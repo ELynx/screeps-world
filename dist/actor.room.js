@@ -92,5 +92,5 @@ var roomActor =
         }
     }
 };
-W
+
 module.exports = roomActor;
