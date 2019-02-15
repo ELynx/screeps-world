@@ -1,0 +1,14 @@
+const DEBUG_VISUAL_X0 = 0;
+const DEBUG_VISUAL_Y0 = 40;
+var DEBUG_VISUAL_X = DEBUG_VISUAL_X0;
+
+const NO_DESTINATION = '';
+
+module.exports =
+{
+    DEBUG_VISUAL_X0,
+    DEBUG_VISUAL_Y0,
+    DEBUG_VISUAL_X,
+
+    NO_DESTINATION
+};
