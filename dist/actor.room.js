@@ -3,7 +3,7 @@ var spawnController = require('controller.spawn');
 var sourceActor     = require('actor.source');
 var refillActor     = require('actor.refill');
 
-var CONST			= require('constants');
+var globals            = require('globals');
 
 // helpers
 
@@ -34,11 +34,13 @@ var roomActor =
     **/
     act: function(room)
     {
+        globals.DEBUG_VISUAL_X = globals.DEBUG_VISUAL_X0;
+
         var activeCreeps = room.find(FIND_MY_CREEPS);
 
-		spawnController.control(room, activeCreeps);
+        spawnController.control(room, activeCreeps);
 
-		// not a controller because it will be more glue and callbacks than work
+        // not a controller because it will be more glue and callbacks than work
         {
             // TODO SO HARDCODE
             const spawn = room.find(FIND_MY_SPAWNS)[0];
@@ -51,8 +53,8 @@ var roomActor =
 
                 // TODO chicken and egg, control and release
 
-				// creep has valid destination
-                if (creep.memory.dest != CONST.NO_DESTINATION)
+                // creep has valid destination
+                if (creep.memory.dest != globals.NO_DESTINATION)
                 {
                     var keepDestination = false;
 
@@ -72,12 +74,12 @@ var roomActor =
 
                     if (!keepDestination)
                     {
-                        creep.memory.dest = CONST.NO_DESTINATION;
+                        creep.memory.dest = globals.NO_DESTINATION;
                     }
                 }
 
                 // now check for new destination
-                if (creep.memory.dest == CONST.NO_DESTINATION)
+                if (creep.memory.dest == globals.NO_DESTINATION)
                 {
                     if (creep.carry.energy < creep.carryCapacity)
                     {

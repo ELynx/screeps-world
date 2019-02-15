@@ -1,4 +1,4 @@
-var CONST = require('constants');
+var globals = require('globals');
 
 // parameters
 const TargetCreepCount = 4;
@@ -12,53 +12,54 @@ const TargetCreepCount = 4;
 **/
 const doSpawn = function(spawn, bodyType)
 {
-	var name = 'creep_' + spawn.id + '_' + Game.time;
+    var name = 'creep_' + spawn.id + '_' + Game.time;
 
-	if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
-	{
-		return spawn.spawnCreep(bodyType, name,
-			{
-				memory :
-				{
-					dest : CONST.NO_DESTINATION
-				}
-			}
-		) == OK;
-	}
+    if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
+    {
+        return spawn.spawnCreep(bodyType, name,
+            {
+                memory :
+                {
+                    dest : globals.NO_DESTINATION
+                }
+            }
+        ) == OK;
+    }
 
-	return false;
+    return false;
 };
 
 var spawnController =
 {
     /**
     @param {Room} room
-	@param {array<Creep>} creeps already present
+    @param {array<Creep>} creeps already present
     **/
     control: function(room, creeps)
     {
-		var creepsBalance = TargetCreepCount - creeps.length;
+        var creepsBalance = TargetCreepCount - creeps.length;
 
-		if (creepsBalance > 0)
-		{
-			const bodyType = [MOVE, CARRY, WORK];
+        if (creepsBalance > 0)
+        {
+            const bodyType = [MOVE, CARRY, WORK];
 
-			var spawns = room.find(FIND_MY_SPAWNS);
+            var spawns = room.find(FIND_MY_SPAWNS);
 
-			for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
-			{
-				if (doSpawn(spawns[i], bodyType))
-				{
-					--creepsBalance;
-				}
-			}
-		}
+            for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
+            {
+                if (doSpawn(spawns[i], bodyType))
+                {
+                    --creepsBalance;
+                }
+            }
+        }
 
-		const textProp = { align: 'left' };
+        const textProp = { align: 'left' };
 
-		room.visual.text('Target creep count ' + TargetCreepCount, 40, 0, textProp);
-		room.visual.text('Actual creep count ' + creeps.length,    40, 1, textProp);
-		room.visual.text('Queued creep count [TODO]',              40, 2, textProp);
+        room.visual.text('Spawn controller ---',                    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('Target creep count ' + TargetCreepCount, globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('Actual creep count ' + creeps.length,    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('Queued creep count [TODO]',              globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
     }
 };
 
