@@ -61,7 +61,14 @@ var roomActor =
                         }
                         else
                         {
-                            keepDestination = creep.moveTo(destination, { visualizePathStyle : { } }) == OK;
+                            if (creep.fatigue > 0)
+                            {
+                                keepDestination = true;
+                            }
+                            else
+                            {
+                                keepDestination = creep.moveTo(destination, { visualizePathStyle : { } }) == OK;
+                            }
                         }
                     }
 
