@@ -1,7 +1,33 @@
-var spawnActor = require('actor.spawn');
+var CONST = require('constants');
 
 // parameters
 const TargetCreepCount = 4;
+
+// helpers
+
+/**
+@param {Spawn} spawn
+@param {array<string>} bodyType
+@return True if creep spawn initiated
+**/
+const doSpawn = function(spawn, bodyType)
+{
+	var name = 'creep_' + spawn.id + '_' + Game.time;
+
+	if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
+	{
+		return spawn.spawnCreep(bodyType, name,
+			{
+				memory :
+				{
+					dest : CONST.NO_DESTINATION
+				}
+			}
+		) == OK;
+	}
+
+	return false;
+};
 
 var spawnController =
 {
@@ -21,7 +47,7 @@ var spawnController =
 
 			for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
 			{
-				if (spawnActor.act(spawns[i], bodyType))
+				if (doSpawn(spawns[i], bodyType))
 				{
 					--creepsBalance;
 				}
