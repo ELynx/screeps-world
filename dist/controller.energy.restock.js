@@ -28,7 +28,7 @@ var energyRestockController =
 
         const creeps = room.find(FIND_MY_CREEPS,
             {
-                filter = function(creep)
+                filter: function(creep)
                 {
                     return globals.creepNotAssigned(creep) && creep.carry.energy > 0;
                 }
