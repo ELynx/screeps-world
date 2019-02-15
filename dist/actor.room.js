@@ -1,13 +1,9 @@
-var spawnActor      = require('actor.spawn');
+var spawnController = require('controller.spawn');
+
 var sourceActor     = require('actor.source');
 var refillActor     = require('actor.refill');
 
-// TODO single place
-// constants
-const NO_DESTINATION = '';
-
-// parameters
-const TargetCreepCount = 4;
+var CONST			= require('constants');
 
 // helpers
 
@@ -40,33 +36,9 @@ var roomActor =
     {
         var activeCreeps = room.find(FIND_MY_CREEPS);
 
-        // TODO actual strategy controller
-        {
-            var creepsBalance = TargetCreepCount - activeCreeps.length;
+		spawnController.control(room, activeCreeps);
 
-            if (creepsBalance > 0)
-            {
-                const bodyType = [MOVE, CARRY, WORK];
-
-                var spawns = room.find(FIND_MY_SPAWNS);
-
-                for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
-                {
-                    if (spawnActor.act(spawns[i], bodyType))
-                    {
-                        --creepsBalance;
-                    }
-                }
-            }
-
-            const textProp = { align: 'left' };
-
-            room.visual.text('Target creep cout ' + TargetCreepCount,       40, 0, textProp);
-            room.visual.text('Actual creep count ' + activeCreeps.length,   40, 1, textProp);
-            room.visual.text('Queued creep count [TODO]',                   40, 2, textProp);
-        }
-
-        // TODO actual behavior controller
+		// not a controller because it will be more glue and callbacks than work
         {
             // TODO SO HARDCODE
             const spawn = room.find(FIND_MY_SPAWNS)[0];
@@ -74,12 +46,13 @@ var roomActor =
 
             for (var i = 0; i < activeCreeps.length; ++i)
             {
-                // TODO is this a performance loss?
+                // performance loss, but only for small number of access
                 var creep = activeCreeps[i];
 
-                // TODO chicken and egg, control or release
+                // TODO chicken and egg, control and release
 
-                if (creep.memory.dest !== NO_DESTINATION)
+				// creep has valid destination
+                if (creep.memory.dest != CONST.NO_DESTINATION)
                 {
                     var keepDestination = false;
 
@@ -99,12 +72,12 @@ var roomActor =
 
                     if (!keepDestination)
                     {
-                        creep.memory.dest = NO_DESTINATION;
+                        creep.memory.dest = CONST.NO_DESTINATION;
                     }
                 }
 
                 // now check for new destination
-                if (creep.memory.dest === NO_DESTINATION)
+                if (creep.memory.dest == CONST.NO_DESTINATION)
                 {
                     if (creep.carry.energy < creep.carryCapacity)
                     {
@@ -119,5 +92,5 @@ var roomActor =
         }
     }
 };
-
+W
 module.exports = roomActor;

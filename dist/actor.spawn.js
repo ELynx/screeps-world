@@ -1,3 +1,5 @@
+var CONST = require('constants');
+
 var spawnActor =
 {
     /**
@@ -15,7 +17,7 @@ var spawnActor =
                 {
                     memory :
                     {
-                        dest : ''
+                        dest : CONST.NO_DESTINATION
                     }
                 }
             ) == OK;
