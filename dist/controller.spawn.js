@@ -34,6 +34,8 @@ var spawnController =
     **/
     control: function(room)
     {
+        globals.roomDebug(room, '<Spawn controller>');
+
         const creeps = room.find(FIND_MY_CREEPS);
 
         var creepsBalance = TargetCreepCount - creeps.length;
@@ -53,11 +55,8 @@ var spawnController =
             }
         }
 
-        const textProp = { align: 'left' };
-
-        room.visual.text('<Spawn controller>',                     globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
-        room.visual.text('Target creep count ' + TargetCreepCount, globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
-        room.visual.text('Actual creep count ' + creeps.length,    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        globals.roomDebug(room, 'Target creep count ' + TargetCreepCount);
+        globals.roomDebug(room, 'Actual creep count ' + creeps.length);
     }
 };
 

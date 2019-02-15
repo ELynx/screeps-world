@@ -1,5 +1,5 @@
 var spawnController = require('controller.spawn');
-var energyHarvestController = require('controller.energy,harvest');
+var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 
 var sourceActor = require('actor.source');
