@@ -23,6 +23,7 @@ var energyController =
             }
         );
 
+        var checked = 0;
         var toSource = 0;
         var toTarget = 0;
 
@@ -31,17 +32,18 @@ var energyController =
             var creep = creeps[i];
 
             // TODO in one place?
-            if (creep.dest == globals.NO_DESTINATION)
+            if (creep.memory.dest == globals.NO_DESTINATION)
             {
+                ++checked;
+
                 if (_.sum(creep.carry) < creep.carryCapacity)
                 {
                     const source = creep.pos.findClosestByPath(sources);
 
                     if (source)
                     {
-                        creep.dest = source.id;
+                        creep.memory.dest = source.id;
                         ++toSource;
-                        creep.say('🔅');
                     }
                 }
                 else
@@ -50,9 +52,8 @@ var energyController =
 
                     if (target)
                     {
-                        creep.dest = target.id;
+                        creep.memory.dest = target.id;
                         ++toTarget;
-                        creep.say('🔄');
                     }
                 }
             }
@@ -61,6 +62,7 @@ var energyController =
         const textProp = { align: 'left' };
 
         room.visual.text('<Energy controller>',         globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('Creeps checked ' + checked,   globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Sent to source ' + toSource,  globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Sent to restock ' + toTarget, globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
     }
