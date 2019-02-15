@@ -1,10 +1,11 @@
-var spawnController     = require('controller.spawn');
-var energyController    = require('controller.energy');
+var spawnController = require('controller.spawn');
+var energyHarvestController = require('controller.energy,harvest');
+var energyRestockController = require('controller.energy.restock');
 
-var sourceActor         = require('actor.source');
-var refillActor         = require('actor.refill');
+var sourceActor = require('actor.source');
+var refillActor = require('actor.refill');
 
-var globals             = require('globals');
+var globals = require('globals');
 
 /**
 @param {Object} destination object
@@ -33,25 +34,25 @@ var roomActor =
     **/
     act: function(room)
     {
-        globals.DEBUG_VISUAL_X = globals.DEBUG_VISUAL_X0;
+        globals.roomDebugReset();
 
-        var myCreeps = room.find(FIND_MY_CREEPS);
-
-        spawnController.control(room, myCreeps);
+        spawnController.control(room);
 
         // not a controller because it will be more glue and callbacks than work
         {
+            var myCreeps = room.find(FIND_MY_CREEPS);
+
             for (var i = 0; i < myCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
                 var creep = myCreeps[i];
 
                 // creep has valid destination
-                if (creep.memory.dest != globals.NO_DESTINATION)
+                if (globals.creepAssigned(creep))
                 {
                     var keepDestination = false;
 
-                    const destination = Game.getObjectById(creep.memory.dest);
+                    const destination = globals.creepTarget(creep);
 
                     if (destination)
                     {
@@ -74,13 +75,14 @@ var roomActor =
 
                     if (!keepDestination)
                     {
-                        creep.memory.dest = globals.NO_DESTINATION;
+                        globals.creepUnassing(creep);
                     }
                 }
             }
         }
 
-        energyController.control(room, myCreeps);
+        energyHarvestController.control(room);
+        energyRestockController.control(room);
     }
 };
 
