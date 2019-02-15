@@ -1,11 +1,10 @@
-var spawnController = require('controller.spawn');
+var spawnController     = require('controller.spawn');
+var energyController    = require('controller.energy');
 
-var sourceActor     = require('actor.source');
-var refillActor     = require('actor.refill');
+var sourceActor         = require('actor.source');
+var refillActor         = require('actor.refill');
 
-var globals            = require('globals');
-
-// helpers
+var globals             = require('globals');
 
 /**
 @param {Object} destination object
@@ -14,14 +13,14 @@ var globals            = require('globals');
 **/
 const mapActors = function(destination, creep)
 {
-    if (sourceActor.canHandle(destination))
-    {
-        return sourceActor.act(destination, creep);
-    }
+    const actors = [sourceActor, refillActor];
 
-    if (refillActor.canHandle(destination))
+    for (var i = 0; i < actors.length; ++i)
     {
-        return refillActor.act(destination, creep);
+        if (actors[i].canHandle(destination))
+        {
+            return actors[i].act(destination, creep);
+        }
     }
 
     return false;
@@ -36,22 +35,16 @@ var roomActor =
     {
         globals.DEBUG_VISUAL_X = globals.DEBUG_VISUAL_X0;
 
-        var activeCreeps = room.find(FIND_MY_CREEPS);
+        var myCreeps = room.find(FIND_MY_CREEPS);
 
-        spawnController.control(room, activeCreeps);
+        spawnController.control(room, myCreeps);
 
         // not a controller because it will be more glue and callbacks than work
         {
-            // TODO SO HARDCODE
-            const spawn = room.find(FIND_MY_SPAWNS)[0];
-            const source = spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-
-            for (var i = 0; i < activeCreeps.length; ++i)
+            for (var i = 0; i < myCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
-                var creep = activeCreeps[i];
-
-                // TODO chicken and egg, control and release
+                var creep = myCreeps[i];
 
                 // creep has valid destination
                 if (creep.memory.dest != globals.NO_DESTINATION)
@@ -77,21 +70,10 @@ var roomActor =
                         creep.memory.dest = globals.NO_DESTINATION;
                     }
                 }
-
-                // now check for new destination
-                if (creep.memory.dest == globals.NO_DESTINATION)
-                {
-                    if (creep.carry.energy < creep.carryCapacity)
-                    {
-                        creep.memory.dest = source.id;
-                    }
-                    else
-                    {
-                        creep.memory.dest = spawn.id;
-                    }
-                }
             }
         }
+
+        energyController.control(room, myCreeps);
     }
 };
 

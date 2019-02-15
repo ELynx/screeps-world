@@ -56,7 +56,7 @@ var spawnController =
 
         const textProp = { align: 'left' };
 
-        room.visual.text('Spawn controller ---',                    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('<Spawn controller>',                    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Target creep count ' + TargetCreepCount, globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Actual creep count ' + creeps.length,    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Queued creep count [TODO]',              globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
