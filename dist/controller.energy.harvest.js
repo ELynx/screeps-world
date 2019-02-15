@@ -19,7 +19,7 @@ var energyHarvestController =
 
         const creeps = room.find(FIND_MY_CREEPS,
             {
-                filter = function(creep)
+                filter: function(creep)
                 {
                     // STRATEGY restock only empty, reduce runs to sources
                     return globals.creepNotAssigned(creep) && _.sum(creep.carry) == 0;
