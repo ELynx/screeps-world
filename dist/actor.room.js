@@ -75,7 +75,7 @@ var roomActor =
 
                     if (!keepDestination)
                     {
-                        globals.creepUnassing(creep);
+                        globals.unassignCreep(creep);
                     }
                 }
             }
