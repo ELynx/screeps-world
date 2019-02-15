@@ -44,7 +44,7 @@ var roomActor =
         {
             // TODO SO HARDCODE
             const spawn = room.find(FIND_MY_SPAWNS)[0];
-            const source = spawn.pos.findClosestByPath(FIND_SOURCES);
+            const source = spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 
             for (var i = 0; i < activeCreeps.length; ++i)
             {
