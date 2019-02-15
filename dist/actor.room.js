@@ -3,7 +3,7 @@ var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 
 var sourceActor = require('actor.source');
-var refillActor = require('actor.refill');
+var restockActor = require('actor.restock');
 
 var globals = require('globals');
 
@@ -14,7 +14,7 @@ var globals = require('globals');
 **/
 const mapActors = function(destination, creep)
 {
-    const actors = [sourceActor, refillActor];
+    const actors = [sourceActor, restockActor];
 
     for (var i = 0; i < actors.length; ++i)
     {
