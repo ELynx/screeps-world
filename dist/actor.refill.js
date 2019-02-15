@@ -2,7 +2,7 @@ var refillActor =
 {
     /**
     @param {Object} destination
-    @return True if source can have it as 'acted' argument
+    @return True if actor can have it as 'actor' argument
     **/
     canHandle: function(destination)
     {
