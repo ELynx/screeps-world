@@ -3,8 +3,6 @@ var globals = require('globals');
 // parameters
 const TargetCreepCount = 4;
 
-// helpers
-
 /**
 @param {Spawn} spawn
 @param {array<string>} bodyType
@@ -33,10 +31,11 @@ var spawnController =
 {
     /**
     @param {Room} room
-    @param {array<Creep>} creeps already present
     **/
-    control: function(room, creeps)
+    control: function(room)
     {
+        const creeps = room.find(FIND_MY_CREEPS);
+
         var creepsBalance = TargetCreepCount - creeps.length;
 
         if (creepsBalance > 0)
@@ -56,10 +55,9 @@ var spawnController =
 
         const textProp = { align: 'left' };
 
-        room.visual.text('<Spawn controller>',                    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
+        room.visual.text('<Spawn controller>',                     globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Target creep count ' + TargetCreepCount, globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
         room.visual.text('Actual creep count ' + creeps.length,    globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
-        room.visual.text('Queued creep count [TODO]',              globals.DEBUG_VISUAL_Y0, globals.DEBUG_VISUAL_X++, textProp);
     }
 };
 

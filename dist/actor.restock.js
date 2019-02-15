@@ -1,4 +1,4 @@
-var refillActor =
+var restockActor =
 {
     /**
     @param {Object} destination
@@ -6,8 +6,7 @@ var refillActor =
     **/
     canHandle: function(destination)
     {
-        return  destination instanceof StructureController ||
-                destination instanceof StructureSpawn ||
+        return  destination instanceof StructureSpawn ||
                 destination instanceof StructureExtension ||
                 destination instanceof StructureTower;
     },
@@ -19,19 +18,8 @@ var refillActor =
     **/
     act: function(structure, creep)
     {
-        var result = false;
-
-        if (structure instanceof StructureController)
-        {
-            result = creep.upgradeController(structure) == OK;
-        }
-        else
-        {
-            result = creep.transfer(structure, RESOURCE_ENERGY) == OK;
-        }
-
-        return result;
+        return result = creep.transfer(structure, RESOURCE_ENERGY) == OK;
     }
 };
 
-module.exports = refillActor;
+module.exports = restockActor;
