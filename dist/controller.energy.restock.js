@@ -11,7 +11,7 @@ var energyRestockController =
 
         const targets = room.find(FIND_MY_STRUCTURES,
             {
-                filter = function(structure)
+                filter: function(structure)
                 {
                     return (structure.structureType == STRUCTURE_SPAWN ||
                             structure.structureType == STRUCTURE_EXTENSION ||

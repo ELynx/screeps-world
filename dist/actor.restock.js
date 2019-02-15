@@ -6,9 +6,9 @@ var restockActor =
     **/
     canHandle: function(destination)
     {
-        return  destination instanceof StructureSpawn ||
-                destination instanceof StructureExtension ||
-                destination instanceof StructureTower;
+        return destination instanceof StructureSpawn ||
+               destination instanceof StructureExtension ||
+               destination instanceof StructureTower;
     },
 
     /**
@@ -18,7 +18,7 @@ var restockActor =
     **/
     act: function(structure, creep)
     {
-        return result = creep.transfer(structure, RESOURCE_ENERGY) == OK;
+        return creep.transfer(structure, RESOURCE_ENERGY) == OK;
     }
 };
 
