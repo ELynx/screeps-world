@@ -1,6 +1,7 @@
 var spawnController = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
+var buildController = require('controller.build');
 
 var globals = require('globals');
 
@@ -21,6 +22,11 @@ const mapActors = function(destination, creep)
     if (creep.memory.ctrl == energyRestockController.id)
     {
         return energyRestockController.act(destination, creep);
+    }
+
+    if (creep.memory.ctrl == buildController.id())
+    {
+        return buildController.act(destination, creep);
     }
 
     return false;
@@ -82,6 +88,7 @@ var roomActor =
 
         energyHarvestController.control(room);
         energyRestockController.control(room);
+        buildController.control(room);
     }
 };
 
