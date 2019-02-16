@@ -4,6 +4,28 @@ var globals = require('globals');
 var energyHarvestController =
 {
     /**
+    ID of controller
+    **/
+    id: 'energy.harvest',
+
+    /**
+    @param {Source} source
+    @param {Creep} creep adjacent to source
+    @return True if creep was acted upon
+    **/
+    act: function(source, creep)
+    {
+        var result = false;
+
+        if (_.sum(creep.carry) < creep.carryCapacity)
+        {
+            result = creep.harvest(source) == OK;
+        }
+
+        return result;
+    },
+
+    /**
     @param {Room} room
     **/
     control: function(room)
@@ -35,7 +57,7 @@ var energyHarvestController =
 
             if (source)
             {
-                globals.assignCreep(creeps[i], source);
+                globals.assignCreep(this.id, source, creeps[i]);
                 ++assigned;
             }
         }

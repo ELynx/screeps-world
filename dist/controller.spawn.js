@@ -1,7 +1,7 @@
 var globals = require('globals');
 
 // parameters
-const TargetCreepCount = 4;
+const TargetCreepCount = 8;
 
 /**
 @param {Spawn} spawn
@@ -16,9 +16,10 @@ const doSpawn = function(spawn, bodyType)
     {
         return spawn.spawnCreep(bodyType, name,
             {
-                memory :
+                memory:
                 {
-                    dest : globals.NO_DESTINATION
+                    dest: globals.NO_DESTINATION,
+                    ctrl: globals.NO_CONTROL
                 }
             }
         ) == OK;
