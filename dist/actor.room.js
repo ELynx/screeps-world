@@ -24,7 +24,7 @@ const mapActors = function(destination, creep)
         return energyRestockController.act(destination, creep);
     }
 
-    if (creep.memory.ctrl == buildController.id())
+    if (creep.memory.ctrl == buildController.id)
     {
         return buildController.act(destination, creep);
     }
