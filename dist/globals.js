@@ -13,25 +13,28 @@ var globals =
     },
 
     NO_DESTINATION: '',
+    NO_CONTROL: '',
 
     creepAssigned: function(creep)
     {
-        return creep.memory.dest != this.NO_DESTINATION;
+        return creep.memory.ctrl != this.NO_CONTROL;
     },
 
     creepNotAssigned: function(creep)
     {
-        return creep.memory.dest == this.NO_DESTINATION;
+        return creep.memory.ctrl == this.NO_CONTROL;
     },
 
-    assignCreep: function(creep, target)
+    assignCreep: function(ctrl, target, creep)
     {
         creep.memory.dest = target.id;
+        creep.memory.ctrl = ctrl;
     },
 
     unassignCreep: function(creep)
     {
         creep.memory.dest = this.NO_DESTINATION;
+        creep.memory.ctrl = this.NO_CONTROL;
     },
 
     creepTarget: function(creep)

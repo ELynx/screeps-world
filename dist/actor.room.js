@@ -2,9 +2,6 @@ var spawnController = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 
-var sourceActor = require('actor.source');
-var restockActor = require('actor.restock');
-
 var globals = require('globals');
 
 /**
@@ -14,14 +11,16 @@ var globals = require('globals');
 **/
 const mapActors = function(destination, creep)
 {
-    const actors = [sourceActor, restockActor];
+    // TODO map of <id, object reference>
 
-    for (var i = 0; i < actors.length; ++i)
+    if (creep.ctrl == energyHarvestController.id)
     {
-        if (actors[i].canHandle(destination))
-        {
-            return actors[i].act(destination, creep);
-        }
+        return energyHarvestController.act(destination, creep);
+    }
+
+    if (creep.ctrl == energyRestockController.id)
+    {
+        return energyRestockController.act(destination, creep);
     }
 
     return false;

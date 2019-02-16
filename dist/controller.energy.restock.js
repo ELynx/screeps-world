@@ -3,6 +3,21 @@ var globals = require('globals');
 var energyRestockController =
 {
     /**
+    ID of controller
+    **/
+    id: 'energy.restock',
+
+    /**
+    @param {Structure} structure
+    @param {Creep} creep adjacent to structure
+    @return True if creep was acted upon
+    **/
+    act: function(structure, creep)
+    {
+        return creep.transfer(structure, RESOURCE_ENERGY) == OK;
+    },
+
+    /**
     @param {Room} room
     **/
     control: function(room)
@@ -26,6 +41,7 @@ var energyRestockController =
             return;
         }
 
+        // TODO unify in one place
         const creeps = room.find(FIND_MY_CREEPS,
             {
                 filter: function(creep)
@@ -43,7 +59,7 @@ var energyRestockController =
 
             if (target)
             {
-                globals.assignCreep(creeps[i], target);
+                globals.assignCreep(this.id, target, creeps[i]);
                 ++assigned;
             }
         }

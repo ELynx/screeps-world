@@ -2,7 +2,7 @@ var memoryManager =
 {
     cleanup: function()
     {
-        for(var name in Memory.creeps)
+        for(const name in Memory.creeps)
         {
             if(!Game.creeps[name])
             {
