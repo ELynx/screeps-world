@@ -13,12 +13,12 @@ const mapActors = function(destination, creep)
 {
     // TODO map of <id, object reference>
 
-    if (creep.ctrl == energyHarvestController.id)
+    if (creep.memory.ctrl == energyHarvestController.id)
     {
         return energyHarvestController.act(destination, creep);
     }
 
-    if (creep.ctrl == energyRestockController.id)
+    if (creep.memory.ctrl == energyRestockController.id)
     {
         return energyRestockController.act(destination, creep);
     }
