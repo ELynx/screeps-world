@@ -3,40 +3,37 @@ var Controller = require('controller.template');
 
 var spawnController = new Controller('spawn');
 
-// STRATEGY
-// worker still can carry resources back if work is shot
-// then extra legs are not necessary, and can be sacreficed
-// then it is just running target
-const bodyTypeSmall  = [WORK, MOVE, CARRY, MOVE];
-const bodyTypeMedium = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+const universalWorker = function(level)
+{
+    return [WORK, MOVE, CARRY, MOVE];
+};
+
+const heavyWorker = function(level)
+{
+    return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE];
+};
+
+const TypeBody    = [ universalWorker, heavyWorker];
+const TypeRestock = [ false,           true       ];
+const TypeCount   = [
+                    [ 0,               0          ], // level 0, no own controller
+                    [ 4,               0          ], // level 1
+                    [ 6,               2          ]  // level 2
+                                                  ];
 
 /**
 @param {Spawn} spawn
-@param {array<string>} bodyType
+@param {integer} type
+@param {integer} level
 @return True if creep spawn initiated
 **/
-const doSpawn = function(spawn, bodyType)
+const doSpawn = function(spawn, type, level)
 {
-    var name = 'creep_' + spawn.id + '_' + Game.time;
+    const name = spawn.id + '_' + Game.time;
+    const bodyType = TypeBody[type](level);
 
     if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
     {
-        // TODO some sane way
-        // <<
-        var move = 0;
-
-        for (var i = 0; i < bodyType.length; ++i)
-        {
-            if (bodyType[i] == MOVE)
-            {
-                ++move;
-            }
-        }
-
-        // if will fatigue
-        var restock = bodyType.length > 2 * move;
-        //
-
         return spawn.spawnCreep(bodyType, name,
             {
                 memory:
@@ -44,7 +41,9 @@ const doSpawn = function(spawn, bodyType)
                     ctrl: globals.NO_CONTROL,
                     actd: globals.NO_ACT_DISTANCE,
                     dest: globals.NO_DESTINATION,
-                    rstk: restock
+                    btyp: type,
+                    levl: level,
+                    rstk: TypeRestock[type]
                 }
             }
         ) == OK;
@@ -53,65 +52,76 @@ const doSpawn = function(spawn, bodyType)
     return false;
 };
 
-spawnController.targets = function(room)
-{
-    return room.find(FIND_MY_SPAWNS);
-};
-
-spawnController.creeps = function(room)
-{
-    return room.find(FIND_MY_CREEPS);
-};
-
 spawnController.control = function(room)
 {
     this.debugPing(room);
 
-    const creeps = this.creeps(room);
+    // TODO move creeps to spawn for renewal or absorbtion
+    //var rc = this.creepsToTargets(room);
+    var rc = 0;
 
-    // TODO sane way
-    // <<
-    var targetSmall  = 4;
-    var targetMedium = 2;
+    var level = 0;
+
+    if (room.controller)
+    {
+        if (room.controller.my)
+        {
+            level = room.controller.level;
+        }
+    }
+
+    if (level == 0)
+    {
+        return rc;
+    }
+
+    const spawns = room.find(FIND_MY_SPAWNS);
+
+    if (spawns.length == 0)
+    {
+        return rc;
+    }
+
+    // cap off at defined
+    if (level >= TypeCount.length)
+    {
+        level = TypeCount.length - 1;
+    }
+
+    const creeps = room.find(FIND_MY_CREEPS);
+
+    // quick check - by # of creeps
+    const creepsWanted = _.sum(TypeCount[level]);
+    if (creeps.length >= creepsWanted)
+    {
+        return rc;
+    }
+
+    // TODO better way
+    // FFS keep this syncronized with above
+    var creepCount = [0, 0];
 
     for (var i = 0; i < creeps.length; ++i)
     {
-        if (creeps[i].body == bodyTypeSmall)
-        {
-            --targetSmall;
-        }
-        else if (creeps[i].body == bodyTypeMedium)
-        {
-            --targetMedium;
-        }
+        ++creepCount[creeps[i].memory.btyp];
     }
 
-    if (targetSmall > 0 || targetMedium > 0)
+    // STRATEGY spawns are few, types are plenty
+    for (var i = 0; i < spawns.length; ++i)
     {
-        var spawns = this.targets(room);
-
-        for (var i = 0; i < spawns.length && (targetSmall > 0 || targetMedium > 0); ++i)
+        var notSpawned = true;
+        for (var type = 0; type < TypeBody.length && notSpawned; ++type)
         {
-            if (targetSmall > 0)
+            var delta = TypeCount[level][type] - creepCount[type];
+
+            if (delta > 0)
             {
-                if (doSpawn(spawns[i], bodyTypeSmall))
-                {
-                    --targetSmall;
-                }
-            }
-            else if (targetMedium > 0)
-            {
-                 if (doSpawn(spawns[i], bodyTypeMedium))
-                {
-                    --targetMedium;
-                }
+                notSpawned = !doSpawn(spawns[i], type, level);
             }
         }
     }
-    // >>
 
-    globals.roomDebug(room, 'Want small # ' + targetSmall);
-    globals.roomDebug(room, 'Want medium # ' + targetMedium);
+    return rc;
 };
 
 module.exports = spawnController;
