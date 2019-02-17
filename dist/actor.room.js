@@ -56,30 +56,30 @@ var roomActor =
                 // creep has valid destination
                 if (globals.creepAssigned(creep))
                 {
-                    var keepDestination = false;
+                    var keepAssignment = false;
 
                     const destination = globals.creepTarget(creep);
 
                     if (destination)
                     {
-                        if (creep.pos.inRangeTo(destination, creep.actd))
+                        if (creep.pos.inRangeTo(destination, creep.memory.actd))
                         {
-                            keepDestination = mapActors(destination, creep);
+                            keepAssignment = mapActors(destination, creep);
                         }
                         else
                         {
                             if (creep.fatigue > 0)
                             {
-                                keepDestination = true;
+                                keepAssignment = true;
                             }
                             else
                             {
-                                keepDestination = creep.moveTo(destination, { visualizePathStyle : { } }) == OK;
+                                keepAssignment = creep.moveTo(destination, { visualizePathStyle : { } }) == OK;
                             }
                         }
                     }
 
-                    if (!keepDestination)
+                    if (!keepAssignment)
                     {
                         globals.unassignCreep(creep);
                     }
