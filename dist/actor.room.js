@@ -2,6 +2,7 @@ var spawnController = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 var buildController = require('controller.build');
+var controllerController = require('controller.controller');
 
 var globals = require('globals');
 
@@ -91,6 +92,7 @@ var roomActor =
         energyHarvestController.control(room);
         energyRestockController.control(room);
         buildController.control(room);
+        controllerController.control(room);
     }
 };
 
