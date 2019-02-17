@@ -12,8 +12,9 @@ var globals =
         room.visual.text(what, 40, this.roomDebugY++, { align: 'left' });
     },
 
-    NO_DESTINATION: '',
     NO_CONTROL: '',
+    NO_ACT_DISTANCE: 0,
+    NO_DESTINATION: '',
 
     creepAssigned: function(creep)
     {
@@ -25,16 +26,18 @@ var globals =
         return creep.memory.ctrl == this.NO_CONTROL;
     },
 
-    assignCreep: function(ctrl, target, creep)
+    assignCreep: function(controller, target, creep)
     {
+        creep.memory.ctrl = controller.id;
+        creep.memory.actd = controller.actDistance;
         creep.memory.dest = target.id;
-        creep.memory.ctrl = ctrl;
     },
 
     unassignCreep: function(creep)
     {
-        creep.memory.dest = this.NO_DESTINATION;
         creep.memory.ctrl = this.NO_CONTROL;
+        creep.memory.actd = this.NO_ACT_DISTANCE;
+        creep.memory.dest = this.NO_DESTINATION;
     },
 
     creepTarget: function(creep)

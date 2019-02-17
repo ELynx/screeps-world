@@ -43,6 +43,7 @@ var roomActor =
 
         spawnController.control(room);
 
+        // TODO helpers
         // not a controller because it will be more glue and callbacks than work
         {
             var myCreeps = room.find(FIND_MY_CREEPS);
@@ -61,7 +62,7 @@ var roomActor =
 
                     if (destination)
                     {
-                        if (creep.pos.isNearTo(destination))
+                        if (creep.pos.inRangeTo(destination, creep.actd))
                         {
                             keepDestination = mapActors(destination, creep);
                         }
@@ -86,6 +87,7 @@ var roomActor =
             }
         }
 
+        // TODO 'for all actors'
         energyHarvestController.control(room);
         energyRestockController.control(room);
         buildController.control(room);
