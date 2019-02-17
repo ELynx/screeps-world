@@ -30,7 +30,7 @@ energyRestockController.targets = function(room)
         }
     );
 
-    return _.concat(structs, creeps);
+    return structs.concat(creeps);
 };
 
 module.exports = energyRestockController;
