@@ -43,7 +43,7 @@ function Controller(id)
     If there are targets then look for creeps.
     Assign each creep to closest target.
     **/
-    this.control: function(room)
+    this.control = function(room)
     {
         this.debugPing(room);
 

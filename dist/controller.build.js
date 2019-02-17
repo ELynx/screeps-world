@@ -1,6 +1,6 @@
 var Controller = require('controller.template');
 
-var buildController = new Controller('energy.restock');
+var buildController = new Controller('build');
 
 buildController.actDistance = 3;
 

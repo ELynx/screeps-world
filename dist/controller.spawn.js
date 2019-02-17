@@ -1,3 +1,4 @@
+var globals = require('globals');
 var Controller = require('controller.template');
 
 var spawnController = new Controller('spawn');
