@@ -2,14 +2,14 @@ var Controller = require('controller.template');
 
 var energyRestockController = new Controller('energy.restock');
 
-energyRestockController.act = function(structure, creep)
+energyRestockController.act = function(target, creep)
 {
-    return creep.transfer(structure, RESOURCE_ENERGY) == OK;
+    return creep.transfer(target, RESOURCE_ENERGY) == OK;
 };
 
 energyRestockController.targets = function(room)
 {
-    return room.find(FIND_MY_STRUCTURES,
+    const structs = room.find(FIND_MY_STRUCTURES,
         {
             filter: function(structure)
             {
@@ -20,6 +20,17 @@ energyRestockController.targets = function(room)
             }
         }
     );
+
+    const creeps = room.find(FIND_MY_CREEPS,
+        {
+            filter: function(creep)
+            {
+                return creep.memory.rstk && _.sum(creep.carry) < creep.carryCapacity;
+            }
+        }
+    );
+
+    return _.concat(structs, creeps);
 };
 
 module.exports = energyRestockController;
