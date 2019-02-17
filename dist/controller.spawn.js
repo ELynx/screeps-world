@@ -1,7 +1,9 @@
-var globals = require('globals');
+var Controller = require('controller.template');
+
+var spawnController = new Controller('spawn');
 
 // parameters
-const TargetCreepCount = 8;
+const TargetCreepCount = 4;
 
 /**
 @param {Spawn} spawn
@@ -18,8 +20,9 @@ const doSpawn = function(spawn, bodyType)
             {
                 memory:
                 {
-                    dest: globals.NO_DESTINATION,
-                    ctrl: globals.NO_CONTROL
+                    ctrl: globals.NO_CONTROL,
+                    actd: globals.NO_ACT_DISTANCE,
+                    dest: globals.NO_DESTINATION
                 }
             }
         ) == OK;
@@ -28,37 +31,41 @@ const doSpawn = function(spawn, bodyType)
     return false;
 };
 
-var spawnController =
+spawnController.targets = function(room)
 {
-    /**
-    @param {Room} room
-    **/
-    control: function(room)
+    return room.find(FIND_MY_SPAWNS);
+};
+
+spawnController.creeps = function(room)
+{
+    return room.find(FIND_MY_CREEPS);
+};
+
+spawnController.control = function(room)
+{
+    this.debugPing(room);
+
+    const creeps = this.creeps(room);
+
+    var creepsBalance = TargetCreepCount - creeps.length;
+
+    if (creepsBalance > 0)
     {
-        globals.roomDebug(room, '<Spawn controller>');
+        const bodyType = [MOVE, CARRY, WORK];
 
-        const creeps = room.find(FIND_MY_CREEPS);
+        var spawns = this.targets(room);
 
-        var creepsBalance = TargetCreepCount - creeps.length;
-
-        if (creepsBalance > 0)
+        for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
         {
-            const bodyType = [MOVE, CARRY, WORK];
-
-            var spawns = room.find(FIND_MY_SPAWNS);
-
-            for (var i = 0; i < spawns.length && creepsBalance > 0; ++i)
+            if (doSpawn(spawns[i], bodyType))
             {
-                if (doSpawn(spawns[i], bodyType))
-                {
-                    --creepsBalance;
-                }
+                --creepsBalance;
             }
         }
-
-        globals.roomDebug(room, 'Target creep count ' + TargetCreepCount);
-        globals.roomDebug(room, 'Actual creep count ' + creeps.length);
     }
+
+    globals.roomDebug(room, 'Actual creep # ' + creeps.length);
+    globals.roomDebug(room, 'Target creep # ' + TargetCreepCount);
 };
 
 module.exports = spawnController;
