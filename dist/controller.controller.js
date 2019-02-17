@@ -13,7 +13,7 @@ controllerController.targets = function(room)
 {
     if (room.controller)
     {
-        return [room.contrroller];
+        return [room.controller];
     }
 
     return [];
