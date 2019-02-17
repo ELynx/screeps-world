@@ -22,8 +22,8 @@ function Controller(id)
     };
 
     /**
-    Default implementation
-    Find unassigned creep that has some energy
+    Default implementation.
+    Find unassigned creep that has some energy.
     **/
     this.creeps = function(room)
     {
@@ -38,15 +38,13 @@ function Controller(id)
     };
 
     /**
-    Default implementation
+    Default implementation.
     Look for targets.
     If there are targets then look for creeps.
     Assign each creep to closest target.
     **/
-    this.control = function(room)
+    this.creepsToTargets = function(room)
     {
-        this.debugPing(room);
-
         const targets = this.targets(room);
 
         if (targets.length == 0)
@@ -74,6 +72,17 @@ function Controller(id)
         globals.roomDebug(room, 'Creeps assigned ' + assigned);
 
         return assigned;
+    };
+
+    /**
+    Default implementation.
+    Print some debug and call creepsToTargets.
+    **/
+    this.control = function(room)
+    {
+        this.debugPing(room);
+
+        return this.creepsToTargets(room);
     }
 };
 
