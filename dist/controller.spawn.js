@@ -52,7 +52,11 @@ spawnController.control = function(room)
 
     if (creepsBalance > 0)
     {
-        const bodyType = [MOVE, CARRY, WORK];
+        // STRATEGY
+        // worker still can carry resources back if work is shot
+        // then extra legs are not necessary, and can be sacreficed
+        // then it is just running target
+        const bodyType = [WORK, MOVE, CARRY, MOVE];
 
         var spawns = this.targets(room);
 
