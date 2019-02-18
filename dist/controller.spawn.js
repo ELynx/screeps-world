@@ -161,7 +161,7 @@ spawnController.control = function(room)
     var creepsNeeded = [];
     for (var i = 0; i < TypeBody.length; ++i)
     {
-        creepsNeeded = creepsNeeded.push(TypeCount[level][i]);
+        creepsNeeded = creepsNeeded.concat(TypeCount[level][i]);
     }
 
     for (var i = 0; i < creeps.length; ++i)
