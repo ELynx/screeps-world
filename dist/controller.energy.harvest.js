@@ -24,15 +24,44 @@ energyHarvestController.targets = function(room)
 
 energyHarvestController.creeps = function(room)
 {
-    return room.find(FIND_MY_CREEPS,
+    var creeps = room.find(FIND_MY_CREEPS,
         {
             filter: function(creep)
             {
-                // STRATEGY restock only empty, reduce runs to sources
-                return globals.creepNotAssigned(creep) && _.sum(creep.carry) == 0;
+                // STRATEGY harvest with empty only, reduce runs to sources
+                return creep.memory.hvst && globals.creepNotAssigned(creep) && _.sum(creep.carry) == 0;
             }
         }
     );
+
+    if (creeps.length == 0)
+    {
+        return [];
+    }
+
+    // STRATEGY creeps with flag restock go to source on their own only when there are no other options
+
+    var restocker = false;
+    for (var i = 0; i < creeps.length && !restocker; ++i)
+    {
+        restocker = !creeps[i].memory.rstk;
+    }
+
+    if (!restocker)
+    {
+        return creeps;
+    }
+
+    var result = [];
+    for (var i = 0; i < creeps.length; ++i)
+    {
+        if (!creeps[i].memory.rstk)
+        {
+            result.push_back(creeps[i]);
+        }
+    }
+
+    return result;
 };
 
 module.exports = energyHarvestController;
