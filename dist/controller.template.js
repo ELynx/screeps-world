@@ -6,6 +6,11 @@ function Controller(id)
 
     this.actDistance = 1;
 
+    this.debugPing = function(room)
+    {
+        globals.roomDebug(room, '<Controller ' + this.id + '>');
+    };
+
     this.act = function(destination, creep)
     {
         return false;
@@ -14,11 +19,6 @@ function Controller(id)
     this.targets = function(room)
     {
         return [];
-    };
-
-    this.debugPing = function(room)
-    {
-        globals.roomDebug(room, '<Controller ' + this.id + '>');
     };
 
     /**
