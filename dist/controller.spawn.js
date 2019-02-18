@@ -28,7 +28,7 @@ const universalWorker = function(level)
     var result = [];
     for (var i = 0; i < level; ++i)
     {
-        result = front.append(result).append(back);
+        result = front.concat(result).concat(back);
     }
 
     return result;
@@ -60,7 +60,7 @@ const heavyWorker = function(level)
     var result = [];
     for (var i = 1; i < level; ++i)
     {
-        result = front.append(result).append(back);
+        result = front.concat(result).concat(back);
     }
 
     return result;
@@ -159,7 +159,7 @@ spawnController.control = function(room)
     var creepsNeeded = [];
     for (var i = 0; i < TypeBody.length; ++i)
     {
-        creepsNeeded = creepsNeeded.append([TypeCount[level][i]]);
+        creepsNeeded = creepsNeeded.concat([TypeCount[level][i]]);
     }
 
     for (var i = 0; i < creeps.length; ++i)
