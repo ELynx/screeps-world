@@ -22,8 +22,8 @@ const universalWorker = function(level)
         return [];
 
     // total 250 per level
-    const front [WORK,  MOVE]; // 150 = 100 50
-    const back  [CARRY, MOVE]; // 100 = 50 50
+    const front = [WORK,  MOVE]; // 150 = 100 50
+    const back =  [CARRY, MOVE]; // 100 = 50 50
 
     var result = [];
     for (var i = 0; i < level; ++i)
@@ -54,8 +54,8 @@ const heavyWorker = function(level)
     }
 
     // for level 3 and above 400 energy per level above 1
-    const front [WORK, WORK, CARRY, CARRY, CARRY]; // 350 = 100 100 50 50 50
-    const back  [MOVE]; // 50 = 50
+    const front = [WORK, WORK, CARRY, CARRY, CARRY]; // 350 = 100 100 50 50 50
+    const back =  [MOVE]; // 50 = 50
 
     var result = [];
     for (var i = 1; i < level; ++i)
