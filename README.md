@@ -8,8 +8,12 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-Unified "creep with energy" list/search, decresing when creep is controlled.
-Controllers with multi-act. Example: spawn controller that can renew and recycle.
+Cached "creep with energy" search in controller.template.
+"Hot" areas to avoid for worker creeps.
+Order creeps with energy by mobility, assign accordingly.
+Creep keeps room ID for spawn calculations.
 
 # Ideas
 Withdraw from enemy structures
+Dismantle enemy structures
+Use getActiveBodyparts
