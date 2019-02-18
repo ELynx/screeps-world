@@ -67,6 +67,7 @@ const heavyWorker = function(level)
 };
 
 const TypeBody    = [ universalWorker, heavyWorker];
+const TypeHarvest = [ true,            true       ];
 const TypeRestock = [ false,           true       ];
 const TypeCount   = [
                     [ 0,               0          ], // level 0, no own controller
@@ -97,6 +98,7 @@ const doSpawn = function(spawn, type, level)
                     dest: globals.NO_DESTINATION,
                     btyp: type,
                     levl: level,
+                    hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
                 }
             }
@@ -159,7 +161,7 @@ spawnController.control = function(room)
     var creepsNeeded = [];
     for (var i = 0; i < TypeBody.length; ++i)
     {
-        creepsNeeded = creepsNeeded.concat([TypeCount[level][i]]);
+        creepsNeeded = creepsNeeded.push_back(TypeCount[level][i]);
     }
 
     for (var i = 0; i < creeps.length; ++i)

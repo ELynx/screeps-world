@@ -25,7 +25,7 @@ energyRestockController.targets = function(room)
         {
             filter: function(creep)
             {
-                return !creep.spawning && creep.memory.rstk && _.sum(creep.carry) < creep.carryCapacity;
+                return creep.memory.rstk && !creep.spawning && (_.sum(creep.carry) < creep.carryCapacity);
             }
         }
     );
