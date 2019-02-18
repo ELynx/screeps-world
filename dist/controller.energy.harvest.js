@@ -57,7 +57,7 @@ energyHarvestController.creeps = function(room)
     {
         if (!creeps[i].memory.rstk)
         {
-            result.push_back(creeps[i]);
+            result.push(creeps[i]);
         }
     }
 
