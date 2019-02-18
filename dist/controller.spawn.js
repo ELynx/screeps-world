@@ -68,7 +68,7 @@ const heavyWorker = function(level)
 
 const TypeBody    = [ universalWorker, heavyWorker];
 const TypeHarvest = [ true,            true       ];
-const TypeRestock = [ false,           true       ];
+const TypeRestock = [ true,            false      ];
 const TypeCount   = [
                     [ 0,               0          ], // level 0, no own controller
                     [ 6,               2          ], // level 1
@@ -110,10 +110,8 @@ const doSpawn = function(spawn, type, level)
 
 spawnController.control = function(room)
 {
-    this.debugPing(room);
+    this.debugHeader(room);
 
-    // TODO move creeps to spawn for renewal or absorbtion
-    //var rc = this.creepsToTargets(room);
     var rc = 0;
 
     var level = 0;
@@ -139,6 +137,7 @@ spawnController.control = function(room)
 
     if (spawns.length == 0)
     {
+        this.debugLine(room, 'No controllable spawns found');
         return rc;
     }
 
@@ -190,7 +189,7 @@ spawnController.control = function(room)
         }
     }
 
-    globals.roomDebug(room, 'Total spawned ' + totalSpawned);
+    this.debugLine(room, 'Total spawned ' + totalSpawned);
 
     return rc;
 };

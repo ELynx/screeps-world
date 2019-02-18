@@ -6,12 +6,25 @@ function Controller(id)
 
     this.actDistance = 1;
 
-    this.debugPing = function(room)
+    this.verbose = false;
+
+    this.debugLine = function(room, what)
     {
-        globals.roomDebug(room, '<Controller ' + this.id + '>');
+        if (this.verbose)
+        {
+            globals.roomDebug(room, what);
+        }
     };
 
-    this.act = function(destination, creep)
+    this.debugHeader = function(room)
+    {
+        if (this.verbose)
+        {
+            this.debugLine(room, '<Controller ' + this.id + '>');
+        }
+    };
+
+    this.act = function(target, creep)
     {
         return false;
     };
@@ -49,7 +62,7 @@ function Controller(id)
 
         if (targets.length == 0)
         {
-            globals.roomDebug(room, 'No targets found');
+            this.debugLine(room, 'No targets found');
             return 0;
         }
 
@@ -68,8 +81,8 @@ function Controller(id)
             }
         }
 
-        globals.roomDebug(room, 'Creeps checked ' + creeps.length);
-        globals.roomDebug(room, 'Creeps assigned ' + assigned);
+        this.debugLine(room, 'Creeps checked ' + creeps.length);
+        this.debugLine(room, 'Creeps assigned ' + assigned);
 
         return assigned;
     };
@@ -80,7 +93,7 @@ function Controller(id)
     **/
     this.control = function(room)
     {
-        this.debugPing(room);
+        this.debugHeader(room);
 
         return this.creepsToTargets(room);
     }

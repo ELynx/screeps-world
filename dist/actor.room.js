@@ -13,7 +13,7 @@ var globals = require('globals');
 **/
 const mapActors = function(destination, creep)
 {
-    // TODO map of <id, object reference>
+    // FIXME [bugs: 1] map of <id, object reference>
 
     if (creep.memory.ctrl == energyHarvestController.id)
     {
@@ -30,6 +30,11 @@ const mapActors = function(destination, creep)
         return buildController.act(destination, creep);
     }
 
+    if (creep.memory.ctrl == controllerController.id)
+    {
+        return controllerController.act(destination, creep);
+    }
+
     return false;
 };
 
@@ -40,8 +45,6 @@ var roomActor =
     **/
     act: function(room)
     {
-        globals.roomDebugReset();
-
         spawnController.control(room);
 
         // TODO helpers
@@ -75,7 +78,7 @@ var roomActor =
                             }
                             else
                             {
-                                keepAssignment = creep.moveTo(destination, { visualizePathStyle : { } }) == OK;
+                                keepAssignment = creep.moveTo(destination) == OK;
                             }
                         }
                     }
