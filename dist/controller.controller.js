@@ -6,10 +6,7 @@ controllerController.actDistance = 3;
 
 controllerController.act = function(target, creep)
 {
-    creep.upgradeController(target);
-
-    // STRATEGY don't hold creeps on this task
-    return false;
+    return creep.upgradeController(target) == OK;
 };
 
 controllerController.targets = function(room)

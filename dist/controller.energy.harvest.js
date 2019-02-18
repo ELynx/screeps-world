@@ -1,7 +1,6 @@
 var globals = require('globals');
 var Controller = require('controller.template');
 
-// TODO energy on ground
 var energyHarvestController = new Controller('energy.harvest');
 
 energyHarvestController.act = function(source, creep)
@@ -24,30 +23,42 @@ energyHarvestController.targets = function(room)
 
 energyHarvestController.creeps = function(room)
 {
-    const hasRestockers = room.find(FIND_MY_CREEPS,
+    const harvesters = room.find(FIND_MY_CREEPS,
         {
             filter: function(creep)
             {
-                return creep.memory.hvst && !creep.memory.rstk;
-            }
-        }
-    ).length > 0;
-
-    return room.find(FIND_MY_CREEPS,
-        {
-            filter: function(creep)
-            {
-                // STRATEGY don't run restockable creeps if there are restockers present
-                if (hasRestockers && creep.memory.rstk)
-                {
-                    return false;
-                }
-
-                // STRATEGY harvest with empty only, reduce runs to sources
-                return creep.memory.hvst && globals.creepNotAssigned(creep) && _.sum(creep.carry) == 0;
+                return creep.memory.hvst;
             }
         }
     );
+
+    var hasRestockers = false;
+    for (var i = 0; i < harvesters.length && !hasRestockers; ++i)
+    {
+        hasRestockers = harvesters[i].memory.rstk == true;
+    }
+
+    this.debugLine(room, 'Restockers found: ' + hasRestockers);
+
+    var result = [];
+    for (var i = 0; i < harvesters.length; ++i)
+    {
+        var creep = harvesters[i];
+
+        // STRATEGY don't run restockable creeps if there are restockers present
+        if (hasRestockers && creep.memory.rstk == false)
+        {
+            continue;
+        }
+
+        // STRATEGY harvest with empty only, reduce runs to sources
+        if (globals.creepNotAssigned(creep) && (_.sum(creep.carry) == 0))
+        {
+            result = result.concat(creep);
+        }
+    }
+
+    return result;
 };
 
 module.exports = energyHarvestController;

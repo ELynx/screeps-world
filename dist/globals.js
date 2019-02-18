@@ -1,15 +1,19 @@
 var globals =
 {
-    roomDebugY: 0,
+    verbose: false,
 
-    roomDebugReset: function()
+    debugReset: function()
     {
-        this.roomDebugY = 0;
+        this.roomDebug = { };
     },
 
     roomDebug: function(room, what)
     {
-        room.visual.text(what, 40, this.roomDebugY++, { align: 'left' });
+        if (this.verbose)
+        {
+            this.roomDebug[room.id] = this.roomDebug[room.id] || 0;
+            room.visual.text(what, 40, this.roomDebug[room.id]++, { align: 'left' });
+        }
     },
 
     NO_CONTROL: '',
