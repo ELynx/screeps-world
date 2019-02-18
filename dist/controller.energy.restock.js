@@ -34,4 +34,31 @@ energyRestockController.targets = function(room)
     return structs.concat(creeps);
 };
 
+energyRestockController.creeps = function(room)
+{
+    const hasRestockers = room.find(FIND_MY_CREEPS,
+        {
+            filter: function(creep)
+            {
+                return creep.memory.hvst && !creep.memory.rstk;
+            }
+        }
+    ).length > 0;
+
+    return room.find(FIND_MY_CREEPS,
+        {
+            filter: function(creep)
+            {
+                // STRATEGY don't run restockable creeps if there are restockers present
+                if (hasRestockers && creep.memory.rstk)
+                {
+                    return false;
+                }
+
+                return globals.creepNotAssigned(creep) && creep.carry.energy > 0;
+            }
+        }
+    );
+};
+
 module.exports = energyRestockController;
