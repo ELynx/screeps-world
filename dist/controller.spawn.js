@@ -135,7 +135,7 @@ spawnController.creeps = function(room)
         {
             filter: function(creep)
             {
-                return globals.creepNotAssigned(creep) && creep.ticksToLive <= 100;
+                return creep.ticksToLive <= 100;
             }
         }
     );
@@ -145,22 +145,15 @@ spawnController.control = function(room)
 {
     this.debugHeader(room);
 
-    var rc = 0;
-
-    var level = 0;
-
-    if (room.controller && room.controller.my)
-    {
-        level = room.controller.level;
-    }
+    const level = globals.roomLevel(room);
 
     if (level == 0)
     {
-        return rc;
+        return 0;
     }
 
     // call default implementation for mortuary service
-    rc = this.creepsToTargets(room);
+    var rc = this.creepsToTargets(room);
 
     const spawns = room.find(FIND_MY_SPAWNS,
         {

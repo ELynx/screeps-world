@@ -19,6 +19,27 @@ var globals =
         }
     },
 
+    roomLevel: function(room)
+    {
+        if (room.controller && room.controller.my)
+        {
+            // TODO from constants
+            if (room.energyCapacityAvailable <= 300)
+            {
+                return 1;
+            }
+
+            if (room.energyCapacityAvailable <= 550)
+            {
+                return 2;
+            }
+
+            return 3;
+        }
+
+        return 0;
+    },
+
     NO_CONTROL: '',
     NO_ACT_DISTANCE: 0,
     NO_DESTINATION: '',
