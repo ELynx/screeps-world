@@ -1,41 +1,43 @@
+var globals = require('globals');
+
 var spawnController = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 var buildController = require('controller.build');
 var controllerController = require('controller.controller');
 
-var globals = require('globals');
+const roomControllers =
+{
+    spawnController.id:         spawnController,
+    energyHarvestController.id: energyHarvestController,
+    energyRestockController.id: energyRestockController,
+    buildController.id:         buildController,
+    controllerController.id:    controllerController
+};
 
 /**
 @param {Object} destination object
 @param {Creep} creep
 @return True if creep was acted upon
 **/
-const mapActors = function(destination, creep)
+const roomControllersAct = function(destination, creep)
 {
-    // FIXME [bugs: 1] map of <id, object reference>
+    const actor = roomActors[creep.memory.ctrl];
 
-    if (creep.memory.ctrl == energyHarvestController.id)
+    if (actor)
     {
-        return energyHarvestController.act(destination, creep);
-    }
-
-    if (creep.memory.ctrl == energyRestockController.id)
-    {
-        return energyRestockController.act(destination, creep);
-    }
-
-    if (creep.memory.ctrl == buildController.id)
-    {
-        return buildController.act(destination, creep);
-    }
-
-    if (creep.memory.ctrl == controllerController.id)
-    {
-        return controllerController.act(destination, creep);
+        return actor.act(destination, creep);
     }
 
     return false;
+};
+
+const roomControllersControl(room) = function(room)
+{
+    for (const controller in roomControllers)
+    {
+        controller.control(room);
+    }
 };
 
 var roomActor =
@@ -45,9 +47,7 @@ var roomActor =
     **/
     act: function(room)
     {
-        spawnController.control(room);
-
-        // TODO helpers
+        roomControllersControl(room);
 
         {
             const harvesters = room.find(FIND_MY_CREEPS,
@@ -68,7 +68,6 @@ var roomActor =
             globals.loopCache[room.id] = { hasRestockers: restockers };
         }
 
-        // not a controller because it will be more glue and callbacks than work
         {
             var myCreeps = room.find(FIND_MY_CREEPS);
 
@@ -88,7 +87,7 @@ var roomActor =
                     {
                         if (creep.pos.inRangeTo(destination, creep.memory.actd))
                         {
-                            keepAssignment = mapActors(destination, creep);
+                            keepAssignment = roomControllersAct(destination, creep);
                         }
                         else
                         {
@@ -110,12 +109,6 @@ var roomActor =
                 }
             }
         }
-
-        // TODO 'for all actors'
-        energyHarvestController.control(room);
-        energyRestockController.control(room);
-        buildController.control(room);
-        controllerController.control(room);
     }
 };
 
