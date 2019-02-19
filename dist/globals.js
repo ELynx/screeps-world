@@ -1,5 +1,7 @@
 var globals =
 {
+    loopCache: { },
+
     verbose: false,
 
     debugReset: function()

@@ -28,7 +28,7 @@ energyHarvestController.creeps = function(room)
             filter: function(creep)
             {
                 // STRATEGY don't run restockable creeps to source if there are restockers
-                if (room.memory.hasRestockers && creep.memory.rstk == false)
+                if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
                 {
                     return false;
                 }

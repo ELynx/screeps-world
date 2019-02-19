@@ -24,7 +24,7 @@ energyRestockController.targets = function(room)
         }
     );
 
-    if (!room.memory.hasRestockers)
+    if (!globals.loopCache[room.id].hasRestockers)
     {
         return structs;
     }
@@ -48,7 +48,7 @@ energyRestockController.creeps = function(room)
             filter: function(creep)
             {
                 // STRATEGY don't run restockable creeps to do restocking
-                if (room.memory.hasRestockers && creep.memory.rstk == false)
+                if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
                 {
                     return false;
                 }
