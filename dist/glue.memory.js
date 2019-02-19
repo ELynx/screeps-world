@@ -10,13 +10,13 @@ var memoryManager =
             }
         }
 
-        for(const id in Game.rooms)
-        {
-            if(!Game.rooms[id])
-            {
-                delete Memory.rooms[id];
-            }
-        }
+        //for(const id in Game.rooms)
+        //{
+        //    if(!Game.rooms[id])
+        //    {
+        //        delete Memory.rooms[id];
+        //    }
+        //}
     }
 };
 

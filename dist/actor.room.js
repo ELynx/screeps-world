@@ -59,13 +59,13 @@ var roomActor =
                 }
             );
 
-            var hasRestockers = false;
-            for (var i = 0; i < harvesters.length && !hasRestockers; ++i)
+            var restockers = false;
+            for (var i = 0; i < harvesters.length && !restockers; ++i)
             {
-                hasRestockers = harvesters[i].memory.rstk == true;
+                restockers = harvesters[i].memory.rstk == true;
             }
 
-            room.memory.hasRestockers = hasRestockers;
+            globals.loopCache[room.id] = { hasRestockers: restockers };
         }
 
         // not a controller because it will be more glue and callbacks than work
