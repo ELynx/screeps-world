@@ -16,10 +16,12 @@ TOUGH           10
 CLAIM           600
 **/
 
-const universalWorker = function(level)
+const workUniversal = function(level)
 {
     if (level == 0)
+    {
         return [];
+    }
 
     // total 250 per level
     const front = [WORK,  MOVE]; // 150 = 100 50
@@ -34,10 +36,12 @@ const universalWorker = function(level)
     return result;
 };
 
-const heavyWorker = function(level)
+const workHeavy = function(level)
 {
     if (level == 0)
+    {
         return [];
+    }
 
     // for level 1 stay within 300 energy
     if (level == 1)
@@ -66,15 +70,15 @@ const heavyWorker = function(level)
     return result;
 };
 
-const TypeBody    = [ universalWorker, heavyWorker];
-const TypeHarvest = [ true,            true       ];
-const TypeRestock = [ true,            false      ];
+const TypeBody    = [ workUniversal, workHeavy ];
+const TypeHarvest = [ true,            true    ];
+const TypeRestock = [ true,            false   ];
 const TypeCount   = [
-                    [ 0,               0          ], // level 0, no own controller
-                    [ 6,               2          ], // level 1
-                    [ 9,               3          ], // level 2
-                    [ 12,              4          ]  // level 3
-                                                  ];
+                    [ 0,               0       ], // level 0, no own controller
+                    [ 6,               2       ], // level 1
+                    [ 9,               3       ], // level 2
+                    [ 12,              4       ]  // level 3
+                                               ];
 
 /**
 @param {Spawn} spawn
@@ -108,6 +112,35 @@ const doSpawn = function(spawn, type, level)
     return false;
 };
 
+spawnController.act = function(spawn, creep)
+{
+    return spawn.recycleCreep(creep) == OK;
+};
+
+spawnController.targets = function(room)
+{
+    return room.find(FIND_MY_SPAWNS,
+        {
+            filter: function(spawn)
+            {
+                return spawn.isActive();
+            }
+        }
+    );
+};
+
+spawnController.creeps = function(room)
+{
+    return room.find(FIND_MY_CREEPS,
+        {
+            filter: function(creep)
+            {
+                return globals.creepNotAssigned(creep) && creep.ticksToLive <= 100;
+            }
+        }
+    );
+};
+
 spawnController.control = function(room)
 {
     this.debugHeader(room);
@@ -125,6 +158,9 @@ spawnController.control = function(room)
     {
         return rc;
     }
+
+    // call default implementation for mortuary service
+    rc = this.creepsToTargets(room);
 
     const spawns = room.find(FIND_MY_SPAWNS,
         {
