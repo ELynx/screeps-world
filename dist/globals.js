@@ -6,16 +6,16 @@ var globals =
 
     debugReset: function()
     {
-        this.roomDebugPos = { };
+        this.loopCache.roomDebugPos = { };
     },
 
     roomDebug: function(room, what)
     {
         if (this.verbose)
         {
-            this.roomDebugPos[room.id] = this.roomDebugPos[room.id] || 0;
+            this.loopCache.roomDebugPos[room.id] = this.loopCache.roomDebugPos[room.id] || 0;
 
-            room.visual.text(what, 40, this.roomDebugPos[room.id]++, { align: 'left' });
+            room.visual.text(what, 40, this.loopCache.roomDebugPos[room.id]++, { align: 'left' });
         }
     },
 
