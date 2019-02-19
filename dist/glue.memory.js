@@ -9,6 +9,14 @@ var memoryManager =
                 delete Memory.creeps[name];
             }
         }
+
+        for(const id in Game.rooms)
+        {
+            if(!Game.rooms[id])
+            {
+                delete Memory.rooms[id];
+            }
+        }
     }
 };
 
