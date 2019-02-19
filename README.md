@@ -12,7 +12,7 @@ Cached "creep with energy" search in controller.template.
 "Hot" areas to avoid for worker creeps.
 Creep keeps room ID for spawn calculations.
 !Level based on current capacity, not controller level. Or creeps die out because there are no extensions.
-!Automatic controller mapping
+no dependency on hasRestockers
 
 # Ideas
 Withdraw from enemy structures
