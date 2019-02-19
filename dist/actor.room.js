@@ -48,6 +48,26 @@ var roomActor =
         spawnController.control(room);
 
         // TODO helpers
+
+        {
+            const harvesters = room.find(FIND_MY_CREEPS,
+                {
+                    filter: function(creep)
+                    {
+                        return creep.memory.hvst;
+                    }
+                }
+            );
+
+            var hasRestockers = false;
+            for (var i = 0; i < harvesters.length && !hasRestockers; ++i)
+            {
+                hasRestockers = harvesters[i].memory.rstk == true;
+            }
+
+            room.memory.hasRestockers = hasRestockers;
+        }
+
         // not a controller because it will be more glue and callbacks than work
         {
             var myCreeps = room.find(FIND_MY_CREEPS);

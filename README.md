@@ -12,11 +12,10 @@ Cached "creep with energy" search in controller.template.
 "Hot" areas to avoid for worker creeps.
 Order creeps with energy by mobility, assign accordingly.
 Creep keeps room ID for spawn calculations.
-Global "has restockers" flag.
-Don't restock buildings with "restockable" creeps.
 Level based on current capacity, not controller level. Or creeps die out because there are no extensions.
 
 # Ideas
 Withdraw from enemy structures
 Dismantle enemy structures
-Use getActiveBodypartsUse Room.lookAtArea
+Use getActiveBodyparts
+Use Room.lookAtArea

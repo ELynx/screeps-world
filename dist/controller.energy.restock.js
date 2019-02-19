@@ -24,6 +24,11 @@ energyRestockController.targets = function(room)
         }
     );
 
+    if (!room.memory.hasRestockers)
+    {
+        return structs;
+    }
+
     const creeps = room.find(FIND_MY_CREEPS,
         {
             filter: function(creep)
@@ -38,41 +43,21 @@ energyRestockController.targets = function(room)
 
 energyRestockController.creeps = function(room)
 {
-    const harvesters = room.find(FIND_MY_CREEPS,
+    return room.find(FIND_MY_CREEPS,
         {
             filter: function(creep)
             {
-                return creep.memory.hvst;
+                // STRATEGY don't run restockable creeps to do restocking
+                if (room.memory.hasRestockers && creep.memory.rstk == false)
+                {
+                    return false;
+                }
+
+                // STRATEGY harvest with empty only, reduce runs to sources
+                return !creep.spawning && globals.creepNotAssigned(creep) && (creep.carry.energy > 0);
             }
         }
     );
-
-    var hasRestockers = false;
-    for (var i = 0; i < harvesters.length && !hasRestockers; ++i)
-    {
-        hasRestockers = harvesters[i].memory.rstk == true;
-    }
-
-    this.debugLine(room, 'Restockers found: ' + hasRestockers);
-
-    var result = [];
-    for (var i = 0; i < harvesters.length; ++i)
-    {
-        var creep = harvesters[i];
-
-        // STRATEGY don't run restockable creeps if there are restockers present
-        if (hasRestockers && creep.memory.rstk == false)
-        {
-            continue;
-        }
-
-        if (globals.creepNotAssigned(creep) && (creep.carry.energy > 0))
-        {
-            result = result.concat(creep);
-        }
-    }
-
-    return result;
 };
 
 module.exports = energyRestockController;
