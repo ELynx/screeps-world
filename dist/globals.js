@@ -4,15 +4,16 @@ var globals =
 
     debugReset: function()
     {
-        this.roomDebug = { };
+        this.roomDebugPos = { };
     },
 
     roomDebug: function(room, what)
     {
         if (this.verbose)
         {
-            this.roomDebug[room.id] = this.roomDebug[room.id] || 0;
-            room.visual.text(what, 40, this.roomDebug[room.id]++, { align: 'left' });
+            this.roomDebugPos[room.id] = this.roomDebugPos[room.id] || 0;
+
+            room.visual.text(what, 40, this.roomDebugPos[room.id]++, { align: 'left' });
         }
     },
 
