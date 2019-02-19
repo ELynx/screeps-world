@@ -1,5 +1,7 @@
 var globals = require('globals');
+
 var memoryManager = require('glue.memory');
+
 var roomActor = require('actor.room');
 var psychoActor = require('actor.psychowarfare');
 
