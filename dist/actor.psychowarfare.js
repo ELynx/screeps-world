@@ -6,7 +6,7 @@ Ten characters long. Infinitely scary and/or hilarious.
 // When there is only one creep in a room, imitate dialog
 const potdSingle = [
 //  |----------| limit
-    'Wait!',
+    'Wait!'
    ,'Dont attac'
    ,'Exploring'
    ,'Will leave'
@@ -15,31 +15,10 @@ const potdSingle = [
    ,'room[sim]n'
    ,'DAMN'
    ,'OK got it.'
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
    ,'DAMN!!!!!'
-   ,''
-   ,''
-   ,''
    ,'suiside'
    ,'suiside'
    ,'suicide'
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
-   ,''
 ];
 
 // TODO
@@ -64,7 +43,7 @@ const potdGroup = [
 
 var psychoWarfareActor =
 {
-    indexCache = { };
+    indexCache: { },
 
     /**
     @param {Room} room
@@ -80,10 +59,7 @@ var psychoWarfareActor =
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            var index = this.indexCache[room.id];
-
-
-            creeps[i].say(potdSingle[this.indexCache[room.id]++]);
+            creeps[i].say(potdSingle[this.indexCache[room.id]++], true);
 
             if (this.indexCache[room.id] >= potdSingle.length)
             {
