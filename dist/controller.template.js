@@ -72,11 +72,19 @@ function Controller(id)
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            const target = creeps[i].pos.findClosestByPath(targets);
+            const result = PathFinder.search(creeps[i].pos, targets,
+                // PROUD samaya pisechka
+                {
+                    opts:
+                    {
+                        range: this.actDistance
+                    }
+                }
+            );
 
-            if (target)
+            if (!result.incomplete)
             {
-                globals.assignCreep(this, target, creeps[i]);
+                globals.assignCreep(this, target, creeps[i], result.path);
                 ++assigned;
             }
         }
