@@ -29,3 +29,6 @@ Dynamic creep life
 Temporary creeps, roles Repair and Heal, spawned if there are broken structures and creeps correspondingly.
 -> Spawn on demand
 --> recycle by "Dynamic creep life" afterwards
+
+Periodically drop off controllers, e.g. prevent endless controller upgrade
+Even distribution of restockers per restockables
