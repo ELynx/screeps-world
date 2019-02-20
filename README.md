@@ -18,7 +18,7 @@ dist - connected to official server
 
 # Warfare
 ## Room level
-✖️ Psychological warfare
+✔️ Psychological warfare
 
 # TODO
 Cached "creep with energy" search in controller.template.
