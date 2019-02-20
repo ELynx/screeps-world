@@ -31,12 +31,6 @@ energyRestockController.control = function(room, roomCreeps)
 
     const targets = this.findTargets(room);
 
-    if (targets.length == 0)
-    {
-        this.debugLine(room, 'No targets found');
-        return;
-    }
-
     var creepTargets = [];
     var creepRestockers = [];
 
