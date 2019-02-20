@@ -7,6 +7,19 @@ Proprietary and confidential.
 # Folders
 dist - connected to official server
 
+# Economics
+## Room level
+✖️ Spawn
+✖️ Harvest
+✖️ Restock
+✖️ Build
+✖️ Repair
+✖️ Controller upgrade
+
+# Warfare
+## Room level
+✖️ Psychological warfare
+
 # TODO
 Cached "creep with energy" search in controller.template.
 "Hot" areas to avoid for worker creeps.
