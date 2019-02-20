@@ -6,7 +6,10 @@ controllerController.actDistance = 3;
 
 controllerController.act = function(target, creep)
 {
-    return creep.upgradeController(target) == OK;
+    // TODO check downgrade time
+    creep.upgradeController(target);
+
+    return false; //not sticky, otherwise stuck at this task
 };
 
 controllerController.targets = function(room)
