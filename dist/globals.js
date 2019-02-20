@@ -6,16 +6,21 @@ var globals =
 
     debugReset: function()
     {
-        this.loopCache.roomDebugPos = { };
+        if (this.verbose)
+        {
+            this.loopCache.roomDebug = { };
+        }
     },
 
     roomDebug: function(room, what)
     {
         if (this.verbose)
         {
-            this.loopCache.roomDebugPos[room.id] = this.loopCache.roomDebugPos[room.id] || 0;
+            var index = this.loopCache.roomDebug[room.id] || 0;
 
-            room.visual.text(what, 40, this.loopCache.roomDebugPos[room.id]++, { align: 'left' });
+            room.visual.text(what, 40, index++, { align: 'left' });
+
+            this.loopCache.roomDebug[room.id] = index;
         }
     },
 
@@ -23,18 +28,47 @@ var globals =
     {
         if (room.controller && room.controller.my)
         {
-            // TODO from constants
-            if (room.energyCapacityAvailable <= 300)
+            // TODO cache
+            const structs = room.find(FIND_MY_STRUCTURES,
+                {
+                    filter: function(structure)
+                    {
+                        return structure.isActive() &&
+                              (structure.structureType == STRUCTURE_SPAWN ||
+                               structure.structureType == STRUCTURE_EXTENSION);
+                    }
+                }
+            );
+
+            var energyCapacity = 0;
+
+            for (var i = 0; i < structs.length; ++i)
             {
-                return 1;
+                if (structs[i] instanceof StructureSpawn)
+                {
+                    energyCapacity = energyCapacity + 300;
+                }
+
+                if (structs[i] instanceof StructureExtension)
+                {
+                    energyCapacity = energyCapacity + 50;
+                }
             }
 
-            if (room.energyCapacityAvailable <= 550)
+            if (energyCapacity >= 800)
+            {
+                return 3;
+            }
+
+            if (energyCapacity >= 550)
             {
                 return 2;
             }
 
-            return 3;
+            if (energyCapacity >= 300)
+            {
+                return 1;
+            }
         }
 
         return 0;
