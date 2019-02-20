@@ -44,7 +44,7 @@ const potdGroup = [
 
 var psychoWarfareActor =
 {
-    indexCache: { },
+    index: 0,
 
     /**
     @param {Room} room
@@ -57,17 +57,14 @@ var psychoWarfareActor =
             return;
 
         const speek = creeps.length == 1 ? potdSingle : potdGroup;
-        var index = this.indexCache[room.id] || 0;
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            if (index >= speek.length)
-                index = 0;
+            if (this.index >= speek.length)
+                this.index = 0;
 
-            creeps[i].say(speek[index++]);
+            creeps[i].say(speek[this.index++]);
         }
-
-        this.indexCache[room.id] = index;
     }
 };
 
