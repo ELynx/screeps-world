@@ -14,11 +14,12 @@ buildController.act = function(target, creep)
     {
         // TODO decide
         creep.repair(target);
+
         return false; // not sticky
     }
 };
 
-buildController.targets = function(room)
+buildController.findTargets = function(room)
 {
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
 

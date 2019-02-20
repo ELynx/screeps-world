@@ -16,28 +16,33 @@ energyHarvestController.act = function(source, creep)
     return result;
 };
 
-energyHarvestController.targets = function(room)
+energyHarvestController.findTargets = function(room)
 {
     return room.find(FIND_SOURCES_ACTIVE);
 };
 
-energyHarvestController.creeps = function(room)
+energyHarvestController.findCreeps = function(creeps)
 {
-    return room.find(FIND_MY_CREEPS,
-        {
-            filter: function(creep)
-            {
-                // STRATEGY don't run restockable creeps to source if there are restockers
-                if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
-                {
-                    return false;
-                }
+    var result = [];
 
-                // STRATEGY harvest with empty only, reduce runs to sources
-                return creep.memory.hvst == true && globals.creepNotAssigned(creep) && (_.sum(creep.carry) == 0)
-            }
+    for (var i = 0; i < creeps.length; ++i)
+    {
+        const creep = creeps[i];
+
+         // STRATEGY don't run restockable creeps to source if there are restockers
+        if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
+        {
+            continue;
         }
-    );
+
+        // STRATEGY harvest with empty only, reduce runs to sources
+        if (creep.memory.hvst && globals.creepNotAssigned(creep) && (_.sum(creep.carry) == 0))
+        {
+            result.push(creep);
+        }
+}
+
+    return result;
 };
 
 module.exports = energyHarvestController;

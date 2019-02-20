@@ -12,7 +12,7 @@ controllerController.act = function(target, creep)
     return false; //not sticky, otherwise stuck at this task
 };
 
-controllerController.targets = function(room)
+controllerController.findTargets = function(room)
 {
     if (room.controller && room.controller.my)
     {

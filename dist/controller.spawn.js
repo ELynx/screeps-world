@@ -117,9 +117,33 @@ spawnController.act = function(spawn, creep)
     return spawn.recycleCreep(creep) == OK;
 };
 
-spawnController.targets = function(room)
+spawnController.findCreeps = function(creeps)
 {
-    return room.find(FIND_MY_SPAWNS,
+    var result = [];
+
+    for (var i = 0; i < creeps.length; ++i)
+    {
+        if (creeps[i].ticksToLive <= 100)
+        {
+            result.push(creeps[i]);
+        }
+    }
+
+    return result;
+};
+
+spawnController.control = function(room, creeps)
+{
+    this.debugHeader(room);
+
+    var level = globals.loopCache[room.id].level;
+
+    if (level == 0)
+    {
+        return;
+    }
+
+    const spawns = room.find(FIND_MY_SPAWNS,
         {
             filter: function(spawn)
             {
@@ -127,47 +151,17 @@ spawnController.targets = function(room)
             }
         }
     );
-};
-
-spawnController.creeps = function(room)
-{
-    return room.find(FIND_MY_CREEPS,
-        {
-            filter: function(creep)
-            {
-                return creep.ticksToLive <= 100;
-            }
-        }
-    );
-};
-
-spawnController.control = function(room)
-{
-    this.debugHeader(room);
-
-    const level = globals.roomLevel(room);
-
-    if (level == 0)
-    {
-        return 0;
-    }
-
-    // call default implementation for mortuary service
-    var rc = this.creepsToTargets(room);
-
-    const spawns = room.find(FIND_MY_SPAWNS,
-        {
-            filter: function(spawn)
-            {
-                return spawn.isActive() && !spawn.spawning;
-            }
-        }
-    );
 
     if (spawns.length == 0)
     {
         this.debugLine(room, 'No controllable spawns found');
-        return rc;
+        return;
+    }
+
+    // call default implementation for mortuary service
+    {
+        const targetCreeps = this.findCreeps(creeps);
+        this.creepsToTargets(room, spawns, targetCreeps);
     }
 
     // cap off at defined
@@ -176,14 +170,12 @@ spawnController.control = function(room)
         level = TypeCount.length - 1;
     }
 
-    const creeps = room.find(FIND_MY_CREEPS);
-
     // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
     // quick check - by # of creeps
     const creepsWanted = _.sum(TypeCount[level]);
     if (creeps.length >= creepsWanted)
     {
-        return rc;
+        return;
     }
 
     var creepsNeeded = [];
@@ -202,6 +194,11 @@ spawnController.control = function(room)
     // STRATEGY there are less spawns than creep types
     for (var i = 0; i < spawns.length; ++i)
     {
+        if (spawns[i].spawning)
+        {
+            continue;
+        }
+
         var spawned = false;
 
         for (var type = 0; type < TypeBody.length && !spawned; ++type)
@@ -220,7 +217,7 @@ spawnController.control = function(room)
 
     this.debugLine(room, 'Total spawned ' + totalSpawned);
 
-    return rc;
+    return;
 };
 
 module.exports = spawnController;

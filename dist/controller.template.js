@@ -29,7 +29,7 @@ function Controller(id)
         return false;
     };
 
-    this.targets = function(room)
+    this.findTargets = function(room)
     {
         return [];
     };
@@ -38,40 +38,34 @@ function Controller(id)
     Default implementation.
     Find unassigned creep that has some energy.
     **/
-    this.creeps = function(room)
+    this.findCreeps = function(creeps)
     {
-        return room.find(FIND_MY_CREEPS,
+        var result = [];
+
+        for (var i = 0; i < creeps.length; ++i)
+        {
+            const creep = creeps[i];
+
+            if (globals.creepNotAssigned(creep) && creep.carry.energy > 0)
             {
-                filter: function(creep)
-                {
-                    return globals.creepNotAssigned(creep) && creep.carry.energy > 0;
-                }
+                result.push(creep);
             }
-        );
+        }
+
+        return result;
     };
 
     /**
     Default implementation.
-    Look for targets.
-    If there are targets then look for creeps.
     Assign each creep to closest target.
     **/
-    this.creepsToTargets = function(room)
+    this.creepsToTargets = function(room, targets, creeps)
     {
-        const targets = this.targets(room);
-
-        if (targets.length == 0)
-        {
-            this.debugLine(room, 'No targets found');
-            return 0;
-        }
-
-        const creeps = this.creeps(room);
-
         var assigned = 0;
 
         for (var i = 0; i < creeps.length; ++i)
         {
+            // TODO PathFinder + range
             const target = creeps[i].pos.findClosestByPath(targets);
 
             if (target)
@@ -83,19 +77,27 @@ function Controller(id)
 
         this.debugLine(room, 'Creeps checked ' + creeps.length);
         this.debugLine(room, 'Creeps assigned ' + assigned);
-
-        return assigned;
     };
 
     /**
     Default implementation.
     Print some debug and call creepsToTargets.
     **/
-    this.control = function(room)
+    this.control = function(room, roomCreeps)
     {
         this.debugHeader(room);
 
-        return this.creepsToTargets(room);
+        const targets = this.findTargets(room);
+
+        if (targets.length == 0)
+        {
+            this.debugLine(room, 'No targets found');
+            return;
+        }
+
+        const creeps = this.findCreeps(roomCreeps);
+
+        this.creepsToTargets(room, targets, creeps);
     }
 };
 
