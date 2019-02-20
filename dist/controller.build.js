@@ -22,20 +22,28 @@ buildController.targets = function(room)
 {
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-    const structs = room.find(FIND_MY_STRUCTURES,
+    const structs = room.find(FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                if (structure instanceof StructureWall)
+                // destructible walls
+                if (structure instanceof StructureWall && structure.hits)
                 {
                     // STRATEGY TODO depend on level
                     return structure.hits < 1000;
                 }
-                else
+                else if (structure instanceof StructureRoad && structure.hits)
                 {
                     // STRATEGY TODO don't run with every booboo
-                    return structure.hits <  Math.ceil(structure.maxHits * 0.85);
+                    return structure.hits < Math.ceil(structure.maxHits * 0.5);
                 }
+                else if (structure instanceof OwnedStructure && structure.my)
+                {
+                    // STRATEGY TODO don't run with every booboo
+                    return structure.hits < Math.ceil(structure.maxHits * 0.95);
+                }
+
+                return false;
             }
         }
     );
