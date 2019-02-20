@@ -8,9 +8,9 @@ energyRestockController.act = function(target, creep)
     return creep.transfer(target, RESOURCE_ENERGY) == OK;
 };
 
-energyRestockController.targets = function(room)
+energyRestockController.findTargets = function(room)
 {
-    const structs = room.find(FIND_MY_STRUCTURES,
+    return room.find(FIND_MY_STRUCTURES,
         {
             filter: function(structure)
             {
@@ -23,41 +23,44 @@ energyRestockController.targets = function(room)
             }
         }
     );
+};
 
-    if (!globals.loopCache[room.id].hasRestockers)
+energyRestockController.control = function(room, roomCreeps)
+{
+    this.debugHeader(room);
+
+    const targets = this.findTargets(room);
+
+    if (targets.length == 0)
     {
-        return structs;
+        this.debugLine(room, 'No targets found');
+        return;
     }
 
-    const creeps = room.find(FIND_MY_CREEPS,
+    var creepTargets = [];
+    var creepRestockers = [];
+
+    for (var i = 0; i < roomCreeps.length; ++i)
+    {
+        const creep = roomCreeps[i];
+
+        if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
         {
-            filter: function(creep)
+            if ((_.sum(creep.carry) < creep.carryCapacity))
             {
-                return !creep.spawning && (creep.memory.rstk == false) && (_.sum(creep.carry) < creep.carryCapacity);
+                creepTargets.push(creep);
             }
         }
-    );
-
-    return structs.concat(creeps);
-};
-
-energyRestockController.creeps = function(room)
-{
-    return room.find(FIND_MY_CREEPS,
+        else
         {
-            filter: function(creep)
+            if (globals.creepNotAssigned(creep) && (creep.carry.energy > 0))
             {
-                // STRATEGY don't run restockable creeps to do restocking
-                if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
-                {
-                    return false;
-                }
-
-                // STRATEGY harvest with empty only, reduce runs to sources
-                return !creep.spawning && globals.creepNotAssigned(creep) && (creep.carry.energy > 0);
+                creepRestockers.push(creep);
             }
         }
-    );
-};
+    }
+
+    this.creepsToTargets(room, targets.concat(creepTargets), creepRestockers);
+}
 
 module.exports = energyRestockController;

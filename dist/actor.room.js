@@ -7,7 +7,6 @@ var buildController = require('controller.build');
 var controllerController = require('controller.controller');
 
 var roomControllers = { };
-
 roomControllers[spawnController.id]         = spawnController;
 roomControllers[energyHarvestController.id] = energyHarvestController;
 roomControllers[energyRestockController.id] = energyRestockController;
@@ -31,11 +30,11 @@ const roomControllersAct = function(destination, creep)
     return false;
 };
 
-const roomControllersControl = function(room)
+const roomControllersControl = function(room, roomCreeps)
 {
     for (const id in roomControllers)
     {
-        roomControllers[id].control(room);
+        roomControllers[id].control(room, roomCreeps);
     }
 };
 
@@ -46,34 +45,30 @@ var roomActor =
     **/
     act: function(room)
     {
+        globals.loopCache[room.id] =
         {
-            const harvesters = room.find(FIND_MY_CREEPS,
-                {
-                    filter: function(creep)
-                    {
-                        return creep.memory.hvst;
-                    }
-                }
-            );
+            level: globals.roomLevel(room)
+        };
 
+        const roomCreeps = room.find(FIND_MY_CREEPS);
+
+        {
             var restockers = false;
-            for (var i = 0; i < harvesters.length && !restockers; ++i)
+            for (var i = 0; i < roomCreeps.length && !restockers; ++i)
             {
-                restockers = harvesters[i].memory.rstk == true;
+                restockers = roomCreeps[i].memory.hvst && roomCreeps[i].memory.rstk;
             }
 
-            globals.loopCache[room.id] = { hasRestockers: restockers };
+            globals.loopCache[room.id].hasRestockers = restockers;
         }
 
-        roomControllersControl(room);
+        roomControllersControl(room, roomCreeps);
 
         {
-            var myCreeps = room.find(FIND_MY_CREEPS);
-
-            for (var i = 0; i < myCreeps.length; ++i)
+            for (var i = 0; i < roomCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
-                var creep = myCreeps[i];
+                var creep = roomCreeps[i];
 
                 // creep has valid destination
                 if (globals.creepAssigned(creep))
