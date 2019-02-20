@@ -46,3 +46,5 @@ Temporary creeps, roles Repair and Heal, spawned if there are broken structures 
 
 Periodically drop off controllers, e.g. prevent endless controller upgrade
 Even distribution of restockers per restockables
+
+PathFinder opt flee
