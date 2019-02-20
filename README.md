@@ -12,6 +12,7 @@ Cached "creep with energy" search in controller.template.
 "Hot" areas to avoid for worker creeps.
 Creep keeps room ID for spawn calculations.
 No dependency on hasRestockers
+Build and repair through "airgap"
 
 # Ideas
 Withdraw from enemy structures
