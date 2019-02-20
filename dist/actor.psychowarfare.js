@@ -39,6 +39,7 @@ const potdGroup = [
    ,'dakka'
    ,'Meme 🚔'
    ,'42 ➗ 0'
+   ,'SEND CODES'
 ];
 
 var psychoWarfareActor =
