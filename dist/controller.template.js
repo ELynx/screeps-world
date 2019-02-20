@@ -72,11 +72,11 @@ function Controller(id)
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            const result = PathFinder.search(creeps[i].pos, { pos: targets[0].pos, range: this.actDistance });
+            const target = creeps[i].pos.findClosestByPath(targets);
 
-            if (!result.incomplete)
+            if (target)
             {
-                globals.assignCreep(this, target, creeps[i], result.path);
+                globals.assignCreep(this, target, creeps[i]);
                 ++assigned;
             }
         }

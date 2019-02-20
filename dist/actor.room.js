@@ -65,17 +65,15 @@ var roomActor =
             globals.loopCache[room.id] = { hasRestockers: restockers };
         }
 
-        // goes first, assigns "dest"
         roomControllersControl(room);
 
-        // goes second, resolves a path
         {
-            var creeps = room.find(FIND_MY_CREEPS);
+            var myCreeps = room.find(FIND_MY_CREEPS);
 
-            for (var i = 0; i < creeps.length; ++i)
+            for (var i = 0; i < myCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
-                var creep = creeps[i];
+                var creep = myCreeps[i];
 
                 // creep has valid destination
                 if (globals.creepAssigned(creep))
@@ -98,14 +96,7 @@ var roomActor =
                             }
                             else
                             {
-                                if (creep.memory.path)
-                                {
-                                    keepAssignment = creep.moveByPath(creep.memory.path);
-                                }
-                                else
-                                {
-                                    keepAssignment = false;
-                                }
+                                keepAssignment = creep.moveTo(destination) == OK;
                             }
                         }
                     }

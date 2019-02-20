@@ -100,7 +100,6 @@ const doSpawn = function(spawn, type, level)
                     ctrl: globals.NO_CONTROL,
                     actd: globals.NO_ACT_DISTANCE,
                     dest: globals.NO_DESTINATION,
-                    path: undefined,
                     btyp: type,
                     levl: level,
                     hvst: TypeHarvest[type],
