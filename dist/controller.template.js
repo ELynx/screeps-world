@@ -72,15 +72,7 @@ function Controller(id)
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            const result = PathFinder.search(creeps[i].pos, targets,
-                // PROUD samaya pisechka
-                {
-                    opts:
-                    {
-                        range: this.actDistance
-                    }
-                }
-            );
+            const result = PathFinder.search(creeps[i].pos, { pos: targets[0].pos, range: this.actDistance });
 
             if (!result.incomplete)
             {
