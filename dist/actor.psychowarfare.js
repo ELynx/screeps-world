@@ -23,10 +23,10 @@ const potdSingle = [
 const potdGroup = [
 //  |----------| limit
     'E2-E4'
-   ,'pew pew'
-   ,'im hit'
+   ,'pew pew 💥'
+   ,'im hit 💀'
    ,'4 da swarm'
-   ,'heal me'
+   ,'heal me 🛠️'
    ,'il be back'
    ,'fus-ro-DAH'
    ,'HeresJohny'
@@ -37,6 +37,8 @@ const potdGroup = [
    ,'dakka'
    ,'dakka'
    ,'dakka'
+   ,'Meme 🚔'
+   ,'42 ➗ 0'
 ];
 
 var psychoWarfareActor =
