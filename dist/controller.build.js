@@ -1,6 +1,33 @@
+var globals = require('globals');
 var Controller = require('controller.template');
 
 var buildController = new Controller('build');
+
+const TargetWallHp = [
+    0,
+    1000,
+    10000,
+    30000
+];
+
+const TargetRoadHpMultiplier = [
+    0.0,
+    0.33,
+    0.5,
+    0.65
+];
+
+const TargetStructureHpMultiplier = [
+    0.0,
+    0.8,
+    0.85,
+    0.9
+];
+
+const fromArray = function(from, index)
+{
+    return from[index >= from.length ? from.length - 1 : index];
+}
 
 buildController.actDistance = 3;
 
@@ -21,27 +48,37 @@ buildController.act = function(target, creep)
 
 buildController.findTargets = function(room)
 {
-    const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
+    const level = globals.loopCache[room.id].level;
+
+    if (level == 0)
+    {
+        return [];
+    }
+
+    // STRATEGY don't run with every booboo
+    const wallHp    = fromArray(TargetWallHp,                level);
+    const roadMult  = fromArray(TargetRoadHpMultiplier,      level);
+    const otherMult = fromArray(TargetStructureHpMultiplier, level);
 
     const structs = room.find(FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                // destructible walls
-                if (structure instanceof StructureWall && structure.hits)
+                if (structure instanceof ConstructionSite && structure.my)
                 {
-                    // STRATEGY TODO depend on level
-                    return structure.hits < 1000;
+                    return true;
+                }
+                else if (structure instanceof StructureWall && structure.hits) // destructible walls
+                {
+                    return structure.hits < wallHp;
                 }
                 else if (structure instanceof StructureRoad && structure.hits)
                 {
-                    // STRATEGY TODO don't run with every booboo
-                    return structure.hits < Math.ceil(structure.maxHits * 0.5);
+                    return structure.hits < Math.ceil(structure.maxHits * roadMult);
                 }
                 else if (structure instanceof OwnedStructure && structure.my)
                 {
-                    // STRATEGY TODO don't run with every booboo
-                    return structure.hits < Math.ceil(structure.maxHits * 0.95);
+                    return structure.hits < Math.ceil(structure.maxHits * otherMult);
                 }
 
                 return false;
@@ -49,7 +86,7 @@ buildController.findTargets = function(room)
         }
     );
 
-    return sites.concat(structs);
+    return structs;
 };
 
 module.exports = buildController;
