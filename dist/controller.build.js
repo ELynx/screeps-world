@@ -60,13 +60,14 @@ buildController.findTargets = function(room)
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
     // call repairs only every N ticks
-    var limit = this.limit || RepairIteration;
-    if (limit < RepairIteration)
+    var limit = this.limit || 0;
+    if (limit > 0)
     {
+        this.limit = limit - 1;
         return sites;
     }
 
-    this.limit = limit > 0 ? limit - 1 : RepairIteration;
+    this.limit = RepairIteration;
 
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             level);
