@@ -100,7 +100,7 @@ function Controller(id)
         const creeps = this.findCreeps(roomCreeps);
 
         this.creepsToTargets(room, targets, creeps);
-    }
+    };
 };
 
 module.exports = Controller;
