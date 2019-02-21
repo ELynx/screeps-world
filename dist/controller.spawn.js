@@ -73,6 +73,7 @@ const workHeavy = function(level)
 const TypeBody    = [ workUniversal, workHeavy ];
 const TypeHarvest = [ true,            true    ];
 const TypeRestock = [ true,            false   ];
+const TypeTtL     = [ 100,             150     ];
 const TypeCount   = [
                     [ 0,               0       ], // level 0, no own controller
                     [ 6,               2       ], // level 1
@@ -112,18 +113,20 @@ const doSpawn = function(spawn, type, level)
     return false;
 };
 
+// mortuary service
 spawnController.act = function(spawn, creep)
 {
     return spawn.recycleCreep(creep) == OK;
 };
 
+// mortuary service
 spawnController.findCreeps = function(creeps)
 {
     var result = [];
 
     for (var i = 0; i < creeps.length; ++i)
     {
-        if (creeps[i].ticksToLive <= 100)
+        if (creeps[i].ticksToLive <= TypeTtL[creeps[i]].btyp)
         {
             result.push(creeps[i]);
         }
@@ -161,8 +164,11 @@ spawnController.control = function(room, creeps)
     // call default implementation for mortuary service
     {
         const targetCreeps = this.findCreeps(creeps);
+        this.debugLine(room, 'Mortuary creeps found ' + targetCreeps.length);
         this.creepsToTargets(room, spawns, targetCreeps);
     }
+
+    // continue spawn strategy
 
     // cap off at defined
     if (level >= TypeCount.length)
@@ -172,17 +178,13 @@ spawnController.control = function(room, creeps)
 
     // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
     // quick check - by # of creeps
-    const creepsWanted = _.sum(TypeCount[level]);
-    if (creeps.length >= creepsWanted)
+    if (creeps.length >= _.sum(TypeCount[level]))
     {
         return;
     }
 
-    var creepsNeeded = [];
-    for (var i = 0; i < TypeBody.length; ++i)
-    {
-        creepsNeeded = creepsNeeded.concat(TypeCount[level][i]);
-    }
+    // copy array
+    var creepsNeeded = TypeCount[level].slice(0);
 
     for (var i = 0; i < creeps.length; ++i)
     {
