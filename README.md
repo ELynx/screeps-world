@@ -48,3 +48,5 @@ Periodically drop off controllers, e.g. prevent endless controller upgrade
 Even distribution of restockers per restockables
 
 PathFinder opt flee
+
+Don't use new level immediately for build and repair, let creep population grow
