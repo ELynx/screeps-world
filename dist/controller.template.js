@@ -6,6 +6,8 @@ function Controller(id)
 
     this.actDistance = 1;
 
+    this.actNoCreeps = false;
+
     this.verbose = false;
 
     this.debugLine = function(room, what)
