@@ -113,6 +113,9 @@ const doSpawn = function(spawn, type, level)
     return false;
 };
 
+// do spawning logic even when there are no creeps
+spawnController.actNoCreeps = true;
+
 // mortuary service
 spawnController.act = function(spawn, creep)
 {
@@ -162,6 +165,7 @@ spawnController.control = function(room, creeps)
     }
 
     // call default implementation for mortuary service
+    if (creeps.length > 0)
     {
         const targetCreeps = this.findCreeps(creeps);
         this.debugLine(room, 'Mortuary creeps found ' + targetCreeps.length);

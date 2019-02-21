@@ -32,9 +32,18 @@ const roomControllersAct = function(destination, creep)
 
 const roomControllersControl = function(room, roomCreeps)
 {
+    // to avoid op[] every iteration
+    const hasUnassigned = globals.loopCache[room.id].hasUnassigned;
+
     for (const id in roomControllers)
     {
-        roomControllers[id].control(room, roomCreeps);
+        const controller = roomControllers[id];
+
+        // if there are free creeps or if controller acts any way
+        if (hasUnassigned || controller.actNoCreeps)
+        {
+            controller.control(room, roomCreeps);
+        }
     }
 };
 
@@ -47,28 +56,25 @@ var roomActor =
     {
         globals.loopCache[room.id] =
         {
+            // TODO very cache
             level: globals.roomLevel(room)
         };
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
 
         {
-            var restockers = false;
-            for (var i = 0; i < roomCreeps.length && !restockers; ++i)
-            {
-                restockers = roomCreeps[i].memory.hvst && roomCreeps[i].memory.rstk;
-            }
+            // do some statistics
+            var restockers = 0;
+            var assigned   = 0;
+            var unassigned = 0;
 
-            globals.loopCache[room.id].hasRestockers = restockers;
-        }
-
-        roomControllersControl(room, roomCreeps);
-
-        {
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
                 var creep = roomCreeps[i];
+
+                // logic short circuit hopefully
+                restockers = restockers || creep.memory.hvst && creep.memory.rstk;
 
                 // creep has valid destination
                 if (globals.creepAssigned(creep))
@@ -96,13 +102,28 @@ var roomActor =
                         }
                     }
 
-                    if (!keepAssignment)
+                    if (keepAssignment)
+                    {
+                        ++assigned;
+                    }
+                    else
                     {
                         globals.unassignCreep(creep);
+                        ++unassigned;
                     }
+                } // end of creep assigned
+                else
+                {
+                    ++unassigned;
                 }
-            }
-        }
+            } // end of for creeps loop
+
+            // cache misc info about creeps
+            globals.loopCache[room.id].hasRestockers = restockers > 0;
+            globals.loopCache[room.id].hasUnassigned = unassigned > 0;
+        } // end of arbitrary scope
+
+        roomControllersControl(room, roomCreeps);
     }
 };
 
