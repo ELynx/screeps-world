@@ -3,9 +3,9 @@ var Controller = require('controller.template');
 
 var buildController = new Controller('build');
 
-const TargetWallHp = [
+const TargetBarrierHp = [
     0,
-    1000,
+    5000,
     10000,
     30000
 ];
@@ -14,7 +14,7 @@ const TargetRoadHpMultiplier = [
     0.0,
     0.33,
     0.5,
-    0.65
+    0.66
 ];
 
 const TargetStructureHpMultiplier = [
@@ -27,7 +27,7 @@ const TargetStructureHpMultiplier = [
 const fromArray = function(from, index)
 {
     return from[index >= from.length ? from.length - 1 : index];
-}
+};
 
 buildController.actDistance = 3;
 
@@ -39,7 +39,7 @@ buildController.act = function(target, creep)
     }
     else
     {
-        // TODO decide
+        // TODO sticky until target hp or error
         creep.repair(target);
 
         return false; // not sticky
@@ -55,26 +55,26 @@ buildController.findTargets = function(room)
         return [];
     }
 
+    const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
+
     // STRATEGY don't run with every booboo
-    const wallHp    = fromArray(TargetWallHp,                level);
+    const barrHp    = fromArray(TargetBarrierHp,             level);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      level);
     const otherMult = fromArray(TargetStructureHpMultiplier, level);
-
-    const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
     const structs = room.find(FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                if ((structure instanceof StructureWall || structure instanceof StructureRampart) && structure.hits) // destructible walls
+                if (structure.hits && (structure instanceof StructureWall || structure instanceof StructureRampart))
                 {
-                    return structure.hits < wallHp;
+                    return structure.hits < barrHp;
                 }
-                else if (structure instanceof StructureRoad && structure.hits)
+                else if (structure instanceof StructureRoad)
                 {
                     return structure.hits < Math.ceil(structure.hitsMax * roadMult);
                 }
-                else if (structure instanceof OwnedStructure && structure.my)
+                else if (structure.hits && /*structure instanceof OwnedStructure &&*/ structure.my)
                 {
                     return structure.hits < Math.ceil(structure.hitsMax * otherMult);
                 }
