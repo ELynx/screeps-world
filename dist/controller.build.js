@@ -66,17 +66,17 @@ buildController.findTargets = function(room)
         {
             filter: function(structure)
             {
-                if (structure instanceof StructureWall && structure.hits) // destructible walls
+                if ((structure instanceof StructureWall || structure instanceof StructureRampart) && structure.hits) // destructible walls
                 {
                     return structure.hits < wallHp;
                 }
                 else if (structure instanceof StructureRoad && structure.hits)
                 {
-                    return structure.hits < Math.ceil(structure.maxHits * roadMult);
+                    return structure.hits < Math.ceil(structure.hitsMax * roadMult);
                 }
                 else if (structure instanceof OwnedStructure && structure.my)
                 {
-                    return structure.hits < Math.ceil(structure.maxHits * otherMult);
+                    return structure.hits < Math.ceil(structure.hitsMax * otherMult);
                 }
 
                 return false;
