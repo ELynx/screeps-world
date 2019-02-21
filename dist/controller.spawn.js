@@ -126,7 +126,7 @@ spawnController.findCreeps = function(creeps)
 
     for (var i = 0; i < creeps.length; ++i)
     {
-        if (creeps[i].ticksToLive <= TypeTtL[creeps[i]].btyp)
+        if (creeps[i].ticksToLive <= TypeTtL[creeps[i].memory.btyp])
         {
             result.push(creeps[i]);
         }

@@ -60,15 +60,13 @@ buildController.findTargets = function(room)
     const roadMult  = fromArray(TargetRoadHpMultiplier,      level);
     const otherMult = fromArray(TargetStructureHpMultiplier, level);
 
+    const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
+
     const structs = room.find(FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                if (structure instanceof ConstructionSite && structure.my)
-                {
-                    return true;
-                }
-                else if (structure instanceof StructureWall && structure.hits) // destructible walls
+                if (structure instanceof StructureWall && structure.hits) // destructible walls
                 {
                     return structure.hits < wallHp;
                 }
@@ -86,7 +84,7 @@ buildController.findTargets = function(room)
         }
     );
 
-    return structs;
+    return sites.concat(structs);
 };
 
 module.exports = buildController;
