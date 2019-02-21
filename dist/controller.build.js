@@ -3,6 +3,8 @@ var Controller = require('controller.template');
 
 var buildController = new Controller('build');
 
+const RepairIteration = 5;
+
 const TargetBarrierHp = [
     0,
     5000,
@@ -56,6 +58,15 @@ buildController.findTargets = function(room)
     }
 
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
+
+    // call repairs only every N ticks
+    var limit = this.limit || RepairIteration;
+    if (limit < RepairIteration)
+    {
+        return sites;
+    }
+
+    this.limit = limit > 0 ? limit - 1 : RepairIteration;
 
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             level);
