@@ -30,11 +30,20 @@ const roomControllersAct = function(destination, creep)
     return false;
 };
 
-const roomControllersControl = function(room, roomCreeps)
+const roomControllerRemember = function(creep)
 {
-    // to avoid op[] every iteration
-    const hasUnassigned = globals.loopCache[room.id].hasUnassigned;
+    const actor = roomControllers[creep.memory.ctrl];
 
+    if (actor)
+    {
+        return actor.rememberCreep(creep);
+    }
+
+    return false;
+};
+
+const roomControllersControl = function(room, roomCreeps, hasUnassigned)
+{
     for (const id in roomControllers)
     {
         const controller = roomControllers[id];
@@ -61,27 +70,21 @@ var roomActor =
         };
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
+        var hasUnassigned = false;
 
         {
+            // special for harvers and restock
+            var restockers = false;
+
             // do some statistics
-            var restockers = 0;
             var assigned   = 0;
             var working   = 0;
             var resting   = 0;
             var moving    = 0;
             var unassigned = 0;
 
-            // TODO once, automated
-            var assignments = { };
-            assignments[spawnController.id]         = [];
-            assignments[energyHarvestController.id] = [];
-            assignments[energyRestockController.id] = [];
-            assignments[buildController.id]         = [];
-            assignments[controllerController.id]    = [];
-
             for (var i = 0; i < roomCreeps.length; ++i)
             {
-                // performance loss, but only for small number of access
                 var creep = roomCreeps[i];
 
                 // logic short circuit hopefully
@@ -118,12 +121,7 @@ var roomActor =
 
                     if (keepAssignment)
                     {
-                        assignments[creep.memory.ctrl].push(
-                            {
-                                targetId:  creep.memory.dest,
-                                creepName: creep.name
-                            }
-                        );
+                        roomControllerRemember(creep);
                         ++assigned;
                     }
                     else
@@ -138,13 +136,13 @@ var roomActor =
                 }
             } // end of for creeps loop
 
-            // cache misc info about creeps
-            loopCache.hasRestockers = restockers > 0;
-            loopCache.hasUnassigned = unassigned > 0;
-            loopCache.assignments = assignments;
+            energyHarvestController.setRestockers(restockers);
+            energyRestockController.setRestockers(restockers);
+
+            hasUnassigned = unassigned > 0;
         } // end of arbitrary scope
 
-        roomControllersControl(room, roomCreeps);
+        roomControllersControl(room, roomCreeps, hasUnassigned);
     }
 };
 

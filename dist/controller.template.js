@@ -8,6 +8,9 @@ function Controller(id)
 
     this.actNoCreeps = false;
 
+    this.targetCacheTime = -1;
+    this.targetCache = [];
+
     this.verbose = false;
 
     this.debugLine = function(room, what)
@@ -24,6 +27,22 @@ function Controller(id)
         {
             this.debugLine(room, '<Controller ' + this.id + '>');
         }
+    };
+
+    this.rememberCreep(creep)
+    {
+        if (this.targetCacheTime != Game.time)
+        {
+            this.targetCache = [];
+        }
+
+        this.targetCacheTime = Game.time;
+        this.targetCache.push(
+            {
+                targetId: creep.memory.dest,
+                creepName: creep.name
+            }
+        );
     };
 
     this.act = function(target, creep)
