@@ -54,7 +54,7 @@ var roomActor =
     **/
     act: function(room)
     {
-        globals.loopCache[room.id] =
+        var loopCache = globals.loopCache[room.id] =
         {
             // TODO very cache
             level: globals.roomLevel(room)
@@ -66,6 +66,9 @@ var roomActor =
             // do some statistics
             var restockers = 0;
             var assigned   = 0;
+            var working   = 0;
+            var resting   = 0;
+            var moving    = 0;
             var unassigned = 0;
 
             // TODO once, automated
@@ -96,16 +99,19 @@ var roomActor =
                         if (creep.pos.inRangeTo(destination, creep.memory.actd))
                         {
                             keepAssignment = roomControllersAct(destination, creep);
+                            working = working + keepAssignment;
                         }
                         else
                         {
                             if (creep.fatigue > 0)
                             {
                                 keepAssignment = true;
+                                ++resting;
                             }
                             else
                             {
                                 keepAssignment = creep.moveTo(destination) == OK;
+                                moving = moving + keepAssignment;
                             }
                         }
                     }
@@ -133,7 +139,6 @@ var roomActor =
             } // end of for creeps loop
 
             // cache misc info about creeps
-            var loopCache = globals.loopCache[room.id];
             loopCache.hasRestockers = restockers > 0;
             loopCache.hasUnassigned = unassigned > 0;
             loopCache.assignments = assignments;
