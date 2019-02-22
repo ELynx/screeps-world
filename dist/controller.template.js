@@ -49,12 +49,7 @@ function Controller(id)
     **/
     this.rememberCreep = function(creep)
     {
-        this.targetCache.push(
-            {
-                targetId: creep.memory.dest,
-                creepName: creep.name
-            }
-        );
+        this.targetCache.push(creep.memory.dest);
     };
 
     /**
@@ -136,12 +131,28 @@ function Controller(id)
     {
         this.debugHeader(room);
 
-        const targets = this.findTargets(room);
+        var targets = this.findTargets(room);
 
         if (targets.length == 0)
         {
             this.debugLine(room, 'No targets found');
             return;
+        }
+
+        if (this.targetCache.length > 0)
+        {
+            // leave only new targets
+            for (var i = 0; i < targets.length; )
+            {
+                if (this.targetCache.indexOf(targets[i].id) >= 0)
+                {
+                    targets.splice(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
         }
 
         this.creepsToTargets(room, targets, roomCreeps);
