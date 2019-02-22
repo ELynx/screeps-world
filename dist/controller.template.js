@@ -51,7 +51,10 @@ function Controller(id)
     **/
     this.rememberCreep = function(creep)
     {
-        this.targetCache.push(creep.memory.dest);
+        if (this.oneToTarget)
+        {
+            this.targetCache.push(creep.memory.dest);
+        }
     };
 
     /**
@@ -141,7 +144,7 @@ function Controller(id)
             return;
         }
 
-        if (this.oneToTarget && this.targetCache.length > 0)
+        if (this.targetCache.length > 0)
         {
             // leave only new targets
             for (var i = 0; i < targets.length; )
