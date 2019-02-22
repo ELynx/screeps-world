@@ -4,13 +4,13 @@ var Controller = require('controller.template');
 var energyHarvestController = new Controller('energy.harvest');
 
 // special for this controller, varying strategy
-energyHarvestController.hasRestockers = false;
+energyHarvestController.hasRestockers = undefined;
 
 /**
 Set if room has restocker creeps.
 @param {boolean} restockers
 **/
-energyHarvestController.setRestockers = function(restockers)
+energyHarvestController.setHasRestockers = function(restockers)
 {
     this.hasRestockers = restockers;
 };
@@ -58,11 +58,11 @@ energyHarvestController.findCreeps = function(creeps)
         }
 
         // STRATEGY harvest with empty only, reduce runs to sources
-        if (creep.memory.hvst && globals.creepNotAssigned(creep) && (_.sum(creep.carry) == 0))
+        if (creep.memory.hvst && (_.sum(creep.carry) == 0))
         {
             result.push(creep);
         }
-}
+    }
 
     return result;
 };

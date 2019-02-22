@@ -6,14 +6,12 @@ function Controller(id)
 
     this.actDistance = 1;
 
-    this.actNoCreeps = false;
-
-    this.targetCache = [];
+    this.targetCache = undefined;
 
     this.verbose = false;
 
     /**
-    Write a common debug line, and move caret to next.
+    Write a common debug line, and move caret to next line.
     @param {Room} room to overlay with text.
     @param {string} what.
     **/
@@ -28,7 +26,6 @@ function Controller(id)
     /**
     Write controller greeting.
     @param {Room} room to overlay with text.
-    @param {string} what.
     **/
     this.debugHeader = function(room)
     {
@@ -74,7 +71,7 @@ function Controller(id)
     /**
     Look for targets within room.
     @param {Room} room.
-    @return array<???> found targets.
+    @return Found targets.
     **/
     this.findTargets = function(room)
     {
@@ -93,11 +90,9 @@ function Controller(id)
 
         for (var i = 0; i < creeps.length; ++i)
         {
-            const creep = creeps[i];
-
-            if (globals.creepNotAssigned(creep) && creep.carry.energy > 0)
+            if (creeps[i].carry.energy > 0)
             {
-                result.push(creep);
+                result.push(creeps[i]);
             }
         }
 
