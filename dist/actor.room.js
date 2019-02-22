@@ -68,6 +68,14 @@ var roomActor =
             var assigned   = 0;
             var unassigned = 0;
 
+            // TODO once, automated
+            var assignments = { };
+            assignments[spawnController.id]         = [];
+            assignments[energyHarvestController.id] = [];
+            assignments[energyRestockController.id] = [];
+            assignments[buildController.id]         = [];
+            assignments[controllerController.id]    = [];
+
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 // performance loss, but only for small number of access
@@ -104,6 +112,12 @@ var roomActor =
 
                     if (keepAssignment)
                     {
+                        assignments[creep.memory.ctrl].push(
+                            {
+                                targetId:  creep.memory.dest,
+                                creepName: creep.name
+                            }
+                        );
                         ++assigned;
                     }
                     else
@@ -119,8 +133,10 @@ var roomActor =
             } // end of for creeps loop
 
             // cache misc info about creeps
-            globals.loopCache[room.id].hasRestockers = restockers > 0;
-            globals.loopCache[room.id].hasUnassigned = unassigned > 0;
+            var loopCache = globals.loopCache[room.id];
+            loopCache.hasRestockers = restockers > 0;
+            loopCache.hasUnassigned = unassigned > 0;
+            loopCache.assignments = assignments;
         } // end of arbitrary scope
 
         roomControllersControl(room, roomCreeps);
