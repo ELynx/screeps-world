@@ -64,11 +64,16 @@ Let room controllers do theit jobs.
 **/
 const roomControllersControl = function(room, creeps)
 {
-    // TODO pass info which creeps are used
-    //for (const id in roomControllers)
-    //{
-    //    roomControllers[id].control(room, creeps);
-    //}
+    for (const id in roomControllers)
+    {
+        roomControllers[id].control(room, creeps);
+
+        // if all creeps had been taken
+        if (creeps.length == 0)
+        {
+            return;
+        }
+    }
 };
 
 var roomActor =
