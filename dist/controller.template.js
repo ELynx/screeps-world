@@ -81,22 +81,12 @@ function Controller(id)
     /**
     Default implementation.
     Find unassigned creep that has some energy.
-    @param {array<Creep>} creeps to look at.
-    @return Creeps that can be used.
+    @param {Creep} creep to look at.
+    @return True if creep can be used.
     **/
-    this.findCreeps = function(creeps)
+    this.filterCreep = function(creep)
     {
-        var result = [];
-
-        for (var i = 0; i < creeps.length; ++i)
-        {
-            if (creeps[i].carry.energy > 0)
-            {
-                result.push(creeps[i]);
-            }
-        }
-
-        return result;
+        return creep.carry.energy > 0
     };
 
     /**
@@ -113,12 +103,15 @@ function Controller(id)
         for (var i = 0; i < creeps.length; ++i)
         {
             // TODO PathFinder + range
-            const target = creeps[i].pos.findClosestByPath(targets);
-
-            if (target)
+            if (this.filterCreep(creeps[i])
             {
-                globals.assignCreep(this, target, creeps[i]);
-                ++assigned;
+                const target = creeps[i].pos.findClosestByPath(targets);
+
+                if (target)
+                {
+                    globals.assignCreep(this, target, creeps[i]);
+                    ++assigned;
+                }
             }
         }
 
@@ -143,8 +136,6 @@ function Controller(id)
             this.debugLine(room, 'No targets found');
             return;
         }
-
-        const creeps = this.findCreeps(roomCreeps);
 
         this.creepsToTargets(room, targets, creeps);
     };

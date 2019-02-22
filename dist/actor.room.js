@@ -168,10 +168,20 @@ var roomActor =
             energyRestockController.setHasRestockers(hasRestockers);
         } // end of arbitrary scope
 
+        // log statistics
+        globals.roomDebug(room, 'Assigned creeps ' + assigned);
+        globals.roomDebug(room, '-> working      ' + working);
+        globals.roomDebug(room, '-> resting      ' + resting);
+        globals.roomDebug(room, '-> moving       ' + moving);
+        globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
+
         // separate action based on total creep #
         spawnController.controlSpawn(room, roomCreeps);
 
-        roomControllersControl(room, unassignedCreeps);
+        if (unassignedCreeps.length > 0)
+        {
+            roomControllersControl(room, unassignedCreeps);
+        |
     } // end of act method
 };
 

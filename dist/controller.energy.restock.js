@@ -88,26 +88,14 @@ energyRestockController.findTargets = function(room)
     return result;
 };
 
-energyRestockController.findCreeps = function(creeps)
+energyRestockController.filterCreep = function(creep)
 {
-    var result = [];
-
-    for (var i = 0; i < creeps.length; ++i)
+    if (this.hasRestockers && creep.memory.rstk == false)
     {
-        var creep = creeps[i];
-
-        if (this.hasRestockers && creep.memory.rstk == false)
-        {
-            continue;
-        }
-
-        if (creep.carry.energy > 0)
-        {
-            result.push(creep);
-        }
+        return false;
     }
 
-    return result;
+    return creep.carry.energy > 0;
 };
 
 module.exports = energyRestockController;
