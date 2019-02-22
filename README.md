@@ -25,6 +25,7 @@ dist - connected to official server
 Creep keeps room ID for spawn calculations.
 Build and repair through "airgap" - requires pathfinding with range.
 Use getActiveBodyparts and btyps to limit control.
+structureType vs instanceof
 
 # Ideas
 Withdraw from enemy structures.
