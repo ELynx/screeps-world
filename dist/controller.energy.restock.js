@@ -5,11 +5,26 @@ var energyRestockController = new Controller('energy.restock');
 
 const DynamicRestock = 0.1;
 
+// special for this controller, varying strategy
 energyRestockController.hasRestockers = false;
 
+/**
+Set if room has restocker creeps.
+@param {boolean} restockers
+**/
 energyRestockController.setRestockers = function(restockers)
 {
     this.hasRestockers = restockers;
+};
+
+/**
+Prepare for new room.
+Special, unset strategy flag.
+**/
+energyRestockController.roomPrepare()
+{
+    this.targetCache = [];
+    this.hasRestockers = false;
 };
 
 energyRestockController.act = function(target, creep)

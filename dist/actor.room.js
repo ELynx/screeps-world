@@ -14,9 +14,21 @@ roomControllers[buildController.id]         = buildController;
 roomControllers[controllerController.id]    = controllerController;
 
 /**
-@param {Object} destination object
-@param {Creep} creep
-@return True if creep was acted upon
+Clear controllers for next room.
+**/
+const roomControllersPrepare = function()
+{
+    for (const id in roomControllers)
+    {
+        roomControllers[id].roomPrepare();
+    }
+};
+
+/**
+Find a controller, execute it's act.
+@param {Object} destination object.
+@param {Creep} creep.
+@return True if creep was acted upon.
 **/
 const roomControllersAct = function(destination, creep)
 {
@@ -30,18 +42,26 @@ const roomControllersAct = function(destination, creep)
     return false;
 };
 
+/**
+Find controller and let it know that creep is aleready in use by it.
+@param {Creep} creep.
+**/
 const roomControllerRemember = function(creep)
 {
     const actor = roomControllers[creep.memory.ctrl];
 
     if (actor)
     {
-        return actor.rememberCreep(creep);
+        actor.rememberCreep(creep);
     }
-
-    return false;
 };
 
+/**
+Let room controllers do theit jobs.
+@param {Room} room.
+@param {array<Creep>} roomCreeps.
+@param {boolean} hasUnassigned.
+**/
 const roomControllersControl = function(room, roomCreeps, hasUnassigned)
 {
     for (const id in roomControllers)
@@ -63,6 +83,9 @@ var roomActor =
     **/
     act: function(room)
     {
+        // clear caches, etc
+        roomControllersPrepare();
+
         var loopCache = globals.loopCache[room.id] =
         {
             // TODO very cache
@@ -136,6 +159,7 @@ var roomActor =
                 }
             } // end of for creeps loop
 
+            // personal for these controllers
             energyHarvestController.setRestockers(restockers);
             energyRestockController.setRestockers(restockers);
 
