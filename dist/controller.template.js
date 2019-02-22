@@ -95,12 +95,13 @@ function Controller(id)
     @param {Room} room
     @param {array<???>} targets.
     @param {array<Creep>} creeps.
+    @return not assigned creeps.
     **/
     this.creepsToTargets = function(room, targets, creeps)
     {
         var assigned = 0;
 
-        for (var i = 0; i < creeps.length; ++i)
+        for (var i = 0; i < creeps.length;)
         {
             // TODO PathFinder + range
             if (this.filterCreep(creeps[i])
@@ -110,9 +111,15 @@ function Controller(id)
                 if (target)
                 {
                     globals.assignCreep(this, target, creeps[i]);
+                    creeps.splice(i, 1);
+
                     ++assigned;
+
+                    continue;
                 }
             }
+
+            ++i;
         }
 
         this.debugLine(room, 'Creeps checked ' + creeps.length);
