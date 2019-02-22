@@ -104,7 +104,7 @@ function Controller(id)
         for (var i = 0; i < creeps.length;)
         {
             // TODO PathFinder + range
-            if (this.filterCreep(creeps[i])
+            if (this.filterCreep(creeps[i]))
             {
                 const target = creeps[i].pos.findClosestByPath(targets);
 
@@ -144,7 +144,7 @@ function Controller(id)
             return;
         }
 
-        this.creepsToTargets(room, targets, creeps);
+        this.creepsToTargets(room, targets, roomCreeps);
     };
 };
 

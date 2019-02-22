@@ -19,7 +19,7 @@ energyHarvestController.setHasRestockers = function(restockers)
 Prepare for new room.
 Special, unset strategy flag.
 **/
-energyHarvestController.roomPrepare()
+energyHarvestController.roomPrepare = function()
 {
     this.targetCache = [];
     this.hasRestockers = false;

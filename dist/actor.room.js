@@ -186,7 +186,7 @@ var roomActor =
         if (unassignedCreeps.length > 0)
         {
             roomControllersControl(room, unassignedCreeps);
-        |
+        }
     } // end of act method
 };
 
