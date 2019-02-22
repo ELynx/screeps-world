@@ -41,7 +41,7 @@ function Controller(id)
     /**
     Prepare for new room.
     **/
-    this.roomPrepare()
+    this.roomPrepare = function()
     {
         this.targetCache = [];
     };
@@ -50,7 +50,7 @@ function Controller(id)
     Remember creeps and targets that are already worked by controller.
     Duration - room.
     **/
-    this.rememberCreep(creep)
+    this.rememberCreep = function(creep)
     {
         this.targetCache.push(
             {
