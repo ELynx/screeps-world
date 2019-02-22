@@ -133,24 +133,28 @@ spawnController.act = function(spawn, creep)
 };
 
 // mortuary service
-spawnController.findCreeps = function(creeps)
+spawnController.findTargets = function(room)
 {
-    var result = [];
-
-    for (var i = 0; i < creeps.length; ++i)
-    {
-        if (creeps[i].ticksToLive <= TypeTtL[creeps[i].memory.btyp])
+    return room.find(FIND_MY_SPAWNS,
         {
-            result.push(creeps[i]);
+            filter: function(spawn)
+            {
+                return spawn.isActive();
+            }
         }
-    }
-
-    return result;
+    );
 };
 
+// mortuary service
+spawnController.filterCreep = function(creep)
+{
+    return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
+};
+
+// room spawn service
 spawnController.controlSpawn = function(room, creeps)
 {
-    this.debugHeader(room);
+    this.debugLine(room, 'Room spawn control');
 
     var level = globals.loopCache[room.id].level;
 
@@ -159,14 +163,8 @@ spawnController.controlSpawn = function(room, creeps)
         return;
     }
 
-    const spawns = room.find(FIND_MY_SPAWNS,
-        {
-            filter: function(spawn)
-            {
-                return spawn.isActive();
-            }
-        }
-    );
+    // TODO not twice
+    const spawns = this.findTargets(room);
 
     if (spawns.length == 0)
     {
@@ -222,8 +220,6 @@ spawnController.controlSpawn = function(room, creeps)
     }
 
     this.debugLine(room, 'Total spawned ' + totalSpawned);
-
-    return;
 };
 
 module.exports = spawnController;
