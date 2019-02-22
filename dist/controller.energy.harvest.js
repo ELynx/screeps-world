@@ -3,11 +3,26 @@ var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');
 
+// special for this controller, varying strategy
 energyHarvestController.hasRestockers = false;
 
+/**
+Set if room has restocker creeps.
+@param {boolean} restockers
+**/
 energyHarvestController.setRestockers = function(restockers)
 {
     this.hasRestockers = restockers;
+};
+
+/**
+Prepare for new room.
+Special, unset strategy flag.
+**/
+energyHarvestController.roomPrepare()
+{
+    this.targetCache = [];
+    this.hasRestockers = false;
 };
 
 energyHarvestController.act = function(source, creep)

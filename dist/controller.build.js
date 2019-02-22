@@ -26,6 +26,9 @@ const TargetStructureHpMultiplier = [
     0.9
 ];
 
+/**
+Get capped value from array.
+**/
 const fromArray = function(from, index)
 {
     return from[index >= from.length ? from.length - 1 : index];
@@ -60,14 +63,14 @@ buildController.findTargets = function(room)
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
     // call repairs only every N ticks
-    var limit = this.limit || 0;
-    if (limit > 0)
+    var repairTime = this.repairTime || 0;
+    if (repairTime > 0)
     {
-        this.limit = limit - 1;
+        this.repairTime = repairTime - 1;
         return sites;
     }
 
-    this.limit = RepairIteration;
+    this.repairTime = RepairIteration;
 
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             level);

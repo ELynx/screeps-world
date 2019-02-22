@@ -8,11 +8,15 @@ function Controller(id)
 
     this.actNoCreeps = false;
 
-    this.targetCacheTime = -1;
     this.targetCache = [];
 
     this.verbose = false;
 
+    /**
+    Write a common debug line, and move caret to next.
+    @param {Room} room to overlay with text.
+    @param {string} what.
+    **/
     this.debugLine = function(room, what)
     {
         if (this.verbose)
@@ -21,6 +25,11 @@ function Controller(id)
         }
     };
 
+    /**
+    Write controller greeting.
+    @param {Room} room to overlay with text.
+    @param {string} what.
+    **/
     this.debugHeader = function(room)
     {
         if (this.verbose)
@@ -29,14 +38,20 @@ function Controller(id)
         }
     };
 
+    /**
+    Prepare for new room.
+    **/
+    this.roomPrepare()
+    {
+        this.targetCache = [];
+    };
+
+    /**
+    Remember creeps and targets that are already worked by controller.
+    Duration - room.
+    **/
     this.rememberCreep(creep)
     {
-        if (this.targetCacheTime != Game.time)
-        {
-            this.targetCache = [];
-        }
-
-        this.targetCacheTime = Game.time;
         this.targetCache.push(
             {
                 targetId: creep.memory.dest,
@@ -45,11 +60,22 @@ function Controller(id)
         );
     };
 
+    /**
+    Do something with target and creep then they met.
+    @param {???} target.
+    @param {Creep} creep.
+    @return If creep should remain on target.
+    **/
     this.act = function(target, creep)
     {
         return false;
     };
 
+    /**
+    Look for targets within room.
+    @param {Room} room.
+    @return array<???> found targets.
+    **/
     this.findTargets = function(room)
     {
         return [];
@@ -58,6 +84,8 @@ function Controller(id)
     /**
     Default implementation.
     Find unassigned creep that has some energy.
+    @param {array<Creep>} creeps to look at.
+    @return Creeps that can be used.
     **/
     this.findCreeps = function(creeps)
     {
@@ -79,6 +107,9 @@ function Controller(id)
     /**
     Default implementation.
     Assign each creep to closest target.
+    @param {Room} room
+    @param {array<???>} targets.
+    @param {array<Creep>} creeps.
     **/
     this.creepsToTargets = function(room, targets, creeps)
     {
@@ -103,6 +134,8 @@ function Controller(id)
     /**
     Default implementation.
     Print some debug and call creepsToTargets.
+    @param {Room} room to control.
+    @param {array<Creeps>} roomCreeps to control.
     **/
     this.control = function(room, roomCreeps)
     {

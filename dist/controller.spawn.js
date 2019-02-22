@@ -16,6 +16,12 @@ TOUGH           10
 CLAIM           600
 **/
 
+/**
+Body calculator.
+Universal worker that could do any Work and restock supplies.
+@param {integer} level.
+@return Creep body definition.
+**/
 const workUniversal = function(level)
 {
     if (level == 0)
@@ -36,6 +42,12 @@ const workUniversal = function(level)
     return result;
 };
 
+/**
+Body calculator.
+Heavy worker that is best when stationary at some area and work.
+@param {integer} level.
+@return Creep body definition.
+**/
 const workHeavy = function(level)
 {
     if (level == 0)
@@ -82,10 +94,11 @@ const TypeCount   = [
                                                ];
 
 /**
-@param {Spawn} spawn
-@param {integer} type
-@param {integer} level
-@return True if creep spawn initiated
+Spawn implementation.
+@param {Spawn} spawn.
+@param {integer} type.
+@param {integer} level.
+@return True if creep spawn initiated.
 **/
 const doSpawn = function(spawn, type, level)
 {
