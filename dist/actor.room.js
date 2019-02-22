@@ -1,10 +1,10 @@
 var globals = require('globals');
 
-var spawnController = require('controller.spawn');
+var spawnController         = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
-var buildController = require('controller.build');
-var controllerController = require('controller.controller');
+var buildController         = require('controller.build');
+var controllerController    = require('controller.controller');
 
 var roomControllers = { };
 roomControllers[spawnController.id]         = spawnController;
@@ -48,32 +48,27 @@ Find controller and let it know that creep is aleready in use by it.
 **/
 const roomControllerRemember = function(creep)
 {
-    const actor = roomControllers[creep.memory.ctrl];
+    const controller = roomControllers[creep.memory.ctrl];
 
-    if (actor)
+    if (controller)
     {
-        actor.rememberCreep(creep);
+        controller.rememberCreep(creep);
     }
 };
 
 /**
 Let room controllers do theit jobs.
 @param {Room} room.
-@param {array<Creep>} roomCreeps.
+@param {array<Creep>} creeps.
 @param {boolean} hasUnassigned.
 **/
-const roomControllersControl = function(room, roomCreeps, hasUnassigned)
+const roomControllersControl = function(room, creeps)
 {
-    for (const id in roomControllers)
-    {
-        const controller = roomControllers[id];
-
-        // if there are free creeps or if controller acts any way
-        if (hasUnassigned || controller.actNoCreeps)
-        {
-            controller.control(room, roomCreeps);
-        }
-    }
+    // TODO pass info which creeps are used
+    //for (const id in roomControllers)
+    //{
+    //    roomControllers[id].control(room, creeps);
+    //}
 };
 
 var roomActor =
@@ -93,29 +88,38 @@ var roomActor =
         };
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
-        var hasUnassigned = false;
+        var unassignedCreeps = [];
 
         {
-            // special for harvers and restock
-            var restockers = false;
-
             // do some statistics
             var assigned   = 0;
-            var working   = 0;
-            var resting   = 0;
-            var moving    = 0;
-            var unassigned = 0;
+            var working    = 0;
+            var resting    = 0;
+            var moving     = 0;
+
+            // special for harvers and restock
+            var hasRestockers = false;
 
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 var creep = roomCreeps[i];
 
-                // logic short circuit hopefully
-                restockers = restockers || creep.memory.hvst && creep.memory.rstk;
+                // special logic section
 
-                // creep has valid destination
+                // check for creeps that can do restocking
+                hasRestockers = hasRestockers || creep.memory.hvst && creep.memory.rstk == true;
+
+                // check and remember creeps that can be restocked
+                if (creep.memory.hvst && creep.memory.rstk == false)
+                {
+                    energyRestockController.rememberRestockable(creep);
+                }
+
+                // common workflow section
+
                 if (globals.creepAssigned(creep))
                 {
+                    // flag if target should be carried to next loop
                     var keepAssignment = false;
 
                     const destination = globals.creepTarget(creep);
@@ -150,24 +154,25 @@ var roomActor =
                     else
                     {
                         globals.unassignCreep(creep);
-                        ++unassigned;
+                        unassignedCreeps.push(creep);
                     }
                 } // end of creep assigned
                 else
                 {
-                    ++unassigned;
+                    unassignedCreeps.push(creep);
                 }
             } // end of for creeps loop
 
             // personal for these controllers
-            energyHarvestController.setRestockers(restockers);
-            energyRestockController.setRestockers(restockers);
-
-            hasUnassigned = unassigned > 0;
+            energyHarvestController.setHasRestockers(hasRestockers);
+            energyRestockController.setHasRestockers(hasRestockers);
         } // end of arbitrary scope
 
-        roomControllersControl(room, roomCreeps, hasUnassigned);
-    }
+        // separate action based on total creep #
+        spawnController.controlSpawn(room, roomCreeps);
+
+        roomControllersControl(room, unassignedCreeps);
+    } // end of act method
 };
 
 module.exports = roomActor;

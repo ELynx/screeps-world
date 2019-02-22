@@ -3,8 +3,6 @@ var Controller = require('controller.template');
 
 var buildController = new Controller('build');
 
-const RepairIteration = 5;
-
 const TargetBarrierHp = [
     0,
     5000,
@@ -27,7 +25,7 @@ const TargetStructureHpMultiplier = [
 ];
 
 /**
-Get capped value from array.
+Get value from array with index capped at length.
 **/
 const fromArray = function(from, index)
 {
@@ -45,9 +43,7 @@ buildController.act = function(target, creep)
     else
     {
         // TODO sticky until target hp or error
-        creep.repair(target);
-
-        return false; // not sticky
+        return creep.repair(target) == OK;
     }
 };
 
@@ -61,16 +57,6 @@ buildController.findTargets = function(room)
     }
 
     const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
-
-    // call repairs only every N ticks
-    var repairTime = this.repairTime || 0;
-    if (repairTime > 0)
-    {
-        this.repairTime = repairTime - 1;
-        return sites;
-    }
-
-    this.repairTime = RepairIteration;
 
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             level);
