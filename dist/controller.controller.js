@@ -4,6 +4,8 @@ var controllerController = new Controller('controller');
 
 controllerController.actDistance = 3;
 
+controllerController.oneToTarget = false;
+
 controllerController.act = function(target, creep)
 {
     // TODO check downgrade time

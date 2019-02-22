@@ -15,6 +15,8 @@ energyHarvestController.setHasRestockers = function(restockers)
     this.hasRestockers = restockers;
 };
 
+energyHarvestController.oneToTarget = false;
+
 /**
 Prepare for new room.
 Special, unset strategy flag.

@@ -6,6 +6,8 @@ function Controller(id)
 
     this.actDistance = 1;
 
+    this.oneToTarget = true;
+
     this.targetCache = undefined;
 
     this.verbose = false;
@@ -139,7 +141,7 @@ function Controller(id)
             return;
         }
 
-        if (this.targetCache.length > 0)
+        if (this.oneToTarget && this.targetCache.length > 0)
         {
             // leave only new targets
             for (var i = 0; i < targets.length; )
