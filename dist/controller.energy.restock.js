@@ -5,6 +5,13 @@ var energyRestockController = new Controller('energy.restock');
 
 const DynamicRestock = 0.1;
 
+energyRestockController.hasRestockers = false;
+
+energyRestockController.setRestockers = function(restockers)
+{
+    this.hasRestockers = restockers;
+};
+
 energyRestockController.act = function(target, creep)
 {
     return creep.transfer(target, RESOURCE_ENERGY) == OK;
@@ -40,7 +47,7 @@ energyRestockController.control = function(room, roomCreeps)
     {
         const creep = roomCreeps[i];
 
-        if (globals.loopCache[room.id].hasRestockers && creep.memory.rstk == false)
+        if (this.hasRestockers && creep.memory.rstk == false)
         {
             if (_.sum(creep.carry) < Math.ceil(DynamicRestock * creep.carryCapacity))
             {

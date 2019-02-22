@@ -3,6 +3,13 @@ var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');
 
+energyHarvestController.hasRestockers = false;
+
+energyHarvestController.setRestockers = function(restockers)
+{
+    this.hasRestockers = restockers;
+};
+
 energyHarvestController.act = function(source, creep)
 {
     var result = false;
@@ -30,7 +37,7 @@ energyHarvestController.findCreeps = function(creeps)
         const creep = creeps[i];
 
          // STRATEGY don't run restockable creeps to source if there are restockers
-        if (globals.loopCache[creep.room.id].hasRestockers && creep.memory.rstk == false)
+        if (this.hasRestockers && creep.memory.rstk == false)
         {
             continue;
         }

@@ -21,7 +21,6 @@ dist - connected to official server
 ✔️ Psychological warfare
 
 # TODO
-Cached "creep with energy" search in controller.template.
 "Hot" areas to avoid for worker creeps.
 Creep keeps room ID for spawn calculations.
 Build and repair through "airgap" - requires pathfinding with range.
@@ -40,8 +39,8 @@ Dynamic creep life
 --> otherwise renew
 
 Temporary creeps, role Heal, spawned if there are broken creeps.
--> Spawn on demand
---> recycle by "Dynamic creep life" afterwards
+-> Spawn on demand;
+--> recycle by "Dynamic creep life" afterwards.
 
 Even distribution of restockers per restockables.
 
