@@ -83,14 +83,14 @@ const workHeavy = function(level)
 };
 
 const TypeBody    = [ workUniversal, workHeavy ];
-const TypeHarvest = [ true,            true    ];
-const TypeRestock = [ true,            false   ];
-const TypeTtL     = [ 100,             150     ];
+const TypeHarvest = [ true,          true      ];
+const TypeRestock = [ true,          false     ];
+const TypeTtL     = [ 25,            50        ];
 const TypeCount   = [
-                    [ 0,               0       ], // level 0, no own controller
-                    [ 6,               2       ], // level 1
-                    [ 9,               3       ], // level 2
-                    [ 12,              4       ]  // level 3
+                    [ 0,             0         ], // level 0, no own controller
+                    [ 4,             2         ], // level 1
+                    [ 9,             3         ], // level 2
+                    [ 12,            4         ]  // level 3
                                                ];
 
 /**
