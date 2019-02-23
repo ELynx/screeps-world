@@ -36,6 +36,7 @@ var globals =
 
     /**
     Add a controller to list of room controllers.
+    @param {Controller} controller
     **/
     registerRoomController = function(controller)
     {

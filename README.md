@@ -25,7 +25,9 @@ dist - connected to official server
 Creep keeps room ID for spawn calculations.
 Build and repair through "airgap" - requires pathfinding with range.
 Use getActiveBodyparts and btyps to limit control.
-structureType vs instanceof
+structureType vs instanceof.
+room level in roomPrepare
+Common controller method "observeCreep" that memorises it if necessary. Replace rememberRestockable, set... etc.
 
 # Ideas
 Withdraw from enemy structures.
@@ -38,6 +40,7 @@ Dynamic creep life
 --> if not needed anymore recycle
 --> if level is less than current recycle
 --> otherwise renew
+If spawn started to spawn creep can wait by return true
 
 Temporary creeps, role Heal, spawned if there are broken creeps.
 -> Spawn on demand;

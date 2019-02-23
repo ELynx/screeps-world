@@ -1,4 +1,3 @@
-var globals = require('globals');
 var Controller = require('controller.template');
 
 var energyRestockController = new Controller('energy.restock');
@@ -12,16 +11,16 @@ energyRestockController.restockable = undefined;
 
 /**
 Set if room has restocker creeps.
-@param {boolean} restockers
+@param {boolean} restockers.
 **/
-energyRestockController.setHasRestockers = function(restockers)
+energyRestockController.setHasRestockers = function(hasRestockers)
 {
-    this.hasRestockers = restockers;
+    this.hasRestockers = hasRestockers;
 };
 
 /**
-Add a creep as restockable
-@param {Creep} creep
+Add a creep as restockable.
+@param {Creep} creep.
 **/
 energyRestockController.rememberRestockable = function(creep)
 {
@@ -31,8 +30,9 @@ energyRestockController.rememberRestockable = function(creep)
 /**
 Prepare for new room.
 Special, unset strategy flag.
+@param {Room} room
 **/
-energyRestockController.roomPrepare = function()
+energyRestockController.roomPrepare = function(room)
 {
     this.targetCache = [];
     this.hasRestockers = false;
