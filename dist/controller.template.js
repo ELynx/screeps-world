@@ -92,7 +92,7 @@ function Controller(id)
 
     /**
     Default implementation.
-    Find unassigned creep that has some energy.
+    Find creep that has some energy.
     @param {Creep} creep to look at.
     @return If creep can be used.
     **/
@@ -192,7 +192,6 @@ function Controller(id)
 
         var creepMatch = this.crossAssign(room, targets, creepMatch);
 
-        // TODO how much an optimization is this
         if (creepMatch.length > 0)
         {
             return creepSkip.concat(creepMatch);
