@@ -4,6 +4,7 @@ var spawnController         = require('controller.spawn');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 var buildController         = require('controller.build');
+var repairController        = require('controller.repair');
 var controllerController    = require('controller.controller');
 
 var roomControllers = { };

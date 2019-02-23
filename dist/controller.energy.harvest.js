@@ -15,7 +15,8 @@ energyHarvestController.setHasRestockers = function(restockers)
     this.hasRestockers = restockers;
 };
 
-energyHarvestController.oneToTarget = false;
+// group harvest from distance 1
+energyHarvestController.actDistance = 1;
 
 /**
 Prepare for new room.
