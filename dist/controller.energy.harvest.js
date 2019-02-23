@@ -1,4 +1,3 @@
-var globals = require('globals');
 var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');
@@ -21,8 +20,9 @@ energyHarvestController.actDistance = 1;
 /**
 Prepare for new room.
 Special, unset strategy flag.
+@param {Room} room
 **/
-energyHarvestController.roomPrepare = function()
+energyHarvestController.roomPrepare = function(room)
 {
     this.targetCache = [];
     this.hasRestockers = false;

@@ -1,7 +1,7 @@
 var globals = require('globals');
-var Controller = require('controller.template');
 
-var spawnController = new Controller('spawn');
+// TODO some base class?
+var spawnController = { };
 
 /**
 MEMO - body part cost
@@ -85,7 +85,6 @@ const workHeavy = function(level)
 const TypeBody    = [ workUniversal, workHeavy ];
 const TypeHarvest = [ true,          true      ];
 const TypeRestock = [ true,          false     ];
-const TypeTtL     = [ 25,            50        ];
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
                     [ 4,             2         ], // level 1
@@ -116,6 +115,7 @@ const doSpawn = function(spawn, type, level)
                     dest: globals.NO_DESTINATION,
                     btyp: type,
                     levl: level,
+                    // TODO if defined
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
                 }
@@ -126,53 +126,14 @@ const doSpawn = function(spawn, type, level)
     return false;
 };
 
-// mortuary service
-// group effort from distance 1
-spawnController.actDistance = 1;
-
-// mortuary service
-spawnController.act = function(spawn, creep)
-{
-    return spawn.recycleCreep(creep) == OK;
-};
-
-// mortuary service
-spawnController.findTargets = function(room)
-{
-    return room.find(FIND_MY_SPAWNS,
-        {
-            filter: function(spawn)
-            {
-                return spawn.isActive();
-            }
-        }
-    );
-};
-
-// mortuary service
-spawnController.filterCreep = function(creep)
-{
-    return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
-};
-
-// room spawn service
 spawnController.controlSpawn = function(room, creeps)
 {
-    this.debugLine(room, 'Room spawn control');
+    globals.roomDebug(room, 'Room spawn control');
 
     var level = globals.loopCache[room.id].level;
 
     if (level == 0)
     {
-        return;
-    }
-
-    // TODO not twice
-    const spawns = this.findTargets(room);
-
-    if (spawns.length == 0)
-    {
-        this.debugLine(room, 'No controllable spawns found');
         return;
     }
 
@@ -189,6 +150,21 @@ spawnController.controlSpawn = function(room, creeps)
         return;
     }
 
+    const spawns = room.find(FIND_MY_SPAWNS,
+        {
+            filter: function(spawn)
+            {
+                return !spawn.spawning && spawn.isActive();
+            }
+        }
+    );
+
+    if (spawns.length == 0)
+    {
+        globals.roomDebug(room, 'No free spawns found');
+        return;
+    }
+
     // copy array
     var creepsNeeded = TypeCount[level].slice(0);
 
@@ -202,11 +178,6 @@ spawnController.controlSpawn = function(room, creeps)
     // STRATEGY there are less spawns than creep types
     for (var i = 0; i < spawns.length; ++i)
     {
-        if (spawns[i].spawning)
-        {
-            continue;
-        }
-
         var spawned = false;
 
         for (var type = 0; type < TypeBody.length && !spawned; ++type)
@@ -223,7 +194,7 @@ spawnController.controlSpawn = function(room, creeps)
         }
     }
 
-    this.debugLine(room, 'Total spawned ' + totalSpawned);
+    globals.roomDebug(room, 'Total spawned ' + totalSpawned);
 };
 
 module.exports = spawnController;

@@ -1,4 +1,3 @@
-var globals = require('globals');
 var Controller = require('controller.template');
 
 var buildController = new Controller('build');

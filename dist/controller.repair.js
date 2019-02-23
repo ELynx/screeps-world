@@ -1,7 +1,7 @@
 var globals = require('globals');
 var Controller = require('controller.template');
 
-var buildController = new Controller('repair');
+var repairController = new Controller('repair');
 
 const TargetBarrierHp = [
     0,
@@ -32,28 +32,37 @@ const fromArray = function(from, index)
     return from[index >= from.length ? from.length - 1 : index];
 };
 
-// solo effort from distance 3
-buildController.actDistance = -3;
+repairController.roomLevel = undefined;
 
-buildController.act = function(target, creep)
+// solo effort from distance 3
+repairController.actDistance = -3;
+
+repairController.act = function(target, creep)
 {
     // TODO sticky until target hp or error
     return creep.repair(target) == OK;
 };
 
-buildController.findTargets = function(room)
+/**
+Prepare for new room.
+**/
+repairController.roomPrepare = function(room)
 {
-    const level = globals.loopCache[room.id].level;
+    this.targetCache = [];
+    this.roomLevel = globals.loopCache[room.id].level;
+};
 
-    if (level == 0)
+repairController.findTargets = function(room)
+{
+    if (this.roomLevel == 0)
     {
         return [];
     }
 
     // STRATEGY don't run with every booboo
-    const barrHp    = fromArray(TargetBarrierHp,             level);
-    const roadMult  = fromArray(TargetRoadHpMultiplier,      level);
-    const otherMult = fromArray(TargetStructureHpMultiplier, level);
+    const barrHp    = fromArray(TargetBarrierHp,             this.roomLevel);
+    const roadMult  = fromArray(TargetRoadHpMultiplier,      this.roomLevel);
+    const otherMult = fromArray(TargetStructureHpMultiplier, this.roomLevel);
 
     const structs = room.find(FIND_STRUCTURES,
         {
@@ -80,4 +89,4 @@ buildController.findTargets = function(room)
     return structs;
 };
 
-module.exports = buildController;
+module.exports = repairController;

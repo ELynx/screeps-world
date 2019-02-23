@@ -1,27 +1,19 @@
 var globals = require('globals');
 
 var spawnController         = require('controller.spawn');
+// TODO common method, no personal care
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
-var buildController         = require('controller.build');
-var repairController        = require('controller.repair');
-var controllerController    = require('controller.controller');
-
-var roomControllers = { };
-roomControllers[spawnController.id]         = spawnController;
-roomControllers[energyHarvestController.id] = energyHarvestController;
-roomControllers[energyRestockController.id] = energyRestockController;
-roomControllers[buildController.id]         = buildController;
-roomControllers[controllerController.id]    = controllerController;
 
 /**
 Clear controllers for next room.
+@param {Room} room.
 **/
-const roomControllersPrepare = function()
+const roomControllersPrepare = function(room)
 {
-    for (const id in roomControllers)
+    for (const id in globals.roomControllers)
     {
-        roomControllers[id].roomPrepare();
+        globals.roomControllers[id].roomPrepare(room);
     }
 };
 
@@ -33,7 +25,7 @@ Find a controller, execute it's act.
 **/
 const roomControllersAct = function(destination, creep)
 {
-    const actor = roomControllers[creep.memory.ctrl];
+    const actor = globals.roomControllers[creep.memory.ctrl];
 
     if (actor)
     {
@@ -49,7 +41,14 @@ Find controller and let it know that creep is aleready in use by it.
 **/
 const roomControllerRemember = function(creep)
 {
-    const controller = roomControllers[creep.memory.ctrl];
+    // TODO less obscure logic
+    // positive actd is a group effort, do not remember
+    if (creep.memory.actd > 0)
+    {
+        return;
+    }
+
+    const controller = globals.roomControllers[creep.memory.ctrl];
 
     if (controller)
     {
@@ -61,13 +60,12 @@ const roomControllerRemember = function(creep)
 Let room controllers do theit jobs.
 @param {Room} room.
 @param {array<Creep>} creeps.
-@param {boolean} hasUnassigned.
 **/
 const roomControllersControl = function(room, creeps)
 {
-    for (const id in roomControllers)
+    for (const id in globals.roomControllers)
     {
-        roomControllers[id].control(room, creeps);
+        globals.roomControllers[id].control(room, creeps);
 
         // if all creeps had been taken
         if (creeps.length == 0)
@@ -84,14 +82,14 @@ var roomActor =
     **/
     act: function(room)
     {
-        // clear caches, etc
-        roomControllersPrepare();
-
         var loopCache = globals.loopCache[room.id] =
         {
             // TODO very cache
             level: globals.roomLevel(room)
         };
+
+        // clear caches, etc
+        roomControllersPrepare(room);
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
         var unassignedCreeps = [];
@@ -132,7 +130,8 @@ var roomActor =
 
                     if (destination)
                     {
-                        if (creep.pos.inRangeTo(destination, creep.memory.actd))
+                        // actd can be negative, use module
+                        if (creep.pos.inRangeTo(destination, Math.abs(creep.memory.actd)))
                         {
                             keepAssignment = roomControllersAct(destination, creep);
                             working = working + keepAssignment;

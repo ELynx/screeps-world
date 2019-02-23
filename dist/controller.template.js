@@ -40,8 +40,9 @@ function Controller(id)
 
     /**
     Prepare for new room.
+    @param {Room} room.
     **/
-    this.roomPrepare = function()
+    this.roomPrepare = function(room)
     {
         this.targetCache = [];
     };
