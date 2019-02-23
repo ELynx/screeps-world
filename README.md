@@ -13,6 +13,9 @@ Creep keeps room ID for spawn calculations.
 Build and repair through "airgap" - requires pathfinding with range.
 Use getActiveBodyparts and btyps to limit control.
 Common Controller method "observeCreep" that memorises it if necessary. Replace rememberRestockable, set... etc.
+Controller upgarde counter, repair HP target.
+Repair controller less targets.
+Base class for spawn controller.
 
 # Ideas
 Withdraw from enemy structures.

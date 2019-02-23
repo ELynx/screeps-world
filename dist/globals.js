@@ -52,7 +52,6 @@ var globals =
     {
         if (room.controller && room.controller.my)
         {
-            // TODO cache
             const structs = room.find(FIND_MY_STRUCTURES,
                 {
                     filter: function(structure)
