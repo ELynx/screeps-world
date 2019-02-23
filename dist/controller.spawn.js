@@ -87,7 +87,7 @@ const TypeHarvest = [ true,          true      ];
 const TypeRestock = [ true,          false     ];
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
-                    [ 4,             2         ], // level 1
+                    [ 6,             2         ], // level 1
                     [ 9,             3         ], // level 2
                     [ 12,            4         ]  // level 3
                                                ];
