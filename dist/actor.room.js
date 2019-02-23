@@ -1,7 +1,10 @@
 var globals = require('globals');
 
 var spawnController         = require('controller.spawn');
-// load modules, register creeps
+
+/**
+Order of load is order of call.
+**/
 var ttlController           = require('controller.ttl');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
@@ -69,11 +72,12 @@ const roomControllersControl = function(room, creeps)
 {
     for (const id in globals.roomControllers)
     {
-        globals.roomControllers[id].control(room, creeps);
+        creeps = globals.roomControllers[id].control(room, creeps);
 
         // if all creeps had been taken
         if (creeps.length == 0)
         {
+            globals.roomDebug(room, 'All creeps assigned after controller <' + id + '>');
             return;
         }
     }
@@ -105,12 +109,16 @@ var roomActor =
             var resting    = 0;
             var moving     = 0;
 
+            // TODO via observe method
+
             // special for harvers and restock
             var hasRestockers = false;
 
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 var creep = roomCreeps[i];
+
+                // TODO via observe method
 
                 // special logic section
 
@@ -184,7 +192,7 @@ var roomActor =
         globals.roomDebug(room, '-> moving       ' + moving);
         globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
 
-        // separate action based on total creep #
+        // separate action based on total creep
         spawnController.controlSpawn(room, roomCreeps);
 
         if (unassignedCreeps.length > 0)
