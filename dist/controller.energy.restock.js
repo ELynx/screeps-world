@@ -30,11 +30,11 @@ energyRestockController.rememberRestockable = function(creep)
 /**
 Prepare for new room.
 Special, unset strategy flag.
-@param {Room} room
+@param {Room} room.
 **/
 energyRestockController.roomPrepare = function(room)
 {
-    this.targetCache = [];
+    this._roomPrepare(room);
     this.hasRestockers = false;
     this.restockable = [];
 };

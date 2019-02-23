@@ -1,4 +1,3 @@
-var globals = require('globals');
 var Controller = require('controller.template');
 
 var repairController = new Controller('repair');
@@ -32,8 +31,6 @@ const fromArray = function(from, index)
     return from[index >= from.length ? from.length - 1 : index];
 };
 
-repairController.roomLevel = undefined;
-
 // solo effort from distance 3
 repairController.actDistance = -3;
 
@@ -41,15 +38,6 @@ repairController.act = function(target, creep)
 {
     // TODO sticky until target hp or error
     return creep.repair(target) == OK;
-};
-
-/**
-Prepare for new room.
-**/
-repairController.roomPrepare = function(room)
-{
-    this.targetCache = [];
-    this.roomLevel = globals.loopCache[room.id].level;
 };
 
 repairController.findTargets = function(room)
@@ -68,15 +56,20 @@ repairController.findTargets = function(room)
         {
             filter: function(structure)
             {
-                if (structure.hits && (structure instanceof StructureWall || structure instanceof StructureRampart))
+                if (!structure.hits)
+                {
+                    return false;
+                }
+
+                if (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART)
                 {
                     return structure.hits < barrHp;
                 }
-                else if (structure instanceof StructureRoad)
+                else if (structure.structureType == STRUCTURE_ROAD)
                 {
                     return structure.hits < Math.ceil(structure.hitsMax * roadMult);
                 }
-                else if (structure.hits && /*structure instanceof OwnedStructure &&*/ structure.my)
+                else if (structure.my)
                 {
                     return structure.hits < Math.ceil(structure.hitsMax * otherMult);
                 }

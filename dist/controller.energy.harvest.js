@@ -20,11 +20,11 @@ energyHarvestController.actDistance = 1;
 /**
 Prepare for new room.
 Special, unset strategy flag.
-@param {Room} room
+@param {Room} room.
 **/
 energyHarvestController.roomPrepare = function(room)
 {
-    this.targetCache = [];
+    this._roomPrepare(room);
     this.hasRestockers = false;
 };
 

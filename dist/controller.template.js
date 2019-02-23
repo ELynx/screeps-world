@@ -11,6 +11,8 @@ function Controller(id)
 
     this.targetCache = undefined;
 
+    this.roomLevel = undefined;
+
     this.verbose = false;
 
     /**
@@ -40,11 +42,22 @@ function Controller(id)
 
     /**
     Prepare for new room.
+    Base class implementation.
+    @param {Room} room.
+    **/
+    this._roomPrepare = function(room)
+    {
+        this.targetCache = [];
+        this.roomLevel = globals.loopCache[room.id].level;
+    };
+
+    /**
+    Prepare for new room.
     @param {Room} room.
     **/
     this.roomPrepare = function(room)
     {
-        this.targetCache = [];
+        this._roomPrepare(room);
     };
 
     /**
@@ -58,7 +71,7 @@ function Controller(id)
 
     /**
     Do something with target and creep then they met.
-    @param {???} target.
+    @param {Object} target.
     @param {Creep} creep.
     @return If creep should remain on target.
     **/
@@ -81,7 +94,7 @@ function Controller(id)
     Default implementation.
     Find unassigned creep that has some energy.
     @param {Creep} creep to look at.
-    @return True if creep can be used.
+    @return If creep can be used.
     **/
     this.filterCreep = function(creep)
     {
@@ -90,32 +103,28 @@ function Controller(id)
 
     /**
     Default implementation.
-    Assign each creep to closest target.
     @param {Room} room
-    @param {array<???>} targets.
+    @param {array<Object>} targets.
     @param {array<Creep>} creeps.
-    @return not assigned creeps.
+    @return Not assigned creeps.
     **/
-    this.creepsToTargets = function(room, targets, creeps)
+    this.crossAssign = function(room, targets, creeps)
     {
         var assigned = 0;
 
         for (var i = 0; i < creeps.length;)
         {
             // TODO PathFinder + range
-            if (this.filterCreep(creeps[i]))
+            const target = creeps[i].pos.findClosestByPath(targets);
+
+            if (target)
             {
-                const target = creeps[i].pos.findClosestByPath(targets);
+                globals.assignCreep(this, target, creeps[i]);
+                creeps.splice(i, 1);
 
-                if (target)
-                {
-                    globals.assignCreep(this, target, creeps[i]);
-                    creeps.splice(i, 1);
+                ++assigned;
 
-                    ++assigned;
-
-                    continue;
-                }
+                continue;
             }
 
             ++i;
@@ -123,11 +132,12 @@ function Controller(id)
 
         this.debugLine(room, 'Creeps checked ' + creeps.length);
         this.debugLine(room, 'Creeps assigned ' + assigned);
+
+        return creeps;
     };
 
     /**
     Default implementation.
-    Print some debug and call creepsToTargets.
     @param {Room} room to control.
     @param {array<Creeps>} roomCreeps to control.
     **/
@@ -135,12 +145,33 @@ function Controller(id)
     {
         this.debugHeader(room);
 
+        var creepMatch = [];
+        var creepSkip  = [];
+
+        for (var i = 0; i < roomCreeps.length; ++i)
+        {
+            if (this.filterCreep(roomCreeps[i]))
+            {
+                creepMatch.push(roomCreeps[i]);
+            }
+            else
+            {
+                creepSkip.push(roomCreeps[i]);
+            }
+        }
+
+        if (creepMatch.length == 0)
+        {
+            this.debugLine(room, 'No creeps found');
+            return roomCreeps;
+        }
+
         var targets = this.findTargets(room);
 
         if (targets.length == 0)
         {
             this.debugLine(room, 'No targets found');
-            return;
+            return roomCreeps;
         }
 
         if (this.targetCache.length > 0)
@@ -150,7 +181,7 @@ function Controller(id)
             {
                 if (this.targetCache.indexOf(targets[i].id) >= 0)
                 {
-                    targets.splice(i);
+                    targets.splice(i, 1);
                 }
                 else
                 {
@@ -159,7 +190,17 @@ function Controller(id)
             }
         }
 
-        this.creepsToTargets(room, targets, roomCreeps);
+        var creepMatch = this.crossAssign(room, targets, creepMatch);
+
+        // TODO how much an optimization is this
+        if (creepMatch.length > 0)
+        {
+            return creepSkip.concat(creepMatch);
+        }
+        else
+        {
+            return creepSkip;
+        }
     };
 
     globals.registerRoomController(this);
