@@ -1,9 +1,13 @@
 var globals = require('globals');
 
 var spawnController         = require('controller.spawn');
-// TODO common method, no personal care
+// load modules, register creeps
+var ttlController           = require('controller.ttl');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
+var buildController         = require('controller.build');
+var repairController        = require('controller.repair');
+var controllerController    = require('controller.controller');
 
 /**
 Clear controllers for next room.

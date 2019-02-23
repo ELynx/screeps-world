@@ -38,7 +38,7 @@ var globals =
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/
-    registerRoomController = function(controller)
+    registerRoomController: function(controller)
     {
         this.roomControllers[controller.id] = controller;
     },
