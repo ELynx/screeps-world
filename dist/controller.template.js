@@ -4,9 +4,10 @@ function Controller(id)
 {
     this.id = id;
 
-    this.actDistance = 1;
-
-    this.oneToTarget = true;
+    // negative and zero - solo creep
+    // positive multiple creeps
+    // solo effort from distance 1
+    this.actDistance = -1;
 
     this.targetCache = undefined;
 
@@ -51,10 +52,7 @@ function Controller(id)
     **/
     this.rememberCreep = function(creep)
     {
-        if (this.oneToTarget)
-        {
-            this.targetCache.push(creep.memory.dest);
-        }
+        this.targetCache.push(creep.memory.dest);
     };
 
     /**
@@ -162,6 +160,8 @@ function Controller(id)
 
         this.creepsToTargets(room, targets, roomCreeps);
     };
+
+    globals.registerRoomController(this);
 };
 
 module.exports = Controller;

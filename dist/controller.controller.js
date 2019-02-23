@@ -2,9 +2,8 @@ var Controller = require('controller.template');
 
 var controllerController = new Controller('controller');
 
+// group effort from distance 3
 controllerController.actDistance = 3;
-
-controllerController.oneToTarget = false;
 
 controllerController.act = function(target, creep)
 {

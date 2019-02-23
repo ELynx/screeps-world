@@ -2,6 +2,8 @@ var globals =
 {
     loopCache: { },
 
+    roomControllers: { },
+
     verbose: false,
 
     /**
@@ -30,6 +32,14 @@ var globals =
 
             this.loopCache.roomDebug[room.id] = index;
         }
+    },
+
+    /**
+    Add a controller to list of room controllers.
+    **/
+    registerRoomController = function(controller)
+    {
+        this.roomControllers[controller.id] = controller;
     },
 
     /**

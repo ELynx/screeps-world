@@ -127,6 +127,10 @@ const doSpawn = function(spawn, type, level)
 };
 
 // mortuary service
+// group effort from distance 1
+spawnController.actDistance = 1;
+
+// mortuary service
 spawnController.act = function(spawn, creep)
 {
     return spawn.recycleCreep(creep) == OK;
