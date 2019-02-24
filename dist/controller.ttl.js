@@ -9,7 +9,27 @@ ttlController.actDistance = 1;
 
 ttlController.act = function(spawn, creep)
 {
-    return spawn.recycleCreep(creep) == OK;
+    // TODO how to know if needed
+    //if (needed count is greater than present)
+    //{
+    //    recycle
+    //}
+
+    // if from previous level
+    if (creep.memory.levl < this.roomLevel)
+    {
+        return spawn.recycleCreep(creep) == OK;
+    }
+
+    // renewal part
+
+    // if controller started to spawn at the same time wait for it
+    if (spawn.spawning)
+    {
+        return true;
+    }
+
+    return spawn.renewCreep(creep) == OK;
 };
 
 ttlController.findTargets = function(room)
