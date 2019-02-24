@@ -16,6 +16,7 @@ Common Controller method "observeCreep" that memorises it if necessary. Replace 
 Controller upgarde counter, repair HP target.
 Repair controller less targets.
 Base class for spawn controller.
+Move creeps from construction sites.
 
 # Ideas
 Withdraw from enemy structures.
