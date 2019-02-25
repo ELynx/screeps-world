@@ -73,6 +73,10 @@ const roomControllersControl = function(room, creeps)
             globals.roomDebug(room, 'All creeps assigned after controller <' + id + '>');
             return;
         }
+        else
+        {
+            globals.roomDebug(room, 'Creeps left ' + creeps.length);
+        }
     }
 };
 
