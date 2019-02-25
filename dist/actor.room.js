@@ -50,7 +50,7 @@ const roomControllerRemember = function(creep)
 {
     // TODO less obscure logic
     // positive actd is a group effort, do not remember
-    if (creep.memory.actd > 0)
+    if (creep.memory.dact > 0)
     {
         return;
     }
@@ -143,7 +143,7 @@ var roomActor =
                     if (destination)
                     {
                         // actd can be negative, use module
-                        if (creep.pos.inRangeTo(destination, Math.abs(creep.memory.actd)))
+                        if (creep.pos.inRangeTo(destination, Math.abs(creep.memory.dact)))
                         {
                             keepAssignment = roomControllersAct(destination, creep);
                             working = working + keepAssignment;

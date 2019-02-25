@@ -111,8 +111,8 @@ const doSpawn = function(spawn, type, level)
                 memory:
                 {
                     ctrl: globals.NO_CONTROL,
-                    actd: globals.NO_ACT_DISTANCE,
                     dest: globals.NO_DESTINATION,
+                    dact: globals.NO_ACT_DISTANCE,
                     btyp: type,
                     levl: level,
                     // TODO if defined
