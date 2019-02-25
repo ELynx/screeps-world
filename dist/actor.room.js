@@ -25,6 +25,20 @@ const roomControllersPrepare = function(room)
 };
 
 /**
+Find controller and let it know that creep is aleready in use by it.
+@param {Creep} creep.
+**/
+const roomControllersObserve = function(creep)
+{
+    const controller = globals.roomControllers[creep.memory.ctrl];
+
+    if (controller)
+    {
+        controller.observeCreep(creep);
+    }
+};
+
+/**
 Find a controller, execute it's act.
 @param {Object} destination object.
 @param {Creep} creep.
@@ -40,27 +54,6 @@ const roomControllersAct = function(destination, creep)
     }
 
     return false;
-};
-
-/**
-Find controller and let it know that creep is aleready in use by it.
-@param {Creep} creep.
-**/
-const roomControllerRemember = function(creep)
-{
-    // TODO less obscure logic
-    // positive actd is a group effort, do not remember
-    if (creep.memory.actd > 0)
-    {
-        return;
-    }
-
-    const controller = globals.roomControllers[creep.memory.ctrl];
-
-    if (controller)
-    {
-        controller.rememberCreep(creep);
-    }
 };
 
 /**
@@ -109,29 +102,9 @@ var roomActor =
             var resting    = 0;
             var moving     = 0;
 
-            // TODO via observe method
-
-            // special for harvers and restock
-            var hasRestockers = false;
-
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 var creep = roomCreeps[i];
-
-                // TODO via observe method
-
-                // special logic section
-
-                // check for creeps that can do restocking
-                hasRestockers = hasRestockers || creep.memory.hvst && creep.memory.rstk == true;
-
-                // check and remember creeps that can be restocked
-                if (creep.memory.hvst && creep.memory.rstk == false)
-                {
-                    energyRestockController.rememberRestockable(creep);
-                }
-
-                // common workflow section
 
                 if (globals.creepAssigned(creep))
                 {
@@ -142,8 +115,7 @@ var roomActor =
 
                     if (destination)
                     {
-                        // actd can be negative, use module
-                        if (creep.pos.inRangeTo(destination, Math.abs(creep.memory.actd)))
+                        if (creep.pos.inRangeTo(destination, creep.memory.actd))
                         {
                             keepAssignment = roomControllersAct(destination, creep);
                             working = working + keepAssignment;
@@ -165,12 +137,12 @@ var roomActor =
 
                     if (keepAssignment)
                     {
-                        roomControllerRemember(creep);
                         ++assigned;
                     }
                     else
                     {
                         globals.unassignCreep(creep);
+
                         unassignedCreeps.push(creep);
                     }
                 } // end of creep assigned
@@ -178,19 +150,19 @@ var roomActor =
                 {
                     unassignedCreeps.push(creep);
                 }
+
+                roomControllersObserve(creep);
+
             } // end of for creeps loop
 
-            // personal for these controllers
-            energyHarvestController.setHasRestockers(hasRestockers);
-            energyRestockController.setHasRestockers(hasRestockers);
-        } // end of arbitrary scope
+            // log statistics
+            globals.roomDebug(room, 'Assigned creeps ' + assigned);
+            globals.roomDebug(room, '-> working      ' + working);
+            globals.roomDebug(room, '-> resting      ' + resting);
+            globals.roomDebug(room, '-> moving       ' + moving);
+            globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
 
-        // log statistics
-        globals.roomDebug(room, 'Assigned creeps ' + assigned);
-        globals.roomDebug(room, '-> working      ' + working);
-        globals.roomDebug(room, '-> resting      ' + resting);
-        globals.roomDebug(room, '-> moving       ' + moving);
-        globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
+        } // end of arbitrary scope
 
         // separate action based on total creep
         spawnController.controlSpawn(room, roomCreeps);

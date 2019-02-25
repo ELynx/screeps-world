@@ -31,8 +31,7 @@ const fromArray = function(from, index)
     return from[index >= from.length ? from.length - 1 : index];
 };
 
-// solo effort from distance 3
-repairController.actDistance = -3;
+repairController.actDistance = 3;
 
 repairController.act = function(target, creep)
 {
@@ -52,6 +51,7 @@ repairController.findTargets = function(room)
     const roadMult  = fromArray(TargetRoadHpMultiplier,      this.roomLevel);
     const otherMult = fromArray(TargetStructureHpMultiplier, this.roomLevel);
 
+    // TODO reduce number of objects checked, eats CPU
     const structs = room.find(FIND_STRUCTURES,
         {
             filter: function(structure)

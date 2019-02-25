@@ -5,17 +5,9 @@ var energyHarvestController = new Controller('energy.harvest');
 // special for this controller, varying strategy
 energyHarvestController.hasRestockers = undefined;
 
-/**
-Set if room has restocker creeps.
-@param {boolean} restockers
-**/
-energyHarvestController.setHasRestockers = function(restockers)
-{
-    this.hasRestockers = restockers;
-};
-
-// group harvest from distance 1
 energyHarvestController.actDistance = 1;
+
+energyHarvestController.oneToOne = false;
 
 /**
 Prepare for new room.
@@ -27,6 +19,16 @@ energyHarvestController.roomPrepare = function(room)
     this._roomPrepare(room);
     this.hasRestockers = false;
 };
+
+/**
+Observe a creep.
+@param {Creep} creep.
+**/
+energyHarvestController.observeCreep = function(creep)
+{
+    this._observeCreep(creep);
+    this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;
+}
 
 energyHarvestController.act = function(source, creep)
 {
@@ -55,7 +57,7 @@ energyHarvestController.filterCreep = function(creep)
     }
 
     // STRATEGY harvest with empty only, reduce runs to sources
-    if (creep.memory.hvst && (_.sum(creep.carry) == 0))
+    if (creep.memory.hvst == false && (_.sum(creep.carry) == 0))
     {
         return true;
     }

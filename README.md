@@ -12,7 +12,6 @@ dist - connected to official server
 (Multiroom)  Creep keeps room ID for spawn calculations.
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
-(Economy)    Common Controller method "observeCreep" that memorises it if necessary. Replace rememberRestockable, set... etc.
 (Economy)    Controller upgarde counter, repair HP target.
 (Economy)    Repair controller less targets.
 (Economy)    Base class for spawn controller.

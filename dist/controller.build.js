@@ -2,8 +2,9 @@ var Controller = require('controller.template');
 
 var buildController = new Controller('build');
 
-// group effort from distance 3
 buildController.actDistance = 3;
+
+buildController.oneToOne = false;
 
 buildController.act = function(site, creep)
 {
@@ -31,6 +32,7 @@ buildController.act = function(site, creep)
         }
         else
         {
+            // invalidate as builder
             creep.drop(RESOURCE_ENERGY);
 
             return false;
