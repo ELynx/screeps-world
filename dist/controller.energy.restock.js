@@ -25,7 +25,7 @@ energyRestockController.roomPrepare = function(room)
 Observe a creep.
 @param {Creep} creep.
 **/
-energyHarvestController.observeCreep = function(creep)
+energyRestockController.observeCreep = function(creep)
 {
     this._observeCreep(creep);
     this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;

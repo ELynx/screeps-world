@@ -200,7 +200,7 @@ function Controller(id)
             return roomCreeps;
         }
 
-        if (this.targetCache.length > 0)
+        if (this.targetCache && this.targetCache.length > 0)
         {
             // leave only new targets
             for (var i = 0; i < targets.length; )
