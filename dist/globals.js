@@ -98,8 +98,8 @@ var globals =
     },
 
     NO_CONTROL: '',
-    NO_ACT_DISTANCE: 0,
     NO_DESTINATION: '',
+    NO_ACT_DISTANCE: undefined,
 
     /**
     @param {Creep} creep.
@@ -128,8 +128,8 @@ var globals =
     assignCreep: function(controller, target, creep)
     {
         creep.memory.ctrl = controller.id;
-        creep.memory.actd = controller.actDistance;
         creep.memory.dest = target.id;
+        creep.memory.dact = controller.actDistance;
     },
 
     /**
@@ -139,8 +139,8 @@ var globals =
     unassignCreep: function(creep)
     {
         creep.memory.ctrl = this.NO_CONTROL;
-        creep.memory.actd = this.NO_ACT_DISTANCE;
         creep.memory.dest = this.NO_DESTINATION;
+        creep.memory.dact = this.NO_ACT_DISTANCE;
     },
 
     /**
