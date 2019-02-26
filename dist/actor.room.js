@@ -1,16 +1,30 @@
 var globals = require('globals');
 
-var spawnController         = require('controller.spawn');
-
 /**
 Order of load is order of call.
 **/
+
+var spawnProcess            = require('process.spawn');
+
 var ttlController           = require('controller.ttl');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 var buildController         = require('controller.build');
 var repairController        = require('controller.repair');
 var controllerController    = require('controller.controller');
+
+/**
+Let room processes work.
+@param {Room} room.
+@param {array<Creep>} creeps.
+**/
+const roomProcessesWork = function(room, creeps)
+{
+    for (const id in globals.roomProcesses)
+    {
+        globals.roomProcesses[id].work(room, creeps);
+    }
+};
 
 /**
 Clear controllers for next room.
@@ -168,8 +182,8 @@ var roomActor =
 
         } // end of arbitrary scope
 
-        // separate action based on total creep
-        spawnController.controlSpawn(room, roomCreeps);
+        // processes have full creep info
+        roomProcessesWork(room, roomCreeps);
 
         if (unassignedCreeps.length > 0)
         {

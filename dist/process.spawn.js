@@ -1,7 +1,8 @@
 var globals = require('globals');
 
-// TODO some base class?
-var spawnController = { };
+var Process = require('process.template');
+
+var spawnProcess = new Process('spawn');
 
 /**
 MEMO - body part cost
@@ -126,9 +127,9 @@ const doSpawn = function(spawn, type, level)
     return false;
 };
 
-spawnController.controlSpawn = function(room, creeps)
+spawnProcess.work = function(room, creeps)
 {
-    globals.roomDebug(room, 'Room spawn control');
+    this.debugHeader(room);
 
     var level = globals.loopCache[room.id].level;
 
@@ -147,6 +148,7 @@ spawnController.controlSpawn = function(room, creeps)
     // quick check - by # of creeps
     if (creeps.length >= _.sum(TypeCount[level]))
     {
+        this.debugLine(room, 'Creep # is enough, no detail check');
         return;
     }
 
@@ -161,7 +163,7 @@ spawnController.controlSpawn = function(room, creeps)
 
     if (spawns.length == 0)
     {
-        globals.roomDebug(room, 'No free spawns found');
+        this.debugLine(room, 'No free spawns found');
         return;
     }
 
@@ -194,7 +196,10 @@ spawnController.controlSpawn = function(room, creeps)
         }
     }
 
-    globals.roomDebug(room, 'Total spawned ' + totalSpawned);
+    if (totalSpawned > 0)
+    {
+        this.debugLine(room, 'Spawned creeps ' + totalSpawned);
+    }
 };
 
-module.exports = spawnController;
+module.exports = spawnProcess;
