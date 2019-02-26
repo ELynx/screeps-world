@@ -4,8 +4,9 @@ var ttlController = new Controller('ttl');
 
 const TypeTtL = [50, 50];
 
-// group effort from distance 1
 ttlController.actDistance = 1;
+
+ttlController.oneToOne = false;
 
 ttlController.act = function(spawn, creep)
 {

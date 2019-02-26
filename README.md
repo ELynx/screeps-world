@@ -8,15 +8,14 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-"Hot" areas to avoid for worker creeps.
-Creep keeps room ID for spawn calculations.
-Build and repair through "airgap" - requires pathfinding with range.
-Use getActiveBodyparts and btyps to limit control.
-Common Controller method "observeCreep" that memorises it if necessary. Replace rememberRestockable, set... etc.
-Controller upgarde counter, repair HP target.
-Repair controller less targets.
-Base class for spawn controller.
-Move creeps from construction sites.
+(Module WAR) "Hot" areas to avoid for worker creeps.
+(Multiroom)  Creep keeps room ID for spawn calculations.
+(Future)     Build and repair through "airgap" - requires pathfinding with range.
+(Multiroom)  Use getActiveBodyparts and btyps to limit control.
+(Economy)    Controller upgarde counter, repair HP target.
+(Economy)    Repair controller less targets.
+(Economy)    Base class for spawn controller.
+(Economy)    Move creeps from construction sites.
 
 # Ideas
 Withdraw from enemy structures.
