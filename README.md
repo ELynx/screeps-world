@@ -8,13 +8,17 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-(Module WAR) "Hot" areas to avoid for worker creeps.
 (Multiroom)  Creep keeps room ID for spawn calculations.
-(Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
+(Module WAR) "Hot" areas to avoid for worker creeps.
+(Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Economy)    Controller upgarde counter, repair HP target.
 (Economy)    Repair controller less targets.
 (Economy)    Move creeps from construction sites.
+(Economy)    Controller controller check downgrade timer.
+(Economy)    Number of creeps per type needed by room.
+(Economy)    Cache room level.
+(Economy)    Fill memory only when needed.
 
 # Ideas
 Withdraw from enemy structures.
