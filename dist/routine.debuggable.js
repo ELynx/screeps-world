@@ -1,3 +1,5 @@
+var globals = require('globals');
+
 function makeDebuggable(target, archetype)
 {
     target.archetype = archetype;
@@ -28,5 +30,6 @@ function makeDebuggable(target, archetype)
             this.debugLine(room, '<' + this.archetype + ' ' + this.id + '>');
         }
     };
+};
 
 module.exports = makeDebuggable;

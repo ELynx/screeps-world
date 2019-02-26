@@ -1,5 +1,5 @@
 var globals = require('globals');
-var makeDebuggable = reqire('routine.debuggable');
+var makeDebuggable = require('routine.debuggable');
 
 function Process(id)
 {
@@ -7,7 +7,7 @@ function Process(id)
 
     makeDebuggable(this, 'Process');
 
-    this.work = function(room, creeps);
+    this.work = function(room, creeps)
     {
         this.debugHeader(room);
     };

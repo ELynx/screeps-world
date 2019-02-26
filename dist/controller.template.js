@@ -1,5 +1,5 @@
 var globals = require('globals');
-var makeDebuggable = reqire('routine.debuggable');
+var makeDebuggable = require('routine.debuggable');
 
 function Controller(id)
 {
