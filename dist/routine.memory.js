@@ -13,11 +13,11 @@ var memoryManager =
             }
         }
 
-        //for(const id in Game.rooms)
+        //for(const name in Game.rooms)
         //{
-        //    if(!Game.rooms[id])
+        //    if(!Game.rooms[name])
         //    {
-        //        delete Memory.rooms[id];
+        //        delete Memory.rooms[name];
         //    }
         //}
     }
