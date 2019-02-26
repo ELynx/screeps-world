@@ -14,7 +14,6 @@ dist - connected to official server
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
 (Economy)    Controller upgarde counter, repair HP target.
 (Economy)    Repair controller less targets.
-(Economy)    Base class for spawn controller.
 (Economy)    Move creeps from construction sites.
 
 # Ideas

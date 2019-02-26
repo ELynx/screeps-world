@@ -1,8 +1,11 @@
 var globals = require('globals');
+var makeDebuggable = reqire('routine.debuggable');
 
 function Controller(id)
 {
     this.id = id;
+
+    makeDebuggable(this, 'Controller');
 
     this.actDistance = 1;
 
@@ -10,33 +13,6 @@ function Controller(id)
     this.targetCache = undefined;
 
     this.roomLevel = undefined;
-
-    this.verbose = false;
-
-    /**
-    Write a common debug line, and move caret to next line.
-    @param {Room} room to overlay with text.
-    @param {string} what.
-    **/
-    this.debugLine = function(room, what)
-    {
-        if (this.verbose)
-        {
-            globals.roomDebug(room, what);
-        }
-    };
-
-    /**
-    Write controller greeting.
-    @param {Room} room to overlay with text.
-    **/
-    this.debugHeader = function(room)
-    {
-        if (this.verbose)
-        {
-            this.debugLine(room, '<Controller ' + this.id + '>');
-        }
-    };
 
     /**
     Prepare for new room.

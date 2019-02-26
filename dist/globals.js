@@ -3,6 +3,7 @@ var globals =
     loopCache: { },
 
     roomControllers: { },
+    roomProcesses: { },
 
     verbose: false,
 
@@ -41,6 +42,15 @@ var globals =
     registerRoomController: function(controller)
     {
         this.roomControllers[controller.id] = controller;
+    },
+
+    /**
+    Add a process to list of room processes.
+    @param {Process} process
+    **/
+    registerRoomProcess: function(process)
+    {
+        this.roomProcesses[process.id] = process;
     },
 
     /**
