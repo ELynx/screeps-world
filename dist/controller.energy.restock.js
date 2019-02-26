@@ -45,7 +45,6 @@ energyRestockController.findTargets = function(room)
 {
     var result = room.find(FIND_MY_STRUCTURES,
         {
-            // TODO laboratory
             filter: function(structure)
             {
                 if (!structure.isActive())

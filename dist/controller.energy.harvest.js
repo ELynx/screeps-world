@@ -34,7 +34,7 @@ energyHarvestController.act = function(source, creep)
 {
     var result = false;
 
-    // TODO no error code for this?
+    // will drop on ground if not enough free space
     if (_.sum(creep.carry) < creep.carryCapacity)
     {
         result = creep.harvest(source) == OK;
