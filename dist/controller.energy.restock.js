@@ -10,24 +10,6 @@ energyRestockController.hasRestockers = undefined;
 energyRestockController.restockable = undefined;
 
 /**
-Set if room has restocker creeps.
-@param {boolean} restockers.
-**/
-energyRestockController.setHasRestockers = function(hasRestockers)
-{
-    this.hasRestockers = hasRestockers;
-};
-
-/**
-Add a creep as restockable.
-@param {Creep} creep.
-**/
-energyRestockController.rememberRestockable = function(creep)
-{
-    this.restockable.push(creep);
-};
-
-/**
 Prepare for new room.
 Special, unset strategy flag.
 @param {Room} room.
@@ -38,6 +20,21 @@ energyRestockController.roomPrepare = function(room)
     this.hasRestockers = false;
     this.restockable = [];
 };
+
+/**
+Observe a creep.
+@param {Creep} creep.
+**/
+energyRestockController.observeCreep = function(creep)
+{
+    this._observeCreep(creep);
+    this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;
+
+    if (creep.memory.rstk == false)
+    {
+        this.restockable.push(creep);
+    }
+}
 
 energyRestockController.act = function(target, creep)
 {
@@ -95,7 +92,7 @@ energyRestockController.filterCreep = function(creep)
         return false;
     }
 
-    return creep.carry.energy > 0;
+    return this._filterCreep(creep);
 };
 
 module.exports = energyRestockController;

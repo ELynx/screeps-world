@@ -4,11 +4,9 @@ function Controller(id)
 {
     this.id = id;
 
-    // negative and zero - solo creep
-    // positive multiple creeps
-    // solo effort from distance 1
-    this.actDistance = -1;
+    this.actDistance = 1;
 
+    this.oneToOne = true;
     this.targetCache = undefined;
 
     this.roomLevel = undefined;
@@ -47,7 +45,11 @@ function Controller(id)
     **/
     this._roomPrepare = function(room)
     {
-        this.targetCache = [];
+        if (this.oneToOne)
+        {
+            this.targetCache = [];
+        }
+
         this.roomLevel = globals.loopCache[room.id].level;
     };
 
@@ -61,13 +63,27 @@ function Controller(id)
     };
 
     /**
-    Remember creeps and targets that are already worked by controller.
+    Observe a creep
+    Base class implementation.
     Duration - room.
+    @param {Creep} creep.
     **/
-    this.rememberCreep = function(creep)
+    this._observeCreep = function(creep)
     {
-        this.targetCache.push(creep.memory.dest);
+        if (this.oneToOne)
+        {
+            this.targetCache.push(creep.memory.dest);
+        }
     };
+
+    /**
+    Observe a creep.
+    @param {Creep} creep.
+    **/
+    this.observeCreep = function(creep)
+    {
+        this._observeCreep(creep);
+    }
 
     /**
     Do something with target and creep then they met.
@@ -91,14 +107,24 @@ function Controller(id)
     };
 
     /**
-    Default implementation.
+    Base class implementation.
     Find creep that has some energy.
+    @param {Creep} creep to look at.
+    @return If creep can be used.
+    **/
+    this._filterCreep = function(creep)
+    {
+        return creep.carry.energy > 0;
+    };
+
+    /**
+    Default implementation.
     @param {Creep} creep to look at.
     @return If creep can be used.
     **/
     this.filterCreep = function(creep)
     {
-        return creep.carry.energy > 0
+        return this._filterCreep(creep);
     };
 
     /**
@@ -174,7 +200,7 @@ function Controller(id)
             return roomCreeps;
         }
 
-        if (this.targetCache.length > 0)
+        if (this.targetCache && this.targetCache.length > 0)
         {
             // leave only new targets
             for (var i = 0; i < targets.length; )
