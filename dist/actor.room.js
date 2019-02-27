@@ -4,6 +4,7 @@ var globals = require('globals');
 Order of load is order of call.
 **/
 
+var mapProcess              = require('process.map');
 var spawnProcess            = require('process.spawn');
 
 var ttlController           = require('controller.ttl');
