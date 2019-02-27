@@ -205,6 +205,61 @@ function Controller(id)
     };
 
     globals.registerRoomController(this);
+
+    this.lookFor = undefined;
+
+    this._filterLooked = function(target)
+    {
+        if (this.targetCache && this.targetCache.length > 0)
+        {
+            if (targetCache.indexOf(target.id) >= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    this.filterLooked = function(target)
+    {
+        return this._filterLooked(target);
+    };
+
+    this._findTargets = function(room, creep)
+    {
+        var targets;
+
+        if (this.lookFor)
+        {
+            for (var caveIndex = 0; /* caves */; /* odd even cave */)
+            {
+                const cave = /* caves */[caveIndex];
+                const caveTargets = room.lookForAtArea(this.lookFor, /*cave*/);
+
+                for (var i = 0; i < caveTargets.length; ++i)
+                {
+                    if (this.filterLooked(caveTargets[i]))
+                    {
+                        targets.push(caveTargets[i]);
+                    }
+                }
+
+                // one cave is enough
+                if (targets.length > 0)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (this.findTargets)
+        {
+            targets = targets.concat(this.findTargets(room));
+        }
+
+        return creep.pos.findClosestByPath(targets);
+    }
 };
 
 module.exports = Controller;
