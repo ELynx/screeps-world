@@ -15,19 +15,6 @@ var repairController        = require('controller.repair');
 var controllerController    = require('controller.controller');
 
 /**
-Let room processes work.
-@param {Room} room.
-@param {array<Creep>} creeps.
-**/
-const roomProcessesWork = function(room, creeps)
-{
-    for (const id in globals.roomProcesses)
-    {
-        globals.roomProcesses[id].work(room, creeps);
-    }
-};
-
-/**
 Clear controllers for next room.
 @param {Room} room.
 **/
@@ -40,7 +27,7 @@ const roomControllersPrepare = function(room)
 };
 
 /**
-Find controller and let it know that creep is aleready in use by it.
+Find controller and let it know that creep is already in use by it.
 @param {Creep} creep.
 **/
 const roomControllersObserve = function(creep)
@@ -116,10 +103,10 @@ var roomActor =
 
         {
             // do some statistics
-            var assigned   = 0;
-            var working    = 0;
-            var resting    = 0;
-            var moving     = 0;
+            var assigned = 0;
+            var working  = 0;
+            var resting  = 0;
+            var moving   = 0;
 
             for (var i = 0; i < roomCreeps.length; ++i)
             {
@@ -172,19 +159,20 @@ var roomActor =
 
                 roomControllersObserve(creep);
 
-            } // end of for creeps loop
+            } // end of creeps loop
 
             // log statistics
+            globals.roomDebug(room, 'Room creeps     ' + roomCreeps.length);
             globals.roomDebug(room, 'Assigned creeps ' + assigned);
             globals.roomDebug(room, '-> working      ' + working);
             globals.roomDebug(room, '-> resting      ' + resting);
             globals.roomDebug(room, '-> moving       ' + moving);
             globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
-
         } // end of arbitrary scope
 
-        // processes have full creep info
-        roomProcessesWork(room, roomCreeps);
+        // manually provide creeps to processes
+        mapProcess.work(room, unassignedCreeps);
+        spawnProcess.work(room, roomCreeps);
 
         if (unassignedCreeps.length > 0)
         {
