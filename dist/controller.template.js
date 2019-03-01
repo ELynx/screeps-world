@@ -3,31 +3,45 @@ var makeDebuggable = require('routine.debuggable');
 
 function Controller(id)
 {
+    /**
+    Unique identifier.
+    **/
     this.id = id;
 
+    // attach methods that allow fast debug writing
     makeDebuggable(this, 'Controller');
 
-    this.actDistance = 1;
+    /**
+    Range at which `act` can be used.
+    **/
+    this.actRange = 1;
 
-    this.oneToOne = true;
+    /**
+    Cache of target IDs that already have creep assigned.
+    **/
     this.targetCache = undefined;
 
+    /**
+    Shortcut to current room level.
+    **/
     this.roomLevel = undefined;
 
     /**
-    Prepare for new room.
-    Base class implementation.
-    @param {Room} room.
+    Clear room target cache.
+    Make it not undefined, so targets are added during observation.
     **/
-    this._roomPrepare = function(room)
+    this._prepareTargetCache = function(room)
     {
-        if (this.oneToOne)
-        {
-            this.targetCache = [];
-        }
-
-        this.roomLevel = globals.loopCache[room.id].level;
+        this.targetCache = [];
     };
+
+    /**
+    Get room level to shortcut.
+    **/
+    this._prepareRoomLevel = function(room)
+    {
+        this.roomLevel = globals.loopCache[room.id].level;
+    }
 
     /**
     Prepare for new room.
@@ -35,7 +49,6 @@ function Controller(id)
     **/
     this.roomPrepare = function(room)
     {
-        this._roomPrepare(room);
     };
 
     /**
@@ -46,7 +59,7 @@ function Controller(id)
     **/
     this._observeCreep = function(creep)
     {
-        if (this.oneToOne)
+        if (this.targetCache)
         {
             this.targetCache.push(creep.memory.dest);
         }
@@ -67,20 +80,49 @@ function Controller(id)
     @param {Creep} creep.
     @return If creep should remain on target.
     **/
-    this.act = function(target, creep)
-    {
-        return false;
-    };
+    this.act = undefined;
 
     /**
-    Look for targets within room.
+    Targets within room.
+    Static means same targets returned every time.
     @param {Room} room.
-    @return Found targets.
+    @return Found  static targets.
     **/
-    this.findTargets = function(room)
+    this.staticTargets = undefined;
+
+    /**
+    Targets within room, partial search.
+    Dynamic means different targets may be found each call.
+    @param {Room} room.
+    @return Found dynamic targets.
+    **/
+    this.dynamicTargets = undefined;
+
+    /**
+    Default target search for single creep.
+    @param {Room} room.
+    @param {Creep} creep.
+    @return Possible targets.
+    **/
+    this._findTargetsForCreep = function(room, creep)
     {
-        return [];
-    };
+        var targets = [];
+
+        if (this.staticTargets)
+        {
+            targets = this.staticTargets(room);
+        }
+
+        if (this.dynamicTargets)
+        {
+            var dt = this.dynamicTargets(room, creep);
+            targets = targets.concat(dt);
+        }
+
+        // TODO filter here?
+
+        return targets;
+    }
 
     /**
     Base class implementation.
@@ -106,13 +148,12 @@ function Controller(id)
     /**
     Default implementation.
     @param {Room} room
-    @param {array<Object>} targets.
     @param {array<Creep>} creeps.
     @return Not assigned creeps.
     **/
-    this.crossAssign = function(room, targets, creeps)
+    this.assignCreeps = function(room, creeps)
     {
-        var assigned = 0;
+        /*var assigned = 0;
 
         for (var i = 0; i < creeps.length;)
         {
@@ -133,7 +174,7 @@ function Controller(id)
         }
 
         this.debugLine(room, 'Creeps checked ' + creeps.length);
-        this.debugLine(room, 'Creeps assigned ' + assigned);
+        this.debugLine(room, 'Creeps assigned ' + assigned);*/
 
         return creeps;
     };
@@ -168,31 +209,7 @@ function Controller(id)
             return roomCreeps;
         }
 
-        var targets = this.findTargets(room);
-
-        if (targets.length == 0)
-        {
-            this.debugLine(room, 'No targets found');
-            return roomCreeps;
-        }
-
-        if (this.targetCache && this.targetCache.length > 0)
-        {
-            // leave only new targets
-            for (var i = 0; i < targets.length; )
-            {
-                if (this.targetCache.indexOf(targets[i].id) >= 0)
-                {
-                    targets.splice(i, 1);
-                }
-                else
-                {
-                    ++i;
-                }
-            }
-        }
-
-        var creepMatch = this.crossAssign(room, targets, creepMatch);
+        var creepMatch = this.assignCreeps(room, creepMatch);
 
         if (creepMatch.length > 0)
         {
@@ -204,62 +221,8 @@ function Controller(id)
         }
     };
 
+    // register into easy access array
     globals.registerRoomController(this);
-
-    this.lookFor = undefined;
-
-    this._filterLooked = function(target)
-    {
-        if (this.targetCache && this.targetCache.length > 0)
-        {
-            if (targetCache.indexOf(target.id) >= 0)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
-    this.filterLooked = function(target)
-    {
-        return this._filterLooked(target);
-    };
-
-    this._findTargets = function(room, creep)
-    {
-        var targets;
-
-        if (this.lookFor)
-        {
-            for (var caveIndex = 0; /* caves */; /* odd even cave */)
-            {
-                const cave = /* caves */[caveIndex];
-                const caveTargets = room.lookForAtArea(this.lookFor, /*cave*/);
-
-                for (var i = 0; i < caveTargets.length; ++i)
-                {
-                    if (this.filterLooked(caveTargets[i]))
-                    {
-                        targets.push(caveTargets[i]);
-                    }
-                }
-
-                // one cave is enough
-                if (targets.length > 0)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (this.findTargets)
-        {
-            targets = targets.concat(this.findTargets(room));
-        }
-
-        return creep.pos.findClosestByPath(targets);
-    }
 };
 
 module.exports = Controller;

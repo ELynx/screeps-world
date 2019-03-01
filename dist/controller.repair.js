@@ -31,7 +31,12 @@ const fromArray = function(from, index)
     return from[index >= from.length ? from.length - 1 : index];
 };
 
-repairController.actDistance = 3;
+repairController.actRange = 3;
+
+repairController.roomPrepare = function(room)
+{
+    this._prepareRoomLevel(room);
+};
 
 repairController.act = function(target, creep)
 {
@@ -39,7 +44,7 @@ repairController.act = function(target, creep)
     return creep.repair(target) == OK;
 };
 
-repairController.findTargets = function(room)
+repairController.staticTargets = function(room)
 {
     if (this.roomLevel == 0)
     {

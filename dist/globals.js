@@ -109,7 +109,7 @@ var globals =
 
     NO_CONTROL: '',
     NO_DESTINATION: '',
-    NO_ACT_DISTANCE: undefined,
+    NO_ACT_RANGE: undefined,
 
     /**
     @param {Creep} creep.
@@ -139,7 +139,7 @@ var globals =
     {
         creep.memory.ctrl = controller.id;
         creep.memory.dest = target.id;
-        creep.memory.dact = controller.actDistance;
+        creep.memory.dact = controller.actRange;
     },
 
     /**
@@ -150,7 +150,7 @@ var globals =
     {
         creep.memory.ctrl = this.NO_CONTROL;
         creep.memory.dest = this.NO_DESTINATION;
-        creep.memory.dact = this.NO_ACT_DISTANCE;
+        creep.memory.dact = this.NO_ACT_RANGE;
     },
 
     /**
