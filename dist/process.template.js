@@ -3,15 +3,22 @@ var makeDebuggable = require('routine.debuggable');
 
 function Process(id)
 {
+    /**
+    Unique identifier.
+    **/
     this.id = id;
 
+    // attach methods that allow fast debug writing
     makeDebuggable(this, 'Process');
 
-    this.work = function(room, creeps)
-    {
-        this.debugHeader(room);
-    };
+    /**
+    Work on a room.
+    @param {Room} room to process.
+    @param {array<Creeps>} creeps that might be interesting for process.
+    **/
+    this.work = undefined;
 
+    // register into easy access array
     globals.registerRoomProcess(this);
 };
 

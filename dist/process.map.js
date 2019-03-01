@@ -1,5 +1,4 @@
 var globals = require('globals');
-
 var Process = require('process.template');
 
 var mapProcess = new Process('map');
@@ -21,14 +20,17 @@ mapProcess.work = function(room, creeps)
                            ];
     }
 
-    //for (var i = 0; i < room.memory.caveMap.length; ++i)
-    //{
-    //    const cave = room.memory.caveMap[i];
-    //    room.visual.rect(
-    //        cave[1], cave[0], cave[3] - cave[1], cave[2] - cave[0],
-    //        { fill: i % 2 ? '#f00' : '#00f', opacity: 0.16 }
-    //    );
-    //}
+    if (this.verbose)
+    {
+        for (var i = 0; i < room.memory.caveMap.length; ++i)
+        {
+            const cave = room.memory.caveMap[i];
+            room.visual.rect(
+                cave[1], cave[0], cave[3] - cave[1], cave[2] - cave[0],
+                { fill: i % 2 ? '#f00' : '#00f', opacity: 0.16 }
+            );
+        }
+    }
 
     for (var i = 0; i < creeps.length; ++i)
     {
