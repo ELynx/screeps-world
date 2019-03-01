@@ -15,7 +15,7 @@ var repairController        = require('controller.repair');
 var controllerController    = require('controller.controller');
 
 /**
-Clear controllers for next room.
+Prepare controllers for next room.
 @param {Room} room.
 **/
 const roomControllersPrepare = function(room)
@@ -27,7 +27,7 @@ const roomControllersPrepare = function(room)
 };
 
 /**
-Find controller and let it know that creep is already in use by it.
+Find controller and let it observe a creep.
 @param {Creep} creep.
 **/
 const roomControllersObserve = function(creep)
@@ -89,13 +89,12 @@ var roomActor =
     **/
     act: function(room)
     {
-        var loopCache = globals.loopCache[room.id] =
+        var loopCache = globals.loopCache[room.name] =
         {
             // TODO very cache
             level: globals.roomLevel(room)
         };
 
-        // clear caches, etc
         roomControllersPrepare(room);
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
@@ -143,6 +142,11 @@ var roomActor =
 
                     if (keepAssignment)
                     {
+                        // TODO check logic flow
+                        // if creep ended with rc != OK because destination e.g. was built
+                        // keep target array sanitized
+                        roomControllersObserve(creep);
+
                         ++assigned;
                     }
                     else
@@ -156,9 +160,6 @@ var roomActor =
                 {
                     unassignedCreeps.push(creep);
                 }
-
-                roomControllersObserve(creep);
-
             } // end of creeps loop
 
             // log statistics
