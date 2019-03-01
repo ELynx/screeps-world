@@ -48,11 +48,11 @@ Find a controller, execute it's act.
 **/
 const roomControllersAct = function(destination, creep)
 {
-    const actor = globals.roomControllers[creep.memory.ctrl];
+    const controller = globals.roomControllers[creep.memory.ctrl];
 
-    if (actor)
+    if (controller)
     {
-        return actor.act(destination, creep);
+        return controller.act(destination, creep);
     }
 
     return false;

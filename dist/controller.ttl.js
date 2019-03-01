@@ -4,9 +4,7 @@ var ttlController = new Controller('ttl');
 
 const TypeTtL = [50, 50];
 
-ttlController.actDistance = 1;
-
-ttlController.oneToOne = false;
+ttlController.actRange = 1;
 
 ttlController.act = function(spawn, creep)
 {
@@ -33,7 +31,7 @@ ttlController.act = function(spawn, creep)
     return spawn.renewCreep(creep) == OK;
 };
 
-ttlController.findTargets = function(room)
+ttlController.staticTargets = function(room)
 {
     return room.find(FIND_MY_SPAWNS,
         {

@@ -9,25 +9,19 @@ const TowerRestock   = 0.9;
 energyRestockController.hasRestockers = undefined;
 energyRestockController.restockable = undefined;
 
-/**
-Prepare for new room.
-Special, unset strategy flag.
-@param {Room} room.
-**/
 energyRestockController.roomPrepare = function(room)
 {
-    this._roomPrepare(room);
+    // make 1 creep to 1 target
+    this._prepareTargetCache(room);
     this.hasRestockers = false;
     this.restockable = [];
 };
 
-/**
-Observe a creep.
-@param {Creep} creep.
-**/
 energyRestockController.observeCreep = function(creep)
 {
+    // call base, remember creep target
     this._observeCreep(creep);
+
     this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;
 
     if (creep.memory.rstk == false)
@@ -41,7 +35,7 @@ energyRestockController.act = function(target, creep)
     return creep.transfer(target, RESOURCE_ENERGY) == OK;
 };
 
-energyRestockController.findTargets = function(room)
+energyRestockController.staticTargets = function(room)
 {
     var result = room.find(FIND_MY_STRUCTURES,
         {

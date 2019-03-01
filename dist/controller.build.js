@@ -2,9 +2,7 @@ var Controller = require('controller.template');
 
 var buildController = new Controller('build');
 
-buildController.actDistance = 3;
-
-buildController.oneToOne = false;
+buildController.actRange = 3;
 
 buildController.act = function(site, creep)
 {
@@ -42,7 +40,7 @@ buildController.act = function(site, creep)
     return rc == OK;
 };
 
-buildController.findTargets = function(room)
+buildController.staticTargets = function(room)
 {
     return room.find(FIND_MY_CONSTRUCTION_SITES);
 };
