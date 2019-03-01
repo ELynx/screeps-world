@@ -1,5 +1,4 @@
 var globals = require('globals');
-
 var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
@@ -113,7 +112,7 @@ const doSpawn = function(spawn, type, level)
                 {
                     ctrl: globals.NO_CONTROL,
                     dest: globals.NO_DESTINATION,
-                    dact: globals.NO_ACT_DISTANCE,
+                    dact: globals.NO_ACT_RANGE,
                     btyp: type,
                     levl: level,
                     // TODO if defined
