@@ -40,7 +40,7 @@ function Controller(id)
     **/
     this._prepareRoomLevel = function(room)
     {
-        this.roomLevel = globals.loopCache[room.id].level;
+        this.roomLevel = globals.loopCache[room.name].level;
     }
 
     /**
