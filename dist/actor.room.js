@@ -10,8 +10,8 @@ var spawnProcess            = require('process.spawn');
 var ttlController           = require('controller.ttl');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
-var buildController         = require('controller.build');
 var repairController        = require('controller.repair');
+var buildController         = require('controller.build');
 var controllerController    = require('controller.controller');
 
 /**
@@ -36,7 +36,7 @@ const roomControllersObserveOwn = function(creep)
 
     if (controller)
     {
-        controller.observeCreep(creep);
+        controller.observeMyCreep(creep);
     }
 };
 
@@ -44,7 +44,7 @@ const roomControllersObserveOwn = function(creep)
 Let controller see all creeps.
 @param {array<Creep>} creeps.
 **/
-const roomControllersObserveOwn = function(creeps)
+const roomControllersObserveAll = function(creeps)
 {
     for (const id in globals.roomControllersObserveAll)
     {

@@ -14,7 +14,7 @@ dist - connected to official server
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Economy)    Controller upgarde counter, repair HP target.
 (Economy)    Repair controller less targets.
-(Economy)    Move creeps from construction sites.
+(Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Controller controller check downgrade timer.
 (Economy)    Number of creeps per type needed by room.
 (Economy)    Cache room level.
