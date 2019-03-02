@@ -37,7 +37,7 @@ var globals =
         {
             var index = this.loopCache.roomDebug[room.id] || 0;
 
-            room.visual.text(what, 0, index++, { font: 'Courier New', align: 'left' });
+            room.visual.text(what, 0, index++, { align: 'left' });
 
             this.loopCache.roomDebug[room.id] = index;
         }
