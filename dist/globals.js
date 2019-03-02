@@ -1,10 +1,18 @@
 var globals =
 {
+    /**
+    Cache that is used inside one loop.
+    **/
     loopCache: { },
 
+    /**
+    Object holding references to all registered room controllers.
+    **/
     roomControllers: { },
-    roomProcesses: { },
 
+    /**
+    Flag to print debug into room visuals.
+    **/
     verbose: false,
 
     /**
@@ -29,7 +37,7 @@ var globals =
         {
             var index = this.loopCache.roomDebug[room.id] || 0;
 
-            room.visual.text(what, 0, index++, { align: 'left' });
+            room.visual.text(what, 0, index++, { font: 'Courier New', align: 'left' });
 
             this.loopCache.roomDebug[room.id] = index;
         }
@@ -42,69 +50,6 @@ var globals =
     registerRoomController: function(controller)
     {
         this.roomControllers[controller.id] = controller;
-    },
-
-    /**
-    Add a process to list of room processes.
-    @param {Process} process
-    **/
-    registerRoomProcess: function(process)
-    {
-        this.roomProcesses[process.id] = process;
-    },
-
-    /**
-    Calculate room energy level.
-    @param {Room} room.
-    @return Energy level of room.
-    **/
-    roomLevel: function(room)
-    {
-        if (room.controller && room.controller.my)
-        {
-            const structs = room.find(FIND_MY_STRUCTURES,
-                {
-                    filter: function(structure)
-                    {
-                        return structure.isActive() &&
-                              (structure.structureType == STRUCTURE_SPAWN ||
-                               structure.structureType == STRUCTURE_EXTENSION);
-                    }
-                }
-            );
-
-            var energyCapacity = 0;
-
-            for (var i = 0; i < structs.length; ++i)
-            {
-                if (structs[i].structureType == STRUCTURE_SPAWN)
-                {
-                    energyCapacity = energyCapacity + 300;
-                }
-
-                if (structs[i].structureType == STRUCTURE_EXTENSION)
-                {
-                    energyCapacity = energyCapacity + 50;
-                }
-            }
-
-            if (energyCapacity >= 800)
-            {
-                return 3;
-            }
-
-            if (energyCapacity >= 550)
-            {
-                return 2;
-            }
-
-            if (energyCapacity >= 300)
-            {
-                return 1;
-            }
-        }
-
-        return 0;
     },
 
     NO_CONTROL: '',

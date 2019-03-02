@@ -17,9 +17,6 @@ function Process(id)
     @param {array<Creeps>} creeps that might be interesting for process.
     **/
     this.work = undefined;
-
-    // register into easy access array
-    globals.registerRoomProcess(this);
 };
 
 module.exports = Process;
