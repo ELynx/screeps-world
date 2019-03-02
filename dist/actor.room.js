@@ -30,13 +30,25 @@ const roomControllersPrepare = function(room)
 Find controller and let it observe a creep.
 @param {Creep} creep.
 **/
-const roomControllersObserve = function(creep)
+const roomControllersObserveOwn = function(creep)
 {
-    const controller = globals.roomControllers[creep.memory.ctrl];
+    const controller = globals.roomControllersObserveOwn[creep.memory.ctrl];
 
     if (controller)
     {
         controller.observeCreep(creep);
+    }
+};
+
+/**
+Let controller see all creeps.
+@param {array<Creep>} creeps.
+**/
+const roomControllersObserveOwn = function(creeps)
+{
+    for (const id in globals.roomControllersObserveAll)
+    {
+        globals.roomControllersObserveAll[id].observeAllCreeps(creeps);
     }
 };
 
@@ -199,7 +211,7 @@ var roomActor =
                         // TODO check logic flow
                         // if creep ended with rc != OK because destination e.g. was built
                         // keep target array sanitized
-                        roomControllersObserve(creep);
+                        roomControllersObserveOwn(creep);
 
                         ++assigned;
                     }
@@ -231,6 +243,8 @@ var roomActor =
 
         if (unassignedCreeps.length > 0)
         {
+            roomControllersObserveAll(roomCreeps);
+
             roomControllersControl(room, unassignedCreeps);
         }
     } // end of act method

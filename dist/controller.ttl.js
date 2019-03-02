@@ -25,6 +25,11 @@ ttlController.act = function(spawn, creep)
     // if controller started to spawn at the same time wait for it
     if (spawn.spawning)
     {
+        if (creep.ticksToLive < 2)
+        {
+            return spawn.recycleCreep(creep) == OK;
+        }
+
         return true;
     }
 
@@ -47,5 +52,7 @@ ttlController.filterCreep = function(creep)
 {
     return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
 };
+
+ttlController.register();
 
 module.exports = ttlController;

@@ -28,7 +28,6 @@ function Controller(id)
 
     /**
     Clear room target cache.
-    Make it not undefined, so targets are added during observation.
     **/
     this._prepareTargetCache = function(room)
     {
@@ -52,27 +51,44 @@ function Controller(id)
     };
 
     /**
-    Observe a creep
-    Base class implementation.
+    Cache the creep target.
     Duration - room.
     @param {Creep} creep.
     **/
-    this._observeCreep = function(creep)
+    this._cacheTarget = function(creep)
     {
-        if (this.targetCache)
-        {
-            this.targetCache.push(creep.memory.dest);
-        }
+        this.targetCache.push(creep.memory.dest);
     };
 
     /**
-    Observe a creep.
+    Observe creep that is already controlled.
     @param {Creep} creep.
     **/
-    this.observeCreep = function(creep)
+    this.observeMyCreep = undefined;
+
+    /**
+    Check for presense of restockers among creeps.
+    @param {array<Creep} creeps.
+    **/
+    this.checkRestockers = function(creeps)
     {
-        this._observeCreep(creep);
-    }
+        for (var i = 0; i < creeps.length; ++i)
+        {
+            if (creeps[i].memory.rstk == true)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    /**
+    Observer every creep controlled by the room.
+    Duration - room.
+    @param {array<Creep>} creeps.
+    **/
+    this.observeAllCreeps = undefined;
 
     /**
     Do something with target and creep then they met.
@@ -98,6 +114,9 @@ function Controller(id)
     **/
     this.dynamicTargets = undefined;
 
+    /**
+    Cache of static targets per loop per room.
+    **/
     this._staticTargetCache = undefined;
 
     /**
@@ -222,7 +241,7 @@ function Controller(id)
             return roomCreeps;
         }
 
-        var creepMatch = this.assignCreeps(room, creepMatch);
+        creepMatch = this.assignCreeps(room, creepMatch);
 
         if (creepMatch.length > 0)
         {
@@ -234,8 +253,13 @@ function Controller(id)
         }
     };
 
-    // register into easy access array
-    globals.registerRoomController(this);
+    /**
+    Register into globals.
+    **/
+    this.register = function()
+    {
+        globals.registerRoomController(this);
+    };
 };
 
 module.exports = Controller;

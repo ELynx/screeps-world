@@ -35,8 +35,14 @@ repairController.actRange = 3;
 
 repairController.roomPrepare = function(room)
 {
+    this._prepareTargetCache(room);
     this._prepareRoomLevel(room);
 };
+
+repairController.observeMyCreep = function(creep)
+{
+    this._cacheTarget(creep);
+}
 
 repairController.act = function(target, creep)
 {
@@ -86,5 +92,7 @@ repairController.staticTargets = function(room)
 
     return structs;
 };
+
+repairController.register();
 
 module.exports = repairController;

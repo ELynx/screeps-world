@@ -11,6 +11,16 @@ var globals =
     roomControllers: { },
 
     /**
+    Object holding references to room controllers that care for their creeps.
+    **/
+    roomControllersObserveOwn: { },
+
+    /**
+    Object holding references to room controllers that care for all creeps.
+    **/
+    roomControllersObserveAll: { },
+
+    /**
     Flag to print debug into room visuals.
     **/
     verbose: false,
@@ -50,6 +60,16 @@ var globals =
     registerRoomController: function(controller)
     {
         this.roomControllers[controller.id] = controller;
+
+        if (controller.observeMyCreep)
+        {
+            this.roomControllersObserveOwn[controller.id] = controller;
+        }
+
+        if (controller.observeAllCreeps)
+        {
+            this.roomControllersObserveAll[controller.id] = controller;
+        }
     },
 
     NO_CONTROL: '',
