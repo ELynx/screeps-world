@@ -163,6 +163,7 @@ function Controller(id)
     {
         this._staticTargetCache = undefined;
 
+        const checked = creeps.length;
         var assigned = 0;
 
         for (var i = 0; i < creeps.length;)
@@ -185,7 +186,7 @@ function Controller(id)
             ++i;
         }
 
-        this.debugLine(room, 'Creeps checked  ' + creeps.length);
+        this.debugLine(room, 'Creeps checked  ' + checked);
         this.debugLine(room, 'Creeps assigned ' + assigned);
 
         return creeps;
