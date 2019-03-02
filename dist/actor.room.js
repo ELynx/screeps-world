@@ -85,6 +85,60 @@ const roomControllersControl = function(room, creeps)
 var roomActor =
 {
     /**
+    Calculate room energy level.
+    @param {Room} room.
+    @return Energy level of room.
+    **/
+    roomLevel: function(room)
+    {
+        if (room.controller && room.controller.my)
+        {
+            const structs = room.find(FIND_MY_STRUCTURES,
+                {
+                    filter: function(structure)
+                    {
+                        return structure.isActive() &&
+                              (structure.structureType == STRUCTURE_SPAWN ||
+                               structure.structureType == STRUCTURE_EXTENSION);
+                    }
+                }
+            );
+
+            var energyCapacity = 0;
+
+            for (var i = 0; i < structs.length; ++i)
+            {
+                if (structs[i].structureType == STRUCTURE_SPAWN)
+                {
+                    energyCapacity = energyCapacity + 300;
+                }
+
+                if (structs[i].structureType == STRUCTURE_EXTENSION)
+                {
+                    energyCapacity = energyCapacity + 50;
+                }
+            }
+
+            if (energyCapacity >= 800)
+            {
+                return 3;
+            }
+
+            if (energyCapacity >= 550)
+            {
+                return 2;
+            }
+
+            if (energyCapacity >= 300)
+            {
+                return 1;
+            }
+        }
+
+        return 0;
+    },
+
+    /**
     @param {Room} room
     **/
     act: function(room)
@@ -92,7 +146,7 @@ var roomActor =
         var loopCache = globals.loopCache[room.name] =
         {
             // TODO very cache
-            level: globals.roomLevel(room)
+            level: this.roomLevel(room)
         };
 
         roomControllersPrepare(room);
