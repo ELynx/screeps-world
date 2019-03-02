@@ -11,24 +11,30 @@ energyRestockController.restockable = undefined;
 
 energyRestockController.roomPrepare = function(room)
 {
-    // make 1 creep to 1 target
     this._prepareTargetCache(room);
+
     this.hasRestockers = false;
     this.restockable = [];
 };
 
-energyRestockController.observeCreep = function(creep)
+energyRestockController.observeMyCreep = function(creep)
 {
-    // call base, remember creep target
-    this._observeCreep(creep);
+    this._cacheTarget(creep);
+};
 
-    this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;
+energyRestockController.observeAllCreeps = function(creeps)
+{
+    // TODO cache for room / loop
+    this.hasRestockers = this.checkRestockers(creeps);
 
-    if (creep.memory.rstk == false)
+    for (var i = 0; i < creeps.length; ++i)
     {
-        this.restockable.push(creep);
+        if (creeps[i].memory.rstk == false)
+        {
+            this.restockable.push(creeps[i]);
+        }
     }
-}
+};
 
 energyRestockController.act = function(target, creep)
 {
@@ -87,5 +93,7 @@ energyRestockController.filterCreep = function(creep)
 
     return this._filterCreep(creep);
 };
+
+energyRestockController.register();
 
 module.exports = energyRestockController;

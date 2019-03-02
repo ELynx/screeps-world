@@ -22,4 +22,6 @@ controllerController.staticTargets = function(room)
     return [];
 };
 
+controllerController.register();
+
 module.exports = controllerController;

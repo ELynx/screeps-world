@@ -17,10 +17,11 @@ energyHarvestController.roomPrepare = function(room)
     this.hasRestockers = false;
 };
 
-energyHarvestController.observeCreep = function(creep)
+energyHarvestController.observeAllCreeps = function(creeps)
 {
-    this.hasRestockers = this.hasRestockers || creep.memory.rstk == true;
-}
+    // TODO cache for room / loop
+    this.hasRestockers = this.checkRestockers(creeps);
+};
 
 energyHarvestController.act = function(source, creep)
 {
@@ -56,5 +57,7 @@ energyHarvestController.filterCreep = function(creep)
 
     return false;
 };
+
+energyHarvestController.register();
 
 module.exports = energyHarvestController;
