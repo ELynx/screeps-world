@@ -98,6 +98,8 @@ function Controller(id)
     **/
     this.dynamicTargets = undefined;
 
+    this._staticTargetCache = undefined;
+
     /**
     Default target search for single creep.
     @param {Room} room.
@@ -106,16 +108,22 @@ function Controller(id)
     **/
     this._findTargetsForCreep = function(room, creep)
     {
+        // TODO fast array operations
         var targets = [];
 
-        if (this.staticTargets)
+        if (this._staticTargetCache)
+        {
+            targets = this._staticTargetCache;
+        }
+        else if (this.staticTargets)
         {
             targets = this.staticTargets(room);
+            this._staticTargetCache = targets;
         }
 
         if (this.dynamicTargets)
         {
-            var dt = this.dynamicTargets(room, creep);
+            const dt = this.dynamicTargets(room, creep);
             targets = targets.concat(dt);
         }
 
@@ -153,16 +161,20 @@ function Controller(id)
     **/
     this.assignCreeps = function(room, creeps)
     {
-        /*var assigned = 0;
+        this._staticTargetCache = undefined;
+
+        var assigned = 0;
 
         for (var i = 0; i < creeps.length;)
         {
-            // TODO PathFinder + range
-            const target = creeps[i].pos.findClosestByPath(targets);
+            const creep = creeps[i];
+
+            const targets = this._findTargetsForCreep(room, creep);
+            const target = creep.pos.findClosestByPath(targets);
 
             if (target)
             {
-                globals.assignCreep(this, target, creeps[i]);
+                globals.assignCreep(this, target, creep);
                 creeps.splice(i, 1);
 
                 ++assigned;
@@ -173,8 +185,8 @@ function Controller(id)
             ++i;
         }
 
-        this.debugLine(room, 'Creeps checked ' + creeps.length);
-        this.debugLine(room, 'Creeps assigned ' + assigned);*/
+        this.debugLine(room, 'Creeps checked  ' + creeps.length);
+        this.debugLine(room, 'Creeps assigned ' + assigned);
 
         return creeps;
     };
