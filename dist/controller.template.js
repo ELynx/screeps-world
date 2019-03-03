@@ -119,16 +119,29 @@ function Controller(id)
     **/
     this.dynamicTargets = undefined;
 
+    this._dynamicTargetCache = undefined;
+
     /**
     Search room using odd-even cave logic.
     @param {Room} room.
     @param {LOOK_*} lookForType.
-    @param {int} caveIndex.
     @param {function} filter.
+    @param {int} caveIndex.
     @return Found targets.
     **/
-    this._lookInCave = function(room, lookForType, caveIndex, filter)
+    this._lookInCave = function(room, lookForType, filter, caveIndex)
     {
+        if (this._dynamicTargetCache)
+        {
+            const caveCache = this._dynamicTargetCache[caveIndex];
+
+            if (caveCache)
+            {
+                console.log('cave cache hit');
+                return caveCache;
+            }
+        }
+
         if (caveIndex < room.memory.caveMap.length)
         {
             const caveTLBR = room.memory.caveMap[caveIndex];
@@ -161,11 +174,26 @@ function Controller(id)
                 }
             }
 
+            if (!this._dynamicTargetCache)
+            {
+                this._dynamicTargetCache = { };
+            }
+
+            this._dynamicTargetCache[caveIndex] = targets;
+
             return targets;
         }
 
         return [];
-    }
+    };
+
+    /**
+    **/
+    this._lookAroundCreep = function(room, lookForType, filter, creep)
+    {
+        // TODO back and forth
+        return this._lookInCave(room, lookForType, filter, creep.memory.cidx);
+    };
 
     /**
     Default target search for single creep.
@@ -197,7 +225,7 @@ function Controller(id)
         // TODO filter here?
 
         return targets;
-    }
+    };
 
     /**
     Base class implementation.
