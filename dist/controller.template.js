@@ -107,6 +107,11 @@ function Controller(id)
     this.staticTargets = undefined;
 
     /**
+    Cache of static targets per loop per room.
+    **/
+    this._staticTargetCache = undefined;
+
+    /**
     Targets within room, partial search.
     Dynamic means different targets may be found each call.
     @param {Room} room.
@@ -115,9 +120,52 @@ function Controller(id)
     this.dynamicTargets = undefined;
 
     /**
-    Cache of static targets per loop per room.
+    Search room using odd-even cave logic.
+    @param {Room} room.
+    @param {LOOK_*} lookForType.
+    @param {int} caveIndex.
+    @param {function} filter.
+    @return Found targets.
     **/
-    this._staticTargetCache = undefined;
+    this._lookInCave = function(room, lookForType, caveIndex, filter)
+    {
+        if (caveIndex < room.memory.caveMap.length)
+        {
+            const caveTLBR = room.memory.caveMap[caveIndex];
+
+            const looked = room.lookForAtArea(
+                lookForType,
+                caveTLBR[0], caveTLBR[1], caveTLBR[2], caveTLBR[3]
+            );
+
+            var targets = [];
+
+            for (var x in looked)
+            {
+                const ys = looked[x];
+
+                for (var y in ys)
+                {
+                    const objs = ys[y];
+
+                    if (objs)
+                    {
+                        for (var i = 0; i < objs.length; ++i)
+                        {
+                            if (filter(objs[i]))
+                            {
+                                targets.push(objs[i]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return targets;
+        }
+
+        return [];
+    }
 
     /**
     Default target search for single creep.
