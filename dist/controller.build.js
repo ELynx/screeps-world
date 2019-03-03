@@ -9,9 +9,14 @@ buildController.act = function(site, creep)
     return creep.build(site) == OK;
 };
 
-buildController.staticTargets = function(room)
+buildController.dynamicTargets = function(room, creep)
 {
-    return room.find(FIND_MY_CONSTRUCTION_SITES);
+    return this._lookAroundCreep(
+        room,
+        LOOK_CONSTRUCTION_SITES,
+        function(site) { return site.my; },
+        creep
+    );
 };
 
 buildController.register();
