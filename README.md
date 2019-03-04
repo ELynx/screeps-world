@@ -19,6 +19,7 @@ dist - connected to official server
 (Economy)    Number of creeps per type needed by room.
 (Economy)    Cache room level.
 (Economy)    Fill memory only when needed.
+(Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
 
 # Ideas
 Withdraw from enemy structures.
