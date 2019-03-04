@@ -257,6 +257,7 @@ function Controller(id)
     this.assignCreeps = function(room, creeps)
     {
         this._staticTargetCache = undefined;
+        this._dynamicTargetCache = undefined;
 
         const checked = creeps.length;
         var assigned = 0;
