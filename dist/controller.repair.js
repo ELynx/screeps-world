@@ -46,6 +46,11 @@ repairController.observeMyCreep = function(creep)
 
 repairController.act = function(target, creep)
 {
+    if (target.hits >= target.hitsMax)
+    {
+        return false;
+    }
+
     // TODO sticky until target hp or error
     return creep.repair(target) == OK;
 };
