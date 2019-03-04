@@ -35,13 +35,13 @@ repairController.actRange = 3;
 
 repairController.roomPrepare = function(room)
 {
-    this._prepareTargetCache(room);
+    this._prepareExcludedTargets(room);
     this._prepareRoomLevel(room);
 };
 
 repairController.observeMyCreep = function(creep)
 {
-    this._cacheTarget(creep);
+    this._excludeTarget(creep);
 }
 
 repairController.act = function(target, creep)

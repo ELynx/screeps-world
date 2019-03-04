@@ -19,7 +19,7 @@ function Controller(id)
     /**
     Cache of target IDs that already have creep assigned.
     **/
-    this.targetCache = undefined;
+    this._excludedTargets = undefined;
 
     /**
     Shortcut to current room level.
@@ -29,9 +29,9 @@ function Controller(id)
     /**
     Clear room target cache.
     **/
-    this._prepareTargetCache = function(room)
+    this._prepareExcludedTargets = function(room)
     {
-        this.targetCache = [];
+        this._excludedTargets = [];
     };
 
     /**
@@ -55,9 +55,9 @@ function Controller(id)
     Duration - room.
     @param {Creep} creep.
     **/
-    this._cacheTarget = function(creep)
+    this._excludeTarget = function(creep)
     {
-        this.targetCache.push(creep.memory.dest);
+        this._excludedTargets.push(creep.memory.dest);
     };
 
     /**
