@@ -61,6 +61,35 @@ function Controller(id)
     };
 
     /**
+    Filter targets by exclusion.
+    When target is filtered out excluded target list is reduced.
+    @param {array<Object>} targets to filter.
+    @return Targets that can be used.
+    **/
+    this._filterExcludedTargets = function(targets)
+    {
+        for (var i = 0; i < targets.length && this._excludedTargets.length > 0; )
+        {
+            const idx = this._excludedTargets.indexOf(targets[i].id);
+
+            if (idx >= 0)
+            {
+                // remove from result
+                targets.splice(i, 1);
+
+                // remove from cache, target is found once
+                this._excludedTargets.splice(idx, 1);
+            }
+            else
+            {
+                ++i;
+            }
+        }
+
+        return targets;
+    };
+
+    /**
     Observe creep that is already controlled.
     @param {Creep} creep.
     **/
@@ -174,6 +203,13 @@ function Controller(id)
                 }
             }
 
+            // filter cave individually
+            // TODO by position also
+            if (this._excludedTargets)
+            {
+                targets = this._filterExcludedTargets(targets);
+            }
+
             if (!this._dynamicTargetCache)
             {
                 this._dynamicTargetCache = { };
@@ -213,16 +249,22 @@ function Controller(id)
         else if (this.staticTargets)
         {
             targets = this.staticTargets(room);
+
+            // filter static targets here
+            if (this._excludedTargets)
+            {
+                targets = this._filterExcludedTargets(targets);
+            }
+
             this._staticTargetCache = targets;
         }
 
         if (this.dynamicTargets)
         {
+            // filter dynamic targets internally to dynamic implementation
             const dt = this.dynamicTargets(room, creep);
             targets = targets.concat(dt);
         }
-
-        // TODO filter here?
 
         return targets;
     };
