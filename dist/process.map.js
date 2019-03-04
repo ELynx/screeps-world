@@ -1,4 +1,3 @@
-var globals = require('globals');
 var Process = require('process.template');
 
 var mapProcess = new Process('map');
