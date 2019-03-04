@@ -166,7 +166,6 @@ function Controller(id)
 
             if (caveCache)
             {
-                console.log('cave cache hit');
                 return caveCache;
             }
         }
