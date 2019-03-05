@@ -247,8 +247,28 @@ function Controller(id)
     **/
     this._lookAroundCreep = function(room, lookForType, filter, creep)
     {
-        // TODO back and forth
-        return this._lookInCave(room, lookForType, filter, creep.memory.cidx);
+        // TODO normal logic
+        const Magic =
+        [
+        [0, 1, 2, 3],
+        [1, 0, 2, 3],
+        [2, 1, 3, 0],
+        [3, 2, 1, 0]
+                   ];
+
+        const MoreMagic = Magic[creep.memory.cidx];
+
+        for (var i = 0; i < MoreMagic.length; ++i)
+        {
+            const caveTargets = this._lookInCave(room, lookForType, filter, MoreMagic[i]);
+
+            if (caveTargets.length > 0)
+            {
+                return caveTargets;
+            }
+        }
+
+        return [];
     };
 
     /**
