@@ -11,4 +11,27 @@ module.exports.loop = function ()
     memoryManager.cleanup();
 
     roomActor.act(Game.rooms['sim']);
+
+    // temporary, just activate tower(s)
+    // <<
+    {
+        const towers = Game.rooms['sim'].find(FIND_MY_STRUCTURES,
+            {
+                filter: function(structure)
+                {
+                    return structure.structureType == STRUCTURE_TOWER;
+                }
+            }
+        );
+
+        for (var i = 0; i < towers.length; ++i)
+        {
+            const closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if(closestHostile)
+            {
+                towers[i].attack(closestHostile);
+            }
+        }
+    }
+    // >>
 }
