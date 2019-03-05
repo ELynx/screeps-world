@@ -64,13 +64,35 @@ function Controller(id)
     Filter targets by exclusion.
     When target is filtered out excluded target list is reduced.
     @param {array<Object>} targets to filter.
+    @param {array<integer>} cave cornesr, or undefined.
     @return Targets that can be used.
     **/
-    this._filterExcludedTargets = function(targets)
+    this._filterExcludedTargets = function(targets, caveTLBR)
     {
         for (var i = 0; i < targets.length && this._excludedTargets.length > 0; )
         {
-            const idx = this._excludedTargets.indexOf(targets[i].id);
+            const target = targets[i];
+
+            if (caveTLBR)
+            {
+                const x = target.pos.x;
+
+                if (x < caveTLBR[1] || x > caveTLBR[3])
+                {
+                    ++i;
+                    continue;
+                }
+
+                const y = target.pos.y;
+
+                if (y < caveTLBR[0] || y > caveTLBR[2])
+                {
+                    ++i;
+                    continue;
+                }
+            }
+
+            const idx = this._excludedTargets.indexOf(target.id);
 
             if (idx >= 0)
             {
@@ -206,7 +228,7 @@ function Controller(id)
             // TODO by position also
             if (this._excludedTargets)
             {
-                targets = this._filterExcludedTargets(targets);
+                targets = this._filterExcludedTargets(targets, caveTLBR);
             }
 
             if (!this._dynamicTargetCache)
@@ -252,7 +274,7 @@ function Controller(id)
             // filter static targets here
             if (this._excludedTargets)
             {
-                targets = this._filterExcludedTargets(targets);
+                targets = this._filterExcludedTargets(targets, undefined);
             }
 
             this._staticTargetCache = targets;
