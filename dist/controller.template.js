@@ -225,7 +225,6 @@ function Controller(id)
             }
 
             // filter cave individually
-            // TODO by position also
             if (this._excludedTargets)
             {
                 targets = this._filterExcludedTargets(targets, caveTLBR);
