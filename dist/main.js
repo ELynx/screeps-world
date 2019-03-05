@@ -30,6 +30,22 @@ module.exports.loop = function ()
             if(closestHostile)
             {
                 towers[i].attack(closestHostile);
+                continue;
+            }
+
+            const damagedCreep = towers[i].pos.findClosestByRange(FIND_MY_CREEPS,
+                {
+                    filter: function(creep)
+                    {
+                        return creep.hits < creep.hitsMax;
+                    }
+                }
+            );
+
+            if (damagedCreep)
+            {
+                towers[i].heal(damagedCreep);
+                continue;
             }
         }
     }
