@@ -64,7 +64,7 @@ function Controller(id)
     Filter targets by exclusion.
     When target is filtered out excluded target list is reduced.
     @param {array<Object>} targets to filter.
-    @param {array<integer>} cave cornesr, or undefined.
+    @param {array<integer>} cave corners, or undefined.
     @return Targets that can be used.
     **/
     this._filterExcludedTargets = function(targets, caveTLBR)
