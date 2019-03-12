@@ -1,3 +1,5 @@
+'use strict';
+
 var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');

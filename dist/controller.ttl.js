@@ -1,3 +1,5 @@
+'use strict';
+
 var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
