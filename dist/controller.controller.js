@@ -1,3 +1,5 @@
+'use strict';
+
 var Controller = require('controller.template');
 
 var controllerController = new Controller('controller');

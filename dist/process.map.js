@@ -1,3 +1,5 @@
+'use strict';
+
 var Process = require('process.template');
 
 var mapProcess = new Process('map');

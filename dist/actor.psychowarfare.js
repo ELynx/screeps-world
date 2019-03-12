@@ -1,3 +1,5 @@
+'use strict';
+
 /**
 Psycho of the day text.
 Ten characters long. Infinitely scary and/or hilarious.
