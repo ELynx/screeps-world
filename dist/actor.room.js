@@ -155,17 +155,21 @@ var roomActor =
     **/
     act: function(room)
     {
-        var loopCache = globals.loopCache[room.name] =
+        // TODO calculate room level less often
+        globals.loopCache[room.name] =
         {
-            // TODO very cache
             level: this.roomLevel(room)
         };
 
-        roomControllersPrepare(room);
+        // arbitrary scope
+        {
+            roomControllersPrepare(room);
+        } // end of arbitrary scope
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
         var unassignedCreeps = [];
 
+        // arbitrary scope
         {
             // do some statistics
             var assigned = 0;
@@ -208,9 +212,6 @@ var roomActor =
 
                     if (keepAssignment)
                     {
-                        // TODO check logic flow
-                        // if creep ended with rc != OK because destination e.g. was built
-                        // keep target array sanitized
                         roomControllersObserveOwn(creep);
 
                         ++assigned;
@@ -237,16 +238,19 @@ var roomActor =
             globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
         } // end of arbitrary scope
 
-        // manually provide creeps to processes
-        mapProcess.work(room, unassignedCreeps);
-        spawnProcess.work(room, roomCreeps);
-
-        if (unassignedCreeps.length > 0)
+        // arbitrary scope
         {
-            roomControllersObserveAll(roomCreeps);
+            // manually provide creeps to processes
+            mapProcess.work(room, unassignedCreeps);
+            spawnProcess.work(room, roomCreeps);
 
-            roomControllersControl(room, unassignedCreeps);
-        }
+            if (unassignedCreeps.length > 0)
+            {
+                roomControllersObserveAll(roomCreeps);
+
+                roomControllersControl(room, unassignedCreeps);
+            }
+        } // end of arbitrary scope
     } // end of act method
 };
 
