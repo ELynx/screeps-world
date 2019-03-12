@@ -55,47 +55,46 @@ repairController.act = function(target, creep)
     return creep.repair(target) == OK;
 };
 
-repairController.staticTargets = function(room)
+repairController.dynamicTargets = function(room, creep)
 {
     if (this.roomLevel == 0)
     {
         return [];
     }
 
+    // TODO roads over walls cost too much, repair strategy
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             this.roomLevel);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      this.roomLevel);
     const otherMult = fromArray(TargetStructureHpMultiplier, this.roomLevel);
 
-    // TODO reduce number of objects checked, eats CPU
-    const structs = room.find(FIND_STRUCTURES,
+    return this._lookAroundCreep(
+        room,
+        LOOK_STRUCTURES,
+        function(structure)
         {
-            filter: function(structure)
+            if (!structure.hits)
             {
-                if (!structure.hits)
-                {
-                    return false;
-                }
-
-                if (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART)
-                {
-                    return structure.hits < barrHp;
-                }
-                else if (structure.structureType == STRUCTURE_ROAD)
-                {
-                    return structure.hits < Math.ceil(structure.hitsMax * roadMult);
-                }
-                else if (structure.my)
-                {
-                    return structure.hits < Math.ceil(structure.hitsMax * otherMult);
-                }
-
                 return false;
             }
-        }
-    );
 
-    return structs;
+            if (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART)
+            {
+                return structure.hits < barrHp;
+            }
+            else if (structure.structureType == STRUCTURE_ROAD)
+            {
+                return structure.hits < /*Math.ceil(*/structure.hitsMax * roadMult/*)*/;
+            }
+            else if (structure.my)
+            {
+                return structure.hits < /*Math.ceil(*/structure.hitsMax * otherMult/*)*/;
+            }
+
+            return false;
+        },
+        creep
+    );
 };
 
 repairController.register();
