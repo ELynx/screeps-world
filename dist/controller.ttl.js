@@ -25,6 +25,13 @@ ttlController.act = function(spawn, creep)
         return spawn.recycleCreep(creep) == OK;
     }
 
+    // TODO mix with healing
+    // if has disabled body parts
+    if (creep.hitsMax - creep.hits > 99)
+    {
+        return spawn.recycleCreep(creep) == OK;
+    }
+
     // renewal part
 
     // if controller started to spawn at the same time wait for it
@@ -55,6 +62,13 @@ ttlController.staticTargets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
+    // TODO mix with healing
+    // if has disabled body parts
+    if (creep.hitsMax - creep.hits > 99)
+    {
+        return true;
+    }    
+
     return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
 };
 
