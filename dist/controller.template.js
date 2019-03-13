@@ -82,7 +82,9 @@ function Controller(id)
 
             if (caveTLBR)
             {
-                const x = excludedTarget.pos.x;
+                const pos = Game.getObjectById(excludedTarget).pos;
+
+                const x = pos.x;
 
                 if (x < caveTLBR[1] || x > caveTLBR[3])
                 {
@@ -90,7 +92,7 @@ function Controller(id)
                     continue;
                 }
 
-                const y = excludedTarget.pos.y;
+                const y = pos.y;
 
                 if (y < caveTLBR[0] || y > caveTLBR[2])
                 {
@@ -99,12 +101,12 @@ function Controller(id)
                 }
             }
 
-            const idx = -1;
+            var idx = -1;
 
             // TODO any faster?
             for (var j = 0; j < targets.length; ++j)
             {
-                if (targets[j].id == excludedTarget.id)
+                if (targets[j].id == excludedTarget)
                 {
                     idx = j;
                     break;
@@ -123,7 +125,7 @@ function Controller(id)
             {
                 ++i;
             }
-        }
+        } // end of loop for excluded target
 
         return targets;
     };
