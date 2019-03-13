@@ -19,6 +19,11 @@ function Controller(id)
     this.actRange = 1;
 
     /**
+    Flag to check reach-ability of target in expensive hardcode way.
+    **/
+    this.smartTargeting = false;
+
+    /**
     Cache of target IDs that already have creep assigned.
     **/
     this._excludedTargets = undefined;
@@ -371,34 +376,42 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
-            // starting with closest, Manhattan distance is "good enough"
-            targets.sort(
-                function(t1, t2)
-                {
-                    const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
-                    const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
-
-                    return d1 - d2;
-                }
-            );
-
             // of them one that can be reached
             var target = undefined;
 
-            // check, see if reacheable in any way
-            for (var j = 0; j < targets.length; ++j)
+            // STRATEGY few controllers actually need smart movement
+            if (this.smartTargeting)
             {
-                // TODO so much tweaking here
-                const solution = PathFinder.search(
-                            creep.pos,
-                            { pos: targets[j].pos, range: 1 },
-                            {}
-                        );
+                target = creep.pos.findClosestByPath(targets);
+            }
+            else
+            {
+                // starting with closest, Manhattan distance is "good enough"
+                targets.sort(
+                    function(t1, t2)
+                    {
+                        const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
+                        const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
-                if (!solution.incomplete)
+                        return d1 - d2;
+                    }
+                );
+
+                // check, see if reacheable in any way
+                for (var j = 0; j < targets.length; ++j)
                 {
-                    target = targets[j];
-                    break;
+                    // TODO so much tweaking here
+                    const solution = PathFinder.search(
+                                creep.pos,
+                                { pos: targets[j].pos, range: 1 },
+                                {}
+                            );
+
+                    if (!solution.incomplete)
+                    {
+                        target = targets[j];
+                        break;
+                    }
                 }
             }
 
