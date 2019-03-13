@@ -328,8 +328,8 @@ const Profiler = {
 
   prototypes: [
     { name: 'Game', val: Game },
-    //{ name: 'Map', val: Game.map },
-    //{ name: 'Market', val: Game.market },
+    { name: 'Map', val: Game.map },
+    { name: 'Market', val: Game.market },
     { name: 'PathFinder', val: PathFinder },
     { name: 'RawMemory', val: RawMemory },
     { name: 'ConstructionSite', val: ConstructionSite },
@@ -338,7 +338,7 @@ const Profiler = {
     { name: 'Mineral', val: Mineral },
     { name: 'Nuke', val: Nuke },
     { name: 'OwnedStructure', val: OwnedStructure },
-    //{ name: 'CostMatrix', val: PathFinder.CostMatrix },
+    { name: 'CostMatrix', val: PathFinder.CostMatrix },
     { name: 'Resource', val: Resource },
     { name: 'Room', val: Room },
     { name: 'RoomObject', val: RoomObject },
