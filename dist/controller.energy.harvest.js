@@ -9,6 +9,8 @@ energyHarvestController.hasRestockers = undefined;
 
 energyHarvestController.actRange = 1;
 
+energyHarvestController.smartTargeting = true; // since sources are crowded
+
 /**
 Prepare for new room.
 Special, unset strategy flag.
