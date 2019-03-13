@@ -366,8 +366,39 @@ function Controller(id)
         {
             const creep = creeps[i];
 
+            // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
-            const target = creep.pos.findClosestByPath(targets);
+
+            // starting with closest, Manhattan distance is "good enough"
+            targets.sort(
+                function(t1, t2)
+                {
+                    const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
+                    const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
+
+                    return d1 - d2;
+                }
+            );
+
+            // of them one that can be reached
+            var target = undefined;
+
+            // check, see if reacheable in any way
+            for (var j = 0; j < targets.length; ++j)
+            {
+                // TODO so much tweaking here
+                const solution = PathFinder.search(
+                            creep.pos,
+                            { pos: targets[j].pos, range: 1 },
+                            {}
+                        );
+
+                if (!solution.incomplete)
+                {
+                    target = targets[j];
+                    break;
+                }
+            }
 
             if (target)
             {
