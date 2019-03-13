@@ -39,3 +39,7 @@ Dynamic creep life:
 Temporary creeps, e.g. role Heal, spawned if there are broken creeps:
 -> spawn on demand;
 --> recycle by "Dynamic creep life" afterwards.
+
+# Profiler
+Uses github.com/samogot/screeps-profiler, more up-to-date and feature branch
+Uses commit a128654877d2bd07bd405eb4e41a0ecd5aed5d42 to master
