@@ -164,6 +164,11 @@ function hookUpPrototypes() {
 }
 
 function profileObjectFunctions(object, label) {
+  // prevent profiling undefined
+  if (!object) {
+    return;
+  }
+
   if (object.prototype) {
     profileObjectFunctions(object.prototype, label);
   }
@@ -323,8 +328,8 @@ const Profiler = {
 
   prototypes: [
     { name: 'Game', val: global.Game },
-    { name: 'Map', val: global.Game.map },
-    { name: 'Market', val: global.Game.market },
+    //{ name: 'Map', val: global.Game.map },
+    //{ name: 'Market', val: global.Game.market },
     { name: 'PathFinder', val: global.PathFinder },
     { name: 'RawMemory', val: global.RawMemory },
     { name: 'ConstructionSite', val: global.ConstructionSite },
@@ -333,7 +338,7 @@ const Profiler = {
     { name: 'Mineral', val: global.Mineral },
     { name: 'Nuke', val: global.Nuke },
     { name: 'OwnedStructure', val: global.OwnedStructure },
-    { name: 'CostMatrix', val: global.PathFinder.CostMatrix },
+    //{ name: 'CostMatrix', val: global.PathFinder.CostMatrix },
     { name: 'Resource', val: global.Resource },
     { name: 'Room', val: global.Room },
     { name: 'RoomObject', val: global.RoomObject },
