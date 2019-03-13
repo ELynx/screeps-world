@@ -71,13 +71,18 @@ function Controller(id)
     **/
     this._filterExcludedTargets = function(targets, caveTLBR)
     {
-        for (var i = 0; i < targets.length && this._excludedTargets.length > 0; )
+        if (targets.length == 0)
         {
-            const target = targets[i];
+            return targets;
+        }
+
+        for (var i = 0; i < this._excludedTargets.length && targets.length > 0; )
+        {
+            const excludedTarget = this._excludedTargets[i];
 
             if (caveTLBR)
             {
-                const x = target.pos.x;
+                const x = excludedTarget.pos.x;
 
                 if (x < caveTLBR[1] || x > caveTLBR[3])
                 {
@@ -85,7 +90,7 @@ function Controller(id)
                     continue;
                 }
 
-                const y = target.pos.y;
+                const y = excludedTarget.pos.y;
 
                 if (y < caveTLBR[0] || y > caveTLBR[2])
                 {
@@ -94,15 +99,25 @@ function Controller(id)
                 }
             }
 
-            const idx = this._excludedTargets.indexOf(target.id);
+            const idx = -1;
+
+            // TODO any faster?
+            for (var j = 0; j < targets.length; ++j)
+            {
+                if (targets[j].id == excludedTarget.id)
+                {
+                    idx = j;
+                    break;
+                }
+            }
 
             if (idx >= 0)
             {
                 // remove from result
-                targets.splice(i, 1);
+                targets.splice(idx, 1);
 
                 // remove from cache, target is found once
-                this._excludedTargets.splice(idx, 1);
+                this._excludedTargets.splice(i, 1);
             }
             else
             {
