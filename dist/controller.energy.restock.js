@@ -93,7 +93,7 @@ energyRestockController.filterCreep = function(creep)
         return false;
     }
 
-    return this._filterCreep(creep);
+    return this._creepHasEnergy(creep);
 };
 
 energyRestockController.register();

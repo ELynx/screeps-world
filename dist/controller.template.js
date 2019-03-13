@@ -327,12 +327,11 @@ function Controller(id)
     };
 
     /**
-    Base class implementation.
-    Find creep that has some energy.
+    Creep that has some energy.
     @param {Creep} creep to look at.
-    @return If creep can be used.
+    @return If creep has some energy.
     **/
-    this._filterCreep = function(creep)
+    this._creepHasEnergy = function(creep)
     {
         return creep.carry.energy > 0;
     };
@@ -344,7 +343,7 @@ function Controller(id)
     **/
     this.filterCreep = function(creep)
     {
-        return this._filterCreep(creep);
+        return this._creepHasEnergy(creep);
     };
 
     /**
