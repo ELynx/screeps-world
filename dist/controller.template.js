@@ -190,7 +190,7 @@ function Controller(id)
     this._dynamicTargetCache = undefined;
 
     /**
-    Search room using odd-even cave logic.
+    Search room using cave logic.
     @param {Room} room.
     @param {LOOK_*} lookForType.
     @param {function} filter.
@@ -261,6 +261,8 @@ function Controller(id)
     };
 
     /**
+    Search for targets starting from creep cave.
+    Limit output to single cave to prevent too much pathfinding.
     **/
     this._lookAroundCreep = function(room, lookForType, filter, creep)
     {
