@@ -6,13 +6,20 @@ var memoryManager = require('routine.memory');
 
 var roomActor = require('actor.room');
 
+////const profiler = require('screeps-profiler');
+////profiler.enable();
+
 module.exports.loop = function ()
 {
+    ////profiler.wrap(function() {
+
     globals.debugReset();
 
     memoryManager.cleanup();
 
     roomActor.act(Game.rooms['sim']);
+
+    ////});
 
     // temporary, just activate tower(s)
     // <<
