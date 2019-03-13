@@ -45,30 +45,7 @@ energyRestockController.act = function(target, creep)
 
 energyRestockController.staticTargets = function(room)
 {
-    var result = room.find(FIND_MY_STRUCTURES,
-        {
-            filter: function(structure)
-            {
-                if (!structure.isActive())
-                {
-                    return false;
-                }
-
-                if (structure.structureType == STRUCTURE_SPAWN ||
-                    structure.structureType == STRUCTURE_EXTENSION)
-                {
-                    return structure.energy < structure.energyCapacity;
-                }
-
-                if (structure.structureType == STRUCTURE_TOWER)
-                {
-                    return structure.energy < Math.ceil(TowerRestock * structure.energyCapacity);
-                }
-
-                return false;
-            }
-        }
-    );
+    var result = [];
 
     if (this.hasRestockers && this.restockable.length > 0)
     {
@@ -76,7 +53,7 @@ energyRestockController.staticTargets = function(room)
         {
             const creep = this.restockable[i];
 
-            if (_.sum(creep.carry) < Math.ceil(DynamicRestock * creep.carryCapacity))
+            if (_.sum(creep.carry) < /*Math.ceil(*/DynamicRestock * creep.carryCapacity/*)*/)
             {
                 result.push(creep);
             }
@@ -84,6 +61,34 @@ energyRestockController.staticTargets = function(room)
     }
 
     return result;
+};
+
+energyRestockController.dynamicTargets = function(room, creep)
+{
+    return this._lookAroundCreep(
+        room,
+        LOOK_STRUCTURES,
+        function(structure)
+        {
+            if (!structure.my)
+            {
+                return false;
+            }
+
+            if (structure.structureType == STRUCTURE_SPAWN ||
+                structure.structureType == STRUCTURE_EXTENSION)
+            {
+                return structure.energy < structure.energyCapacity;
+            }
+            else if (structure.structureType == STRUCTURE_TOWER)
+            {
+                return structure.energy < /*Math.ceil(*/TowerRestock * structure.energyCapacity/*)*/;
+            }
+
+            return false;
+        },
+        creep
+    );
 };
 
 energyRestockController.filterCreep = function(creep)
