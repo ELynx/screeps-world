@@ -43,12 +43,14 @@ mapProcess.work = function(room, creeps)
     {
         const pos = creeps[i].pos;
 
+        var cidx = 0;
+
         for (var x = 0; x < room.memory.caveMap[0].length - 1; ++x)
         {
             if (pos.x >= room.memory.caveMap[0][x] &&
                 pos.x <  room.memory.caveMap[0][x + 1])
             {
-                creeps[i].cidx = x;
+                cidx = x;
                 break;
             }
         }
@@ -58,10 +60,12 @@ mapProcess.work = function(room, creeps)
             if (pos.y >= room.memory.caveMap[1][y] &&
                 pos.y <  room.memory.caveMap[1][y + 1])
             {
-                creeps[i].cidy = y;
+                cidx = cidx + (room.memory.caveMap[0].length - 1) * y;
                 break;
             }
         }
+
+        creeps[i].cidx = cidx;
     }
 };
 
