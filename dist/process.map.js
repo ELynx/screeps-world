@@ -26,10 +26,10 @@ mapProcess.work = function(room, creeps)
         {
             for (var y = 0; y < room.memory.caveMap[1].length - 1; ++y)
             {
-                const x0 = room.memory.caveMap[0][x];
-                const w  = room.memory.caveMap[0][x + 1] - x0;
-                const y0 = room.memory.caveMap[1][y];
-                const h  = room.memory.caveMap[1][y + 1] - y0;
+                const x0 = room.memory.caveMap[0][x] - 0.5;
+                const w  = room.memory.caveMap[0][x + 1] - x0 - 0.5;
+                const y0 = room.memory.caveMap[1][y] - 0.5;
+                const h  = room.memory.caveMap[1][y + 1] - y0 - 0.5;
 
                 room.visual.rect(
                     x0, y0, w, h,

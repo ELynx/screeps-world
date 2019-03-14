@@ -219,7 +219,8 @@ function Controller(id)
             }
         }
 
-        if (caveIndex < room.memory.caveMap.length)
+        if (caveX < room.memory.caveMap[0].length - 1 &&
+            caveY < room.memory.caveMap[1].length - 1)
         {
             const t = room.memory.caveMap[1][caveY];
             const l = room.memory.caveMap[0][caveX + 1] - 1;
@@ -280,7 +281,7 @@ function Controller(id)
 
         //for (caves)
         //{
-            const caveTargets = this._lookInCave(room, lookForType, filter, creep.cidx, creep, cidy);
+            const caveTargets = this._lookInCave(room, lookForType, filter, creep.cidx, creep.cidy);
 
             if (caveTargets.length > 0)
             {
