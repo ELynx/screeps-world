@@ -201,14 +201,17 @@ function Controller(id)
     @param {Room} room.
     @param {LOOK_*} lookForType.
     @param {function} filter.
-    @param {int} caveIndex.
+    @param {int} caveX.
+    @param {int} caveY.
     @return Found targets.
     **/
-    this._lookInCave = function(room, lookForType, filter, caveIndex)
+    this._lookInCave = function(room, lookForType, filter, caveX, caveY)
     {
+        const cacheIndex = caveX + 1000 * caveY;
+
         if (this._dynamicTargetCache)
         {
-            const caveCache = this._dynamicTargetCache[caveIndex];
+            const caveCache = this._dynamicTargetCache[cacheIndex];
 
             if (caveCache)
             {
@@ -218,12 +221,12 @@ function Controller(id)
 
         if (caveIndex < room.memory.caveMap.length)
         {
-            const caveTLBR = room.memory.caveMap[caveIndex];
+            const t = room.memory.caveMap[1][caveY];
+            const l = room.memory.caveMap[0][caveX + 1] - 1;
+            const b = room.memory.caveMap[1][caveY];
+            const r = room.memory.caveMap[0][caveX + 1] - 1;
 
-            const looked = room.lookForAtArea(
-                lookForType,
-                caveTLBR[0], caveTLBR[1], caveTLBR[2], caveTLBR[3]
-            );
+            const looked = room.lookForAtArea(lookForType, t, l, b, r);
 
             var targets = [];
 
@@ -251,7 +254,7 @@ function Controller(id)
             // filter cave individually
             if (this._excludedTargets)
             {
-                targets = this._filterExcludedTargets(targets, caveTLBR);
+                targets = this._filterExcludedTargets(targets, [t, l, b, r]);
             }
 
             if (!this._dynamicTargetCache)
@@ -259,7 +262,7 @@ function Controller(id)
                 this._dynamicTargetCache = { };
             }
 
-            this._dynamicTargetCache[caveIndex] = targets;
+            this._dynamicTargetCache[cacheIndex] = targets;
 
             return targets;
         }
@@ -273,26 +276,17 @@ function Controller(id)
     **/
     this._lookAroundCreep = function(room, lookForType, filter, creep)
     {
-        // TODO normal logic
-        const Magic =
-        [
-        [0, 1, 2, 3],
-        [1, 0, 2, 3],
-        [2, 1, 3, 0],
-        [3, 2, 1, 0]
-                   ];
+        // TODO cave navigation
 
-        const MoreMagic = Magic[creep.memory.cidx];
-
-        for (var i = 0; i < MoreMagic.length; ++i)
-        {
-            const caveTargets = this._lookInCave(room, lookForType, filter, MoreMagic[i]);
+        //for (caves)
+        //{
+            const caveTargets = this._lookInCave(room, lookForType, filter, creep.cidx, creep, cidy);
 
             if (caveTargets.length > 0)
             {
                 return caveTargets;
             }
-        }
+        //}
 
         return [];
     };
