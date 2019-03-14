@@ -205,13 +205,11 @@ function Controller(id)
     @param {int} caveY.
     @return Found targets.
     **/
-    this._lookInCave = function(room, lookForType, filter, caveX, caveY)
+    this._lookInCave = function(room, lookForType, filter, caveIndex)
     {
-        const cacheIndex = caveX + 1000 * caveY;
-
         if (this._dynamicTargetCache)
         {
-            const caveCache = this._dynamicTargetCache[cacheIndex];
+            const caveCache = this._dynamicTargetCache[caveIndex];
 
             if (caveCache)
             {
@@ -219,7 +217,11 @@ function Controller(id)
             }
         }
 
-        if (caveX < room.memory.caveMap[0].length - 1 &&
+        const xSize = room.memory.caveMap[0].length - 1;
+        const caveX = caveIndex % xSize;
+        const caveY = Math.floor(caveIndex / xSize);
+
+        if (/*caveX < room.memory.caveMap[0].length - 1 &&*/ // always true
             caveY < room.memory.caveMap[1].length - 1)
         {
             const t = room.memory.caveMap[1][caveY];
@@ -263,7 +265,7 @@ function Controller(id)
                 this._dynamicTargetCache = { };
             }
 
-            this._dynamicTargetCache[cacheIndex] = targets;
+            this._dynamicTargetCache[caveIndex] = targets;
 
             return targets;
         }
@@ -279,15 +281,48 @@ function Controller(id)
     {
         // TODO cave navigation
 
-        //for (caves)
-        //{
-            const caveTargets = this._lookInCave(room, lookForType, filter, creep.cidx, creep.cidy);
+        // TODO fill in routes
+        const Magic =
+        [
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24],
+        [00, 01, 05, 06, 02, 10, 07, 11, 12, 03, 15, 08, 16, 13, 17, 18, 04, 20, 09, 21, 14, 22, 19, 23, 24]
+                                                                                                           ];
+
+        const NavigationRoute = Magic[creep.cidx];
+
+        for (var ridx = 0; ridx < NavigationRoute.length; ++ridx)
+        {
+
+            const caveTargets = this._lookInCave(room, lookForType, filter, NavigationRoute[ridx]);
 
             if (caveTargets.length > 0)
             {
                 return caveTargets;
             }
-        //}
+        }
 
         return [];
     };
