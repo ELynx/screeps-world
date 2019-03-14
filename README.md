@@ -10,6 +10,7 @@ dist - connected to official server
 # TODO
 (Multiroom)  Creep keeps room ID for spawn calculations.
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
+(Multiroom)  Common method to cache and read from cache.
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Economy)    Controller upgarde counter, repair HP target.
