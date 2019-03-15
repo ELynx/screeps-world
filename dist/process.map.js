@@ -33,39 +33,10 @@ mapProcess.work = function(room, creeps)
 
                 room.visual.rect(
                     x0, y0, w, h,
-                    { fill: x % 2 == y % 2 ? '#f00' : '#00f', opacity: 0.16 }
+                    { fill: (x + y) % 2 == 0 ? '#f00' : '#00f', opacity: 0.16 }
                 );
             }
         }
-    }
-
-    for (var i = 0; i < creeps.length; ++i)
-    {
-        const pos = creeps[i].pos;
-
-        var cidx = 0;
-
-        for (var x = 0; x < room.memory.caveMap[0].length - 1; ++x)
-        {
-            if (pos.x >= room.memory.caveMap[0][x] &&
-                pos.x <  room.memory.caveMap[0][x + 1])
-            {
-                cidx = x;
-                break;
-            }
-        }
-
-        for (var y = 0; y < room.memory.caveMap[1].length - 1; ++y)
-        {
-            if (pos.y >= room.memory.caveMap[1][y] &&
-                pos.y <  room.memory.caveMap[1][y + 1])
-            {
-                cidx = cidx + (room.memory.caveMap[0].length - 1) * y;
-                break;
-            }
-        }
-
-        creeps[i].cidx = cidx;
     }
 };
 
