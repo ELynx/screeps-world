@@ -6,12 +6,18 @@ var controllerController = new Controller('controller');
 
 controllerController.actRange = 3;
 
+controllerController.extra = 10; // max number of calls to upgradeController
+
 controllerController.act = function(controller, creep)
 {
-    // TODO check downgrade time
-    creep.upgradeController(controller);
+    const rc = creep.upgradeController(controller);
 
-    return false; //not sticky, otherwise restockable creeps stuck at this task
+    if (rc == OK)
+    {
+        return --creep.memory.xtra >= 0;
+    }
+
+    return false; 
 };
 
 controllerController.staticTargets = function(room)

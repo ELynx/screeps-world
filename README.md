@@ -20,6 +20,7 @@ dist - connected to official server
 (Economy)    Fill memory only when needed.
 (Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
 (Economy)    Repair controller not spending much on roads on walls.
+(Economy)    Controller 'red alert' to handle urgent business but sleep otherwise.
 
 # Ideas
 Withdraw from enemy structures.
