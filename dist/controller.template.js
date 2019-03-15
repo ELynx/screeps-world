@@ -134,10 +134,23 @@ function Controller(id)
     {
         for (var i = 0; i < creeps.length; ++i)
         {
-            if (creeps[i].memory.rstk == true)
+            const creep = creeps[i];
+
+            if (creep.room._hasRestockers_ !== undefined)
             {
+                return creep.room._hasRestockers_;
+            }
+
+            if (creep.memory.rstk == true)
+            {
+                creep.room._hasRestockers_ = true;
                 return true;
             }
+        }
+
+        if (creeps.length > 0)
+        {
+            creeps[0].room._hasRestockers_ = false;
         }
 
         return false;

@@ -158,7 +158,8 @@ var roomActor =
     {
         // TODO calculate room level less often
         room._level_ = this.roomLevel(room);
-        room._debugY_ = 0;
+        room._debugY_ = undefined;
+        room._hasRestockers_ = undefined;
 
         // arbitrary scope
         {

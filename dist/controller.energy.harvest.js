@@ -11,19 +11,8 @@ energyHarvestController.actRange = 1;
 
 energyHarvestController.smartTargeting = true; // since sources are crowded
 
-/**
-Prepare for new room.
-Special, unset strategy flag.
-@param {Room} room.
-**/
-energyHarvestController.roomPrepare = function(room)
-{
-    this.hasRestockers = false;
-};
-
 energyHarvestController.observeAllCreeps = function(creeps)
 {
-    // TODO cache for room / loop
     this.hasRestockers = this.checkRestockers(creeps);
 };
 
