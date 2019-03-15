@@ -6,7 +6,11 @@ var controllerController = new Controller('controller');
 
 controllerController.actRange = 3;
 
-controllerController.extra = 10; // max number of calls to upgradeController
+controllerController.extra = function(controller)
+{
+    // max number of calls to upgradeController
+    return 10;
+};
 
 controllerController.act = function(controller, creep)
 {

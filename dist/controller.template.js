@@ -17,11 +17,11 @@ function Controller(id)
     Range at which `act` can be used.
     **/
     this.actRange = 1;
-    
+
     /**
     Extra value set at start and used by `act'.
     **/
-    this.extra = undefined;a
+    this.extra = undefined;
 
     /**
     Flag to check reach-ability of target in expensive hardcode way.
@@ -485,7 +485,9 @@ function Controller(id)
 
             if (target)
             {
-                globals.assignCreep(this, target, creep, this.extra);
+                const extra = this.extra ? this.extra(target) : undefined;
+
+                globals.assignCreep(this, target, creep, extra);
                 creeps.splice(i, 1);
 
                 ++assigned;
