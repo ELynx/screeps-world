@@ -112,13 +112,13 @@ const doSpawn = function(spawn, type, level)
             {
                 memory:
                 {
+                    // 'undefined' is not using memory
                     ctrl: globals.NO_CONTROL,
                     dest: globals.NO_DESTINATION,
                     dact: globals.NO_ACT_RANGE,
                     xtra: globals.NO_EXTRA,
                     btyp: type,
                     levl: level,
-                    // TODO if defined
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
                 }

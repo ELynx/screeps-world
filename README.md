@@ -15,7 +15,6 @@ dist - connected to official server
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
 (Economy)    Cache room level.
-(Economy)    Fill memory only when needed.
 (Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
 (Economy)    Controller 'Red Alert' to handle urgent business but sleep otherwise.
 
