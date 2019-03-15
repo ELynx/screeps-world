@@ -10,6 +10,11 @@ ttlController.actRange = 1;
 
 ttlController.act = function(spawn, creep)
 {
+    var recycle = false;
+    var renew = false;
+    var rc = false;
+
+
     // TODO how to know if needed
     //if (needed count is greater than present)
     //{
@@ -19,30 +24,45 @@ ttlController.act = function(spawn, creep)
     // if from previous level
     if (creep.memory.levl < creep.room._level_)
     {
-        return spawn.recycleCreep(creep) == OK;
+        recycle = true;
     }
-
     // TODO mix with healing
     // if has disabled body parts
-    if (creep.hitsMax - creep.hits > 99)
+    else if (creep.hitsMax - creep.hits > 99)
     {
-        return spawn.recycleCreep(creep) == OK;
+        recycle = true;
     }
-
     // renewal part
-
     // if controller started to spawn at the same time wait for it
-    if (spawn.spawning)
+    else if (spawn.spawning)
     {
         if (creep.ticksToLive < 2)
         {
-            return spawn.recycleCreep(creep) == OK;
+            recycle = true;
         }
-
-        return true;
+        else
+        {
+            rc = true;
+        }
     }
 
-    return spawn.renewCreep(creep) == OK;
+    // donate while here
+    if (spawn.energy < spawn.energyCapacity && creep.carry.energy > 0)
+    {
+        creep.transfer(spawn, RESOURCE_ENERGY);
+    }
+
+    if (recycle)
+    {
+        rc = spawn.recycleCreep(creep) == OK;
+    }
+
+    if (renew)
+    {
+        rc = spawn.renewCreep(creep) == OK;
+    }
+
+    return rc;
 };
 
 ttlController.staticTargets = function(room)
@@ -64,7 +84,7 @@ ttlController.filterCreep = function(creep)
     if (creep.hitsMax - creep.hits > 99)
     {
         return true;
-    }    
+    }
 
     return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
 };
