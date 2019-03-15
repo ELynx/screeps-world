@@ -13,9 +13,8 @@ const TargetBarrierHp = [
 
 const TargetRoadHpMultiplier = [
     0.0,
-    0.33,
-    0.5,
-    0.66
+    0.16,
+    0.33
 ];
 
 const TargetStructureHpMultiplier = [

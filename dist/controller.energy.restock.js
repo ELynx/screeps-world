@@ -4,6 +4,7 @@ var Controller = require('controller.template');
 
 var energyRestockController = new Controller('energy.restock');
 
+// STRATEGY coefficient for restocking
 const DynamicRestock = 0.1;
 const TowerRestock   = 0.9;
 

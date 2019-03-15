@@ -8,7 +8,7 @@ controllerController.actRange = 3;
 
 controllerController.extra = function(controller)
 {
-    // max number of calls to upgradeController
+    // STRATEGY maximum number of upgradeController calls per assignment
     return 10;
 };
 
