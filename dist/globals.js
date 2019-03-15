@@ -3,11 +3,6 @@
 var globals =
 {
     /**
-    Cache that is used inside one loop.
-    **/
-    loopCache: { },
-
-    /**
     Object holding references to all registered room controllers.
     **/
     roomControllers: { },
@@ -33,17 +28,6 @@ var globals =
     verbose: false,
 
     /**
-    Clear debug info cache.
-    **/
-    debugReset: function()
-    {
-        if (this.verbose)
-        {
-            this.loopCache.roomDebug = { };
-        }
-    },
-
-    /**
     Print a message to room overlay.
     @param {Room} room.
     @param {string} what.
@@ -52,11 +36,11 @@ var globals =
     {
         if (this.verbose)
         {
-            var index = this.loopCache.roomDebug[room.id] || 0;
+            var index = room._debugY_ || 0;
 
             room.visual.text(what, 0, index++, { align: 'left' });
 
-            this.loopCache.roomDebug[room.id] = index;
+            room._debugY_ = index;
         }
     },
 
