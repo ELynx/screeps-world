@@ -71,6 +71,7 @@ var globals =
     NO_CONTROL: '',
     NO_DESTINATION: '',
     NO_ACT_RANGE: undefined,
+    NO_EXTRA: undefined,
 
     /**
     @param {Creep} creep.
@@ -96,11 +97,12 @@ var globals =
     @param {???} target.
     @param {Creep} creep.
     **/
-    assignCreep: function(controller, target, creep)
+    assignCreep: function(controller, target, creep, extra)
     {
         creep.memory.ctrl = controller.id;
         creep.memory.dest = target.id;
         creep.memory.dact = controller.actRange;
+        creep.memory.xtra = extra;
     },
 
     /**
@@ -112,6 +114,7 @@ var globals =
         creep.memory.ctrl = this.NO_CONTROL;
         creep.memory.dest = this.NO_DESTINATION;
         creep.memory.dact = this.NO_ACT_RANGE;
+        creep.memory.xtra = this.NO_EXTRA;
     },
 
     /**
