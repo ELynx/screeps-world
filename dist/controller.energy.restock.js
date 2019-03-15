@@ -14,9 +14,6 @@ energyRestockController.restockable = undefined;
 energyRestockController.roomPrepare = function(room)
 {
     this._prepareExcludedTargets(room);
-
-    this.hasRestockers = false;
-    this.restockable = [];
 };
 
 energyRestockController.observeMyCreep = function(creep)
@@ -26,8 +23,8 @@ energyRestockController.observeMyCreep = function(creep)
 
 energyRestockController.observeAllCreeps = function(creeps)
 {
-    // TODO cache for room / loop
     this.hasRestockers = this.checkRestockers(creeps);
+    this.restockable = [];
 
     for (var i = 0; i < creeps.length; ++i)
     {
