@@ -391,6 +391,8 @@ function Controller(id)
         return targets;
     };
 
+    this._needEnergetic = undefined;
+
     /**
     Creep that has some energy.
     @param {Creep} creep to look at.
@@ -398,8 +400,12 @@ function Controller(id)
     **/
     this._creepHasEnergy = function(creep)
     {
+        this._needEnergetic = true;
+
         return creep.carry.energy > 0;
     };
+
+    this._filterEnergetic = undefined;
 
     /**
     Default implementation.
@@ -408,6 +414,8 @@ function Controller(id)
     **/
     this.filterCreep = function(creep)
     {
+        this._filterEnergetic = true;
+
         return this._creepHasEnergy(creep);
     };
 
@@ -499,6 +507,15 @@ function Controller(id)
     {
         this.debugHeader(room);
 
+        if (this._needEnergetic)
+        {
+            if (room._hasEnergetic_ == false)
+            {
+                this.debugLine(room, 'Fast exit, no creeps with energy');
+                return roomCreeps;
+            }
+        }
+
         var creepMatch = [];
         var creepSkip  = [];
 
@@ -516,7 +533,16 @@ function Controller(id)
 
         if (creepMatch.length == 0)
         {
-            this.debugLine(room, 'No creeps found');
+            if (this._filterEnergetic)
+            {
+                room._hasEnergetic_ = false;
+                this.debugLine(room, 'No creeps with energy found');
+            }
+            else
+            {
+                this.debugLine(room, 'No creeps found');
+            }
+
             return roomCreeps;
         }
 
@@ -528,6 +554,12 @@ function Controller(id)
         }
         else
         {
+            if (this._filterEnergetic)
+            {
+                room._hasEnergetic_ = false;
+                this.debugLine(room, 'All creeps with energy are used');
+            }
+
             return creepSkip;
         }
     };

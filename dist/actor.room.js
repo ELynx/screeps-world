@@ -160,6 +160,7 @@ var roomActor =
         room._level_ = this.roomLevel(room);
         room._debugY_ = undefined;
         room._hasRestockers_ = undefined;
+        room._hasEnergetic_ = undefined;
 
         // arbitrary scope
         {
