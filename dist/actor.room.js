@@ -85,7 +85,7 @@ const roomControllersControl = function(room, creeps)
         // if all creeps had been taken
         if (creeps.length == 0)
         {
-            globals.roomDebug(room, 'All creeps assigned after controller <' + id + '>');
+            globals.roomDebug(room, 'All creeps assigned after controller [' + id + ']');
             return;
         }
         else
