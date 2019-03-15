@@ -2,13 +2,12 @@
 
 var globals = require('globals');
 
-/**
-Order of load is order of call.
-**/
-
 var mapProcess              = require('process.map');
 var spawnProcess            = require('process.spawn');
 
+/**
+Order of load is priority order for creep assignment.
+**/
 var ttlController           = require('controller.ttl');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
@@ -22,9 +21,9 @@ Prepare controllers for next room.
 **/
 const roomControllersPrepare = function(room)
 {
-    for (const id in globals.roomControllers)
+    for (const id in globals.roomControllersPrepare)
     {
-        globals.roomControllers[id].roomPrepare(room);
+        globals.roomControllersPrepare[id].roomPrepare(room);
     }
 };
 
@@ -166,7 +165,8 @@ var roomActor =
         // arbitrary scope
         {
             roomControllersPrepare(room);
-        } // end of arbitrary scope
+        }
+        // end of arbitrary scope
 
         const roomCreeps = room.find(FIND_MY_CREEPS);
         var unassignedCreeps = [];
@@ -238,12 +238,13 @@ var roomActor =
             globals.roomDebug(room, '-> resting      ' + resting);
             globals.roomDebug(room, '-> moving       ' + moving);
             globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
-        } // end of arbitrary scope
+        }
+        // end of arbitrary scope
 
         // arbitrary scope
         {
             // manually provide creeps to processes
-            mapProcess.work(room, undefined);
+            mapProcess.work(room);
             spawnProcess.work(room, roomCreeps);
 
             if (unassignedCreeps.length > 0)
@@ -252,7 +253,8 @@ var roomActor =
 
                 roomControllersControl(room, unassignedCreeps);
             }
-        } // end of arbitrary scope
+        }
+        // end of arbitrary scope
     } // end of act method
 };
 

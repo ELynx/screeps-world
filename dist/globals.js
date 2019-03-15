@@ -13,6 +13,11 @@ var globals =
     roomControllers: { },
 
     /**
+    Object holding references to room controllers that want to prepare for the room.
+    **/
+    roomControllersPrepare: { },
+
+    /**
     Object holding references to room controllers that care for their creeps.
     **/
     roomControllersObserveOwn: { },
@@ -62,6 +67,11 @@ var globals =
     registerRoomController: function(controller)
     {
         this.roomControllers[controller.id] = controller;
+
+        if (controller.roomPrepare)
+        {
+            this.roomControllersPrepare[controller.id] = controller;
+        }
 
         if (controller.observeMyCreep)
         {
