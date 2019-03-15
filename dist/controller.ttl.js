@@ -14,7 +14,6 @@ ttlController.act = function(spawn, creep)
     var renew = false;
     var rc = false;
 
-
     // TODO how to know if needed
     //if (needed count is greater than present)
     //{
@@ -44,6 +43,10 @@ ttlController.act = function(spawn, creep)
         {
             rc = true;
         }
+    }
+    else
+    {
+        renew = true;
     }
 
     // donate while here
