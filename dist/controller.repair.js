@@ -35,6 +35,11 @@ const fromArray = function(from, index)
 
 repairController.actRange = 3;
 
+repairController.extra = function(structure)
+{
+    return structure._targetHp_;
+}
+
 repairController.roomPrepare = function(room)
 {
     this._prepareExcludedTargets(room);
@@ -47,12 +52,12 @@ repairController.observeMyCreep = function(creep)
 
 repairController.act = function(target, creep)
 {
-    if (target.hits >= target.hitsMax)
+    if (target.hits >= target.hitsMax ||
+        target.hits >= creep.memory.xtra)
     {
         return false;
     }
 
-    // TODO sticky until target hp or error
     return creep.repair(target) == OK;
 };
 
@@ -63,7 +68,6 @@ repairController.dynamicTargets = function(room, creep)
         return [];
     }
 
-    // TODO roads over walls cost too much, repair strategy
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             room._level_);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room._level_);
@@ -79,17 +83,33 @@ repairController.dynamicTargets = function(room, creep)
                 return false;
             }
 
-            if (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART)
+            if (structure.structureType == STRUCTURE_WALL ||
+                structure.structureType == STRUCTURE_RAMPART)
             {
-                return structure.hits < barrHp;
+                if (structure.hits < barrHp)
+                {
+                    structure._targetHp_ = barrHp;
+                    return true;
+                }
             }
             else if (structure.structureType == STRUCTURE_ROAD)
             {
-                return structure.hits < /*Math.ceil(*/structure.hitsMax * roadMult/*)*/;
+                const hp = Math.ceil(structure.hitsMax * roadMult);
+                if (structure.hits < hp)
+                {
+                    structure._targetHp_ = hp;
+                    return true;
+                }
             }
             else if (structure.my)
             {
-                return structure.hits < /*Math.ceil(*/structure.hitsMax * otherMult/*)*/;
+                const hp = Math.ceil(structure.hitsMax * otherMult);
+
+                if (structure.hits < hp)
+                {
+                    structure._targetHp_ = hp;
+                    return true;
+                }
             }
 
             return false;
