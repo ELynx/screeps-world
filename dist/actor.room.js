@@ -181,6 +181,7 @@ var roomActor =
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 var creep = roomCreeps[i];
+                creep._cidx_ = undefined;
 
                 if (globals.creepAssigned(creep))
                 {

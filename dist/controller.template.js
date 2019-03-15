@@ -277,7 +277,7 @@ function Controller(id)
     **/
     this._lookAroundCreep = function(room, lookForType, filter, creep)
     {
-        if (!creep.cidx)
+        if (!creep._cidx_)
         {
             const pos = creep.pos;
 
@@ -303,7 +303,7 @@ function Controller(id)
                 }
             }
 
-            creep.cidx = cidx;
+            creep._cidx_ = cidx;
         }
 
         // TODO cave navigation
@@ -338,7 +338,7 @@ function Controller(id)
         [ 0,  1,  5,  6,  2, 10,  7, 11, 12,  3, 15,  8, 16, 13, 17, 18,  4, 20,  9, 21, 14, 22, 19, 23, 24]
                                                                                                            ];
 
-        const NavigationRoute = Magic[creep.cidx];
+        const NavigationRoute = Magic[creep._cidx_];
 
         for (var ridx = 0; ridx < NavigationRoute.length; ++ridx)
         {
