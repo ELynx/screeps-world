@@ -29,26 +29,12 @@ function Controller(id)
     this._excludedTargets = undefined;
 
     /**
-    Shortcut to current room level.
-    **/
-    this.roomLevel = undefined;
-
-    /**
     Clear room target cache.
     **/
     this._prepareExcludedTargets = function(room)
     {
         this._excludedTargets = [];
     };
-
-    /**
-    Get room level to shortcut.
-    **/
-    this._prepareRoomLevel = function(room)
-    {
-        // TODO direct?
-        this.roomLevel = room._level_;
-    }
 
     /**
     Prepare for new room.

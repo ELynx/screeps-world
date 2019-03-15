@@ -132,7 +132,7 @@ spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    var level = globals.loopCache[room.name].level;
+    var level = room._level_;
 
     if (level == 0)
     {

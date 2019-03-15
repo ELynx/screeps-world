@@ -8,11 +8,6 @@ const TypeTtL = [50, 50];
 
 ttlController.actRange = 1;
 
-ttlController.roomPrepare = function(room)
-{
-    this._prepareRoomLevel(room);
-};
-
 ttlController.act = function(spawn, creep)
 {
     // TODO how to know if needed
@@ -22,7 +17,7 @@ ttlController.act = function(spawn, creep)
     //}
 
     // if from previous level
-    if (creep.memory.levl < this.roomLevel)
+    if (creep.memory.levl < creep.room._level_)
     {
         return spawn.recycleCreep(creep) == OK;
     }
