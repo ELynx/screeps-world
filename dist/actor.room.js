@@ -157,10 +157,8 @@ var roomActor =
     act: function(room)
     {
         // TODO calculate room level less often
-        globals.loopCache[room.name] =
-        {
-            level: this.roomLevel(room)
-        };
+        room._level_ = this.roomLevel(room);
+        room._debugY_ = 0;
 
         // arbitrary scope
         {

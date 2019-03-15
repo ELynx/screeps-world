@@ -46,7 +46,8 @@ function Controller(id)
     **/
     this._prepareRoomLevel = function(room)
     {
-        this.roomLevel = globals.loopCache[room.name].level;
+        // TODO direct?
+        this.roomLevel = room._level_;
     }
 
     /**
