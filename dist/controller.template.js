@@ -279,6 +279,35 @@ function Controller(id)
     **/
     this._lookAroundCreep = function(room, lookForType, filter, creep)
     {
+        if (!creep.cidx)
+        {
+            const pos = creep.pos;
+
+            var cidx = 0;
+
+            for (var x = 0; x < room.memory.caveMap[0].length - 1; ++x)
+            {
+                if (pos.x >= room.memory.caveMap[0][x] &&
+                    pos.x <  room.memory.caveMap[0][x + 1])
+                {
+                    cidx = x;
+                    break;
+                }
+            }
+
+            for (var y = 0; y < room.memory.caveMap[1].length - 1; ++y)
+            {
+                if (pos.y >= room.memory.caveMap[1][y] &&
+                    pos.y <  room.memory.caveMap[1][y + 1])
+                {
+                    cidx = cidx + (room.memory.caveMap[0].length - 1) * y;
+                    break;
+                }
+            }
+
+            creep.cidx = cidx;
+        }
+
         // TODO cave navigation
 
         // TODO fill in routes

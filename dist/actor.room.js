@@ -243,7 +243,7 @@ var roomActor =
         // arbitrary scope
         {
             // manually provide creeps to processes
-            mapProcess.work(room, unassignedCreeps);
+            mapProcess.work(room, undefined);
             spawnProcess.work(room, roomCreeps);
 
             if (unassignedCreeps.length > 0)
