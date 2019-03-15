@@ -12,15 +12,12 @@ dist - connected to official server
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
-(Economy)    Controller upgarde counter, repair HP target.
 (Economy)    Move creeps from construction sites (see log of controller.build).
-(Economy)    Controller controller check downgrade timer.
 (Economy)    Number of creeps per type needed by room.
 (Economy)    Cache room level.
 (Economy)    Fill memory only when needed.
 (Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
-(Economy)    Repair controller not spending much on roads on walls.
-(Economy)    Controller 'red alert' to handle urgent business but sleep otherwise.
+(Economy)    Controller 'Red Alert' to handle urgent business but sleep otherwise.
 
 # Ideas
 Withdraw from enemy structures.
@@ -36,7 +33,7 @@ Dynamic creep life:
 --> if level is less than current recycle;
 --> otherwise renew;
 --> spawn started to spawn creep can wait by return true.
---> TODO give energy to spawn while nearby.
+--> give energy to spawn while nearby.
 
 Temporary creeps, e.g. role Heal, spawned if there are broken creeps:
 -> spawn on demand;
