@@ -38,7 +38,6 @@ repairController.actRange = 3;
 repairController.roomPrepare = function(room)
 {
     this._prepareExcludedTargets(room);
-    this._prepareRoomLevel(room);
 };
 
 repairController.observeMyCreep = function(creep)
@@ -59,16 +58,16 @@ repairController.act = function(target, creep)
 
 repairController.dynamicTargets = function(room, creep)
 {
-    if (this.roomLevel == 0)
+    if (room._level_ == 0)
     {
         return [];
     }
 
     // TODO roads over walls cost too much, repair strategy
     // STRATEGY don't run with every booboo
-    const barrHp    = fromArray(TargetBarrierHp,             this.roomLevel);
-    const roadMult  = fromArray(TargetRoadHpMultiplier,      this.roomLevel);
-    const otherMult = fromArray(TargetStructureHpMultiplier, this.roomLevel);
+    const barrHp    = fromArray(TargetBarrierHp,             room._level_);
+    const roadMult  = fromArray(TargetRoadHpMultiplier,      room._level_);
+    const otherMult = fromArray(TargetStructureHpMultiplier, room._level_);
 
     return this._lookAroundCreep(
         room,
