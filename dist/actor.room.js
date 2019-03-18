@@ -168,7 +168,23 @@ var roomActor =
         }
         // end of arbitrary scope
 
-        const roomCreeps = room.find(FIND_MY_CREEPS);
+        var roomCreeps = [];
+
+        for (const name in Game.creeps)
+        {
+            var creep = Game.creeps[name];
+
+            if (!creep.memory.crum)
+            {
+                creep.memory.crum = room.name;
+                roomCreeps.push(creep);
+            }
+            else if (creep.memory.crum == room.name)
+            {
+                roomCreeps.push(creep);
+            }
+        }
+
         var unassignedCreeps = [];
 
         // arbitrary scope
