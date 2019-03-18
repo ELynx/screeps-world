@@ -62,15 +62,15 @@ repairController.act = function(target, creep)
 
 repairController.dynamicTargets = function(room, creep)
 {
-    if (room._level_ == 0)
+    if (room.memory.elvl == 0)
     {
         return [];
     }
 
     // STRATEGY don't run with every booboo
-    const barrHp    = fromArray(TargetBarrierHp,             room._level_);
-    const roadMult  = fromArray(TargetRoadHpMultiplier,      room._level_);
-    const otherMult = fromArray(TargetStructureHpMultiplier, room._level_);
+    const barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
+    const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
+    const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl);
 
     return this._lookAroundCreep(
         room,
