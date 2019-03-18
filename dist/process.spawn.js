@@ -113,6 +113,7 @@ const doSpawn = function(spawn, type, level)
                 memory:
                 {
                     // 'undefined' is not using memory
+                    crum: spawn.room.name,
                     ctrl: globals.NO_CONTROL,
                     dest: globals.NO_DESTINATION,
                     dact: globals.NO_ACT_RANGE,

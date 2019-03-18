@@ -8,7 +8,6 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-(Multiroom)  Creep keeps room ID for spawn calculations.
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
