@@ -21,7 +21,7 @@ ttlController.act = function(spawn, creep)
     //}
 
     // if from previous level
-    if (creep.memory.levl < creep.room._level_)
+    if (creep.memory.levl < spawn.room.memory.elvl)
     {
         recycle = true;
     }

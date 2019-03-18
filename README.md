@@ -13,7 +13,6 @@ dist - connected to official server
 (Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
-(Economy)    Cache room level.
 (Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
 (Economy)    Parse event log to recalculate room level only in case of changes.
 

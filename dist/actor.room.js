@@ -157,8 +157,13 @@ var roomActor =
     **/
     act: function(room)
     {
-        // TODO calculate room level less often
-        room._level_ = this.roomLevel(room);
+        if (room.memory.intl < Game.time + 33)
+        {
+            room.memory.elvl = this.roomLevel(room);
+
+            room.memory.intl = Game.time;
+        }
+
         room._debugY_ = undefined;
         room._hasRestockers_ = undefined;
         room._hasEnergetic_ = undefined;

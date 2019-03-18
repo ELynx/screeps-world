@@ -134,7 +134,7 @@ spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    var level = room._level_;
+    var level = room.memory.elvl;
 
     if (level == 0)
     {
