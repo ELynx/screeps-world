@@ -12,46 +12,49 @@ module.exports.loop = function ()
 
     memoryManager.cleanup();
 
-    roomActor.act(Game.rooms['sim']);
-
-    ////});
-
-    // temporary, just activate tower(s)
-    // <<
+    for(const name in Game.rooms)
     {
-        const towers = Game.rooms['sim'].find(FIND_MY_STRUCTURES,
-            {
-                filter: function(structure)
-                {
-                    return structure.structureType == STRUCTURE_TOWER;
-                }
-            }
-        );
+        roomActor.act(Game.rooms[name]);
 
-        for (var i = 0; i < towers.length; ++i)
+        ////});
+
+        // temporary, just activate tower(s)
+        // <<
         {
-            const closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-            if(closestHostile)
-            {
-                towers[i].attack(closestHostile);
-                continue;
-            }
-
-            const damagedCreep = towers[i].pos.findClosestByRange(FIND_MY_CREEPS,
+            const towers = Game.rooms[name].find(FIND_MY_STRUCTURES,
                 {
-                    filter: function(creep)
+                    filter: function(structure)
                     {
-                        return creep.hits < creep.hitsMax;
+                        return structure.structureType == STRUCTURE_TOWER;
                     }
                 }
             );
 
-            if (damagedCreep)
+            for (var i = 0; i < towers.length; ++i)
             {
-                towers[i].heal(damagedCreep);
-                continue;
+                const closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                if(closestHostile)
+                {
+                    towers[i].attack(closestHostile);
+                    continue;
+                }
+
+                const damagedCreep = towers[i].pos.findClosestByRange(FIND_MY_CREEPS,
+                    {
+                        filter: function(creep)
+                        {
+                            return creep.hits < creep.hitsMax;
+                        }
+                    }
+                );
+
+                if (damagedCreep)
+                {
+                    towers[i].heal(damagedCreep);
+                    continue;
+                }
             }
         }
+        // >>
     }
-    // >>
 }
