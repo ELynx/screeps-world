@@ -184,12 +184,7 @@ var roomActor =
             {
                 var creep = Game.creeps[name];
 
-                if (!creep.memory.crum)
-                {
-                    creep.memory.crum = room.name;
-                    roomCreeps.push(creep);
-                }
-                else if (creep.memory.crum == room.name)
+                if (creep.memory.crum == room.name)
                 {
                     roomCreeps.push(creep);
                 }
