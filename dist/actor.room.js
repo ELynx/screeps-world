@@ -204,16 +204,22 @@ var roomActor =
                 // hotplug - grab resources nearby
                 if (creep._sumcarry_ < creep.carryCapacity)
                 {
-                    const res = creep.pos.findInRange(FIND_DROPPED_ENERGY, 1);
-                    if (res.length > 0)
-                    {
-                        creep.pickup(res[0]);
+                    const res = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 1);
 
-                        // TODO integrate
-                        // hotplug 2 - don't go with harvest
-                        if (creep.memory.ctrl == energyHarvestController.id)
+                    for (var k = 0; k < res.length; ++k)
+                    {
+                        if (res[k].resourceType == RESOURCE_ENERGY)
                         {
-                            globals.unassignCreep(creep);
+                            creep.pickup(res[k]);
+
+                            // TODO integrate
+                            // hotplug 2 - don't go with harvest
+                            if (creep.memory.ctrl == energyHarvestController.id)
+                            {
+                                globals.unassignCreep(creep);
+                            }
+
+                            break;
                         }
                     }
                 }
