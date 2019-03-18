@@ -169,22 +169,6 @@ var roomActor =
         // end of arbitrary scope
 
         var roomCreeps = [];
-
-        for (const name in Game.creeps)
-        {
-            var creep = Game.creeps[name];
-
-            if (!creep.memory.crum)
-            {
-                creep.memory.crum = room.name;
-                roomCreeps.push(creep);
-            }
-            else if (creep.memory.crum == room.name)
-            {
-                roomCreeps.push(creep);
-            }
-        }
-
         var unassignedCreeps = [];
 
         // arbitrary scope
@@ -195,10 +179,23 @@ var roomActor =
             var resting  = 0;
             var moving   = 0;
 
-            for (var i = 0; i < roomCreeps.length; ++i)
+            for (const name in Game.creeps)
             {
-                var creep = roomCreeps[i];
+                var creep = Game.creeps[name];
 
+                if (!creep.memory.crum)
+                {
+                    creep.memory.crum = room.name;
+                    roomCreeps.push(creep);
+                }
+                else if (creep.memory.crum == room.name)
+                {
+                    roomCreeps.push(creep);
+                }
+                else
+                {
+                    continue;
+                }
 
                 creep._cidx_ = undefined;
                 creep._sumcarry_ = _.sum(creep.carry);
