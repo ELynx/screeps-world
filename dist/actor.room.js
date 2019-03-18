@@ -182,15 +182,26 @@ var roomActor =
             for (var i = 0; i < roomCreeps.length; ++i)
             {
                 var creep = roomCreeps[i];
-                creep._cidx_ = undefined;
 
+
+                creep._cidx_ = undefined;
+                creep._sumcarry_ = _.sum(creep.carry);
+
+                // TODO integrate
                 // hotplug - grab resources nearby
-                if (_.sum(creep.carry) < creep.carryCapacity)
+                if (creep._sumcarry_ < creep.carryCapacity)
                 {
                     const res = creep.pos.findInRange(FIND_DROPPED_ENERGY, 1);
                     if (res.length > 0)
                     {
                         creep.pickup(res[0]);
+
+                        // TODO integrate
+                        // hotplug 2 - don't go with harvest
+                        if (creep.memory.ctrl == energyHarvestController.id)
+                        {
+                            globals.unassignCreep(creep);
+                        }
                     }
                 }
 
