@@ -15,7 +15,6 @@ dist - connected to official server
 (Economy)    Number of creeps per type needed by room.
 (Economy)    Cache room level.
 (Economy)    Double assignment is possible when two creeps get same target in one "control" cycle.
-(Economy)    Controller 'Red Alert' to handle urgent business but sleep otherwise.
 (Economy)    Parse event log to recalculate room level only in case of changes.
 
 # Ideas

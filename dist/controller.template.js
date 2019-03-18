@@ -513,6 +513,12 @@ function Controller(id)
     {
         this.debugHeader(room);
 
+        if (this.precondition && !this.precondition(room))
+        {
+            this.debugLine(room, 'Fast exit, precondition faield');
+            return roomCreeps;
+        }
+
         if (this._needEnergetic)
         {
             if (room._hasEnergetic_ == false)
