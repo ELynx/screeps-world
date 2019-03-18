@@ -9,7 +9,7 @@ var roomActor = require('actor.room');
 module.exports.loop = function ()
 {
     //console.log('Limit ' + Game.cpu.limit);
-    //console.log('Tick limit before ' + Game.cpu.tickLimit);
+    //console.log('Tick limit ' + Game.cpu.tickLimit);
     //console.log('Bucket ' + Game.cpu.bucket);
 
     ////profiler.wrap(function() {
@@ -62,5 +62,5 @@ module.exports.loop = function ()
         // >>
     }
 
-    //console.log('Tick limit after ' + Game.cpu.tickLimit);
+    //console.log('Used ' + Game.cpu.getUsed());
 }
