@@ -184,6 +184,16 @@ var roomActor =
                 var creep = roomCreeps[i];
                 creep._cidx_ = undefined;
 
+                // hotplug - grab resources nearby
+                if (_.sum(creep.carry) < creep.carryCapacity)
+                {
+                    const res = creep.pos.findInRange(FIND_DROPPED_ENERGY, 1);
+                    if (res.length > 0)
+                    {
+                        creep.pickup(res[0]);
+                    }
+                }
+
                 if (globals.creepAssigned(creep))
                 {
                     // flag if target should be carried to next loop
