@@ -34,7 +34,7 @@ redAlert.staticTargets = function(room)
 
         if (room.controller.ticksToDowngrade < targetTicks)
         {
-            room.controller._targetTicks_ = targetTicks;
+            room.controller._targetTicks_ = 2 * targetTicks;
             return [room.controller];
         }
     }
