@@ -472,7 +472,7 @@ function Controller(id)
                     const solution = PathFinder.search(
                                 creep.pos,
                                 { pos: targets[j].pos, range: 1 },
-                                {}
+                                { maxRooms: 1, range: this.actRange }
                             );
 
                     if (!solution.incomplete)

@@ -264,7 +264,7 @@ var roomActor =
                             }
                             else
                             {
-                                keepAssignment = creep.moveTo(destination) == OK;
+                                keepAssignment = creep.moveTo(destination, { maxRooms: 1, range: creep.memory.dact }) == OK;
                                 moving = moving + keepAssignment;
                             }
                         }

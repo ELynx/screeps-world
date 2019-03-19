@@ -10,7 +10,6 @@ dist - connected to official server
 # TODO
 (Multiroom)  Use getActiveBodyparts and btyps to limit control.
 (Module WAR) "Hot" areas to avoid for worker creeps.
-(Future)     Build and repair through "airgap" - requires pathfinding with range.
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
 
