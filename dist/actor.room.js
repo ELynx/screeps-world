@@ -206,22 +206,37 @@ var roomActor =
                 // hotplug - grab resources nearby
                 if (creep._sumcarry_ < creep.carryCapacity)
                 {
+                    var wasGrabbed = false;
+
                     const res = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 1);
 
-                    for (var k = 0; k < res.length; ++k)
+                    for (var k = 0; k < res.length && !wasGrabbed; ++k)
                     {
+                        // TODO all resources, now only energy since other breaks harvest logic
                         if (res[k].resourceType == RESOURCE_ENERGY)
                         {
-                            creep.pickup(res[k]);
+                            wasGrabbed = creep.pickup(res[k]) == OK;
+                        }
+                    }
 
-                            // TODO integrate
-                            // hotplug 2 - don't go with harvest
-                            if (creep.memory.ctrl == energyHarvestController.id)
-                            {
-                                globals.unassignCreep(creep);
-                            }
+                    if (!wasGrabbed)
+                    {
+                        const tomb = creep.pos.findInRange(FIND_TOMBSTONES, 1);
 
-                            break;
+                        for (var k = 0; k < tomb.length && !wasGrabbed; ++k)
+                        {
+                            // TODO on hostile tomb on hostile rampart
+                            wasGrabbed = creep.withdraw(tomb[k]) == OK;
+                        }
+                    }
+
+                    if (wasGrabbed)
+                    {
+                        // TODO integrate
+                        // hotplug 2 - don't go with harvest
+                        if (creep.memory.ctrl == energyHarvestController.id)
+                        {
+                            globals.unassignCreep(creep);
                         }
                     }
                 }
