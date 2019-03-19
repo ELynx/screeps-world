@@ -8,7 +8,6 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-(Multiroom)  Use getActiveBodyparts and btyps to limit control.
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
@@ -16,10 +15,9 @@ dist - connected to official server
 # Ideas
 Withdraw from enemy structures.
 Dismantle enemy structures, 50 hits vs melee Attack 30 hits.
-Controller Scavenge, collect dropped resources.
 structureType might be faster than instanceof.
 PathFinder opt flee.
-Don't use new level immediately for build and repair, let creep population grow.
+moveTo has same options as PathFinder.
 
 Dynamic creep life:
 -> old creeps undergo a check;
