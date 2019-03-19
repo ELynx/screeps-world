@@ -87,7 +87,7 @@ repairController.dynamicTargets = function(room, creep)
             {
                 if (structure.hits < barrHp)
                 {
-                    structure._targetHp_ = barrHp;
+                    structure._targetHp_ = Math.ceil(1.2 * barrHp);
                     return true;
                 }
             }
