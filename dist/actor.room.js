@@ -226,7 +226,8 @@ var roomActor =
                         for (var k = 0; k < tomb.length && !wasGrabbed; ++k)
                         {
                             // TODO on hostile tomb on hostile rampart
-                            wasGrabbed = creep.withdraw(tomb[k]) == OK;
+                            // TODO all resources, now only energy since other breaks harvest logic
+                            wasGrabbed = creep.withdraw(tomb[k], RESOURCE_ENERGY) == OK;
                         }
                     }
 
