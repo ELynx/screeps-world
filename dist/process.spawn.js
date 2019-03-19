@@ -52,14 +52,8 @@ const workUniversal = function(level)
         total = 3 + ((total - 3) * 2);
     }
 
-    // cap at 50 body length
-    if (total > 12)
-    {
-        total = 12;
-    }
-
     var result = [];
-    for (var i = 0; i < total; ++i)
+    for (var i = 0; i < total && i < 12; ++i)
     {
         result = front.concat(result).concat(back);
     }
@@ -117,7 +111,7 @@ const workHeavy = function(level)
     const back =  [MOVE]; // 50 = 50
 
     var result = [];
-    for (var i = 1; i < level; ++i)
+    for (var i = 1; i < level && i < 12; ++i)
     {
         result = front.concat(result).concat(back);
     }
