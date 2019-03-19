@@ -45,7 +45,8 @@ energyHarvestController.filterCreep = function(creep)
     }
 
     // STRATEGY harvest with empty only, reduce runs to sources
-    if (creep.memory.hvst == true && (_.sum(creep.carry) == 0))
+    // maybe was checked by hotplug in room code
+    if (creep.memory.hvst == true && (creep._sumcarry_ == 0 || _.sum(creep.carry) == 0))
     {
         return true;
     }
