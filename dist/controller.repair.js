@@ -77,16 +77,24 @@ repairController.dynamicTargets = function(room, creep)
         LOOK_STRUCTURES,
         function(structure)
         {
-            if (!structure.hits)
+            if (!structure.hits || structure.hits >= structure.hitsMax)
             {
                 return false;
             }
 
-            if (structure.structureType == STRUCTURE_WALL ||
-                structure.structureType == STRUCTURE_RAMPART)
+            if (structure.structureType == STRUCTURE_WALL)
             {
                 if (structure.hits < barrHp)
                 {
+                    structure._targetHp_ = barrHp;
+                    return true;
+                }
+            }
+            else if (structure.structureType == STRUCTURE_RAMPART)
+            {
+                if (structure.hits < barrHp)
+                {
+                    // STRATEGY some histeresis
                     structure._targetHp_ = Math.ceil(1.2 * barrHp);
                     return true;
                 }
@@ -103,10 +111,10 @@ repairController.dynamicTargets = function(room, creep)
             else if (structure.my)
             {
                 const hp = Math.ceil(structure.hitsMax * otherMult);
-
                 if (structure.hits < hp)
                 {
-                    structure._targetHp_ = hp;
+                    // STRATEGY some histeresis, repair to top
+                    structure._targetHp_ = structure.hitsMax;
                     return true;
                 }
             }
