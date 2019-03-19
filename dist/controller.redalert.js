@@ -13,14 +13,13 @@ redAlert.extra = function(controller)
 
 redAlert.act = function(controller, creep)
 {
-    const rc = creep.upgradeController(controller);
-
-    if (rc == OK)
+    if (controller.ticksToDowngrade >= CONTROLLER_DOWNGRADE[controller.level] ||
+        controller.ticksToDowngrade >= creep.memory.xtra)
     {
-        return creep.memory.xtra > controller.ticksToDowngrade;
+        return false;
     }
 
-    return false;
+    return creep.upgradeController(controller) == OK;
 };
 
 redAlert.staticTargets = function(room)
@@ -34,6 +33,7 @@ redAlert.staticTargets = function(room)
 
         if (room.controller.ticksToDowngrade < targetTicks)
         {
+            // STRATEGY some histeresis
             room.controller._targetTicks_ = 2 * targetTicks;
             return [room.controller];
         }
