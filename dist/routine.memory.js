@@ -15,7 +15,7 @@ var memoryManager =
             }
         }
 
-        for(const name in Game.rooms)
+        for(const name in Memory.rooms)
         {
             if(!Game.rooms[name])
             {
