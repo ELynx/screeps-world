@@ -18,6 +18,8 @@ TOUGH           10
 CLAIM           600
 **/
 
+var _workUniversalCache_ = { };
+
 /**
 Body calculator.
 Universal worker that could do any Work and restock supplies.
@@ -31,18 +33,43 @@ const workUniversal = function(level)
         return [];
     }
 
-    // total 250 per level
+    const cacheHit = _workUniversalCache_[level];
+
+    if (cacheHit)
+    {
+        return cacheHit;
+    }
+
+    // total 250 per iteration
     const front = [WORK,  MOVE]; // 150 = 100 50
     const back =  [CARRY, MOVE]; // 100 = 50 50
 
+    var total = level;
+
+    // above three increment in 500
+    if (total > 3)
+    {
+        total = 3 + ((total - 3) * 2);
+    }
+
+    // cap at 50 body length
+    if (total > 12)
+    {
+        total = 12;
+    }
+
     var result = [];
-    for (var i = 0; i < level; ++i)
+    for (var i = 0; i < total; ++i)
     {
         result = front.concat(result).concat(back);
     }
 
+    _workUniversalCache_[level] = result;
+
     return result;
 };
+
+var _workHeavyCache_ = { };
 
 /**
 Body calculator.
@@ -71,8 +98,22 @@ const workHeavy = function(level)
         return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE];
     }
 
-    // for level 3 and above 400 energy per level above 1
-    const front = [WORK, WORK, CARRY, CARRY, CARRY]; // 350 = 100 100 50 50 50
+    // for level 3 stay within 800 energy
+    if (level == 3)
+    {
+        // 800  100   100   100   100   100   50     50     50     50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+    }
+
+    const cacheHit = _workHeavyCache_[level];
+
+    if (cacheHit)
+    {
+        return cacheHit;
+    }
+
+    // for level 4 and above 300 energy per level
+    const front = [WORK, WORK, CARRY]; // 250 = 100 100 50
     const back =  [MOVE]; // 50 = 50
 
     var result = [];
@@ -80,6 +121,33 @@ const workHeavy = function(level)
     {
         result = front.concat(result).concat(back);
     }
+
+    // stuff -> work -> carry -> move
+    const bpMap = function(bp)
+    {
+        if (bp == WORK)
+            return 1;
+
+        if (bp == CARRY)
+            return 2;
+
+        if (bp == MOVE)
+            return 3;
+
+        return 0;
+    };
+
+    result.sort(
+        function(bp1, bp2)
+        {
+            if (bp1 == bp2)
+                return 0;
+
+            return bpMap(bp1) - bpMap(bp2);
+        }
+    );
+
+    _workHeavyCache_[level] = result;
 
     return result;
 };
@@ -90,8 +158,8 @@ const TypeRestock = [ true,          false     ];
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
                     [ 6,             2         ], // level 1
-                    [ 9,             3         ], // level 2
-                    [ 12,            4         ]  // level 3
+                    [ 8,             3         ], // level 2
+                    [ 10,            4         ]  // level 3, crowd enough
                                                ];
 
 /**
@@ -134,22 +202,23 @@ spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    var level = room.memory.elvl;
+    const elvl = room.memory.elvl;
 
-    if (level == 0)
+    if (elvl == 0)
     {
         return;
     }
 
     // cap off at defined
-    if (level >= TypeCount.length)
+    var mobLevel = elvl;
+    if (mobLevel >= TypeCount.length)
     {
-        level = TypeCount.length - 1;
+        mobLevel = TypeCount.length - 1;
     }
 
     // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
     // quick check - by # of creeps
-    if (creeps.length >= _.sum(TypeCount[level]))
+    if (creeps.length >= _.sum(TypeCount[mobLevel]))
     {
         this.debugLine(room, 'Creep # is enough, no detail check');
         return;
@@ -171,7 +240,7 @@ spawnProcess.work = function(room, creeps)
     }
 
     // copy array
-    var creepsNeeded = TypeCount[level].slice(0);
+    var creepsNeeded = TypeCount[mobLevel].slice(0);
 
     for (var i = 0; i < creeps.length; ++i)
     {
@@ -189,7 +258,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = doSpawn(spawns[i], type, level);
+                spawned = doSpawn(spawns[i], type, elvl);
             }
         }
 

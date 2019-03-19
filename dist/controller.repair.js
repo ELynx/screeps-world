@@ -8,7 +8,8 @@ const TargetBarrierHp = [
     0,
     5000,
     10000,
-    15000
+    15000,
+    20000
 ];
 
 const TargetRoadHpMultiplier = [

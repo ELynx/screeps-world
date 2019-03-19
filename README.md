@@ -11,6 +11,7 @@ dist - connected to official server
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
+(Economy)    Number of creeps depend on source #.
 
 # Ideas
 Withdraw from enemy structures.

@@ -135,7 +135,8 @@ var roomActor =
 
             if (energyCapacity >= 800)
             {
-                return 3;
+                // above 800 (aka full built RCL 3) go in increments of 500
+                return Math.floor((energyCapacity - 799) / 500) + 3;
             }
 
             if (energyCapacity >= 550)
