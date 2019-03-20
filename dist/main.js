@@ -139,7 +139,7 @@ module.exports.loop = function ()
                 Memory.pestering = false;
             }
 
-            if (pest.carry.energy < pest.carryCapacity)
+            if (pest.carry.energy < pest.carryCapacity && pest.ticksToLive > 100)
             {
                 if (pest.pos.roomName == 'E38N1')
                 {
@@ -205,6 +205,11 @@ module.exports.loop = function ()
                         if (pest.pos.inRangeTo(dropPoint, 2))
                         {
                             pest.drop(RESOURCE_ENERGY);
+
+                            if (pest.ticksToLive < 100)
+                            {
+                                pest.suicide();
+                            }
                         }
                         else
                         {
