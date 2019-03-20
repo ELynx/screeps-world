@@ -4,6 +4,7 @@ var globals = require('globals');
 
 var mapProcess              = require('process.map');
 var spawnProcess            = require('process.spawn');
+var psychoWarfare           = require('actor.psychowarfare');
 
 /**
 Order of load is priority order for creep assignment.
@@ -306,6 +307,7 @@ var roomActor =
             // manually provide creeps to processes
             mapProcess.work(room);
             spawnProcess.work(room, roomCreeps);
+            //psychoWarfare.act(roomCreeps);
 
             if (unassignedCreeps.length > 0)
             {

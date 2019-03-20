@@ -49,12 +49,10 @@ var psychoWarfareActor =
     index: 0,
 
     /**
-    @param {Room} room
+    @param {array<Creep>} creeps
     **/
-    act: function(room)
+    act: function(creeps)
     {
-        const creeps = room.find(FIND_MY_CREEPS);
-
         if (creeps.length == 0)
             return;
 
