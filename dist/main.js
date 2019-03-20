@@ -84,7 +84,7 @@ module.exports.loop = function ()
             {
                 if (pest.pos.roomName == 'E38N1')
                 {
-                    pest.moveTo(49, 19, 'E38N1');
+                    pest.moveTo(49, 19, 'E38N1', { maxRooms: 1 });
                 }
                 else
                 {
@@ -120,19 +120,19 @@ module.exports.loop = function ()
                 {
                     if (pest.pos.roomName == 'E39N1')
                     {
-                        pest.moveTo(0, 19, 'E39N1');
+                        pest.moveTo(0, 19, 'E39N1', { maxRooms: 1 });
                     }
                     else
                     {
-                        const dropPoint = new RoomPosition(34, 8, 'E38N1');
+                        const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
 
-                        if (pest.pos.isEqualTo(dropPoint))
+                        if (pest.pos.inRangeTo(dropPoint, 2))
                         {
                             pest.drop(RESOURCE_ENERGY);
                         }
                         else
                         {
-                            pest.moveTo(dropPoint, { maxRooms: 1, plainCost: 2 });
+                            pest.moveTo(dropPoint, { maxRooms: 1, plainCost: 2, range: 2 });
                         }
                     }
                 }
