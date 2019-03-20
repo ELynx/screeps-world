@@ -61,6 +61,74 @@ module.exports.loop = function ()
         }
         // >>
 
+        // temporary code, break neighbour controller
+        // <<
+        var lad = Game.creeps['lad'];
+        if (lad)
+        {
+            if (lad.hits < lad.hitsMax)
+            {
+                Memory.pestering = false;
+            }
+
+            const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
+
+            if (ctrl)
+            {
+                if (ctrl.safeMode)
+                {
+                    Memory.pestering = false;
+                }
+
+                if (ctrl.upgradeBlocked)
+                {
+                    lad.say('Perish');
+                    lad.suicide();
+                }
+
+                if (lad.pos.isNearTo(ctrl))
+                {
+                    if (ctrl.level == 0)
+                    {
+                        lad.say('MINE');
+                        lad.claimController(ctrl);
+                    }
+                    else if (Game.gcl.level > 1)
+                    {
+                        lad.say('Do damage');
+                        lad.attackController(ctrl);
+                    }
+                    else if (ctrl.level > 2)
+                    {
+                        lad.say('Do damage');
+                        lad.attackController(ctrl);
+                    }
+                    else
+                    {
+                        lad.say('-whistle-');
+                    }
+                }
+                else
+                {
+                    lad.say('Incoming');
+                    lad.moveTo(ctrl, { maxRooms: 2 });
+                }
+            }
+        }
+        else
+        {
+            const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
+
+            if (ctrl && !ctrl.upgradeBlocked)
+            {
+                if (Memory.pestering)
+                {
+                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, CLAIM], 'lad');
+                }
+            }
+        }
+        // >>
+
         // temporary code, attack neighbour
         // <<
         var chum = Game.creeps['chum'];
