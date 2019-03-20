@@ -62,6 +62,8 @@ module.exports.loop = function ()
         // >>
 
         // temporary code, break neighbour controller
+        const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
+        
         // <<
         var lad = Game.creeps['lad'];
         if (lad)
@@ -82,8 +84,6 @@ module.exports.loop = function ()
 
                 if (ctrl.upgradeBlocked)
                 {
-                    const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
-
                     if (lad.pos.inRangeTo(dropPoint, 2))
                     {
                         lad.suicide();
@@ -147,32 +147,46 @@ module.exports.loop = function ()
                 Memory.pestering = false;
             }
 
-            const chumStand = new RoomPosition(25, 8, 'E39N1');
-
-            if (!chum.pos.isEqualTo(chumStand))
+            if (chum.ticksToLive < 100)
             {
-                chum.say('Incoming');
-                chum.moveTo(chumStand, { maxRooms: 2 });
-            }
-            else
-            {
-                if (chum.room.controller.level > 2)
+                if (chum.pos.inRangeTo(dropPoint, 2))
                 {
-                    const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 10; } });
-
-                    if (suckers.length > 0)
-                    {
-                        chum.say('Ha-ha');
-                        chum.rangedAttack(suckers[0]);
-                    }
-                    else
-                    {
-                        chum.say('Suffer');
-                    }
+                    chum.suicide();
                 }
                 else
                 {
-                    chum.say('Live for now');
+                    chum.moveTo(dropPoint, { maxRooms: 1, plainCost: 1, range: 2 });
+                }
+            }
+            else
+            {
+                const chumStand = new RoomPosition(25, 8, 'E39N1');
+
+                if (!chum.pos.isEqualTo(chumStand))
+                {
+                    chum.say('Incoming');
+                    chum.moveTo(chumStand, { maxRooms: 2 });
+                }
+                else
+                {
+                    if (chum.room.controller.level > 2)
+                    {
+                        const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 10; } });
+
+                        if (suckers.length > 0)
+                        {
+                            chum.say('Ha-ha');
+                            chum.rangedAttack(suckers[0]);
+                        }
+                        else
+                        {
+                            chum.say('Suffer');
+                        }
+                    }
+                    else
+                    {
+                        chum.say('Live for now');
+                    }
                 }
             }
         }
@@ -198,7 +212,7 @@ module.exports.loop = function ()
             {
                 if (Memory.pestering)
                 {
-                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, MOVE, MOVE, MOVE, MOVE], pestNames[i]);
+                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], pestNames[i]);
                 }
 
                 continue;
@@ -275,8 +289,6 @@ module.exports.loop = function ()
                     }
                     else
                     {
-                        const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
-
                         if (pest.pos.inRangeTo(dropPoint, 2))
                         {
                             pest.drop(RESOURCE_ENERGY);
