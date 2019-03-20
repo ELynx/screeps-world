@@ -77,12 +77,16 @@ module.exports.loop = function ()
             {
                 if (chum.room.controller.level > 1)
                 {
-                    const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 50; } });
+                    const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 10; } });
 
                     if (suckers.length > 0)
                     {
                         chum.say('Ha-ha');
                         chum.rangedAttack(suckers[0]);
+                    }
+                    else
+                    {
+                        chum.say('Suffer');
                     }
                 }
                 else
@@ -101,6 +105,7 @@ module.exports.loop = function ()
         // temporary code, steal energy from neighbour
         // <<
         const pestNames = ['pest', 'pester'];
+        var letGrow = false;
 
         for (var i = 0; i < pestNames.length; ++i)
         {
@@ -143,8 +148,21 @@ module.exports.loop = function ()
                         const spawn = Game.getObjectById('5c8d3f57360c03411ed406f8');
                         if (pest.pos.isNearTo(spawn))
                         {
-                            pest.say('Slurp');
-                            pest.withdraw(spawn, RESOURCE_ENERGY);
+                            if (!letGrow)
+                            {
+                                const stillWorking = pest.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return sucker.hits > 10; } });
+                                letGrow = stillWorking.length < 2;
+                            }
+
+                            if (letGrow)
+                            {
+                                pest.say('Breed some');
+                            }
+                            else
+                            {
+                                pest.say('Slurp');
+                                pest.withdraw(spawn, RESOURCE_ENERGY);                                
+                            }
                         }
                         else
                         {
