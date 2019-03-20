@@ -42,14 +42,6 @@ redAlert.staticTargets = function(room)
     return [];
 };
 
-redAlert.precondition = function(room)
-{
-    // TODO integrate
-    this._staticTargetCache = this.staticTargets(room);
-
-    return this._staticTargetCache.length > 0;
-};
-
 redAlert.register();
 
 module.exports = redAlert;

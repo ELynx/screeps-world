@@ -513,10 +513,17 @@ function Controller(id)
     {
         this.debugHeader(room);
 
-        if (this.precondition && !this.precondition(room))
+        // viable for fast check
+        if (this.staticTargets && !this.dynamicTargets)
         {
-            this.debugLine(room, 'Fast exit, precondition faield');
-            return roomCreeps;
+            // TODO more subtle
+            this._staticTargetCache = this.staticTargets(room);
+
+            if (this._staticTargetCache.length == 0)
+            {
+                this.debugLine('Fast exit, no targets');
+                return roomCreeps;
+            }
         }
 
         if (this._needEnergetic)
