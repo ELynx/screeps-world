@@ -119,7 +119,7 @@ module.exports.loop = function ()
         {
             const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
 
-            if (ctrl && !ctrl.upgradeBlocked)
+            if (ctrl && !ctrl.upgradeBlocked && ctrl.level > 2)
             {
                 if (Memory.pestering)
                 {
@@ -148,7 +148,7 @@ module.exports.loop = function ()
             }
             else
             {
-                if (chum.room.controller.level > 1)
+                if (chum.room.controller.level > 2)
                 {
                     const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 10; } });
 
@@ -166,7 +166,6 @@ module.exports.loop = function ()
                 {
                     chum.say('Live for now');
                 }
-
             }
         }
         else
