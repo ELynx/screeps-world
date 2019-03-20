@@ -93,33 +93,35 @@ module.exports.loop = function ()
                         lad.moveTo(dropPoint, { maxRooms: 1, plainCost: 1, range: 2 });
                     }
                 }
-
-                if (lad.pos.isNearTo(ctrl))
+                else
                 {
-                    if (ctrl.level == 0)
+                    if (lad.pos.isNearTo(ctrl))
                     {
-                        lad.say('MINE');
-                        lad.claimController(ctrl);
-                    }
-                    else if (Game.gcl.level > 1)
-                    {
-                        lad.say('Do damage');
-                        lad.attackController(ctrl);
-                    }
-                    else if (ctrl.level > 2)
-                    {
-                        lad.say('Do damage');
-                        lad.attackController(ctrl);
+                        if (ctrl.level == 0)
+                        {
+                            lad.say('MINE');
+                            lad.claimController(ctrl);
+                        }
+                        else if (Game.gcl.level > 1)
+                        {
+                            lad.say('Do damage');
+                            lad.attackController(ctrl);
+                        }
+                        else if (ctrl.level > 2)
+                        {
+                            lad.say('Do damage');
+                            lad.attackController(ctrl);
+                        }
+                        else
+                        {
+                            lad.say('-whistle-');
+                        }
                     }
                     else
                     {
-                        lad.say('-whistle-');
+                        lad.say('Incoming');
+                        lad.moveTo(ctrl, { maxRooms: 2 });
                     }
-                }
-                else
-                {
-                    lad.say('Incoming');
-                    lad.moveTo(ctrl, { maxRooms: 2 });
                 }
             }
         }
@@ -194,7 +196,7 @@ module.exports.loop = function ()
         {
             if (Memory.pestering)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK], 'chum');
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK, RANGED_ATTACK], 'chum');
             }
         }
         // >>
