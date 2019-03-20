@@ -66,6 +66,11 @@ module.exports.loop = function ()
         var chum = Game.creeps['chum'];
         if (chum)
         {
+            if (chum.hits < chum.hitsMax)
+            {
+                Memory.pestering = false;
+            }
+
             const chumStand = new RoomPosition(25, 8, 'E39N1');
 
             if (!chum.pos.isEqualTo(chumStand))
@@ -98,7 +103,10 @@ module.exports.loop = function ()
         }
         else
         {
-            Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK], 'chum');
+            if (Memory.pestering)
+            {
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK], 'chum');
+            }
         }
         // >>
 
@@ -113,13 +121,22 @@ module.exports.loop = function ()
 
             if (!pest)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, MOVE, MOVE, MOVE, MOVE], pestNames[i]);
+                if (Memory.pestering)
+                {
+                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, MOVE, MOVE, MOVE, MOVE], pestNames[i]);
+                }
+
                 continue;
             }
 
             if (pest.spawning)
             {
                 continue;
+            }
+
+            if (pest.hits < pest.hitsMax)
+            {
+                Memory.pestering = false;
             }
 
             if (pest.carry.energy < pest.carryCapacity)
@@ -161,7 +178,7 @@ module.exports.loop = function ()
                             else
                             {
                                 pest.say('Slurp');
-                                pest.withdraw(spawn, RESOURCE_ENERGY);                                
+                                pest.withdraw(spawn, RESOURCE_ENERGY);
                             }
                         }
                         else
