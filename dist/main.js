@@ -63,9 +63,23 @@ module.exports.loop = function ()
 
         // temporary code, steal energy from neighbour
         // <<
-        var pest = Game.creeps['pest'];
-        if (pest)
+        const pestNames = ['pest', 'pester'];
+
+        for (var i = 0; i < pestNames.length; ++i)
         {
+            var pest = Game.creeps[pestNames[i]];
+
+            if (!pest)
+            {
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, MOVE, MOVE, MOVE, MOVE], pestNames[i]);
+                continue;
+            }
+
+            if (pest.spawning)
+            {
+                continue;
+            }
+
             if (pest.carry.energy < pest.carryCapacity)
             {
                 if (pest.pos.roomName == 'E38N1')
@@ -123,10 +137,6 @@ module.exports.loop = function ()
                     }
                 }
             }
-        }
-        else
-        {
-            Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, MOVE, MOVE, MOVE, MOVE], 'pest');
         }
         // >>
     }
