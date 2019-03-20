@@ -29,12 +29,12 @@ redAlert.staticTargets = function(room)
         room.controller.level > 0 &&
        !room.controller.upgradeBlocked)
     {
-        const targetTicks = Math.floor(CONTROLLER_DOWNGRADE[room.controller.level] / 3);
+        // STRATEGY safe mode could not be activated below 50% - 5000, use 5000 maneuver space
+        const targetTicks = (CONTROLLER_DOWNGRADE[room.controller.level] / 2) - 2500;
 
         if (room.controller.ticksToDowngrade < targetTicks)
         {
-            // STRATEGY some histeresis
-            room.controller._targetTicks_ = 2 * targetTicks;
+            room.controller._targetTicks_ = targetTicks + 2500;
             return [room.controller];
         }
     }
