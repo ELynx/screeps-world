@@ -119,7 +119,7 @@ module.exports.loop = function ()
                         }
                         else
                         {
-                            pest.moveTo(dropPoint. { maxRooms: 1, plainCost: 2 });
+                            pest.moveTo(dropPoint, { maxRooms: 1, plainCost: 2 });
                         }
                     }
                 }
