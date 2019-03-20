@@ -82,8 +82,16 @@ module.exports.loop = function ()
 
                 if (ctrl.upgradeBlocked)
                 {
-                    lad.say('Perish');
-                    lad.suicide();
+                    const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
+
+                    if (lad.pos.inRangeTo(dropPoint, 2))
+                    {
+                        lad.suicide();
+                    }
+                    else
+                    {
+                        lad.moveTo(dropPoint, { maxRooms: 1, plainCost: 1, range: 2 });
+                    }
                 }
 
                 if (lad.pos.isNearTo(ctrl))
