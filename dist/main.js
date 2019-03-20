@@ -62,7 +62,7 @@ module.exports.loop = function ()
         // >>
 
         // temporary code, break neighbour controller
-        const dropPoint = Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').pos;
+        const dropPoint = Game.getObjectById('5bbcaf309099fc012e63a4c5').pos;
         
         // <<
         var lad = Game.creeps['lad'];
@@ -173,7 +173,7 @@ module.exports.loop = function ()
                 {
                     if (chum.room.controller.level > 2)
                     {
-                        const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 10; } });
+                        const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 20; } });
 
                         if (suckers.length > 0)
                         {
@@ -203,7 +203,7 @@ module.exports.loop = function ()
 
         // temporary code, steal energy from neighbour
         // <<
-        const pestNames = ['pest', 'pester'];
+        const pestNames = ['pest', 'pester', 'pestest'];
         var letGrow = false;
 
         for (var i = 0; i < pestNames.length; ++i)
@@ -258,7 +258,7 @@ module.exports.loop = function ()
                         {
                             if (!letGrow)
                             {
-                                const stillWorking = pest.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return sucker.hits > 10; } });
+                                const stillWorking = pest.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return sucker.hits > 20; } });
                                 letGrow = stillWorking.length < 2;
                             }
 
