@@ -77,7 +77,7 @@ module.exports.loop = function ()
                     const tbb = undefined; // Game.getObjectById('');
                     if (tbb)
                     {
-                        if (pest.pos.isNearTo(tbb)
+                        if (pest.pos.isNearTo(tbb))
                         {
                             pest.dismantle(tbb);
                         }
