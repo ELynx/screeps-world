@@ -74,17 +74,16 @@ module.exports.loop = function ()
                 }
                 else
                 {
-                    const wallPos = new RoomPosition(2, 19, 'E39N1');
-                    const stuff = wallPos.look();
-                    if (stuff.length > 0)
+                    const tbb = undefined; // Game.getObjectById('');
+                    if (tbb)
                     {
-                        if (pest.pos.isNearTo(stuff[0]))
+                        if (pest.pos.isNearTo(tbb)
                         {
-                            pest.dismantle(stuff[0]);
+                            pest.dismantle(tbb);
                         }
                         else
                         {
-                            pest.move(RIGHT);
+                            pest.moveTo(tbb, { maxRooms: 1, range: 1});
                         }
                     }
                     else
