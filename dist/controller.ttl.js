@@ -4,9 +4,20 @@ var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
 
-const TypeTtL = [50, 50];
+const HitsTreshold = 99;
+const Ttl = 100;
 
 ttlController.actRange = 1;
+
+ttlController.roomPrepare = function(room)
+{
+    this._prepareExcludedTargets(room);
+};
+
+ttlController.observeMyCreep = function(creep)
+{
+    this._excludeTarget(creep);
+}
 
 ttlController.act = function(spawn, creep)
 {
@@ -27,7 +38,7 @@ ttlController.act = function(spawn, creep)
     }
     // TODO mix with healing
     // if has disabled body parts
-    else if (creep.hitsMax - creep.hits > 99)
+    else if (creep.hitsMax - creep.hits > HitsTreshold)
     {
         recycle = true;
     }
@@ -35,7 +46,7 @@ ttlController.act = function(spawn, creep)
     // if controller started to spawn at the same time wait for it
     else if (spawn.spawning)
     {
-        if (creep.ticksToLive < 2)
+        if (creep.ticksToLive <= spawn.spawning.remainingTime)
         {
             recycle = true;
         }
@@ -74,7 +85,7 @@ ttlController.staticTargets = function(room)
         {
             filter: function(spawn)
             {
-                return spawn.isActive();
+                return spawn.isActive() && !spawn.spawning;
             }
         }
     );
@@ -84,12 +95,12 @@ ttlController.filterCreep = function(creep)
 {
     // TODO mix with healing
     // if has disabled body parts
-    if (creep.hitsMax - creep.hits > 99)
+    if (creep.hitsMax - creep.hits > HitsTreshold)
     {
         return true;
     }
 
-    return creep.ticksToLive <= TypeTtL[creep.memory.btyp]
+    return creep.ticksToLive <= Ttl;
 };
 
 ttlController.register();
