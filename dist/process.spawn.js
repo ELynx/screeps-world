@@ -165,10 +165,11 @@ Spawn implementation.
 @param {integer} level.
 @return True if creep spawn initiated.
 **/
-const doSpawn = function(spawn, type, level)
+const doSpawn = function(spawn, type, roomLevel)
 {
     const name = spawn.id + '_' + Game.time;
-    const bodyType = TypeBody[type](level);
+    const strength = globals.roomEnergyToStrength(roomLevel);
+    const bodyType = TypeBody[type](strength);
 
     if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
     {
@@ -183,7 +184,7 @@ const doSpawn = function(spawn, type, level)
                     dact: globals.NO_ACT_RANGE,
                     xtra: globals.NO_EXTRA,
                     btyp: type,
-                    levl: level,
+                    levl: strength,
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
                 }
@@ -243,13 +244,6 @@ spawnProcess.work = function(room, creeps)
         --creepsNeeded[creeps[i].memory.btyp];
     }
 
-    var strength = roomLevel;
-    // STRATEGY limit to 3 to avoid hyper-expensive creeps
-    if (strength > 3)
-    {
-        strength = 3;
-    }
-
     var totalSpawned = 0;
 
     // STRATEGY there are less spawns than creep types
@@ -261,7 +255,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = doSpawn(spawns[i], type, strength);
+                spawned = doSpawn(spawns[i], type, roomLevel);
             }
         }
 

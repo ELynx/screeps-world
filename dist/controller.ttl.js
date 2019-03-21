@@ -1,5 +1,6 @@
 'use strict';
 
+var globals = require('globals');
 var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
@@ -21,6 +22,8 @@ ttlController.act = function(spawn, creep)
     var renew = false;
     var rc = false;
 
+    const strength = globals.roomEnergyToStrength(spawn.room.memory.elvl);
+
     // TODO how to know if needed
     //if (needed count is greater than present)
     //{
@@ -28,7 +31,7 @@ ttlController.act = function(spawn, creep)
     //}
 
     // if from previous level
-    if (creep.memory.levl < spawn.room.memory.elvl)
+    if (creep.memory.levl < strength)
     {
         recycle = true;
     }
