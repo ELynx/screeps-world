@@ -442,9 +442,6 @@ function Controller(id)
     **/
     this.assignCreeps = function(room, creeps)
     {
-        this._staticTargetCache = undefined;
-        this._dynamicTargetCache = undefined;
-
         const checked = creeps.length;
         var assigned = 0;
 
@@ -523,6 +520,9 @@ function Controller(id)
     this.control = function(room, roomCreeps)
     {
         this.debugHeader(room);
+
+        this._staticTargetCache = undefined;
+        this._dynamicTargetCache = undefined;
 
         // viable for fast check
         if (this.staticTargets && !this.dynamicTargets)
