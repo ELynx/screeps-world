@@ -64,6 +64,15 @@ module.exports.loop = function ()
 
     // temporary code, break neighbour controller
     const dropPoint = Game.getObjectById('5bbcaf309099fc012e63a4c5').pos;
+    const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
+
+    if (ctrl)
+    {
+        if (ctrl.safeMode)
+        {
+            Memory.pestering = false;
+        }
+    }
 
     // <<
     var lad = Game.creeps['lad'];
@@ -74,15 +83,8 @@ module.exports.loop = function ()
             Memory.pestering = false;
         }
 
-        const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
-
         if (ctrl)
         {
-            if (ctrl.safeMode)
-            {
-                Memory.pestering = false;
-            }
-
             if (ctrl.upgradeBlocked)
             {
                 if (lad.pos.inRangeTo(dropPoint, 2))
@@ -91,7 +93,7 @@ module.exports.loop = function ()
                 }
                 else
                 {
-                    lad.moveTo(dropPoint, { maxRooms: 1, plainCost: 1, range: 2 });
+                    lad.moveTo(dropPoint, { maxRooms: 2, range: 2 });
                 }
             }
             else
@@ -128,8 +130,6 @@ module.exports.loop = function ()
     }
     else
     {
-        const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
-
         if (ctrl && !ctrl.upgradeBlocked && ctrl.level > 2)
         {
             if (Memory.pestering)
@@ -158,7 +158,7 @@ module.exports.loop = function ()
             }
             else
             {
-                chum.moveTo(dropPoint, { maxRooms: 1, plainCost: 1, range: 2 });
+                chum.moveTo(dropPoint, { maxRooms: 2, range: 2 });
             }
         }
         else
@@ -188,16 +188,19 @@ module.exports.loop = function ()
                 }
                 else
                 {
-                    chum.say('Live for now');
+                    chum.say('LiveForNow');
                 }
             }
         }
     }
     else
     {
-        if (Memory.pestering)
+        if (ctrl && ctrl.level > 2)
         {
-            Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK, RANGED_ATTACK], 'chum');
+            if (Memory.pestering)
+            {
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK, RANGED_ATTACK], 'chum');
+            }
         }
     }
     // >>
@@ -260,7 +263,14 @@ module.exports.loop = function ()
                         if (!letGrow)
                         {
                             const stillWorking = pest.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return sucker.hits > 20; } });
-                            letGrow = stillWorking.length < 2;
+                            if (ctrl && ctrl.level > 2)
+                            {
+                                letGrow = stillWorking.length <= 2;
+                            }
+                            else
+                            {
+                                letGrow = stillWorking.length <= 3;
+                            }
                         }
 
                         if (letGrow)
@@ -303,7 +313,7 @@ module.exports.loop = function ()
                     }
                     else
                     {
-                        pest.moveTo(dropPoint, { maxRooms: 1, plainCost: 2, range: 2 });
+                        pest.moveTo(dropPoint, { maxRooms: 1, range: 2 });
                     }
                 }
             }
