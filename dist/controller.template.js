@@ -358,6 +358,30 @@ function Controller(id)
     };
 
     /**
+    Caching getter for static targets.
+    @param {Room} room.
+    @return Possible static targets.
+    **/
+    this._findStaticTargets(room)
+    {
+        if (this._staticTargetCache)
+        {
+            return this._staticTargetCache;
+        }
+
+        var targets = this.staticTargets(room);
+
+        if (this._excludedTargets)
+        {
+            targets = this._filterExcludedTargets(targets, undefined);
+        }
+
+        this._staticTargetCache = targets;
+
+        return targets;
+    }
+
+    /**
     Default target search for single creep.
     @param {Room} room.
     @param {Creep} creep.
@@ -368,26 +392,13 @@ function Controller(id)
         // TODO fast array operations
         var targets = [];
 
-        if (this._staticTargetCache)
+        if (this.staticTargets)
         {
-            targets = this._staticTargetCache;
-        }
-        else if (this.staticTargets)
-        {
-            targets = this.staticTargets(room);
-
-            // filter static targets here
-            if (this._excludedTargets)
-            {
-                targets = this._filterExcludedTargets(targets, undefined);
-            }
-
-            this._staticTargetCache = targets;
+            targets = this._findStaticTargets(room);
         }
 
         if (this.dynamicTargets)
         {
-            // filter dynamic targets internally to dynamic implementation
             const dt = this.dynamicTargets(room, creep);
             targets = targets.concat(dt);
         }
@@ -516,10 +527,9 @@ function Controller(id)
         // viable for fast check
         if (this.staticTargets && !this.dynamicTargets)
         {
-            // TODO more subtle
-            this._staticTargetCache = this.staticTargets(room);
+            const st = this._findStaticTargets();
 
-            if (this._staticTargetCache.length == 0)
+            if (st.length == 0)
             {
                 this.debugLine('Fast exit, no targets');
                 return roomCreeps;
