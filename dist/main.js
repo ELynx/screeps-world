@@ -203,7 +203,7 @@ module.exports.loop = function ()
 
         // temporary code, steal energy from neighbour
         // <<
-        const pestNames = ['pest', 'pester', 'pestest'];
+        const pestNames = ['pest', 'pester'];
         var letGrow = false;
 
         for (var i = 0; i < pestNames.length; ++i)
