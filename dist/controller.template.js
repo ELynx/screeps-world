@@ -367,7 +367,7 @@ function Controller(id)
     @param {Room} room.
     @return Possible static targets.
     **/
-    this._findStaticTargets(room)
+    this._findStaticTargets = function(room)
     {
         if (this._staticTargetCache)
         {
