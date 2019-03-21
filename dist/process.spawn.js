@@ -85,18 +85,20 @@ const workHeavy = function(level)
         return [WORK, WORK, CARRY, MOVE];
     }
 
+    // limit to carry size of universal worker
     // for level 2 stay within 550 energy
     if (level == 2)
     {
-        // 550  100   100   100   50     50     50     50    50
-        return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE];
+        // 550  100   100   100   50     50      -50-     50    50
+        return [WORK, WORK, WORK, CARRY, CARRY, /*CARRY*/ MOVE, MOVE, MOVE];
     }
 
     // for level 3 stay within 800 energy
     if (level == 3)
     {
-        // 800  100   100   100   100   100   50     50     50     50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+        // was: 800
+        // 750  100   100   100   100   /*100*/   50     50     50     50    50    50   +50+
+        return [WORK, WORK, WORK, WORK, /*WORK*/, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
 
     const cacheHit = _workHeavyCache_[level];
@@ -106,8 +108,8 @@ const workHeavy = function(level)
         return cacheHit;
     }
 
-    // for level 4 and above 300 energy per level
-    const front = [WORK, WORK, CARRY]; // 250 = 100 100 50
+    // for level 4 and above 200 -300- energy per level
+    const front = [WORK, /*WORK,*/ CARRY]; // 150 -250- = 100 -100- 50
     const back =  [MOVE]; // 50 = 50
 
     var result = [];
@@ -151,8 +153,8 @@ const TypeHarvest = [ true,          true      ];
 const TypeRestock = [ true,          false     ];
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
-                    [ 6,             2         ], // level 1
-                    [ 8,             3         ], // level 2
+                    [ 8,             0         ], // level 1
+                    [ 8,             2         ], // level 2
                     [ 10,            4         ]  // level 3, crowd enough
                                                ];
 
@@ -196,15 +198,15 @@ spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    const elvl = room.memory.elvl;
+    const roomLevel = room.memory.elvl;
 
-    if (elvl == 0)
+    if (roomLevel == 0)
     {
         return;
     }
 
     // cap off at defined
-    var mobLevel = elvl;
+    var mobLevel = roomLevel;
     if (mobLevel >= TypeCount.length)
     {
         mobLevel = TypeCount.length - 1;
@@ -241,6 +243,13 @@ spawnProcess.work = function(room, creeps)
         --creepsNeeded[creeps[i].memory.btyp];
     }
 
+    var strength = roomLevel;
+    // STRATEGY limit to 3 to avoid hyper-expensive creeps
+    if (strength > 3)
+    {
+        strength = 3;
+    }
+
     var totalSpawned = 0;
 
     // STRATEGY there are less spawns than creep types
@@ -252,7 +261,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = doSpawn(spawns[i], type, elvl);
+                spawned = doSpawn(spawns[i], type, strength);
             }
         }
 
