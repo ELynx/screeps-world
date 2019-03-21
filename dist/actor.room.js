@@ -160,7 +160,7 @@ var roomActor =
     act: function(room)
     {
         if (!room.memory.intl ||
-             room.memory.intl < Game.time - 100)
+             room.memory.intl < Game.time - 1500)
         {
             room.memory.elvl = this.roomLevel(room);
 
