@@ -450,6 +450,8 @@ function Controller(id)
         const checked = creeps.length;
         var assigned = 0;
 
+        const assignLimit = this.enough ? this.enough(room) : undefined;
+
         for (var i = 0; i < creeps.length;)
         {
             const creep = creeps[i];
@@ -505,12 +507,9 @@ function Controller(id)
 
                 ++assigned;
 
-                if (this.enough)
+                if (assignLimit && assigned >= assignLimit)
                 {
-                    if (this.enough(room, assigned))
-                    {
-                        break;
-                    }
+                    break;
                 }
 
                 continue;

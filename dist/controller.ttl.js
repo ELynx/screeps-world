@@ -9,21 +9,11 @@ const Ttl = 100;
 
 ttlController.actRange = 1;
 
-ttlController.enough = function(room, assigned)
+ttlController.enough = function(room)
 {
     const st = this._findStaticTargets(room);
-    return assigned >= st.length;
+    return st.length;
 };
-
-ttlController.roomPrepare = function(room)
-{
-    this._prepareExcludedTargets(room);
-};
-
-ttlController.observeMyCreep = function(creep)
-{
-    this._excludeTarget(creep);
-}
 
 ttlController.act = function(spawn, creep)
 {
