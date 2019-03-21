@@ -174,8 +174,7 @@ module.exports.loop = function ()
                 if (chum.room.controller.level > 2)
                 {
                     const deadZone = Game.getObjectById('5bbcaf439099fc012e63a653').pos;
-                    const dead = chum.pos.inRangeTo(deadZone, 1);
-                    const suckers = chum.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return (dead || sucker.hits > 20) && sucker.name.startsWith('Upgrader'); } });
+                    const suckers = chum.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return (sucker.pos.isNearTo(deadZone) || sucker.hits > 20) && sucker.name.startsWith('Upgrader'); } });
 
                     if (suckers.length > 0)
                     {
