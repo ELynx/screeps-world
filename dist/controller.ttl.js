@@ -9,6 +9,12 @@ const Ttl = 100;
 
 ttlController.actRange = 1;
 
+ttlController.enough = function(room, assigned)
+{
+    const st = this._findStaticTargets(room);
+    return assigned >= st.length;
+};
+
 ttlController.roomPrepare = function(room)
 {
     this._prepareExcludedTargets(room);

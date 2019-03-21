@@ -24,6 +24,11 @@ function Controller(id)
     this.extra = undefined;
 
     /**
+    Decide whether more creeps are needed or not.
+    **/
+    this.enough = undefined;
+
+    /**
     Flag to check reach-ability of target in expensive hardcode way.
     **/
     this.smartTargeting = false;
@@ -499,6 +504,14 @@ function Controller(id)
                 creeps.splice(i, 1);
 
                 ++assigned;
+
+                if (this.enough)
+                {
+                    if (this.enough(room, assigned))
+                    {
+                        break;
+                    }
+                }
 
                 continue;
             }
