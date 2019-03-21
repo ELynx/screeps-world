@@ -64,204 +64,268 @@ module.exports.loop = function ()
 
     // temporary code, break neighbour
     // <<
-    const watchPoint = new RoomPosition(27, 6, 'E39N1');
-    const dropPoint = Game.getObjectById('5bbcaf309099fc012e63a4c5').pos;
-    const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
-
-    if (ctrl)
     {
-        if (ctrl.safeMode)
-        {
-            Game.notify('Safe mode on');
-            delete Memory.pestering;
-        }
-        else if (ctrl.level == 0)
-        {
-            Game.notify('Done');
-            delete Memory.pestering;
-        }
-    }
-
-    var lad = Game.creeps['lad'];
-    if (lad)
-    {
-        if (lad.hits < lad.hitsMax)
-        {
-            Memory.pestering = false;
-        }
-
-        var goHome = true;
+        const watchPoint = new RoomPosition(27, 6, 'E39N1');
+        const dropPoint = Game.getObjectById('5bbcaf309099fc012e63a4c5').pos;
+        const ctrl = Game.getObjectById('5bbcaf439099fc012e63a652');
 
         if (ctrl)
         {
-            if (!ctrl.upgradeBlocked)
+            if (ctrl.safeMode)
             {
-                goHome = false;
+                Game.notify('Safe mode on');
+                delete Memory.pestering;
+            }
+            else if (ctrl.level == 0)
+            {
+                Game.notify('Done');
+                delete Memory.pestering;
             }
         }
 
-        if (goHome)
+        var lad = Game.creeps['lad'];
+        if (lad)
         {
-            if (lad.pos.inRangeTo(dropPoint, 2))
+            if (lad.hits < lad.hitsMax)
             {
-                lad.suicide();
+                Memory.pestering = false;
             }
-            else
-            {
-                lad.moveTo(dropPoint, { maxRooms: 2, range: 2 });
-            }
-        }
-        else
-        {
-            if (lad.pos.isNearTo(ctrl))
-            {
-                lad.attackController(ctrl);
-            }
-            else
-            {
-                lad.moveTo(ctrl, { maxRooms: 2 });
-            }
-        }
-    }
-    else
-    {
-        if (Memory.pestering)
-        {
-            if (ctrl && ctrl.level > 0 && !ctrl.upgradeBlocked)
-            {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, CLAIM], 'lad');
-            }
-        }
-    }
 
-    var chum = Game.creeps['chum'];
-    if (chum)
-    {
-        if (chum.hits < chum.hitsMax)
-        {
-            Memory.pestering = false;
-        }
+            var goHome = true;
 
-        if (chum.ticksToLive < 100)
-        {
-            if (chum.pos.inRangeTo(dropPoint, 2))
+            if (ctrl)
             {
-                chum.suicide();
-            }
-            else
-            {
-                chum.moveTo(dropPoint, { maxRooms: 2, range: 2 });
-            }
-        }
-        else
-        {
-            if (chum.pos.roomName != watchPoint.roomName)
-            {
-                chum.moveTo(watchPoint, { maxRooms: 2 });
-            }
-            else
-            {
-                var suckers = chum.room.find(FIND_HOSTILE_CREEPS);
-                if (suckers.length == 0)
+                if (!ctrl.upgradeBlocked)
                 {
-                    suckers = chum.room.find(FIND_HOSTILE_SPAWNS);
+                    goHome = false;
                 }
+            }
 
-                if (suckers.length > 0)
+            if (goHome)
+            {
+                if (lad.pos.inRangeTo(dropPoint, 2))
                 {
-                    if (chum.pos.inRangeTo(suckers[0], 3))
-                    {
-                        chum.rangedAttack(suckers[0]);
-                    }
-                    else
-                    {
-                        chum.moveTo(suckers[0], { maxRooms: 1 });
-                    }
+                    lad.suicide();
                 }
                 else
                 {
-                    if (!chum.pos.isEqualTo(watchPoint))
-                    {
-                        chum.moveTo(watchPoint, { maxRooms: 2 });
-                    }
+                    lad.moveTo(dropPoint, { maxRooms: 2, range: 2 });
                 }
             }
-        }
-    }
-    else
-    {
-        if (Memory.pestering)
-        {
-            const wroom = Game.rooms[watchPoint.roomName];
-
-            if (wroom)
+            else
             {
-                const spwns = room.find(FIND_HOSTILE_SPAWNS);
-
-                if (spwns.length > 0)
+                if (lad.pos.isNearTo(ctrl))
                 {
-                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK, RANGED_ATTACK], 'chum');
+                    lad.attackController(ctrl);
+                }
+                else
+                {
+                    lad.moveTo(ctrl, { maxRooms: 2 });
                 }
             }
         }
-    }
-
-    const pestNames = ['pest'];
-
-    for (var i = 0; i < pestNames.length; ++i)
-    {
-        var pest = Game.creeps[pestNames[i]];
-
-        if (!pest)
+        else
         {
             if (Memory.pestering)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE], pestNames[i]);
+                if (ctrl && ctrl.level > 0 && !ctrl.upgradeBlocked)
+                {
+                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, CLAIM], 'lad');
+                }
+            }
+        }
+
+        var chum = Game.creeps['chum'];
+        if (chum)
+        {
+            if (chum.hits < chum.hitsMax)
+            {
+                Memory.pestering = false;
             }
 
-            continue;
-        }
-
-        if (pest.spawning)
-        {
-            continue;
-        }
-
-        if (pest.hits < pest.hitsMax)
-        {
-            Memory.pestering = false;
-        }
-
-        if (pest.ticksToLive > 100)
-        {
-            if (pest.pos.roomName == 'E38N1')
+            if (chum.ticksToLive < 100)
             {
-                pest.moveTo(49, 19, 'E38N1', { maxRooms: 1 });
+                if (chum.pos.inRangeTo(dropPoint, 2))
+                {
+                    chum.suicide();
+                }
+                else
+                {
+                    chum.moveTo(dropPoint, { maxRooms: 2, range: 2 });
+                }
             }
             else
             {
-                if (!pest.pos.isNearTo(watchPoint))
+                if (chum.pos.roomName != watchPoint.roomName)
                 {
-                    pest.moveTo(watchPoint, { maxRooms: 1, range: 1 });
+                    chum.moveTo(watchPoint, { maxRooms: 2 });
+                }
+                else
+                {
+                    var suckers = chum.room.find(FIND_HOSTILE_CREEPS);
+                    if (suckers.length == 0)
+                    {
+                        suckers = chum.room.find(FIND_HOSTILE_SPAWNS);
+                    }
+
+                    if (suckers.length > 0)
+                    {
+                        if (chum.pos.inRangeTo(suckers[0], 3))
+                        {
+                            chum.rangedAttack(suckers[0]);
+                        }
+                        else
+                        {
+                            chum.moveTo(suckers[0], { maxRooms: 1 });
+                        }
+                    }
+                    else
+                    {
+                        if (!chum.pos.isEqualTo(watchPoint))
+                        {
+                            chum.moveTo(watchPoint, { maxRooms: 2 });
+                        }
+                    }
                 }
             }
         }
         else
         {
-            if (pest.pos.roomName == 'E39N1')
+            if (Memory.pestering)
             {
-                pest.moveTo(0, 19, 'E39N1', { maxRooms: 1 });
-            }
-            else
-            {
-                if (pest.pos.inRangeTo(dropPoint, 2))
+                const wroom = Game.rooms[watchPoint.roomName];
+
+                if (wroom)
                 {
-                    pest.suicide();
+                    const spwns = wroom.find(FIND_HOSTILE_SPAWNS);
+
+                    if (spwns.length > 0)
+                    {
+                        Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK, RANGED_ATTACK], 'chum');
+                    }
+                }
+            }
+        }
+
+        const pestNames = ['pest'];
+
+        for (var i = 0; i < pestNames.length; ++i)
+        {
+            var pest = Game.creeps[pestNames[i]];
+
+            if (!pest)
+            {
+                if (Memory.pestering)
+                {
+                    Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE], pestNames[i]);
+                }
+
+                continue;
+            }
+
+            if (pest.spawning)
+            {
+                continue;
+            }
+
+            if (pest.hits < pest.hitsMax)
+            {
+                Memory.pestering = false;
+            }
+
+            if (pest.ticksToLive > 100)
+            {
+                if (pest.pos.roomName == 'E38N1')
+                {
+                    pest.moveTo(49, 19, 'E38N1', { maxRooms: 1 });
                 }
                 else
                 {
-                    pest.moveTo(dropPoint, { maxRooms: 1, range: 2 });
+                    if (!pest.pos.isNearTo(watchPoint))
+                    {
+                        pest.moveTo(watchPoint, { maxRooms: 1, range: 1 });
+                    }
                 }
+            }
+            else
+            {
+                if (pest.pos.roomName == 'E39N1')
+                {
+                    pest.moveTo(0, 19, 'E39N1', { maxRooms: 1 });
+                }
+                else
+                {
+                    if (pest.pos.inRangeTo(dropPoint, 2))
+                    {
+                        pest.suicide();
+                    }
+                    else
+                    {
+                        pest.moveTo(dropPoint, { maxRooms: 1, range: 2 });
+                    }
+                }
+            }
+        }
+    }
+    // >>
+
+    // temporary code, mess around
+    // <<
+    {
+        var strelok = Game.creeps['strelok'];
+        if (strelok)
+        {
+            if (strelok.hits < strelok.hitsMax)
+            {
+                delete Memory.strelok;
+            }
+
+            const to = new RoomPosition(25, 25, 'E37N2');
+
+            if (!strelok.pos.inRangeTo(to, 10))
+            {
+                if (strelok.fatigue == 0)
+                {
+                    strelok.moveTo(to, { range: 10 });
+                }
+            }
+            else
+            {
+                var targets = strelok.room.find(FIND_HOSTILE_CREEPS);
+
+                if (targets.length == 0)
+                {
+                    targets = strelok.room.find(FIND_HOSTILE_SPAWNS);
+                }
+
+                if (targets.length == 0)
+                {
+                    targets = strelok.room.find(FIND_HOSTILE_STRUCTURES);
+                }
+
+                const target = strelok.pos.findClosestByRange(targets);
+
+                if (target)
+                {
+                    if (strelok.pos.inRangeTo(target, 3))
+                    {
+                        strelok.rangedAttack(target);
+                    }
+                    else
+                    {
+                        if (strelok.fatigue == 0)
+                        {
+                            strelok.moveTo(target, { maxRooms: 1 });
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Memory.strelok)
+            {
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([TOUGH, MOVE, RANGED_ATTACK, RANGED_ATTACK], 'strelok');
             }
         }
     }
