@@ -540,7 +540,7 @@ function Controller(id)
         // viable for fast check
         if (this.staticTargets && !this.dynamicTargets)
         {
-            const st = this._findStaticTargets();
+            const st = this._findStaticTargets(room);
 
             if (st.length == 0)
             {
