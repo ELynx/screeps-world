@@ -280,7 +280,7 @@ module.exports.loop = function ()
                 delete Memory.strelok;
             }
 
-            const to = new RoomPosition(25, 25, 'E37N2');
+            const to = new RoomPosition(25, 25, 'E39N3');
 
             if (!strelok.pos.inRangeTo(to, 10))
             {
