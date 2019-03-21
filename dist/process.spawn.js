@@ -89,8 +89,8 @@ const workHeavy = function(level)
     // for level 2 stay within 550 energy
     if (level == 2)
     {
-        // 550  100   100   100   50     50      -50-     50    50
-        return [WORK, WORK, WORK, CARRY, CARRY, /*CARRY*/ MOVE, MOVE, MOVE];
+        // 550  100   100   100   50     50      -50-      50    50
+        return [WORK, WORK, WORK, CARRY, CARRY, /*CARRY,*/ MOVE, MOVE, MOVE];
     }
 
     // for level 3 stay within 800 energy
@@ -98,7 +98,7 @@ const workHeavy = function(level)
     {
         // was: 800
         // 750  100   100   100   100   /*100*/   50     50     50     50    50    50   +50+
-        return [WORK, WORK, WORK, WORK, /*WORK*/, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
+        return [WORK, WORK, WORK, WORK, /*WORK,*/ CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
 
     const cacheHit = _workHeavyCache_[level];
