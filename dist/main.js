@@ -275,11 +275,11 @@ module.exports.loop = function ()
                             const stillWorking = pest.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return sucker.hits > 20; } });
                             if (ctrl && ctrl.level > 2)
                             {
-                                letGrow = stillWorking.length <= 2;
+                                letGrow = stillWorking.length < 2;
                             }
                             else
                             {
-                                letGrow = stillWorking.length <= 3;
+                                letGrow = stillWorking.length < 3;
                             }
                         }
 
