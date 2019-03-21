@@ -165,25 +165,36 @@ module.exports.loop = function ()
         {
             const chumStand = new RoomPosition(25, 8, 'E39N1');
 
-            if (!chum.pos.isEqualTo(chumStand))
+            if (chum.pos.roomName != chumStand.roomName)
             {
-                chum.say('Incoming');
                 chum.moveTo(chumStand, { maxRooms: 2 });
             }
             else
             {
                 if (chum.room.controller.level > 2)
                 {
-                    const suckers = chumStand.findInRange(FIND_HOSTILE_CREEPS, 3, { filter: function(sucker) { return sucker.hits > 20; } });
+                    const deadZone = Game.getObjectById('5bbcaf439099fc012e63a653').pos;
+                    const dead = chum.pos.inRangeTo(deadZone, 1);
+                    const suckers = chum.room.find(FIND_HOSTILE_CREEPS, { filter: function(sucker) { return (dead || sucker.hits > 20) && sucker.name.startsWith('Upgrader'); } });
 
                     if (suckers.length > 0)
                     {
-                        chum.say('Ha-ha');
-                        chum.rangedAttack(suckers[0]);
+                        if (chum.pos.inRangeTo(suckers[0], 3))
+                        {
+                            chum.say('Ha-ha');
+                            chum.rangedAttack(suckers[0]);
+                        }
+                        else
+                        {
+                            chum.moveTo(suckers[0], { maxRooms: 1 });
+                        }
                     }
                     else
                     {
-                        chum.say('Suffer');
+                        if (!chum.pos.isEqualTo(chumStand))
+                        {
+                            chum.moveTo(chumStand, { maxRooms: 2 });
+                        }
                     }
                 }
                 else
@@ -207,7 +218,7 @@ module.exports.loop = function ()
 
     // temporary code, steal energy from neighbour
     // <<
-    const pestNames = ['pest', 'pester'];
+    const pestNames = ['pest', 'pester', 'pestest'];
     var letGrow = false;
 
     for (var i = 0; i < pestNames.length; ++i)
