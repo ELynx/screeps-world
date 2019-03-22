@@ -11,7 +11,7 @@ var reserve = function()
             delete Memory.reserve;
         }
 
-        const dest = Memory.reserve ? Memory.reserve : undefined;
+        const dest = Memory.reserve ? Memory.reserve : creep.pos.roomName;
 
         if (!dest)
         {
@@ -36,15 +36,15 @@ var reserve = function()
             {
                 if (controller.reservation)
                 {
-                    if (controller.reservation > 4999)
+                    if (controller.reservation > 4990)
                     {
                         delete Memory.reserve;
                     }
                 }
 
-                if (creep.isNearTo(controller))
+                if (creep.pos.isNearTo(controller))
                 {
-                    creep.singController(controller, 'Has doing boits');
+                    creep.signController(controller, 'Has doing boits');
                     creep.reserveController(controller);
                 }
                 else
@@ -62,7 +62,7 @@ var reserve = function()
 
             if (spawn)
             {
-                spawn.spawnCreep([CLAIM, MOVE], 'reserve');
+                spawn.spawnCreep([CLAIM, CLAIM, MOVE, MOVE], 'reserve');
             }
         }
     }
