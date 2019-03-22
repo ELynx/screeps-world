@@ -288,7 +288,7 @@ module.exports.loop = function ()
             {
                 if (strelok.fatigue == 0)
                 {
-                    strelok.moveTo(destRoom, { range: 24 });
+                    strelok.moveTo(destRoom, { reusePath:50, range: 24 });
                 }
             }
             else
