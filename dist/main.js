@@ -306,11 +306,8 @@ module.exports.loop = function ()
                 if (targets.length == 0)
                 {
                     targets = strelok.room.find(FIND_HOSTILE_CREEPS);
-                }
 
-                if (targets.length == 0)
-                {
-                    targets = strelok.room.find(
+                    var structs = strelok.room.find(
                         FIND_HOSTILE_STRUCTURES,
                         {
                             filter: function(structure)
@@ -322,15 +319,44 @@ module.exports.loop = function ()
                             }
                         }
                     );
+
+                    if (structs.length > 0)
+                    {
+                        targets.concat(structs);
+                    }
                 }
 
                 const target = strelok.pos.findClosestByRange(targets);
 
                 if (target)
                 {
-                    if (strelok.pos.inRangeTo(target, 3))
+                    if (strelok.pos.inRangeTo(target, 2))
                     {
-                        strelok.rangedAttack(target);
+                        var mass = false;
+
+                        for (var i = 0; i < targets.length && !mass; ++i)
+                        {
+                            const secondary = targets[i];
+
+                            if (secondary.id == target.id)
+                            {
+                                continue;
+                            }
+
+                            if (strelok.pos.inRangeTo(secondary, 3))
+                            {
+                                mass = true;
+                            }
+                        }
+
+                        if (mass)
+                        {
+                            strelok.rangedMassAttack();
+                        }
+                        else
+                        {
+                            strelok.rangedAttack(target);
+                        }
                     }
                     else
                     {
@@ -350,7 +376,11 @@ module.exports.loop = function ()
         {
             if (Memory.strelok)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE], 'strelok');
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep(
+                    [RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                     MOVE,          MOVE,          MOVE,          MOVE,          MOVE],
+                    'strelok'
+                );
             }
         }
     }
