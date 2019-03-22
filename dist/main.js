@@ -2,11 +2,12 @@
 
 var memoryManager = require('routine.memory');
 var roomActor = require('actor.room');
+var strelok = require('manual.strelok');
 
 //const profiler = require('screeps-profiler');
 //profiler.enable();
 
-module.exports.loop = function ()
+module.exports.loop = function()
 {
     //console.log('Limit ' + Game.cpu.limit);
     //console.log('Tick limit ' + Game.cpu.tickLimit);
@@ -61,6 +62,8 @@ module.exports.loop = function ()
     }
 
     //});
+
+    strelok();
 
     // temporary code, break neighbour
     // <<
@@ -264,140 +267,6 @@ module.exports.loop = function ()
                         pest.moveTo(dropPoint, { maxRooms: 1, range: 2 });
                     }
                 }
-            }
-        }
-    }
-    // >>
-
-    // temporary code, mess around
-    // <<
-    {
-        var strelok = Game.creeps['strelok'];
-        if (strelok)
-        {
-            if (strelok.hits < strelok.hitsMax)
-            {
-                delete Memory.strelok;
-            }
-
-            const dest = Memory.dest ? Memory.dest : strelok.pos.roomName;
-
-            const destRoom = new RoomPosition(25, 25, Memory.dest);
-
-            if (strelok.pos.roomName != destRoom.roomName)
-            {
-                if (strelok.fatigue == 0)
-                {
-                    strelok.moveTo(destRoom, { reusePath:50, range: 24 });
-                }
-            }
-            else
-            {
-                var attackSpawn = false;
-
-                var targets = strelok.room.find(
-                        FIND_HOSTILE_SPAWNS,
-                        {
-                            filter: function(structure)
-                            {
-                                return structure.hits;
-                            }
-                        }
-                    );
-
-                if (targets.length == 0)
-                {
-                    targets = strelok.room.find(FIND_HOSTILE_CREEPS);
-
-                    var structs = strelok.room.find(
-                        FIND_HOSTILE_STRUCTURES,
-                        {
-                            filter: function(structure)
-                            {
-                                return structure.hits &&
-                                       structure.hitsMax < 10000 &&
-                                       structure.structureType != STRUCTURE_WALL &&
-                                       structure.type != STRUCTURE_ROAD;
-                            }
-                        }
-                    );
-
-                    if (structs.length > 0)
-                    {
-                        targets = targets.concat(structs);
-                    }
-                }
-                else
-                {
-                    attackSpawn = true;
-                }
-
-                const target = strelok.pos.findClosestByRange(targets);
-
-                if (target)
-                {
-                    var range = 3;
-
-                    if (attackSpawn)
-                    {
-                        range = 1;
-                    }
-                    else if (targets.length > 1)
-                    {
-                        range = 2;
-                    }
-
-                    if (strelok.pos.inRangeTo(target, range))
-                    {
-                        var mass = attackSpawn;
-
-                        for (var i = 0; i < targets.length && !mass; ++i)
-                        {
-                            const secondary = targets[i];
-
-                            if (secondary.id == target.id)
-                            {
-                                continue;
-                            }
-
-                            if (strelok.pos.inRangeTo(secondary, 2))
-                            {
-                                mass = true;
-                            }
-                        }
-
-                        if (mass)
-                        {
-                            strelok.rangedMassAttack();
-                        }
-                        else
-                        {
-                            strelok.rangedAttack(target);
-                        }
-                    }
-                    else
-                    {
-                        if (strelok.fatigue == 0)
-                        {
-                            strelok.moveTo(target);
-                        }
-                    }
-                }
-                else
-                {
-                    delete Memory.strelok;
-                }
-            }
-        }
-        else
-        {
-            if (Memory.strelok)
-            {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep(
-                    [RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                     MOVE,          MOVE,          MOVE,          MOVE,          MOVE],
-                    'strelok'
-                );
             }
         }
     }
