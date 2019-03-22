@@ -315,7 +315,10 @@ module.exports.loop = function ()
                         {
                             filter: function(structure)
                             {
-                                return structure.hits && structure.structureType != STRUCTURE_WALL;
+                                return structure.hits &&
+                                       structure.hitsMax < 10000 &&
+                                       structure.structureType != STRUCTURE_WALL &&
+                                       structure.type != STRUCTURE_ROAD;
                             }
                         }
                     );
