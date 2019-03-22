@@ -8,7 +8,6 @@ Proprietary and confidential.
 dist - connected to official server
 
 # TODO
-(Module WAR) Drop safe mode when bitten in the ass.
 (Module WAR) "Hot" areas to avoid for worker creeps.
 (Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
