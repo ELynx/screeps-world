@@ -38,10 +38,49 @@ module.exports.loop = function()
             }
         );
 
-        // arbitrary scope
+        if (hostileCreeps.length > 0)
+        {
+            const ctrl = room.controller;
+
+            if (ctrl && ctrl.my)
+            {
+                if (!ctrl.safeMode &&
+                    !ctrl.safeModeCooldown &&
+                    !ctrl.upgradeBlocked &&
+                     ctrl.safeModeAvailable > 0)
+                {
+                    for (const flagName in Game.flags)
+                    {
+                        if (!flagName.startsWith('fence'))
+                        {
+                            continue;
+                        }
+
+                        const flag = Game.flags[flagName];
+
+                        if (flag.pos.roomName != name)
+                        {
+                            continue;
+                        }
+
+                        const trigger = flag.pos.findInRange(hostileCreeps, 3);
+                        if (trigger)
+                        {
+                            const notification = 'ROOM ' + name + ' IS UDNER HEAVY ATTACK';
+
+                            Game.notify(notification);
+                            console.log(notification);
+                            //ctrl.activateSafeMode();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (hostileCreeps.length > 0 || damagedCreeps.length > 0)
         {
             // just activate towers
-            const towers = Game.rooms[name].find(FIND_MY_STRUCTURES,
+            const towers = room.find(FIND_MY_STRUCTURES,
                 {
                     filter: function(structure)
                     {
@@ -68,7 +107,6 @@ module.exports.loop = function()
                 }
             }
         }
-        // end of arbitrary scope
 
         // >>
     }
