@@ -14,6 +14,7 @@ dist - connected to official server
 (Economy)    Number of creeps depend on source #.
 
 # Ideas
+Intent pipeline! Do more things in one turn!
 Withdraw from enemy structures.
 Dismantle enemy structures, 50 hits vs melee Attack 30 hits.
 structureType might be faster than instanceof.
