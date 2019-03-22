@@ -280,27 +280,45 @@ module.exports.loop = function ()
                 delete Memory.strelok;
             }
 
-            const to = new RoomPosition(25, 25, 'E39N3');
+            const dest = Memory.dest ? Memory.dest : strelok.pos.roomName;
 
-            if (!strelok.pos.inRangeTo(to, 10))
+            const destRoom = new RoomPosition(25, 25, Memory.dest);
+
+            if (strelok.pos.roomName != destRoom.roomName)
             {
                 if (strelok.fatigue == 0)
                 {
-                    strelok.moveTo(to, { range: 10 });
+                    strelok.moveTo(destRoom, { range: 24 });
                 }
             }
             else
             {
-                var targets = strelok.room.find(FIND_HOSTILE_CREEPS);
+                var targets = strelok.room.find(
+                        FIND_HOSTILE_SPAWNS,
+                        {
+                            filter: function(structure)
+                            {
+                                return structure.hits;
+                            }
+                        }
+                    );
 
                 if (targets.length == 0)
                 {
-                    targets = strelok.room.find(FIND_HOSTILE_SPAWNS);
+                    targets = strelok.room.find(FIND_HOSTILE_CREEPS);
                 }
 
                 if (targets.length == 0)
                 {
-                    targets = strelok.room.find(FIND_HOSTILE_STRUCTURES);
+                    targets = strelok.room.find(
+                        FIND_HOSTILE_STRUCTURES,
+                        {
+                            filter: function(structure)
+                            {
+                                return structure.hits && structure.structureType != STRUCTURE_WALL;
+                            }
+                        }
+                    );
                 }
 
                 const target = strelok.pos.findClosestByRange(targets);
@@ -315,9 +333,13 @@ module.exports.loop = function ()
                     {
                         if (strelok.fatigue == 0)
                         {
-                            strelok.moveTo(target, { maxRooms: 1 });
+                            strelok.moveTo(target);
                         }
                     }
+                }
+                else
+                {
+                    delete Memory.strelok;
                 }
             }
         }
@@ -325,7 +347,7 @@ module.exports.loop = function ()
         {
             if (Memory.strelok)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([TOUGH, MOVE, RANGED_ATTACK, RANGED_ATTACK], 'strelok');
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK], 'strelok');
             }
         }
     }
