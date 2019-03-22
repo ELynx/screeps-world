@@ -64,13 +64,14 @@ module.exports.loop = function()
                         }
 
                         const trigger = flag.pos.findInRange(hostileCreeps, 3);
-                        if (trigger)
+                        if (trigger.length > 0)
                         {
-                            const notification = 'ROOM ' + name + ' IS UDNER HEAVY ATTACK';
+                            const rc = ctrl.activateSafeMode();
+
+                            const notification = 'Room ' + name + ' requested safeMode [' + rc + ']';
 
                             Game.notify(notification);
                             console.log(notification);
-                            //ctrl.activateSafeMode();
                         }
                     }
                 }
