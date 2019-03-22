@@ -293,6 +293,8 @@ module.exports.loop = function ()
             }
             else
             {
+                var attackSpawn = false;
+
                 var targets = strelok.room.find(
                         FIND_HOSTILE_SPAWNS,
                         {
@@ -322,17 +324,32 @@ module.exports.loop = function ()
 
                     if (structs.length > 0)
                     {
-                        targets.concat(structs);
+                        targets = targets.concat(structs);
                     }
+                }
+                else
+                {
+                    attackSpawn = true;
                 }
 
                 const target = strelok.pos.findClosestByRange(targets);
 
                 if (target)
                 {
-                    if (strelok.pos.inRangeTo(target, 2))
+                    var range = 3;
+
+                    if (attackSpawn)
                     {
-                        var mass = false;
+                        range = 1;
+                    }
+                    else if (targets.length > 1)
+                    {
+                        range = 2;
+                    }
+
+                    if (strelok.pos.inRangeTo(target, range))
+                    {
+                        var mass = attackSpawn;
 
                         for (var i = 0; i < targets.length && !mass; ++i)
                         {
