@@ -20,11 +20,27 @@ module.exports.loop = function()
 
     for(const name in Game.rooms)
     {
-        roomActor.act(Game.rooms[name]);
+        const room = Game.rooms[name];
 
-        // temporary, just activate tower(s)
+        roomActor.act(room);
+
+        // temporary defences
         // <<
+
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+        var damagedCreeps = room.find(
+            FIND_MY_CREEPS,
+            {
+                filter: function(creep)
+                {
+                    return creep.hits < creep.hitsMax;
+                }
+            }
+        );
+
+        // arbitrary scope
         {
+            // just activate towers
             const towers = Game.rooms[name].find(FIND_MY_STRUCTURES,
                 {
                     filter: function(structure)
@@ -36,21 +52,14 @@ module.exports.loop = function()
 
             for (var i = 0; i < towers.length; ++i)
             {
-                const closestHostile = towers[i].pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
                 if(closestHostile)
                 {
                     towers[i].attack(closestHostile);
                     continue;
                 }
 
-                const damagedCreep = towers[i].pos.findClosestByRange(FIND_MY_CREEPS,
-                    {
-                        filter: function(creep)
-                        {
-                            return creep.hits < creep.hitsMax;
-                        }
-                    }
-                );
+                const damagedCreep = towers[i].pos.findClosestByRange(damagedCreeps);
 
                 if (damagedCreep)
                 {
@@ -59,6 +68,8 @@ module.exports.loop = function()
                 }
             }
         }
+        // end of arbitrary scope
+
         // >>
     }
 
