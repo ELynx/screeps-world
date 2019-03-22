@@ -63,7 +63,18 @@ module.exports.loop = function()
                             continue;
                         }
 
-                        const trigger = flag.pos.findInRange(hostileCreeps, 3);
+                        var range = 3; // red, for brevity
+
+                        if (flag.color == COLOR_YELLOW)
+                        {
+                            range = 2;
+                        }
+                        else if (flag.color == COLOR_GREEN)
+                        {
+                            range = 1;
+                        }
+
+                        const trigger = flag.pos.findInRange(hostileCreeps, range);
                         if (trigger.length > 0)
                         {
                             const rc = ctrl.activateSafeMode();
@@ -72,6 +83,8 @@ module.exports.loop = function()
 
                             Game.notify(notification);
                             console.log(notification);
+
+                            break;
                         }
                     }
                 }
