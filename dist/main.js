@@ -28,7 +28,10 @@ module.exports.loop = function()
         // <<
 
         var hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
-        var damagedCreeps = room.find(
+        var damagedCreeps = room._damaged_ ?
+            room._damaged_
+            :
+            room.find(
             FIND_MY_CREEPS,
             {
                 filter: function(creep)

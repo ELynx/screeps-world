@@ -215,7 +215,26 @@ spawnProcess.work = function(room, creeps)
 
     // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
     // quick check - by # of creeps
-    if (creeps.length >= _.sum(TypeCount[mobLevel]))
+    var persistent = 0;
+
+    // speedhack, room actor can calculate this flag
+    if (room._allPersistent_)
+    {
+        persistent = creeps.length;
+    }
+    else
+    {
+        // no flag given, calculate
+        for (var i = 0; i < creeps.length; ++i)
+        {
+            if (creeps[i].memory.levl > 0)
+            {
+                ++persistent;
+            }
+        }
+    }
+
+    if (persistent >= _.sum(TypeCount[mobLevel]))
     {
         this.debugLine(room, 'Creep # is enough, no detail check');
         return;

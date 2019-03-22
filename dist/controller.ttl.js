@@ -30,8 +30,13 @@ ttlController.act = function(spawn, creep)
     //    recycle
     //}
 
+    // temporary creep
+    if (creep.memory.levl == 0)
+    {
+        recycle = true;
+    }
     // if from previous level
-    if (creep.memory.levl < strength)
+    else if (creep.memory.levl < strength)
     {
         recycle = true;
     }
