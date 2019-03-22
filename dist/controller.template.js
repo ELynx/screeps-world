@@ -34,6 +34,12 @@ function Controller(id)
     this.smartTargeting = false;
 
     /**
+    Flag to focus creeps on one target in room.
+    For dynamic targets.
+    **/
+    this.focusDynamic = false;
+
+    /**
     Cache of target IDs that already have creep assigned.
     **/
     this._excludedTargets = undefined;
@@ -266,6 +272,12 @@ function Controller(id)
             if (this._excludedTargets)
             {
                 targets = this._filterExcludedTargets(targets, [t, l, b, r]);
+            }
+
+            // one target per cave if flag is set
+            if (this.focusDynamic && targets.length > 0)
+            {
+                targets = [targets[0]];
             }
 
             if (!this._dynamicTargetCache)
