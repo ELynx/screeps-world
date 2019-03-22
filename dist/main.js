@@ -360,7 +360,7 @@ module.exports.loop = function ()
                                 continue;
                             }
 
-                            if (strelok.pos.inRangeTo(secondary, 3))
+                            if (strelok.pos.inRangeTo(secondary, 2))
                             {
                                 mass = true;
                             }
