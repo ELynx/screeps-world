@@ -347,7 +347,7 @@ module.exports.loop = function ()
         {
             if (Memory.strelok)
             {
-                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([MOVE, RANGED_ATTACK], 'strelok');
+                Game.getObjectById('5c8f93046ce2ec3bb9d19a9e').spawnCreep([RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE], 'strelok');
             }
         }
     }
