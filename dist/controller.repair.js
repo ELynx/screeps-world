@@ -109,7 +109,7 @@ repairController.dynamicTargets = function(room, creep)
                     return true;
                 }
             }
-            else if (structure.my)
+            else if (structure.my || structure.structureType == STRUCTURE_CONTAINER)
             {
                 const hp = Math.ceil(structure.hitsMax * otherMult);
                 if (structure.hits < hp)

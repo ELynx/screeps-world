@@ -20,6 +20,7 @@ Dismantle enemy structures, 50 hits vs melee Attack 30 hits.
 structureType might be faster than instanceof.
 PathFinder opt flee.
 moveTo has same options as PathFinder.
+StructureContainer is not owned.
 
 Dynamic creep life:
 -> old creeps undergo a check;
@@ -32,6 +33,8 @@ Dynamic creep life:
 Temporary creeps, e.g. role Heal, spawned if there are broken creeps:
 -> spawn on demand;
 --> recycle by "Dynamic creep life" afterwards.
+
+Roads in neutral room require change in repair code to work on energy level 0.
 
 # Profiler
 Uses github.com/samogot/screeps-profiler, more up-to-date and feature branch
