@@ -9,9 +9,8 @@ dist - connected to official server
 
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
-(Economy)    Move creeps from construction sites (see log of controller.build).
 (Economy)    Number of creeps per type needed by room.
-(Economy)    Number of creeps depend on source #.
+(Economy)    Number of creeps depend on source number.
 
 # Ideas
 Intent pipeline! Do more things in one turn!
@@ -30,7 +29,7 @@ Dynamic creep life:
 --> spawn started to spawn creep can wait by return true.
 --> give energy to spawn while nearby.
 
-Temporary creeps, e.g. role Heal, spawned if there are broken creeps:
+Temporary creeps:
 -> spawn on demand;
 --> recycle by "Dynamic creep life" afterwards.
 

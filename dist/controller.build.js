@@ -18,7 +18,7 @@ buildController.dynamicTargets = function(room, creep)
     return this._lookAroundCreep(
         room,
         LOOK_CONSTRUCTION_SITES,
-        function(site) { return site.my; },
+        function(site) { return site.my && !site.pos.isEqualTo(creep.pos) },
         creep
     );
 };
