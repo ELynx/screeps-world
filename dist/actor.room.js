@@ -203,6 +203,19 @@ var roomActor =
                     continue;
                 }
 
+                if (creep.memory.crum != creep.pos.roomName)
+                {
+                    if (creep.fatigue == 0)
+                    {
+                        const destRoom = new RoomPosition(25, 25, creep.memory.crum);
+
+                        // STRATEGY cache path roughly for the room, and just find a spot there
+                        creep.moveTo(destRoom, { reusePath: 50, range: 24 });
+                    }
+
+                    continue;
+                }
+
                 if (creep.memory.levl == 0)
                 {
                     room._allPersistent_ = false;
