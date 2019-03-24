@@ -206,10 +206,10 @@ var roomActor =
                 if (creep.memory.crum != creep.pos.roomName || creep.memory.travel)
                 {
                     globals.unassignCreep(creep);
-                    
+
                     // hotplug
                     creep.memory.travel = true;
-                    
+
 
                     const destRoom = new RoomPosition(25, 25, creep.memory.crum);
 
@@ -338,6 +338,42 @@ var roomActor =
             globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
         }
         // end of arbitrary scope
+
+        // hotplug
+        // <<
+        {
+            if (room.name == 'E39N1')
+            {
+                const spawns = room.find(FIND_MY_SPAWNS);
+
+                if (spawns.length < 1)
+                {
+                    // move back to renew
+                    for (var i = 0; i < roomCreeps.length; ++i)
+                    {
+                        if (roomCreeps[i].ticksToLive < 150)
+                        {
+                            roomCreeps[i].memory.crum = 'E38N1';
+                        }
+                    }
+
+                    // steal creeps
+                    if (roomCreeps.length < 4)
+                    {
+                        for (const name in Game.creeps)
+                        {
+                            if (!globals.creepAssigned(Game.creeps[name]))
+                            {
+                                Game.creeps[name].memory.crum = 'E39N1';
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        // >>
 
         // arbitrary scope
         {
