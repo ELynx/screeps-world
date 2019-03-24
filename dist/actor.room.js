@@ -205,6 +205,8 @@ var roomActor =
 
                 if (creep.memory.crum != creep.pos.roomName)
                 {
+                    globals.unassignCreep(creep);
+                    
                     if (creep.fatigue == 0)
                     {
                         const destRoom = new RoomPosition(25, 25, creep.memory.crum);
