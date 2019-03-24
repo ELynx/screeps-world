@@ -1,17 +1,17 @@
 'use strict';
 
-var reserve = function()
+var claim = function()
 {
-    var creep = Game.creeps['reserve'];
+    var creep = Game.creeps['claim'];
 
     if (creep)
     {
         if (creep.hits < creep.hitsMax)
         {
-            delete Memory.reserve;
+            delete Memory.claim;
         }
 
-        const dest = Memory.reserve ? Memory.reserve : creep.pos.roomName;
+        const dest = Memory.claim ? Memory.claim : creep.pos.roomName;
 
         if (!dest)
         {
@@ -34,18 +34,15 @@ var reserve = function()
 
             if (controller)
             {
-                if (controller.reservation)
+                if (controller.level > 0)
                 {
-                    if (controller.reservation > 4990)
-                    {
-                        delete Memory.reserve;
-                    }
+                    delete Memory.claim;
                 }
 
                 if (creep.pos.isNearTo(controller))
                 {
-                    creep.signController(controller, 'Has doing boits');
-                    creep.reserveController(controller);
+                    creep.signController(controller, '');
+                    creep.claimController(controller);
                 }
                 else
                 {
@@ -56,16 +53,16 @@ var reserve = function()
     }
     else
     {
-        if (Memory.reserve && Memory.handspawn)
+        if (Memory.claim && Memory.handspawn)
         {
             const spawn = Game.getObjectById(Memory.handspawn);
 
             if (spawn)
             {
-                spawn.spawnCreep([CLAIM, CLAIM, MOVE, MOVE], 'reserve');
+                spawn.spawnCreep([CLAIM, MOVE], 'claim');
             }
         }
     }
 };
 
-module.exports = reserve;
+module.exports = claim;
