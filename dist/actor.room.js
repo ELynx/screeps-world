@@ -203,16 +203,26 @@ var roomActor =
                     continue;
                 }
 
-                if (creep.memory.crum != creep.pos.roomName)
+                if (creep.memory.crum != creep.pos.roomName || creep.memory.travel)
                 {
                     globals.unassignCreep(creep);
                     
+                    // hotplug
+                    creep.memory.travel = true;
+                    
+
+                    const destRoom = new RoomPosition(25, 25, creep.memory.crum);
+
                     if (creep.fatigue == 0)
                     {
-                        const destRoom = new RoomPosition(25, 25, creep.memory.crum);
-
-                        // STRATEGY cache path roughly for the room, and just find a spot there
-                        creep.moveTo(destRoom, { reusePath: 50, range: 24 });
+                        if (!creep.pos.inRangeTo(destRoom, 22))
+                        {
+                            creep.moveTo(destRoom, { reusePath: 50, range: 22 });
+                        }
+                        else
+                        {
+                            creep.memory.travel = undefined;
+                        }
                     }
 
                     continue;
