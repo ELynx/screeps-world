@@ -3,7 +3,7 @@
 var memoryManager = require('routine.memory');
 var roomActor = require('actor.room');
 var manualStrelok = require('manual.strelok');
-var manualReserve = require('manual.reserve');
+var manualClaim = require('manual.claim');
 
 //const profiler = require('screeps-profiler');
 //profiler.enable();
@@ -131,7 +131,7 @@ module.exports.loop = function()
     //});
 
     manualStrelok();
-    manualReserve();
+    manualClaim();
 
     //console.log('Used ' + Game.cpu.getUsed());
 }
