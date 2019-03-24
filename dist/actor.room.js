@@ -203,25 +203,25 @@ var roomActor =
                     continue;
                 }
 
-                if (creep.memory.crum != creep.pos.roomName || creep.memory.travel)
+                if (creep.memory.crum != creep.pos.roomName || creep.memory.roomChange)
                 {
                     globals.unassignCreep(creep);
 
-                    // hotplug
-                    creep.memory.travel = true;
-
+                    creep.memory.roomChange = true;
 
                     const destRoom = new RoomPosition(25, 25, creep.memory.crum);
 
                     if (creep.fatigue == 0)
                     {
-                        if (!creep.pos.inRangeTo(destRoom, 22))
+                        const destRange = 23;
+
+                        if (!creep.pos.inRangeTo(destRoom, destRange))
                         {
-                            creep.moveTo(destRoom, { reusePath: 50, range: 22 });
+                            creep.moveTo(destRoom, { reusePath: 50, range: destRange });
                         }
                         else
                         {
-                            creep.memory.travel = undefined;
+                            creep.memory.roomChange = undefined;
                         }
                     }
 
@@ -341,7 +341,7 @@ var roomActor =
 
         // hotplug
         // <<
-        {
+        /*{
             if (room.name == 'E39N1')
             {
                 const spawns = room.find(FIND_MY_SPAWNS);
@@ -363,7 +363,7 @@ var roomActor =
                         for (const name in Game.creeps)
                         {
                             var creep = Game.creeps[name];
-                            
+
                             if (creep.ticksToLive > 1200 &&
                                 creep.memory.btyp == 0 &&
                                 !globals.creepAssigned(creep))
@@ -376,7 +376,7 @@ var roomActor =
 
                 }
             }
-        }
+        }*/
         // >>
 
         // arbitrary scope
