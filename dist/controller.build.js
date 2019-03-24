@@ -15,18 +15,20 @@ buildController.act = function(site, creep)
 
 buildController.dynamicTargets = function(room, creep)
 {
-    // hotplug
-    const spawns = room.find(FIND_MY_SPAWNS);
-    const hasSpawn = spawns.length > 0;
+    // TODO build priorities
+    //const spawns = room.find(FIND_MY_SPAWNS);
+    //const hasSpawn = spawns.length > 0;
+    //(hasSpawn || site.structureType == STRUCTURE_SPAWN);
 
+    // TODO what can be built with creep on
+    // roads
+    // ramparts?
     return this._lookAroundCreep(
         room,
         LOOK_CONSTRUCTION_SITES,
         function(site)
         {
-            return site.my &&
-                   !site.pos.isEqualTo(creep.pos) && // TODO OK on roads
-                   (hasSpawn || site.structureType == STRUCTURE_SPAWN); // hotplug
+            return site.my && !site.pos.isEqualTo(creep.pos);
         },
         creep
     );
