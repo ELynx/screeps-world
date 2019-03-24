@@ -362,7 +362,11 @@ var roomActor =
                     {
                         for (const name in Game.creeps)
                         {
-                            if (!globals.creepAssigned(Game.creeps[name]))
+                            var creep = Game.creeps[name];
+                            
+                            if (creep.ticksToLive > 1200 &&
+                                creep.memory.btyp == 0 &&
+                                !globals.creepAssigned(creep))
                             {
                                 Game.creeps[name].memory.crum = 'E39N1';
                                 break;
