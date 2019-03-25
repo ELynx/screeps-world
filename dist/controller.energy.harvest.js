@@ -9,11 +9,32 @@ energyHarvestController.hasRestockers = undefined;
 
 energyHarvestController.actRange = 1;
 
-energyHarvestController.smartTargeting = true; // since sources are crowded
+energyHarvestController.roomPrepare = function(room)
+{
+    var sources = this._findStaticTargets(room);
+
+    for (var i = 0; i < sources.length; ++i)
+    {
+        globals.setCanTake(sources[i], this.id, globals.walkableTiles(sources[i]));
+    }
+};
 
 energyHarvestController.observeAllCreeps = function(creeps)
 {
     this.hasRestockers = this.checkRestockers(creeps);
+
+    for (var i = 0; i < creeps.length; ++i)
+    {
+        if (creeps.memory.ctrl == this.id)
+        {
+            var source = globals.creepTarget(creep);
+            const canTake = globals.getCanTake(source, this.id);
+            if (canTake)
+            {
+                globals.setCanTake(source, this.id, canTake - 1);
+            }
+        }
+    }
 };
 
 energyHarvestController.act = function(source, creep)
