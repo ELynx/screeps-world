@@ -468,6 +468,7 @@ function Controller(id)
 
             // of them one that can be reached
             var target = undefined;
+            var canTake = undefined;
 
             // starting with closest, Manhattan distance is "good enough"
             targets.sort(
@@ -483,8 +484,8 @@ function Controller(id)
             // check, see if reacheable in any way
             for (var j = 0; j < targets.length; ++j)
             {
-                const cur = targets[j];
-                const canTake = globals.getCanTake(cur, this.id);
+                const curent = targets[j];
+                canTake = globals.getCanTake(curent, this.id);
 
                 if (canTake && canTake < 1)
                 {
@@ -494,13 +495,13 @@ function Controller(id)
                 // TODO so much tweaking here
                 const solution = PathFinder.search(
                             creep.pos,
-                            { pos: cur.pos, range: 1 },
+                            { pos: curent.pos, range: 1 },
                             { maxRooms: 1, range: this.actRange }
                         );
 
                 if (!solution.incomplete)
                 {
-                    target = cur;
+                    target = curent;
                     break;
                 }
             }
@@ -511,6 +512,11 @@ function Controller(id)
 
                 globals.assignCreep(this, target, creep, extra);
                 creeps.splice(i, 1);
+
+                if (canTake)
+                {
+                    globals.setCanTake(target, this.id, canTake - 1);
+                }
 
                 ++assigned;
 
