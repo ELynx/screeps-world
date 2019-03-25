@@ -489,7 +489,6 @@ function Controller(id)
 
                 if (cTake && cTake < 1)
                 {
-                    //console.log(this.id + ' pass on ' + cTarg.id);
                     continue;
                 }
 
@@ -519,8 +518,6 @@ function Controller(id)
                 {
                     canTake = canTake - 1;
                     this._canTake_[target.id] = canTake;
-
-                    console.log(this.id + ' ' + target.id + ' changed can take ' + canTake);
                 }
 
                 ++assigned;

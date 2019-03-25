@@ -22,8 +22,6 @@ energyHarvestController.roomPrepare = function(room)
         // hotplug
         const canTake = globals.walkableTiles(sources[i]);
         this._canTake_[sources[i].id] = canTake;
-
-        //console.log(this.id + ' init ' + sources[i].id + ' can take ' + canTake);
     }
 
     this._staticTargetCache = sources;
@@ -42,8 +40,6 @@ energyHarvestController.observeAllCreeps = function(creeps)
             // hotplug
             const canTake = this._canTake_[creep.memory.dest] - 1;
             this._canTake_[creep.memory.dest] = canTake;
-
-            //console.log(this.id + ' decrease' + creep.memory.dest + ' can take ' + canTake);
         }
     }
 };
