@@ -151,10 +151,10 @@ var globals =
         const room = Game.rooms[roomPos.roomName];
         if (room)
         {
-            const t = roomPos.x > 0  ? roomPos.x - 1 : 0;
-            const l = roomPos.y > 0  ? roomPos.y - 1 : 0;
-            const b = roomPos.x < 49 ? roomPos.x + 1 : 49;
-            const r = roomPos.y < 49 ? roomPos.y + 1 : 49;
+            const t = roomPos.y > 0  ? roomPos.y - 1 : 0;
+            const l = roomPos.x > 0  ? roomPos.x - 1 : 0;
+            const b = roomPos.y < 49 ? roomPos.y + 1 : 49;
+            const r = roomPos.x < 49 ? roomPos.x + 1 : 49;
 
             const around = room.lookAtArea(t, l, b, r);
 
