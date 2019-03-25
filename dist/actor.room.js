@@ -243,7 +243,7 @@ var roomActor =
 
                 // TODO integrate
                 // hotplug - grab resources nearby
-                if (creep._sumcarry_ < creep.carryCapacity)
+                if (creep._sumcarry_ < creep.carryCapacity && !creep.memory.manual)
                 {
                     var wasGrabbed = false;
 
