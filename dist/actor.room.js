@@ -189,7 +189,6 @@ var roomActor =
         room._debugY_ = undefined;
         room._hasRestockers_ = undefined;
         room._hasEnergetic_ = undefined;
-        room._allPersistent_ = true;
         room._damaged_ = [];
 
         // arbitrary scope
@@ -245,11 +244,6 @@ var roomActor =
                     }
 
                     continue;
-                }
-
-                if (creep.memory.levl == 0)
-                {
-                    room._allPersistent_ = false;
                 }
 
                 if (creep.hits < creep.hitsMax)
