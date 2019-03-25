@@ -29,6 +29,11 @@ function Controller(id)
     this.enough = undefined;
 
     /**
+    Flag to check reach-ability of target in expensive hardcode way.
+    **/
+    this.smartTargeting = false;
+
+    /**
     Flag to focus creeps on one target in room.
     For dynamic targets.
     **/
@@ -466,44 +471,42 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
-            // starting with closest, Manhattan distance is "good enough"
-            targets.sort(
-                function(t1, t2)
-                {
-                    const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
-                    const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
-
-                    return d1 - d2;
-                }
-            );
-
             // of them one that can be reached
             var target = undefined;
-            var canTake = undefined;
 
-            // check, see if reacheable in any way
-            for (var j = 0; j < targets.length; ++j)
+            // STRATEGY few controllers actually need smart movement
+            if (this.smartTargeting)
             {
-                const cTarg = targets[j];
-                const cTake = this._canTake_ ? this._canTake_[cTarg.id] : undefined;
+                target = creep.pos.findClosestByPath(targets);
+            }
+            else
+            {
+                // starting with closest, Manhattan distance is "good enough"
+                targets.sort(
+                    function(t1, t2)
+                    {
+                        const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
+                        const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
-                if (cTake && cTake < 1)
+                        return d1 - d2;
+                    }
+                );
+
+                // check, see if reacheable in any way
+                for (var j = 0; j < targets.length; ++j)
                 {
-                    continue;
-                }
+                    // TODO so much tweaking here
+                    const solution = PathFinder.search(
+                                creep.pos,
+                                { pos: targets[j].pos, range: 1 },
+                                { maxRooms: 1, range: this.actRange }
+                            );
 
-                // TODO so much tweaking here
-                const solution = PathFinder.search(
-                            creep.pos,
-                            { pos: cTarg.pos, range: 1 },
-                            { maxRooms: 1, range: this.actRange }
-                        );
-
-                if (!solution.incomplete)
-                {
-                    target = cTarg;
-                    canTake = cTake;
-                    break;
+                    if (!solution.incomplete)
+                    {
+                        target = targets[j];
+                        break;
+                    }
                 }
             }
 
@@ -513,12 +516,6 @@ function Controller(id)
 
                 globals.assignCreep(this, target, creep, extra);
                 creeps.splice(i, 1);
-
-                if (this._canTake_ && canTake)
-                {
-                    canTake = canTake - 1;
-                    this._canTake_[target.id] = canTake;
-                }
 
                 ++assigned;
 
