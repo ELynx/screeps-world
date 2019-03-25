@@ -240,7 +240,12 @@ const calculateCreepsNeeded = function(energyLevel, sourceLevel)
         }
     }
 
-       // cache
+    // cache
+    if (!_countCache_[energyLevel])
+    {
+        _countCache_[energyLevel] = { };
+    }
+
     _countCache_[energyLevel][sourceLevel] = creepsNeeded;
 
     return creepsNeeded.slice(0);
