@@ -12,11 +12,14 @@ energyHarvestController.actRange = 1;
 
 energyHarvestController.roomPrepare = function(room)
 {
+    this._canTake_ = { };
+
     var sources = this._findStaticTargets(room);
 
     for (var i = 0; i < sources.length; ++i)
     {
-        globals.setCanTake(sources[i], this.id, globals.walkableTiles(sources[i]));
+        // hotplug
+        this._canTake_[sources[i].id] = globals.walkableTiles(sources[i]);
     }
 };
 
@@ -29,11 +32,9 @@ energyHarvestController.observeAllCreeps = function(creeps)
         if (creeps[i].memory.ctrl == this.id)
         {
             var source = globals.creepTarget(creeps[i]);
-            const canTake = globals.getCanTake(source, this.id);
-            if (canTake)
-            {
-                globals.setCanTake(source, this.id, canTake - 1);
-            }
+
+            // hotplug
+            this._canTake_[source.id] = this._canTake_[source.id] - 1;
         }
     }
 };
