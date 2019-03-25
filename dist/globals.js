@@ -138,31 +138,6 @@ var globals =
     },
 
     /**
-    **/
-    setCanTake: function(target, id, howMany)
-    {
-        if (!target._canTake_)
-        {
-            target._canTake_ = { id: howMany };
-            return;
-        }
-
-        target._canTake_[id] = howMany;
-    },
-
-    /**
-    **/
-    getCanTake: function(target, id)
-    {
-        if (!target._canTake_)
-        {
-            return undefined;
-        }
-
-        return target._canTake_[id];
-    },
-
-    /**
     Get number of walkable tiles around a position.
     @param {RoomPosition or GameObject} target.
     @return {integer} number of walkable tiles.

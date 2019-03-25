@@ -484,8 +484,8 @@ function Controller(id)
             // check, see if reacheable in any way
             for (var j = 0; j < targets.length; ++j)
             {
-                const curent = targets[j];
-                canTake = globals.getCanTake(curent, this.id);
+                const current = targets[j];
+                var canTake = this._canTake_ ? this._canTake_[current.id] : undefined;
 
                 if (canTake && canTake < 1)
                 {
@@ -495,13 +495,13 @@ function Controller(id)
                 // TODO so much tweaking here
                 const solution = PathFinder.search(
                             creep.pos,
-                            { pos: curent.pos, range: 1 },
+                            { pos: current.pos, range: 1 },
                             { maxRooms: 1, range: this.actRange }
                         );
 
                 if (!solution.incomplete)
                 {
-                    target = curent;
+                    target = current;
                     break;
                 }
             }
@@ -515,7 +515,7 @@ function Controller(id)
 
                 if (canTake)
                 {
-                    globals.setCanTake(target, this.id, canTake - 1);
+                    this._canTake_[target.id] = canTake - 1;
                 }
 
                 ++assigned;
