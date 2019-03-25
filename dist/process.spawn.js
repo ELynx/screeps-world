@@ -198,13 +198,18 @@ const doSpawn = function(spawn, type, roomLevel)
 
 var _countCache_ = { };
 
-const calculateCreepsNeeded = function(roomLevel)
+const calculateCreepsNeeded = function(energyLevel, sourceLevel)
 {
-    const cacheHit = _countCache_[roomLevel];
+    const cacheLevel0 = _countCache_[roomLevel];
 
-    if (cacheHit)
+    if (cacheLevel0)
     {
-        return cacheHit.slice(0);
+        const cacheHit = cacheLevel0[sourceLevel];
+
+        if (cacheHit)
+        {
+            return cacheHit.slice(0);
+        }
     }
 
     // cap off at defined
@@ -227,7 +232,7 @@ const calculateCreepsNeeded = function(roomLevel)
             continue;
         }
 
-        limit = Math.round(limit * room.slvl);
+        limit = Math.round(limit * sourceLevel);
 
         if (creepsNeeded[i] > limit)
         {
@@ -236,7 +241,7 @@ const calculateCreepsNeeded = function(roomLevel)
     }
 
        // cache
-    _countCache_[roomLevel] = creepsNeeded;
+    _countCache_[roomLevel][sourceLevel] = creepsNeeded;
 
     return creepsNeeded.slice(0);
 };
@@ -252,7 +257,7 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    var creepsNeeded = calculateCreepsNeeded(roomLevel);
+    var creepsNeeded = calculateCreepsNeeded(roomLevel, room.memory.slvl);
 
     for (var i = 0; i < creeps.length; ++i)
     {
