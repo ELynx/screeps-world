@@ -200,7 +200,7 @@ var _countCache_ = { };
 
 const calculateCreepsNeeded = function(energyLevel, sourceLevel)
 {
-    const cacheLevel0 = _countCache_[roomLevel];
+    const cacheLevel0 = _countCache_[energyLevel];
 
     if (cacheLevel0)
     {
@@ -213,7 +213,7 @@ const calculateCreepsNeeded = function(energyLevel, sourceLevel)
     }
 
     // cap off at defined
-    var mobLevel = roomLevel;
+    var mobLevel = energyLevel;
     if (mobLevel >= TypeCount.length)
     {
         mobLevel = TypeCount.length - 1;
@@ -241,7 +241,7 @@ const calculateCreepsNeeded = function(energyLevel, sourceLevel)
     }
 
        // cache
-    _countCache_[roomLevel][sourceLevel] = creepsNeeded;
+    _countCache_[energyLevel][sourceLevel] = creepsNeeded;
 
     return creepsNeeded.slice(0);
 };
