@@ -185,7 +185,7 @@ var globals =
 
             for (var x in around)
             {
-                const ys = looked[x];
+                const ys = around[x];
 
                 for (var y in ys)
                 {
@@ -214,7 +214,7 @@ var globals =
                                 }
                             }
 
-                            if (obj.type == LOOK_STRUCTURE)
+                            if (obj.type == LOOK_STRUCTURES)
                             {
                                 if (obj.structure.structureType == STRUCTURE_ROAD)
                                 {

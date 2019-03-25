@@ -1,5 +1,6 @@
 'use strict';
 
+var globals = require('globals');
 var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');
@@ -25,9 +26,9 @@ energyHarvestController.observeAllCreeps = function(creeps)
 
     for (var i = 0; i < creeps.length; ++i)
     {
-        if (creeps.memory.ctrl == this.id)
+        if (creeps[i].memory.ctrl == this.id)
         {
-            var source = globals.creepTarget(creep);
+            var source = globals.creepTarget(creeps[i]);
             const canTake = globals.getCanTake(source, this.id);
             if (canTake)
             {
