@@ -151,6 +151,7 @@ const workHeavy = function(level)
 const TypeBody    = [ workUniversal, workHeavy ];
 const TypeHarvest = [ true,          true      ];
 const TypeRestock = [ true,          false     ];
+const TypeLimit   = [ 1.0,           0.5       ]; // limit by source level
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
                     [ 8,             0         ], // level 1
@@ -206,6 +207,22 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
+    // became less expensive than the following code
+    const spawns = room.find(FIND_MY_SPAWNS,
+        {
+            filter: function(spawn)
+            {
+                return !spawn.spawning && spawn.isActive();
+            }
+        }
+    );
+
+    if (spawns.length == 0)
+    {
+        this.debugLine(room, 'No free spawns found');
+        return;
+    }
+
     // cap off at defined
     var mobLevel = roomLevel;
     if (mobLevel >= TypeCount.length)
@@ -214,7 +231,29 @@ spawnProcess.work = function(room, creeps)
     }
 
     // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
-    // quick check - by # of creeps
+
+    // copy array
+    var creepsNeeded = TypeCount[mobLevel].slice(0);
+
+    // limit by source level
+    for (var i = 0; i < creepsNeeded.length; ++i)
+    {
+        var limit = TypeLimit[i];
+
+        if (!limit)
+        {
+            continue;
+        }
+
+        limit = Math.round(limit * room.slvl);
+
+        if (creepsNeeded[i] > limit)
+        {
+            creepsNeeded[i] = limit;
+        }
+    }
+
+    // only persistent creeps go into rough check
     var persistent = 0;
 
     // speedhack, room actor can calculate this flag
@@ -234,29 +273,11 @@ spawnProcess.work = function(room, creeps)
         }
     }
 
-    if (persistent >= _.sum(TypeCount[mobLevel]))
+    if (persistent >= _.sum(creepsNeeded))
     {
         this.debugLine(room, 'Creep # is enough, no detail check');
         return;
     }
-
-    const spawns = room.find(FIND_MY_SPAWNS,
-        {
-            filter: function(spawn)
-            {
-                return !spawn.spawning && spawn.isActive();
-            }
-        }
-    );
-
-    if (spawns.length == 0)
-    {
-        this.debugLine(room, 'No free spawns found');
-        return;
-    }
-
-    // copy array
-    var creepsNeeded = TypeCount[mobLevel].slice(0);
 
     for (var i = 0; i < creeps.length; ++i)
     {
