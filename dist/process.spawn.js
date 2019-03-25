@@ -196,31 +196,15 @@ const doSpawn = function(spawn, type, roomLevel)
     return false;
 };
 
-spawnProcess.work = function(room, creeps)
+var _countCache_ = { };
+
+const calculateCreepsNeeded = function(roomLevel)
 {
-    this.debugHeader(room);
+    const cacheHit = _countCache_[roomLevel];
 
-    const roomLevel = room.memory.elvl;
-
-    if (roomLevel == 0)
+    if (cacheHit)
     {
-        return;
-    }
-
-    // became less expensive than the following code
-    const spawns = room.find(FIND_MY_SPAWNS,
-        {
-            filter: function(spawn)
-            {
-                return !spawn.spawning && spawn.isActive();
-            }
-        }
-    );
-
-    if (spawns.length == 0)
-    {
-        this.debugLine(room, 'No free spawns found');
-        return;
+        return cacheHit.slice(0);
     }
 
     // cap off at defined
@@ -229,8 +213,6 @@ spawnProcess.work = function(room, creeps)
     {
         mobLevel = TypeCount.length - 1;
     }
-
-    // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
 
     // copy array
     var creepsNeeded = TypeCount[mobLevel].slice(0);
@@ -253,35 +235,60 @@ spawnProcess.work = function(room, creeps)
         }
     }
 
-    // only persistent creeps go into rough check
-    var persistent = 0;
+       // cache
+    _countCache_[roomLevel] = creepsNeeded;
 
-    // speedhack, room actor can calculate this flag
-    if (room._allPersistent_)
-    {
-        persistent = creeps.length;
-    }
-    else
-    {
-        // no flag given, calculate
-        for (var i = 0; i < creeps.length; ++i)
-        {
-            if (creeps[i].memory.levl > 0)
-            {
-                ++persistent;
-            }
-        }
-    }
+    return creepsNeeded.slice(0);
+};
 
-    if (persistent >= _.sum(creepsNeeded))
+spawnProcess.work = function(room, creeps)
+{
+    this.debugHeader(room);
+
+    const roomLevel = room.memory.elvl;
+
+    if (roomLevel == 0)
     {
-        this.debugLine(room, 'Creep # is enough, no detail check');
         return;
     }
+
+    var creepsNeeded = calculateCreepsNeeded(roomLevel);
 
     for (var i = 0; i < creeps.length; ++i)
     {
         --creepsNeeded[creeps[i].memory.btyp];
+    }
+
+    // remember for TTL
+    room.memory.ccnt = creepsNeeded;
+
+    var hasNeeded = false;
+
+    // check
+    for (var i = 0; i < creepsNeeded.length && !hasNeeded; ++i)
+    {
+        hasNeeded = creepsNeeded[i] > 0;
+    }
+
+    if (!hasNeeded)
+    {
+        return;
+    }
+
+    // check for spawns
+    const spawns = room.find(FIND_MY_SPAWNS,
+        {
+            filter: function(spawn)
+            {
+                return !spawn.spawning && spawn.isActive();
+            }
+        }
+    );
+
+    if (spawns.length == 0)
+    {
+        this.debugLine(room, 'No free spawns found');
+        return;
     }
 
     var totalSpawned = 0;

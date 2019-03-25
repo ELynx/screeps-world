@@ -9,7 +9,6 @@ dist - connected to official server
 
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
-(Economy)    Number of creeps per type needed by room.
 
 # Ideas
 Intent pipeline! Do more things in one turn!
