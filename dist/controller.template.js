@@ -466,10 +466,6 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
-            // of them one that can be reached
-            var target = undefined;
-            var canTake = undefined;
-
             // starting with closest, Manhattan distance is "good enough"
             targets.sort(
                 function(t1, t2)
@@ -481,27 +477,33 @@ function Controller(id)
                 }
             );
 
+            // of them one that can be reached
+            var target = undefined;
+            var canTake = undefined;
+
             // check, see if reacheable in any way
             for (var j = 0; j < targets.length; ++j)
             {
-                const current = targets[j];
-                var canTake = this._canTake_ ? this._canTake_[current.id] : undefined;
+                const cTarg = targets[j];
+                const cTake = this._canTake_ ? this._canTake_[cTarg.id] : undefined;
 
-                if (canTake && canTake < 1)
+                if (cTake && cTake < 1)
                 {
+                    //console.log(this.id + ' pass on ' + cTarg.id);
                     continue;
                 }
 
                 // TODO so much tweaking here
                 const solution = PathFinder.search(
                             creep.pos,
-                            { pos: current.pos, range: 1 },
+                            { pos: cTarg.pos, range: 1 },
                             { maxRooms: 1, range: this.actRange }
                         );
 
                 if (!solution.incomplete)
                 {
-                    target = current;
+                    target = cTarg;
+                    canTake = cTake;
                     break;
                 }
             }
@@ -513,9 +515,12 @@ function Controller(id)
                 globals.assignCreep(this, target, creep, extra);
                 creeps.splice(i, 1);
 
-                if (canTake)
+                if (this._canTake_ && canTake)
                 {
-                    this._canTake_[target.id] = canTake - 1;
+                    canTake = canTake - 1;
+                    this._canTake_[target.id] = canTake;
+
+                    console.log(this.id + ' ' + target.id + ' changed can take ' + canTake);
                 }
 
                 ++assigned;

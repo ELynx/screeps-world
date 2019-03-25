@@ -19,7 +19,10 @@ energyHarvestController.roomPrepare = function(room)
     for (var i = 0; i < sources.length; ++i)
     {
         // hotplug
-        this._canTake_[sources[i].id] = globals.walkableTiles(sources[i]);
+        const canTake = globals.walkableTiles(sources[i]);
+        this._canTake_[sources[i].id] = canTake;
+
+        //console.log(this.id + ' init ' + sources[i].id + ' can take ' + canTake);
     }
 };
 
@@ -29,12 +32,15 @@ energyHarvestController.observeAllCreeps = function(creeps)
 
     for (var i = 0; i < creeps.length; ++i)
     {
-        if (creeps[i].memory.ctrl == this.id)
-        {
-            var source = globals.creepTarget(creeps[i]);
+        const creep = creeps[i];
 
+        if (creep.memory.ctrl == this.id)
+        {
             // hotplug
-            this._canTake_[source.id] = this._canTake_[source.id] - 1;
+            const canTake = this._canTake_[creep.memory.dest] - 1;
+            this._canTake_[creep.memory.dest] = canTake;
+
+            //console.log(this.id + ' decrease' + sources[i].id + ' can take ' + canTake);
         }
     }
 };
