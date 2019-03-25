@@ -14,7 +14,8 @@ energyHarvestController.roomPrepare = function(room)
 {
     this._canTake_ = { };
 
-    var sources = this._findStaticTargets(room);
+    // TODO because cache is cleared much later
+    var sources = this.staticTargets(room);
 
     for (var i = 0; i < sources.length; ++i)
     {
@@ -24,6 +25,8 @@ energyHarvestController.roomPrepare = function(room)
 
         //console.log(this.id + ' init ' + sources[i].id + ' can take ' + canTake);
     }
+
+    this._staticTargetCache = sources;
 };
 
 energyHarvestController.observeAllCreeps = function(creeps)
@@ -40,7 +43,7 @@ energyHarvestController.observeAllCreeps = function(creeps)
             const canTake = this._canTake_[creep.memory.dest] - 1;
             this._canTake_[creep.memory.dest] = canTake;
 
-            //console.log(this.id + ' decrease' + sources[i].id + ' can take ' + canTake);
+            //console.log(this.id + ' decrease' + creep.memory.dest + ' can take ' + canTake);
         }
     }
 };
