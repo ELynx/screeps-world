@@ -151,6 +151,7 @@ const workHeavy = function(level)
 const TypeBody    = [ workUniversal, workHeavy ];
 const TypeHarvest = [ true,          true      ];
 const TypeRestock = [ true,          false     ];
+const TypeLimit   = [ 1.0,           0.5       ]; // limit by source level
 const TypeCount   = [
                     [ 0,             0         ], // level 0, no own controller
                     [ 8,             0         ], // level 1
@@ -195,6 +196,61 @@ const doSpawn = function(spawn, type, roomLevel)
     return false;
 };
 
+var _countCache_ = { };
+
+const calculateCreepsNeeded = function(energyLevel, sourceLevel)
+{
+    const cacheLevel0 = _countCache_[energyLevel];
+
+    if (cacheLevel0)
+    {
+        const cacheHit = cacheLevel0[sourceLevel];
+
+        if (cacheHit)
+        {
+            return cacheHit.slice(0);
+        }
+    }
+
+    // cap off at defined
+    var mobLevel = energyLevel;
+    if (mobLevel >= TypeCount.length)
+    {
+        mobLevel = TypeCount.length - 1;
+    }
+
+    // copy array
+    var creepsNeeded = TypeCount[mobLevel].slice(0);
+
+    // limit by source level
+    for (var i = 0; i < creepsNeeded.length; ++i)
+    {
+        var limit = TypeLimit[i];
+
+        if (!limit)
+        {
+            continue;
+        }
+
+        limit = Math.round(limit * sourceLevel);
+
+        if (creepsNeeded[i] > limit)
+        {
+            creepsNeeded[i] = limit;
+        }
+    }
+
+    // cache
+    if (!_countCache_[energyLevel])
+    {
+        _countCache_[energyLevel] = { };
+    }
+
+    _countCache_[energyLevel][sourceLevel] = creepsNeeded;
+
+    return creepsNeeded.slice(0);
+};
+
 spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
@@ -206,40 +262,30 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    // cap off at defined
-    var mobLevel = roomLevel;
-    if (mobLevel >= TypeCount.length)
+    var creepsNeeded = calculateCreepsNeeded(roomLevel, room.memory.slvl);
+
+    for (var i = 0; i < creeps.length; ++i)
     {
-        mobLevel = TypeCount.length - 1;
+        --creepsNeeded[creeps[i].memory.btyp];
     }
 
-    // STRATEGY creeps will rotate "soon enough" on global scale, save CPU
-    // quick check - by # of creeps
-    var persistent = 0;
+    // remember for TTL
+    room.memory.ccnt = creepsNeeded;
 
-    // speedhack, room actor can calculate this flag
-    if (room._allPersistent_)
+    var hasNeeded = false;
+
+    // check
+    for (var i = 0; i < creepsNeeded.length && !hasNeeded; ++i)
     {
-        persistent = creeps.length;
-    }
-    else
-    {
-        // no flag given, calculate
-        for (var i = 0; i < creeps.length; ++i)
-        {
-            if (creeps[i].memory.levl > 0)
-            {
-                ++persistent;
-            }
-        }
+        hasNeeded = creepsNeeded[i] > 0;
     }
 
-    if (persistent >= _.sum(TypeCount[mobLevel]))
+    if (!hasNeeded)
     {
-        this.debugLine(room, 'Creep # is enough, no detail check');
         return;
     }
 
+    // check for spawns
     const spawns = room.find(FIND_MY_SPAWNS,
         {
             filter: function(spawn)
@@ -253,14 +299,6 @@ spawnProcess.work = function(room, creeps)
     {
         this.debugLine(room, 'No free spawns found');
         return;
-    }
-
-    // copy array
-    var creepsNeeded = TypeCount[mobLevel].slice(0);
-
-    for (var i = 0; i < creeps.length; ++i)
-    {
-        --creepsNeeded[creeps[i].memory.btyp];
     }
 
     var totalSpawned = 0;

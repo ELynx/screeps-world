@@ -19,21 +19,17 @@ ttlController.enough = function(room)
 ttlController.act = function(spawn, creep)
 {
     var recycle = false;
+    var countRecycle = false;
     var renew = false;
     var rc = false;
 
     const strength = globals.roomEnergyToStrength(spawn.room.memory.elvl);
 
-    // TODO how to know if needed
-    //if (needed count is greater than present)
-    //{
-    //    recycle
-    //}
-
-    // temporary creep
-    if (creep.memory.levl == 0)
+    // if not needed anymore
+    if (spawn.room.memory.ccnt && spawn.room.memory.ccnt[creep.memory.btyp] < 0)
     {
         recycle = true;
+        countRecycle = true;
     }
     // if from previous level
     else if (creep.memory.levl < strength)
@@ -73,6 +69,11 @@ ttlController.act = function(spawn, creep)
     if (recycle)
     {
         rc = spawn.recycleCreep(creep) == OK;
+
+        if (rc && countRecycle)
+        {
+            ++spawn.room.memory.ccnt[creep.memory.btyp];
+        }
     }
 
     if (renew)

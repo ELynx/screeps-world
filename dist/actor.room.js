@@ -104,7 +104,7 @@ var roomActor =
     @param {Room} room.
     @return Energy level of room.
     **/
-    roomLevel: function(room)
+    energyLevel: function(room)
     {
         if (room.controller && room.controller.my)
         {
@@ -155,6 +155,24 @@ var roomActor =
     },
 
     /**
+    Calculate room source level.
+    @param {Room} room.
+    @return Source level of room.
+    **/
+    sourceLevel: function(room)
+    {
+        const sources = room.find(FIND_SOURCES);
+
+        var total = 0;
+        for (var i = 0; i < sources.length; ++i)
+        {
+            total = total + globals.walkableTiles(sources[i]);
+        }
+
+        return total;
+    },
+
+    /**
     @param {Room} room
     **/
     act: function(room)
@@ -165,7 +183,8 @@ var roomActor =
         if (!room.memory.intl ||
              room.memory.intl < Game.time - 1500)
         {
-            room.memory.elvl = this.roomLevel(room);
+            room.memory.elvl = this.energyLevel(room);
+            room.memory.slvl = this.sourceLevel(room);
 
             room.memory.intl = Game.time;
         }
@@ -173,7 +192,6 @@ var roomActor =
         room._debugY_ = undefined;
         room._hasRestockers_ = undefined;
         room._hasEnergetic_ = undefined;
-        room._allPersistent_ = true;
         room._damaged_ = [];
 
         // arbitrary scope
@@ -229,11 +247,6 @@ var roomActor =
                     }
 
                     continue;
-                }
-
-                if (creep.memory.levl == 0)
-                {
-                    room._allPersistent_ = false;
                 }
 
                 if (creep.hits < creep.hitsMax)

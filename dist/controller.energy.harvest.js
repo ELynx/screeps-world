@@ -1,6 +1,5 @@
 'use strict';
 
-var globals = require('globals');
 var Controller = require('controller.template');
 
 var energyHarvestController = new Controller('energy.harvest');
@@ -10,33 +9,11 @@ energyHarvestController.hasRestockers = undefined;
 
 energyHarvestController.actRange = 1;
 
-energyHarvestController.roomPrepare = function(room)
-{
-    this._canTake_ = { };
-
-    var sources = this._findStaticTargets(room);
-
-    for (var i = 0; i < sources.length; ++i)
-    {
-        // hotplug
-        this._canTake_[sources[i].id] = globals.walkableTiles(sources[i]);
-    }
-};
+energyHarvestController.smartTargeting = true; // since sources are crowded
 
 energyHarvestController.observeAllCreeps = function(creeps)
 {
     this.hasRestockers = this.checkRestockers(creeps);
-
-    for (var i = 0; i < creeps.length; ++i)
-    {
-        if (creeps[i].memory.ctrl == this.id)
-        {
-            var source = globals.creepTarget(creeps[i]);
-
-            // hotplug
-            this._canTake_[source.id] = this._canTake_[source.id] - 1;
-        }
-    }
 };
 
 energyHarvestController.act = function(source, creep)

@@ -9,9 +9,6 @@ dist - connected to official server
 
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
-(Economy)    Migrate to _canTake_.
-(Economy)    Number of creeps per type needed by room.
-(Economy)    Number of creeps depend on source number.
 
 # Ideas
 Intent pipeline! Do more things in one turn!
