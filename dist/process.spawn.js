@@ -18,7 +18,7 @@ TOUGH           10
 CLAIM           600
 **/
 
-var _workUniversalCache_ = { };
+spawnProcess.workUniversalCache = { };
 
 /**
 Body calculator.
@@ -26,14 +26,14 @@ Universal worker that could do any Work and restock supplies.
 @param {integer} level.
 @return Creep body definition.
 **/
-const workUniversal = function(level)
+spawnProcess.workUniversal = function(level)
 {
     if (level == 0)
     {
         return [];
     }
 
-    const cacheHit = _workUniversalCache_[level];
+    const cacheHit = this.workUniversalCache[level];
 
     if (cacheHit)
     {
@@ -58,12 +58,12 @@ const workUniversal = function(level)
         result = front.concat(result).concat(back);
     }
 
-    _workUniversalCache_[level] = result;
+    this.workUniversalCache[level] = result;
 
     return result;
 };
 
-var _workHeavyCache_ = { };
+spawnProcess.workHeavyCache = { };
 
 /**
 Body calculator.
@@ -71,7 +71,7 @@ Heavy worker that is best when stationary at some area and work.
 @param {integer} level.
 @return Creep body definition.
 **/
-const workHeavy = function(level)
+spawnProcess.workHeavy = function(level)
 {
     if (level == 0)
     {
@@ -101,7 +101,7 @@ const workHeavy = function(level)
         return [WORK, WORK, WORK, WORK, /*WORK,*/ CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     }
 
-    const cacheHit = _workHeavyCache_[level];
+    const cacheHit = this.workHeavyCache[level];
 
     if (cacheHit)
     {
@@ -143,64 +143,16 @@ const workHeavy = function(level)
         }
     );
 
-    _workHeavyCache_[level] = result;
+    this.workHeavyCache[level] = result;
 
     return result;
 };
 
-const TypeBody    = [ workUniversal, workHeavy ];
-const TypeHarvest = [ true,          true      ];
-const TypeRestock = [ true,          false     ];
-const TypeLimit   = [ 1.0,           0.5       ]; // limit by source level
-const TypeCount   = [
-                    [ 0,             0         ], // level 0, no own controller
-                    [ 8,             0         ], // level 1
-                    [ 8,             2         ], // level 2
-                    [ 10,            4         ]  // level 3, crowd enough
-                                               ];
+spawnProcess.countCache = { };
 
-/**
-Spawn implementation.
-@param {Spawn} spawn.
-@param {integer} type.
-@param {integer} level.
-@return True if creep spawn initiated.
-**/
-const doSpawn = function(spawn, type, roomLevel)
+spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
 {
-    const name = spawn.id + '_' + Game.time;
-    const strength = globals.roomEnergyToStrength(roomLevel);
-    const bodyType = TypeBody[type](strength);
-
-    if (spawn.spawnCreep(bodyType, name, { dryRun: true }) == OK)
-    {
-        return spawn.spawnCreep(bodyType, name,
-            {
-                memory:
-                {
-                    // 'undefined' is not using memory
-                    crum: spawn.room.name,
-                    ctrl: globals.NO_CONTROL,
-                    dest: globals.NO_DESTINATION,
-                    dact: globals.NO_ACT_RANGE,
-                    xtra: globals.NO_EXTRA,
-                    btyp: type,
-                    levl: strength,
-                    hvst: TypeHarvest[type],
-                    rstk: TypeRestock[type]
-                }
-            }
-        ) == OK;
-    }
-
-    return false;
-};
-
-var _countCache_ = { };
-
-const calculateCreepsNeeded = function(energyLevel, sourceLevel)
-{
-    const cacheLevel0 = _countCache_[energyLevel];
+    const cacheLevel0 = this.countCache[energyLevel];
 
     if (cacheLevel0)
     {
@@ -241,15 +193,64 @@ const calculateCreepsNeeded = function(energyLevel, sourceLevel)
     }
 
     // cache
-    if (!_countCache_[energyLevel])
+    if (!this.countCache[energyLevel])
     {
-        _countCache_[energyLevel] = { };
+        this.countCache[energyLevel] = { };
     }
 
-    _countCache_[energyLevel][sourceLevel] = creepsNeeded;
+    this.countCache[energyLevel][sourceLevel] = creepsNeeded;
 
     return creepsNeeded.slice(0);
 };
+
+/**
+Spawn implementation.
+@param {Spawn} spawn.
+@param {integer} type.
+@param {integer} level.
+@return True if creep spawn initiated.
+**/
+spawnProcess.doSpawn = function(spawn, type, roomLevel)
+{
+    const name = spawn.id + '_' + Game.time;
+    const strength = globals.roomEnergyToStrength(roomLevel);
+    const body = TypeBody[type](strength);
+
+    if (spawn.spawnCreep(body, name, { dryRun: true }) == OK)
+    {
+        return spawn.spawnCreep(body, name,
+            {
+                memory:
+                {
+                    // 'undefined' is not using memory
+                    crum: spawn.room.name,
+                    ctrl: globals.NO_CONTROL,
+                    dest: globals.NO_DESTINATION,
+                    dact: globals.NO_ACT_RANGE,
+                    xtra: globals.NO_EXTRA,
+                    btyp: type,
+                    levl: strength,
+                    hvst: TypeHarvest[type],
+                    rstk: TypeRestock[type]
+                }
+            }
+        ) == OK;
+    }
+
+    return false;
+};
+
+const TypeBody    = [ spawnProcess.workUniversal,
+                                     spawnProcess.workHeavy ];
+const TypeHarvest = [ true,          true                   ];
+const TypeRestock = [ true,          false                  ];
+const TypeLimit   = [ 1.0,           0.5                    ]; // limit by source level
+const TypeCount   = [
+                    [ 0,             0                      ], // level 0, no own controller
+                    [ 8,             0                      ], // level 1
+                    [ 8,             2                      ], // level 2
+                    [ 10,            4                      ]  // level 3, crowd enough
+                                                            ];
 
 spawnProcess.work = function(room, creeps)
 {
@@ -262,7 +263,7 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    var creepsNeeded = calculateCreepsNeeded(roomLevel, room.memory.slvl);
+    var creepsNeeded = this.calculateCreepsNeeded(roomLevel, room.memory.slvl);
 
     for (var i = 0; i < creeps.length; ++i)
     {
@@ -312,7 +313,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = doSpawn(spawns[i], type, roomLevel);
+                spawned = this.doSpawn(spawns[i], type, roomLevel);
             }
         }
 
