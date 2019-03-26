@@ -19,14 +19,6 @@ PathFinder opt flee.
 moveTo has same options as PathFinder.
 StructureContainer is not owned.
 
-Dynamic creep life:
--> old creeps undergo a check;
---> TODO if not needed anymore recycle;
---> if level is less than current recycle;
---> otherwise renew;
---> spawn started to spawn creep can wait by return true.
---> give energy to spawn while nearby.
-
 Temporary creeps:
 -> spawn on demand;
 --> recycle by "Dynamic creep life" afterwards.
