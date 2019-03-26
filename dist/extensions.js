@@ -17,8 +17,8 @@ Creep.prototype.caveIndex = function()
         {
             for (var x = 0; x < caveMap[0].length - 1; ++x)
             {
-                if (pos.x >= caveMap[0][x] &&
-                    pos.x <  caveMap[0][x + 1])
+                if (this.pos.x >= caveMap[0][x] &&
+                    this.pos.x <  caveMap[0][x + 1])
                 {
                     cidx = x;
                     break;
@@ -27,8 +27,8 @@ Creep.prototype.caveIndex = function()
 
             for (var y = 0; y < caveMap[1].length - 1; ++y)
             {
-                if (pos.y >= caveMap[1][y] &&
-                    pos.y <  caveMap[1][y + 1])
+                if (this.pos.y >= caveMap[1][y] &&
+                    this.pos.y <  caveMap[1][y + 1])
                 {
                     cidx = cidx + (caveMap[0].length - 1) * y;
                     break;
