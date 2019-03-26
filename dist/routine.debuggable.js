@@ -17,7 +17,7 @@ function makeDebuggable(target, archetype)
     {
         if (this.verbose)
         {
-            globals.roomDebug(room, what);
+            room.roomDebug(what);
         }
     };
 
