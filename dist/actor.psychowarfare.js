@@ -1,28 +1,10 @@
 'use strict';
 
 /**
-Psycho of the day text.
+Psycho of the day.
 Ten characters long. Infinitely scary and/or hilarious.
 **/
-
-// When there is only one creep in a room, imitate dialog
-const potdSingle = [
-//  |----------| limit
-    'Wait!'
-   ,'Dont attac'
-   ,'Exploring'
-   ,'Will leave'
-   ,'Sorry'
-   ,'roomsimnot'
-   ,'room[sim]n'
-   ,'DAMN'
-   ,'OK got it.'
-   ,'DAMN!!!!!'
-];
-
-// When there are more creeps, just spam
-// Each creep gets a line
-const potdGroup = [
+const PotD = [
 //  |----------| limit
     'E2-E4'
    ,'pew pew 💥'
@@ -56,14 +38,12 @@ var psychoWarfareActor =
         if (creeps.length == 0)
             return;
 
-        const speek = creeps.length == 1 ? potdSingle : potdGroup;
-
         for (var i = 0; i < creeps.length; ++i)
         {
-            if (this.index >= speek.length)
+            if (this.index >= PotD.length)
                 this.index = 0;
 
-            creeps[i].say(speek[this.index++]);
+            creeps[i].say(PotD[this.index++]);
         }
     }
 };
