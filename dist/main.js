@@ -1,5 +1,6 @@
 'use strict';
 
+var extensions    = require('extensions');
 var memoryManager = require('routine.memory');
 var roomActor     = require('actor.room');
 var manualStrelok = require('manual.strelok');
