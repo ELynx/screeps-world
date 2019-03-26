@@ -11,6 +11,7 @@ const TowerRestock   = 0.9;
 // special for this controller, varying strategy
 energyRestockController.hasRestockers = undefined;
 energyRestockController.restockable = undefined;
+energyRestockController.actRange = 1;
 
 energyRestockController.roomPrepare = function(room)
 {

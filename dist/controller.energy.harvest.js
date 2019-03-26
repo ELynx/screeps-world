@@ -6,9 +6,7 @@ var energyHarvestController = new Controller('energy.harvest');
 
 // special for this controller, varying strategy
 energyHarvestController.hasRestockers = undefined;
-
 energyHarvestController.actRange = 1;
-
 energyHarvestController.smartTargeting = true; // since sources are crowded
 
 energyHarvestController.observeAllCreeps = function(creeps)

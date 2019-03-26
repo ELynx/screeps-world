@@ -5,7 +5,6 @@ var Controller = require('controller.template');
 var buildController = new Controller('build');
 
 buildController.actRange = 3;
-
 buildController.focusDynamic = true;
 
 buildController.act = function(site, creep)
