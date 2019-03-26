@@ -8,11 +8,13 @@ var manualClaim = require('manual.claim');
 //const profiler = require('screeps-profiler');
 //profiler.enable();
 
+console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
+
 module.exports.loop = function()
 {
-    //console.log('Limit ' + Game.cpu.limit);
-    //console.log('Tick limit ' + Game.cpu.tickLimit);
-    //console.log('Bucket ' + Game.cpu.bucket);
+    //console.log('Hard limit ' + Game.cpu.limit);
+    //console.log('Soft limit ' + Game.cpu.tickLimit);
+    //console.log('Bucket     ' + Game.cpu.bucket);
 
     //profiler.wrap(function() {
 
@@ -133,5 +135,5 @@ module.exports.loop = function()
     manualStrelok();
     manualClaim();
 
-    //console.log('Used ' + Game.cpu.getUsed());
+    //console.log('Used       ' + Game.cpu.getUsed());
 }
