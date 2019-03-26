@@ -40,7 +40,7 @@ Creep.prototype.caveIndex = function()
         this._cidxT_ = Game.time;
     }
 
-    return this_.cidx_;
+    return this._cidx_;
 };
 
 Room.prototype._verbose_ = false;
