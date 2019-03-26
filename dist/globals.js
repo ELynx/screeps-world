@@ -41,28 +41,6 @@ var globals =
     roomControllersObserveAll: { },
 
     /**
-    Flag to print debug into room visuals.
-    **/
-    verbose: false,
-
-    /**
-    Print a message to room overlay.
-    @param {Room} room.
-    @param {string} what.
-    **/
-    roomDebug: function(room, what)
-    {
-        if (this.verbose)
-        {
-            var index = room._debugY_ || 0;
-
-            room.visual.text(what, 0, index++, { align: 'left' });
-
-            room._debugY_ = index;
-        }
-    },
-
-    /**
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/

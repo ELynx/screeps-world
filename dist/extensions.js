@@ -42,3 +42,21 @@ Creep.prototype.caveIndex = function()
 
     return this_.cidx_;
 };
+
+Room.prototype._verbose_ = false;
+
+Room.prototype.roomDebug = function(what)
+{
+    if (this._verbose_)
+    {
+        if (!this._debugY_ ||
+            !this._verboseT_ ||
+             this._verboseT_ != Game.time)
+        {
+            this._debugY_ = 0;
+            this._verboseT_ = Game.time;
+        }
+
+        room.visual.text(what, 0, this._debugY_++, { align: 'left' });
+    }
+};

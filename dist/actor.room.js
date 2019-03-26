@@ -163,12 +163,12 @@ var roomActor =
             // if all creeps had been taken
             if (creeps.length == 0)
             {
-                globals.roomDebug(room, 'All creeps assigned after controller [' + id + ']');
+                room.roomDebug('All creeps assigned after controller [' + id + ']');
                 return;
             }
             else
             {
-                globals.roomDebug(room, 'Creeps left ' + creeps.length);
+                room.roomDebug('Creeps left ' + creeps.length);
             }
         }
     },
@@ -182,7 +182,6 @@ var roomActor =
         const t0 = Game.cpu.getUsed();
 
         // clean up all temporary room variables
-        room._debugY_ = undefined;
         room._hasRestockers_ = undefined;
         room._hasEnergetic_ = undefined;
 
@@ -214,7 +213,7 @@ var roomActor =
             }
         );
 
-        globals.roomDebug(room, 'Room creeps     ' + roomCreeps.length);
+        room.roomDebug('Room creeps     ' + roomCreeps.length);
 
         // not all friendly or own creeps are in roomCreeps, but will do for a time
         towerProcess.work(room, roomCreeps, hostileCreeps);
@@ -353,7 +352,7 @@ var roomActor =
                                     {
                                         // so assignment is not dropped
                                         rc = OK;
-                                        globals.roomDebug(room, 'Creep ' + creep.name + ' stalls');
+                                        room.roomDebug('Creep ' + creep.name + ' stalls');
                                     }
                                 }
 
@@ -383,11 +382,11 @@ var roomActor =
             } // end of creeps loop
 
             // log statistics
-            globals.roomDebug(room, 'Assigned creeps ' + assigned);
-            globals.roomDebug(room, '-> working      ' + working);
-            globals.roomDebug(room, '-> resting      ' + resting);
-            globals.roomDebug(room, '-> moving       ' + moving);
-            globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
+            room.roomDebug('Assigned creeps ' + assigned);
+            room.roomDebug('-> working      ' + working);
+            room.roomDebug('-> resting      ' + resting);
+            room.roomDebug('-> moving       ' + moving);
+            room.roomDebug('Free creeps     ' + unassignedCreeps.length);
         } // end of roomCreeps
 
         if (unassignedCreeps.length > 0)
@@ -399,7 +398,7 @@ var roomActor =
 
         spawnProcess.work(room, roomCreeps);
 
-        globals.roomDebug(room, 'HCPU: ' + globals.hardCpuUsed(cpuZero) + '%');
+        room.roomDebug('HCPU: ' + globals.hardCpuUsed(cpuZero) + '%');
 
     } // end of act method
 };
