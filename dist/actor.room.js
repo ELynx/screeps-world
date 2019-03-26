@@ -159,6 +159,9 @@ var roomActor =
     **/
     act: function(room)
     {
+        // t0 time mark
+        const cpuZero = Game.cpu.getUsed();
+
         if (!room.memory.intl ||
              room.memory.intl < Game.time - 1500)
         {
@@ -304,7 +307,33 @@ var roomActor =
                             }
                             else
                             {
-                                keepAssignment = creep.moveTo(destination, { maxRooms: 1, range: creep.memory.dact }) == OK;
+                                // STRATEGY creep movement, main CPU sink
+
+                                // first move by cached path
+                                var rc = creep.moveTo(destination, { noPathFinding: true });
+
+                                // no movement, see if pathfinding is possible
+                                if (rc == ERR_NOT_FOUND)
+                                {
+                                    // from hard limit, try to fill in bucket; precent for simplicity
+                                    const cpuUsed = globals.hardCpuUsed(cpuZero);
+
+                                    // TODO room limit
+                                    // TODO other operations take CPU too
+                                    if (cpuUsed < 40)
+                                    {
+                                        // STRATEGY tweak point for creep movement
+                                        rc = creep.moveTo(destination, { maxRooms: 1, range: creep.memory.dact });
+                                    }
+                                    else
+                                    {
+                                        // so assignment is not dropped
+                                        rc = OK;
+                                        globals.roomDebug(room, 'Creep ' + creep.name + 'stalls');
+                                    }
+                                }
+
+                                keepAssignment = rc == OK;
                                 moving = moving + keepAssignment;
                             }
                         }
@@ -394,6 +423,9 @@ var roomActor =
             }
         }
         // end of arbitrary scope
+
+        globals.roomDebug(room, 'HCPU: ' + globals.hardCpuUsed(cpuZero) + '%');
+
     } // end of act method
 };
 
