@@ -19,6 +19,10 @@ function Process(id)
     @param {array<Creeps>} creeps that might be interesting for process.
     **/
     this.work = undefined;
+    
+    this.register = function()
+    {
+    };
 };
 
 module.exports = Process;
