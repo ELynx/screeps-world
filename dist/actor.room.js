@@ -342,7 +342,7 @@ var roomActor =
                                     {
                                         // so assignment is not dropped
                                         rc = OK;
-                                        globals.roomDebug(room, 'Creep ' + creep.name + 'stalls');
+                                        globals.roomDebug(room, 'Creep ' + creep.name + ' stalls');
                                     }
                                 }
 
