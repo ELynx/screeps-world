@@ -53,8 +53,7 @@ energyRestockController.staticTargets = function(room)
             const creep = this.restockable[i];
             const capacityThreshold = /*Math.ceil(*/DynamicRestock * creep.carryCapacity/*)*/;
 
-            if (creep._sumcarry_   < capacityThreshold ||
-                _.sum(creep.carry) < capacityThreshold)
+            if (creep.sumCarry() < capacityThreshold)
             {
                 result.push(creep);
             }

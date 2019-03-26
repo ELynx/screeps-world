@@ -270,13 +270,9 @@ var roomActor =
                     }
                 }
 
-                // clean up all temporary creep variables
-                creep._cidx_ = undefined;
-                creep._sumcarry_ = _.sum(creep.carry);
-
                 // TODO integrate
                 // hotplug - grab resources nearby
-                if (creep._sumcarry_ < creep.carryCapacity && !creep.memory.manual)
+                if (creep.sumCarry() < creep.carryCapacity && !creep.memory.manual)
                 {
                     var wasGrabbed = false;
 
