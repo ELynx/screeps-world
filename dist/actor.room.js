@@ -339,7 +339,7 @@ var roomActor =
                                 if (rc == ERR_NOT_FOUND)
                                 {
                                     // percent
-                                    const cpuUsed = globals.hardCpuUsed(cpuZero);
+                                    const cpuUsed = globals.hardCpuUsed(t0);
 
                                     // TODO room limit
                                     // TODO other operations take CPU too
