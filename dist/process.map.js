@@ -40,4 +40,6 @@ mapProcess.work = function(room, creeps)
     }
 };
 
+mapProcess.register();
+
 module.exports = mapProcess;

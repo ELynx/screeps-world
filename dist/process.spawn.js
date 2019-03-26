@@ -328,4 +328,6 @@ spawnProcess.work = function(room, creeps)
     }
 };
 
+spawnProcess.register();
+
 module.exports = spawnProcess;
