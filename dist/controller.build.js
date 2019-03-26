@@ -19,9 +19,7 @@ buildController.dynamicTargets = function(room, creep)
     //const hasSpawn = spawns.length > 0;
     //(hasSpawn || site.structureType == STRUCTURE_SPAWN);
 
-    // TODO what can be built with creep on
-    // roads
-    // ramparts?
+    // TODO OBSTACLE_OBJECT_TYPES
     return this._lookAroundCreep(
         room,
         LOOK_CONSTRUCTION_SITES,
