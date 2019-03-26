@@ -17,86 +17,6 @@ var repairController        = require('controller.repair');
 var buildController         = require('controller.build');
 var controllerController    = require('controller.controller');
 
-/**
-Prepare controllers for next room.
-@param {Room} room.
-**/
-const roomControllersPrepare = function(room)
-{
-    for (const id in globals.roomControllersPrepare)
-    {
-        globals.roomControllersPrepare[id].roomPrepare(room);
-    }
-};
-
-/**
-Find controller and let it observe a creep.
-@param {Creep} creep.
-**/
-const roomControllersObserveOwn = function(creep)
-{
-    const controller = globals.roomControllersObserveOwn[creep.memory.ctrl];
-
-    if (controller)
-    {
-        controller.observeMyCreep(creep);
-    }
-};
-
-/**
-Let controller see all creeps.
-@param {array<Creep>} creeps.
-**/
-const roomControllersObserveAll = function(creeps)
-{
-    for (const id in globals.roomControllersObserveAll)
-    {
-        globals.roomControllersObserveAll[id].observeAllCreeps(creeps);
-    }
-};
-
-/**
-Find a controller, execute it's act.
-@param {Object} destination object.
-@param {Creep} creep.
-@return True if creep was acted upon.
-**/
-const roomControllersAct = function(destination, creep)
-{
-    const controller = globals.roomControllers[creep.memory.ctrl];
-
-    if (controller)
-    {
-        return controller.act(destination, creep);
-    }
-
-    return false;
-};
-
-/**
-Let room controllers do theit jobs.
-@param {Room} room.
-@param {array<Creep>} creeps.
-**/
-const roomControllersControl = function(room, creeps)
-{
-    for (const id in globals.roomControllers)
-    {
-        creeps = globals.roomControllers[id].control(room, creeps);
-
-        // if all creeps had been taken
-        if (creeps.length == 0)
-        {
-            globals.roomDebug(room, 'All creeps assigned after controller [' + id + ']');
-            return;
-        }
-        else
-        {
-            globals.roomDebug(room, 'Creeps left ' + creeps.length);
-        }
-    }
-};
-
 var roomActor =
 {
     /**
@@ -173,6 +93,86 @@ var roomActor =
     },
 
     /**
+    Prepare controllers for next room.
+    @param {Room} room.
+    **/
+    roomControllersPrepare: function(room)
+    {
+        for (const id in globals.roomControllersPrepare)
+        {
+            globals.roomControllersPrepare[id].roomPrepare(room);
+        }
+    },
+
+    /**
+    Find controller and let it observe a creep.
+    @param {Creep} creep.
+    **/
+    roomControllersObserveOwn: function(creep)
+    {
+        const controller = globals.roomControllersObserveOwn[creep.memory.ctrl];
+
+        if (controller)
+        {
+            controller.observeMyCreep(creep);
+        }
+    },
+
+    /**
+    Let controller see all creeps.
+    @param {array<Creep>} creeps.
+    **/
+    roomControllersObserveAll: function(creeps)
+    {
+        for (const id in globals.roomControllersObserveAll)
+        {
+            globals.roomControllersObserveAll[id].observeAllCreeps(creeps);
+        }
+    },
+
+    /**
+    Find a controller, execute it's act.
+    @param {Object} destination object.
+    @param {Creep} creep.
+    @return True if creep was acted upon.
+    **/
+    roomControllersAct: function(destination, creep)
+    {
+        const controller = globals.roomControllers[creep.memory.ctrl];
+
+        if (controller)
+        {
+            return controller.act(destination, creep);
+        }
+
+        return false;
+    },
+
+    /**
+    Let room controllers do theit jobs.
+    @param {Room} room.
+    @param {array<Creep>} creeps.
+    **/
+    roomControllersControl: function(room, creeps)
+    {
+        for (const id in globals.roomControllers)
+        {
+            creeps = globals.roomControllers[id].control(room, creeps);
+
+            // if all creeps had been taken
+            if (creeps.length == 0)
+            {
+                globals.roomDebug(room, 'All creeps assigned after controller [' + id + ']');
+                return;
+            }
+            else
+            {
+                globals.roomDebug(room, 'Creeps left ' + creeps.length);
+            }
+        }
+    },
+
+    /**
     @param {Room} room
     **/
     act: function(room)
@@ -196,7 +196,7 @@ var roomActor =
 
         // arbitrary scope
         {
-            roomControllersPrepare(room);
+            this.roomControllersPrepare(room);
         }
         // end of arbitrary scope
 
@@ -308,7 +308,7 @@ var roomActor =
                     {
                         if (creep.pos.inRangeTo(destination, creep.memory.dact))
                         {
-                            keepAssignment = roomControllersAct(destination, creep);
+                            keepAssignment = this.roomControllersAct(destination, creep);
                             working = working + keepAssignment;
                         }
                         else
@@ -354,7 +354,7 @@ var roomActor =
 
                     if (keepAssignment)
                     {
-                        roomControllersObserveOwn(creep);
+                        this.roomControllersObserveOwn(creep);
 
                         ++assigned;
                     }
@@ -430,9 +430,9 @@ var roomActor =
 
             if (unassignedCreeps.length > 0)
             {
-                roomControllersObserveAll(roomCreeps);
+                this.roomControllersObserveAll(roomCreeps);
 
-                roomControllersControl(room, unassignedCreeps);
+                this.roomControllersControl(room, unassignedCreeps);
             }
         }
         // end of arbitrary scope
