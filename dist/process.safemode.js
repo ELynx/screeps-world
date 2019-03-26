@@ -28,7 +28,7 @@ safemodeProcess.work = function(room, hostileCreeps)
 
                     const flag = Game.flags[flagName];
 
-                    if (flag.pos.roomName != name)
+                    if (flag.pos.roomName != room.name)
                     {
                         continue;
                     }
