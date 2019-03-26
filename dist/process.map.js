@@ -4,7 +4,7 @@ var Process = require('process.template');
 
 var mapProcess = new Process('map');
 
-mapProcess.work = function(room, creeps)
+mapProcess.work = function(room)
 {
     this.debugHeader(room);
 

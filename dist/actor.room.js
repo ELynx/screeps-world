@@ -2,9 +2,10 @@
 
 var globals = require('globals');
 
+var safemodeProcess         = require('process.safemode');
 var mapProcess              = require('process.map');
+var towerProcess            = require('process.tower');
 var spawnProcess            = require('process.spawn');
-var psychoWarfare           = require('actor.psychowarfare');
 
 /**
 Order of load is priority order for creep assignment.
@@ -177,33 +178,51 @@ var roomActor =
     **/
     act: function(room)
     {
-        // t0 time mark
-        const cpuZero = Game.cpu.getUsed();
+        // mark initial time
+        const t0 = Game.cpu.getUsed();
 
+        // clean up all temporary room variables
+        room._debugY_ = undefined;
+        room._hasRestockers_ = undefined;
+        room._hasEnergetic_ = undefined;
+
+        // clean up controllers
+        this.roomControllersPrepare(room);
+
+        // priority - safemode
+        const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+        safemodeProcess.work(room, hostileCreeps);
+
+        // once in a creep life update room info
         if (!room.memory.intl ||
              room.memory.intl < Game.time - 1500)
         {
             room.memory.elvl = this.energyLevel(room);
             room.memory.slvl = this.sourceLevel(room);
 
+            mapProcess.work(room);
+
             room.memory.intl = Game.time;
         }
 
-        room._debugY_ = undefined;
-        room._hasRestockers_ = undefined;
-        room._hasEnergetic_ = undefined;
-        room._damaged_ = [];
+        // all creeps registered to room
+        const roomCreeps = _.filter(
+            Game.creeps,
+            function(creep, name)
+            {
+                return creep.memory.crum == room.name;
+            }
+        );
 
-        // arbitrary scope
-        {
-            this.roomControllersPrepare(room);
-        }
-        // end of arbitrary scope
+        globals.roomDebug(room, 'Room creeps     ' + roomCreeps.length);
 
-        var roomCreeps = [];
+        // not all friendly or own creeps are in roomCreeps, but will do for a time
+        towerProcess.work(room, roomCreeps, hostileCreeps);
+
+        // creeps that has no controller assigned will go here
         var unassignedCreeps = [];
 
-        // arbitrary scope
+        if (roomCreeps.length > 0)
         {
             // do some statistics
             var assigned = 0;
@@ -211,49 +230,47 @@ var roomActor =
             var resting  = 0;
             var moving   = 0;
 
-            for (const name in Game.creeps)
+            for (var i = 0; i < roomCreeps.length; ++i)
             {
-                var creep = Game.creeps[name];
+                var creep = roomCreeps[i];
 
-                if (creep.memory.crum == room.name)
-                {
-                    roomCreeps.push(creep);
-                }
-                else
-                {
-                    continue;
-                }
-
+                // code that migrate creeps into room of registration
                 if (creep.memory.crum != creep.pos.roomName || creep.memory.roomChange)
                 {
+                    // to take off any work from previous room
                     globals.unassignCreep(creep);
 
+                    // flag to handle border transition
                     creep.memory.roomChange = true;
 
-                    const destRoom = new RoomPosition(25, 25, creep.memory.crum);
-
+                    // TODO only creep with fatugue zero travels border?
                     if (creep.fatigue == 0)
                     {
+                        // TODO test range from 0,0 and 49,49 to 25,25
+                        // get off border area
+                        const destRoom = new RoomPosition(25, 25, creep.memory.crum);
                         const destRange = 23;
 
                         if (!creep.pos.inRangeTo(destRoom, destRange))
                         {
                             creep.moveTo(destRoom, { reusePath: 50, range: destRange });
+
+                            continue; // to next creep
                         }
                         else
                         {
+                            // drop and forget the flag
+                            // not continue, can be used
                             creep.memory.roomChange = undefined;
                         }
                     }
-
-                    continue;
+                    else
+                    {
+                        continue; // to the next creep
+                    }
                 }
 
-                if (creep.hits < creep.hitsMax)
-                {
-                    room._damaged_.push(creep);
-                }
-
+                // clean up all temporary creep variables
                 creep._cidx_ = undefined;
                 creep._sumcarry_ = _.sum(creep.carry);
 
@@ -267,7 +284,6 @@ var roomActor =
 
                     for (var k = 0; k < res.length && !wasGrabbed; ++k)
                     {
-                        // TODO all resources, now only energy since other breaks harvest logic
                         if (res[k].resourceType == RESOURCE_ENERGY)
                         {
                             wasGrabbed = creep.pickup(res[k]) == OK;
@@ -280,8 +296,7 @@ var roomActor =
 
                         for (var k = 0; k < tomb.length && !wasGrabbed; ++k)
                         {
-                            // TODO on hostile tomb on hostile rampart
-                            // TODO all resources, now only energy since other breaks harvest logic
+                            // since internal to room don't bother with hostile ramparts
                             wasGrabbed = creep.withdraw(tomb[k], RESOURCE_ENERGY) == OK;
                         }
                     }
@@ -328,7 +343,7 @@ var roomActor =
                                 // no movement, see if pathfinding is possible
                                 if (rc == ERR_NOT_FOUND)
                                 {
-                                    // from hard limit, try to fill in bucket; precent for simplicity
+                                    // percent
                                     const cpuUsed = globals.hardCpuUsed(cpuZero);
 
                                     // TODO room limit
@@ -372,70 +387,21 @@ var roomActor =
             } // end of creeps loop
 
             // log statistics
-            globals.roomDebug(room, 'Room creeps     ' + roomCreeps.length);
             globals.roomDebug(room, 'Assigned creeps ' + assigned);
             globals.roomDebug(room, '-> working      ' + working);
             globals.roomDebug(room, '-> resting      ' + resting);
             globals.roomDebug(room, '-> moving       ' + moving);
             globals.roomDebug(room, 'Free creeps     ' + unassignedCreeps.length);
-        }
-        // end of arbitrary scope
+        } // end of roomCreeps
 
-        // hotplug
-        // <<
-        /*{
-            if (room.name == 'E39N1')
-            {
-                const spawns = room.find(FIND_MY_SPAWNS);
-
-                if (spawns.length < 1)
-                {
-                    // move back to renew
-                    for (var i = 0; i < roomCreeps.length; ++i)
-                    {
-                        if (roomCreeps[i].ticksToLive < 150)
-                        {
-                            roomCreeps[i].memory.crum = 'E38N1';
-                        }
-                    }
-
-                    // steal creeps
-                    if (roomCreeps.length < 4)
-                    {
-                        for (const name in Game.creeps)
-                        {
-                            var creep = Game.creeps[name];
-
-                            if (creep.ticksToLive > 1200 &&
-                                creep.memory.btyp == 0 &&
-                                !globals.creepAssigned(creep))
-                            {
-                                Game.creeps[name].memory.crum = 'E39N1';
-                                break;
-                            }
-                        }
-                    }
-
-                }
-            }
-        }*/
-        // >>
-
-        // arbitrary scope
+        if (unassignedCreeps.length > 0)
         {
-            // manually provide creeps to processes
-            mapProcess.work(room);
-            spawnProcess.work(room, roomCreeps);
-            //psychoWarfare.act(roomCreeps);
+            this.roomControllersObserveAll(roomCreeps);
 
-            if (unassignedCreeps.length > 0)
-            {
-                this.roomControllersObserveAll(roomCreeps);
-
-                this.roomControllersControl(room, unassignedCreeps);
-            }
+            this.roomControllersControl(room, unassignedCreeps);
         }
-        // end of arbitrary scope
+
+        spawnProcess.work(room, roomCreeps);
 
         globals.roomDebug(room, 'HCPU: ' + globals.hardCpuUsed(cpuZero) + '%');
 
