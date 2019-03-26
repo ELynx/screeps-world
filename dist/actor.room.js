@@ -398,7 +398,7 @@ var roomActor =
 
         spawnProcess.work(room, roomCreeps);
 
-        room.roomDebug('HCPU: ' + globals.hardCpuUsed(cpuZero) + '%');
+        room.roomDebug('HCPU: ' + globals.hardCpuUsed(t0) + '%');
 
     } // end of act method
 };
