@@ -467,13 +467,19 @@ function Controller(id)
                 for (var j = 0; j < targets.length; ++j)
                 {
                     // TODO so much tweaking here
-                    const solution = PathFinder.search(
-                                creep.pos,
-                                { pos: targets[j].pos, range: 1 },
-                                { maxRooms: 1, range: this.actRange }
-                            );
+                    const solution = room.findPath(
+                        creep.pos,
+                        targets[j].pos,
+                        {
+                            ignoreRoads: true,
+                            maxRooms: 1,
+                            range: this.actRange,
+                            plainCost: 1,
+                            swampCost: 1
+                        }
+                    );
 
-                    if (!solution.incomplete)
+                    if (solution.length)
                     {
                         target = targets[j];
                         break;
