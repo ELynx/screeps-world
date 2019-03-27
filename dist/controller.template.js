@@ -466,20 +466,32 @@ function Controller(id)
                 // check, see if reacheable in any way
                 for (var j = 0; j < targets.length; ++j)
                 {
-                    // TODO so much tweaking here
-                    const solution = room.findPath(
-                        creep.pos,
-                        targets[j].pos,
-                        {
-                            ignoreRoads: true,
-                            maxRooms: 1,
-                            range: this.actRange,
-                            plainCost: 1,
-                            swampCost: 1
-                        }
-                    );
+                    const tgt = targets[j].pos;
+                    var found = tgt.inRangeTo(creep.pos, this.actRange);
 
-                    if (solution.length)
+                    if (!found)
+                    {
+                        // TODO so much tweaking here
+                        const solution = room.findPath(
+                            creep.pos,
+                            tgt,
+                            {
+                                ignoreRoads: true,
+                                maxRooms: 1,
+                                range: this.actRange,
+                                plainCost: 1,
+                                swampCost: 1
+                            }
+                        );
+
+                        if (solution.length > 0)
+                        {
+                            const last = solution[solution.length - 1];
+                            found = tgt.inRangeTo(last.x, last.y, this.actRange);
+                        }
+                    }
+
+                    if (found)
                     {
                         target = targets[j];
                         break;
