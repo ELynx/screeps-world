@@ -57,6 +57,6 @@ Room.prototype.roomDebug = function(what)
             this._verboseT_ = Game.time;
         }
 
-        room.visual.text(what, 0, this._debugY_++, { align: 'left' });
+        this.visual.text(what, 0, this._debugY_++, { align: 'left' });
     }
 };
