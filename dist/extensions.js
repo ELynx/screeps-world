@@ -5,6 +5,11 @@ Creep.prototype.sumCarry = function()
     return _.sum(this.carry);
 };
 
+Creep.prototype.hasEnergy = function()
+{
+    return this.carry.energy > 0;
+};
+
 Creep.prototype.caveIndex = function()
 {
     if (!this._cidxT_ ||
