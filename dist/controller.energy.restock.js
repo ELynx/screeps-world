@@ -95,7 +95,7 @@ energyRestockController.dynamicTargets = function(room, creep)
                 return creep.memory.rstk == true;
             }
 
-            return true;
+            return creep.memory.rstk == false;
         }
     );
 };
