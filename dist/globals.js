@@ -120,17 +120,6 @@ var globals =
     creepTarget: function(creep)
     {
         return Game.getObjectById(creep.memory.dest);
-    },
-
-    /**
-    Get creep strength for given room energy level.
-    @param {integer} Room level.
-    @return Strength.
-    **/
-    roomEnergyToStrength: function(elvl)
-    {
-        // STRATEGY limit to 3 to avoid hyper-expensive creeps
-        return elvl > 3 ? 3 : elvl;
     }
 };
 
