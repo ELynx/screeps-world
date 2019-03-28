@@ -13,7 +13,7 @@ dismantleController.act = function(structure, creep)
         structure.room.memory.dism = [];
     }
 
-    structure.room.mememory.push(structure.id);
+    structure.room.memory.dism.push(structure.id);
 
     var result = false;
 
@@ -125,7 +125,8 @@ dismantleController.dynamicTargets = function(room, creep)
 
 dismantleController.filterCreep = function(creep)
 {
-    if (creep.sumCarry() == 0)
+    if (creep.sumCarry() == 0 &&
+        creep.getActiveBodyparts(WORK) > 3)
     {
         return true;
     }
