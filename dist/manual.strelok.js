@@ -27,9 +27,6 @@ var strelok = function()
         }
         else
         {
-            // spawn attack has special logic
-            var attackSpawn = false;
-
             // first wipe spawn
             var targets = creep.room.find(
                     FIND_HOSTILE_SPAWNS,
@@ -42,37 +39,31 @@ var strelok = function()
                     }
                 );
 
-            // if spawn(s) not found
-            if (targets.length == 0)
-            {
-                // next wipe creeps and 'killable' buildings
-                targets = creep.room.find(FIND_HOSTILE_CREEPS);
+            const attackSpawn = targets.length > 0;
 
-                var structs = creep.room.find(
-                    FIND_HOSTILE_STRUCTURES,
-                    {
-                        filter: function(structure)
-                        {
-                            return structure.hits &&
-                                   structure.hitsMax < 10000 &&
-                                   structure.structureType != STRUCTURE_WALL &&
-                                   structure.structureType != STRUCTURE_ROAD;
-                        }
-                    }
-                );
-
-                if (structs.length > 0)
+            // next wipe creeps and 'killable' buildings
+            const creeps = creep.room.find(FIND_HOSTILE_CREEPS);
+            const structs = creep.room.find(
+                FIND_HOSTILE_STRUCTURES,
                 {
-                    targets = targets.concat(structs);
+                    filter: function(structure)
+                    {
+                        return structure.hits && structure.hitsMax < 10000;
+                    }
                 }
-            }
-            else
+            );
+
+            if (creeps.length > 0)
             {
-                attackSpawn = true;
+                targets = targets.concat(creeps);
             }
 
-            // simple algorithm, hit closest
-            const target = creep.pos.findClosestByRange(targets);
+            if (structs.length > 0)
+            {
+                targets = targets.concat(structs);
+            }
+
+            const target =  attackSpawn ? targets[0] : creep.pos.findClosestByRange(targets);
 
             if (target)
             {
@@ -84,8 +75,8 @@ var strelok = function()
                         creep.move(creep.pos.getDirectionTo(target));
                     }
 
-                    // remember, carpet bombing
-                    var mass = attackSpawn;
+                    // carpet bombing
+                    var mass = false;
 
                     // find out if mass will hit someone else
                     for (var i = 0; i < targets.length && !mass; ++i)
@@ -111,6 +102,11 @@ var strelok = function()
                     else
                     {
                         creep.rangedAttack(target);
+                    }
+
+                    if (target.energy)
+                    {
+                        creep.withdraw(target, RESOURCE_ENERGY);
                     }
                 }
                 else
