@@ -8,7 +8,7 @@ energyTakeController.actRange = 1;
 
 energyTakeController.act = function(structure, creep)
 {
-    const howMuch = creep.memory.xtra ? creep.memory.xtra : creep.carryCapacity - creep.sumCarry();
+    const howMuch = creep.carryCapacity - creep.sumCarry();
 
     return creep.withdraw(structure, RESOURCE_ENERGY, howMuch);
 };
