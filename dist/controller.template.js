@@ -364,21 +364,21 @@ function Controller(id)
         return targets;
     };
 
-    this._needEnergetic = undefined;
+    this._usesDefaultFilter = undefined;
 
     /**
-    Creep that has some energy.
+    Creep that has some energy and not a restocker.
     @param {Creep} creep to look at.
-    @return If creep has some energy.
+    @return If creep matches filter.
     **/
-    this._creepHasEnergy = function(creep)
+    this._defaultFilter = function(creep)
     {
-        this._needEnergetic = true;
+        this._usesDefaultFilter = true;
 
-        return creep.carry.energy > 0;
+        return creep.hasEnergy() && !creep.memory.rstk;
     };
 
-    this._filterEnergetic = undefined;
+    this._doesDefaultFilter = undefined;
 
     /**
     Default implementation.
@@ -387,9 +387,9 @@ function Controller(id)
     **/
     this.filterCreep = function(creep)
     {
-        this._filterEnergetic = true;
+        this._doesDefaultFilter = true;
 
-        return this._creepHasEnergy(creep);
+        return this._defaultFilter(creep);
     };
 
     /**
@@ -519,9 +519,9 @@ function Controller(id)
             }
         }
 
-        if (this._needEnergetic)
+        if (this._usesDefaultFilter)
         {
-            if (room._hasEnergetic_ == false)
+            if (room._defaultFilter_ == false)
             {
                 this.debugLine(room, 'Fast exit, no creeps with energy');
                 return roomCreeps;
@@ -545,9 +545,9 @@ function Controller(id)
 
         if (creepMatch.length == 0)
         {
-            if (this._filterEnergetic)
+            if (this._doesDefaultFilter)
             {
-                room._hasEnergetic_ = false;
+                room._defaultFilter_ = false;
                 this.debugLine(room, 'No creeps with energy found');
             }
             else
@@ -566,9 +566,9 @@ function Controller(id)
         }
         else
         {
-            if (this._filterEnergetic)
+            if (this._doesDefaultFilter)
             {
-                room._hasEnergetic_ = false;
+                room._defaultFilter_ = false;
                 this.debugLine(room, 'All creeps with energy are used');
             }
 
