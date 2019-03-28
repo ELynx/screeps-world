@@ -6,7 +6,7 @@ var energyRestockController = new Controller('energy.restock');
 
 // STRATEGY coefficients for restocking
 const TowerRestock     = 0.9;
-const ContainerRestock = 0.8;
+const ContainerRestock = 1.0; // prevent running around
 const LinkRestock      = 0.9;
 
 // special for this controller, varying strategy
