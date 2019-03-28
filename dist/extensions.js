@@ -65,7 +65,7 @@ Room.prototype.roomDebug = function(what)
 Get number of walkable tiles around a position.
 @return {integer} number of walkable tiles.
 **/
-RoomPosition.prototype.walkableTiles: function()
+RoomPosition.prototype.walkableTiles = function()
 {
     var result = [];
 
