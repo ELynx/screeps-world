@@ -18,8 +18,6 @@ TOUGH           10
 CLAIM           600
 **/
 
-spawnProcess.workUniversalCache = { };
-
 /**
 Body calculator.
 Universal worker.
@@ -33,6 +31,11 @@ spawnProcess.workUniversal = function(level)
     if (level == 0)
     {
         return [];
+    }
+
+    if (!this.workUniversalCache)
+    {
+        this.workUniversalCache = { };
     }
 
     const cacheHit = this.workUniversalCache[level];
@@ -65,8 +68,6 @@ spawnProcess.workUniversal = function(level)
     return result;
 };
 
-spawnProcess.restockerCache = { };
-
 /**
 Body calculator.
 Restocker, harvest and slowly brings energy.
@@ -85,6 +86,11 @@ spawnProcess.restocker = function(level)
     {
         // 800  100   100   100   100   100   50     50     50     50    50    50
         return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+    }
+
+    if (!this.restockerCache)
+    {
+        this.restockerCache = { };
     }
 
     const cacheHit = this.restockerCache[level];
@@ -133,10 +139,13 @@ spawnProcess.restocker = function(level)
     return result;
 };
 
-spawnProcess.countCache = { };
-
 spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
 {
+    if (!this.countCache)
+    {
+        this.countCache = { };
+    }
+
     const cacheLevel0 = this.countCache[energyLevel];
 
     if (cacheLevel0)
