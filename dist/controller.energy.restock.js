@@ -4,14 +4,31 @@ var Controller = require('controller.template');
 
 var energyRestockController = new Controller('energy.restock');
 
-// STRATEGY coefficient for restocking
-const DynamicRestock = 0.1;
-const TowerRestock   = 0.9;
+// STRATEGY coefficients for restocking
+const TowerRestock     = 0.9;
+const ContainerRestock = 0.8;
+const LinkRestock      = 0.9;
 
 // special for this controller, varying strategy
 energyRestockController.hasRestockers = undefined;
-energyRestockController.restockable = undefined;
 energyRestockController.actRange = 1;
+
+/**
+Check for presense of restockers among creeps.
+@param {array<Creep>} creeps.
+**/
+energyRestockController.checkRestockers = function(creeps)
+{
+    for (var i = 0; i < creeps.length; ++i)
+    {
+        if (creeps[i].memory.rstk == true)
+        {
+            return true;
+        }
+    }
+
+    return false;
+};
 
 energyRestockController.roomPrepare = function(room)
 {
@@ -26,15 +43,6 @@ energyRestockController.observeMyCreep = function(creep)
 energyRestockController.observeAllCreeps = function(creeps)
 {
     this.hasRestockers = this.checkRestockers(creeps);
-    this.restockable = [];
-
-    for (var i = 0; i < creeps.length; ++i)
-    {
-        if (creeps[i].memory.rstk == false)
-        {
-            this.restockable.push(creeps[i]);
-        }
-    }
 };
 
 energyRestockController.act = function(target, creep)
@@ -42,35 +50,14 @@ energyRestockController.act = function(target, creep)
     return creep.transfer(target, RESOURCE_ENERGY) == OK;
 };
 
-energyRestockController.staticTargets = function(room)
-{
-    var result = [];
-
-    if (this.hasRestockers && this.restockable.length > 0)
-    {
-        for (var i = 0; i < this.restockable.length; ++i)
-        {
-            const creep = this.restockable[i];
-            const capacityThreshold = /*Math.ceil(*/DynamicRestock * creep.carryCapacity/*)*/;
-
-            if (creep.sumCarry() < capacityThreshold)
-            {
-                result.push(creep);
-            }
-        }
-    }
-
-    return result;
-};
-
 energyRestockController.dynamicTargets = function(room, creep)
 {
-    return this._lookAroundCreep(
+    const nearby = this._lookAroundCreep(
         room,
         LOOK_STRUCTURES,
         function(structure)
         {
-            if (!structure.my)
+            if (!structure.my && structure.structureType != STRUCTURE_CONTAINER)
             {
                 return false;
             }
@@ -82,12 +69,34 @@ energyRestockController.dynamicTargets = function(room, creep)
             }
             else if (structure.structureType == STRUCTURE_TOWER)
             {
-                return structure.energy < /*Math.ceil(*/TowerRestock * structure.energyCapacity/*)*/;
+                return structure.energy < TowerRestock * structure.energyCapacity;
+            }
+            else if (structure.structureType == STRUCTURE_CONTAINER)
+            {
+                return structure.store[RESOURCE_ENERGY] < ContainerRestock * structure.storeCapacity;
+            }
+            else if (structure.structureType == STRUCTURE_LINK)
+            {
+                return return structure.store[RESOURCE_ENERGY] < LinkRestock * structure.storeCapacity;
             }
 
             return false;
         },
         creep
+    );
+
+    return _.filter(
+        nearby,
+        function(structure)
+        {
+            if (structure.structureType == STRUCTURE_CONTAINER ||
+                structure.structureType == STRUCTURE_LINK)
+            {
+                return creep.memory.rstk == true;
+            }
+
+            return true;
+        }
     );
 };
 

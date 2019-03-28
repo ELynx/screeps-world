@@ -243,7 +243,7 @@ spawnProcess.doSpawn = function(spawn, type, roomLevel)
 const TypeBody    = [ spawnProcess.workUniversal,
                                      spawnProcess.workHeavy ];
 const TypeHarvest = [ true,          true                   ];
-const TypeRestock = [ true,          false                  ];
+const TypeRestock = [ false,         true                  ];
 const TypeLimit   = [ 1.0,           0.5                    ]; // limit by source level
 const TypeCount   = [
                     [ 0,             0                      ], // level 0, no own controller
