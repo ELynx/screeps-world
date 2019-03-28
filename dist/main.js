@@ -21,20 +21,6 @@ module.exports.loop = function()
 
     memoryManager.cleanup();
 
-    // one-shot, swap rstk flag
-    // <<
-    for (const name in Game.creeps)
-    {
-        var creep = Game.creeps[name];
-
-        if (!creep.memory.once)
-        {
-            creep.memory.rstk = ! creep.memory.rstk;
-            creep.memory.once = true;
-        }
-    }
-    // >>
-
     for(const name in Game.rooms)
     {
         const room = Game.rooms[name];
