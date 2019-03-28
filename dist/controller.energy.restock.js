@@ -65,11 +65,11 @@ energyRestockController.dynamicTargets = function(room, creep)
             if (structure.structureType == STRUCTURE_SPAWN ||
                 structure.structureType == STRUCTURE_EXTENSION)
             {
-                return structure.energy < structure.energyCapacity;
+                return structure.isActive() && structure.energy < structure.energyCapacity;
             }
             else if (structure.structureType == STRUCTURE_TOWER)
             {
-                return structure.energy < TowerRestock * structure.energyCapacity;
+                return structure.isActive() && structure.energy < TowerRestock * structure.energyCapacity;
             }
             else if (structure.structureType == STRUCTURE_CONTAINER)
             {
@@ -77,7 +77,7 @@ energyRestockController.dynamicTargets = function(room, creep)
             }
             else if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.store[RESOURCE_ENERGY] < LinkRestock * structure.storeCapacity;
+                return structure.isActive() && structure.store[RESOURCE_ENERGY] < LinkRestock * structure.storeCapacity;
             }
 
             return false;
