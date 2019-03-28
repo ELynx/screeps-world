@@ -80,6 +80,21 @@ dismantleController.dynamicTargets = function(room, creep)
             LOOK_STRUCTURES,
             function(structure)
             {
+                if (range == 0)
+                {
+                    if (!structure.pos.isEqualTo(flag.pos))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (!structure.pos.inRangeTo(flag.pos, range))
+                    {
+                        return false;
+                    }
+                }
+
                 if (types.indexOf(structure.structureType) != -1)
                 {
                     return true;
