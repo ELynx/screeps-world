@@ -5,6 +5,7 @@ var globals = require('globals');
 var safemodeProcess         = require('process.safemode');
 var mapProcess              = require('process.map');
 var towerProcess            = require('process.tower');
+var linkProcess             = require('process.link');
 var spawnProcess            = require('process.spawn');
 
 /**
