@@ -1,6 +1,7 @@
 'use strict';
 
 var globals = require('globals');
+var bodywork = require('routine.bodywork');
 var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
@@ -19,32 +20,52 @@ ttlController.enough = function(room)
 ttlController.act = function(spawn, creep)
 {
     var recycle = false;
-    var countRecycle = false;
-    var renew = false;
+    var increaseCcnt = false;
+
+    // if not needed
+    if (spawn.room.memory.ccnt &&
+        spawn.room.memory.ccnt[creep.memory.btyp] < 0)
+    {
+        recycle = true;
+        increaseCcnt = true;
+    }
+
+    if (!recycle)
+    {
+        // TODO mix with healing
+        // if has disabled body parts
+        recycle = creep.hitsMax - creep.hits > HitsTreshold;
+    }
+
+    if (!recycle)
+    {
+        // example parameters
+        const [level, exampleBody] = bodywork[creep.memory.btyp](spawn.room.memory.elvl);
+
+        if (creep.memory.levl < level)
+        {
+            recycle = true;
+        }
+        else if (creep.memory.levl == level)
+        {
+            if (exampleBody.length == creep.body.length)
+            {
+                for (var i = 0; i < exampleBody.length && !recycle; ++i)
+                {
+                    recycle = exampleBody[i] != creep.body[i].type;
+                }
+            }
+            else
+            {
+                recycle = true;
+            }
+        }
+    }
+
+    var renew = !recycle;
     var rc = false;
 
-    const strength = globals.roomEnergyToStrength(spawn.room.memory.elvl);
-
-    // if not needed anymore
-    if (spawn.room.memory.ccnt && spawn.room.memory.ccnt[creep.memory.btyp] < 0)
-    {
-        recycle = true;
-        countRecycle = true;
-    }
-    // if from previous level
-    else if (creep.memory.levl < strength)
-    {
-        recycle = true;
-    }
-    // TODO mix with healing
-    // if has disabled body parts
-    else if (creep.hitsMax - creep.hits > HitsTreshold)
-    {
-        recycle = true;
-    }
-    // renewal part
-    // if controller started to spawn at the same time wait for it
-    else if (spawn.spawning)
+    if (renew && spawn.spawning)
     {
         if (creep.ticksToLive <= spawn.spawning.remainingTime)
         {
@@ -52,12 +73,9 @@ ttlController.act = function(spawn, creep)
         }
         else
         {
+            renew = false;
             rc = true;
         }
-    }
-    else
-    {
-        renew = true;
     }
 
     // donate while here
@@ -70,7 +88,7 @@ ttlController.act = function(spawn, creep)
     {
         rc = spawn.recycleCreep(creep) == OK;
 
-        if (rc && countRecycle)
+        if (rc && increaseCcnt)
         {
             ++spawn.room.memory.ccnt[creep.memory.btyp];
         }

@@ -1,143 +1,21 @@
 'use strict';
 
 var globals = require('globals');
+var bodywork = require('routine.bodywork');
 var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
-/**
-MEMO - body part cost
-
-MOVE            50
-WORK            100
-ATTACK          80
-CARRY           50
-HEAL            250
-RANGED_ATTACK   150
-TOUGH           10
-CLAIM           600
-**/
-
-/**
-Body calculator.
-Universal worker.
-Could do any work.
-Restocks energy while there are no specialists.
-@param {integer} level.
-@return Creep body definition.
-**/
-spawnProcess.workUniversal = function(level)
-{
-    if (level == 0)
-    {
-        return [];
-    }
-
-    if (!this.workUniversalCache)
-    {
-        this.workUniversalCache = { };
-    }
-
-    const cacheHit = this.workUniversalCache[level];
-
-    if (cacheHit)
-    {
-        return cacheHit.slice(0);
-    }
-
-    // total 250 per iteration
-    const front = [WORK,  MOVE]; // 150 = 100 50
-    const back =  [CARRY, MOVE]; // 100 = 50 50
-
-    var total = level;
-
-    // above three increment in 500
-    if (total > 3)
-    {
-        total = 3 + ((total - 3) * 2);
-    }
-
-    var result = [];
-    for (var i = 0; i < total && i < 12; ++i)
-    {
-        result = front.concat(result).concat(back);
-    }
-
-    this.workUniversalCache[level] = result;
-
-    return result;
-};
-
-/**
-Body calculator.
-Restocker, harvest and slowly brings energy.
-@param {integer} level.
-@return Creep body definition.
-**/
-spawnProcess.restocker = function(level)
-{
-    if (level < 3)
-    {
-        return [];
-    }
-
-    // for level 3 stay within 800 energy
-    if (level == 3)
-    {
-        // 800  100   100   100   100   100   50     50     50     50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
-    }
-
-    if (!this.restockerCache)
-    {
-        this.restockerCache = { };
-    }
-
-    const cacheHit = this.restockerCache[level];
-
-    if (cacheHit)
-    {
-        return cacheHit.slice(0);
-    }
-
-    // for level 4 and above add 100 energy per level
-    const more =  [CARRY, MOVE]; // 100 = 50 + 50
-
-    var result = this.restocker(3);
-    for (var i = 1; i < level && i < 19; ++i)
-    {
-        result = result.concat(more);
-    }
-
-    // stuff -> work -> carry -> move
-    const bpMap = function(bp)
-    {
-        if (bp == WORK)
-            return 1;
-
-        if (bp == CARRY)
-            return 2;
-
-        if (bp == MOVE)
-            return 3;
-
-        return 0;
-    };
-
-    result.sort(
-        function(bp1, bp2)
-        {
-            if (bp1 == bp2)
-                return 0;
-
-            return bpMap(bp1) - bpMap(bp2);
-        }
-    );
-
-    this.restockerCache[level] = result;
-
-    return result;
-};
+const TypeBody    = [ bodywork[0], bodywork[1] ];
+const TypeHarvest = [ true,        true        ];
+const TypeRestock = [ false,       true        ];
+const TypeLimit   = [ 5.0,         1.0         ]; // limit by source level
+const TypeCount   = [
+                    [ 0,           0           ], // level 0, no own controller
+                    [ 4,           0           ], // level 1
+                    [ 8,           0           ], // level 2
+                    [ 10,          4           ]  // level 3, crowd enough
+                                               ];
 
 spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
 {
@@ -146,11 +24,11 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
         this.countCache = { };
     }
 
-    const cacheLevel0 = this.countCache[energyLevel];
+    const cacheOuter = this.countCache[energyLevel];
 
-    if (cacheLevel0)
+    if (cacheOuter)
     {
-        const cacheHit = cacheLevel0[sourceLevel];
+        const cacheHit = cacheOuter[sourceLevel];
 
         if (cacheHit)
         {
@@ -178,7 +56,7 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
             continue;
         }
 
-        limit = Math.round(limit * sourceLevel);
+        limit = Math.ceil(limit * sourceLevel);
 
         if (creepsNeeded[i] > limit)
         {
@@ -201,16 +79,16 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
 Spawn implementation.
 @param {Spawn} spawn.
 @param {integer} type.
-@param {integer} level.
-@return True if creep spawn initiated.
+@param {integer} energyLevel.
+@return True if creep spawn started.
 **/
-spawnProcess.doSpawn = function(spawn, type, roomLevel)
+spawnProcess.doSpawn = function(spawn, type, energyLevel)
 {
     const name = spawn.id + '_' + Game.time;
-    const strength = globals.roomEnergyToStrength(roomLevel);
-    const body = TypeBody[type](strength);
 
-    if (body.length == 0 || body.length > 50)
+    const [level, body] = TypeBody[type](energyLevel);
+
+    if (level == 0 || body.length == 0 || body.length > 50)
     {
         return false;
     }
@@ -228,7 +106,7 @@ spawnProcess.doSpawn = function(spawn, type, roomLevel)
                     dact: globals.NO_ACT_RANGE,
                     xtra: globals.NO_EXTRA,
                     btyp: type,
-                    levl: strength,
+                    levl: level,
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
                 }
@@ -239,30 +117,16 @@ spawnProcess.doSpawn = function(spawn, type, roomLevel)
     return false;
 };
 
-const TypeBody    = [ spawnProcess.workUniversal,
-                                   spawnProcess.restocker ];
-const TypeHarvest = [ true,        true                   ];
-const TypeRestock = [ false,       true                   ];
-const TypeLimit   = [ 5.0,         1.0                    ]; // limit by source level
-const TypeCount   = [
-                    [ 0,           0                      ], // level 0, no own controller
-                    [ 4,           0                      ], // level 1
-                    [ 8,           0                      ], // level 2
-                    [ 10,          4                      ]  // level 3, crowd enough
-                                                          ];
-
 spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    const roomLevel = room.memory.elvl;
-
-    if (roomLevel == 0)
+    if (room.memory.elvl == 0)
     {
         return;
     }
 
-    var creepsNeeded = this.calculateCreepsNeeded(roomLevel, room.memory.slvl);
+    var creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl);
 
     for (var i = 0; i < creeps.length; ++i)
     {
@@ -272,15 +136,15 @@ spawnProcess.work = function(room, creeps)
     // remember for TTL
     room.memory.ccnt = creepsNeeded;
 
-    var hasNeeded = false;
+    var hasBelow = false;
 
     // check
-    for (var i = 0; i < creepsNeeded.length && !hasNeeded; ++i)
+    for (var i = 0; i < creepsNeeded.length && !hasBelow; ++i)
     {
-        hasNeeded = creepsNeeded[i] > 0;
+        hasBelow = creepsNeeded[i] > 0;
     }
 
-    if (!hasNeeded)
+    if (!hasBelow)
     {
         return;
     }
@@ -312,7 +176,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = this.doSpawn(spawns[i], type, roomLevel);
+                spawned = this.doSpawn(spawns[i], type, room.memory.elvl);
             }
         }
 
