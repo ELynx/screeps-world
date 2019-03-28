@@ -25,13 +25,6 @@ ttlController.act = function(spawn, creep)
 
     const strength = globals.roomEnergyToStrength(spawn.room.memory.elvl);
 
-    // one-shot
-    // <<
-    if (creep.memory.btyp == 1 && !creep.memory.frsh)
-    {
-        recycle = true;
-    } else
-    // >>
     // if not needed anymore
     if (spawn.room.memory.ccnt && spawn.room.memory.ccnt[creep.memory.btyp] < 0)
     {
