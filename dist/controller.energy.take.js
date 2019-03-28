@@ -23,11 +23,16 @@ energyTakeController.dynamicTargets = function(room, creep)
         nearby,
         function(structure)
         {
-            if (structure.structureType == STRUCTURE_CONTAINER ||
-                structure.structureType == STRUCTURE_LINK)
+            // TODO limit grabbing
+
+            if (structure.structureType == STRUCTURE_CONTAINER)
             {
-                // TODO limit grabbing
                 return structure.store[RESOURCE_ENERGY] > 0;
+            }
+
+            if (structure.structureType == STRUCTURE_LINK)
+            {
+                return structure.energy > 0;
             }
 
             return false;
