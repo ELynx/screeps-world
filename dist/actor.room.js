@@ -208,6 +208,7 @@ var roomActor =
 
         // not all friendly or own creeps are in roomCreeps, but will do for a time
         towerProcess.work(room, roomCreeps, hostileCreeps);
+        linkProcess.work(room);
 
         // creeps that has no controller assigned will go here
         var unassignedCreeps = [];
