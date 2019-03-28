@@ -60,3 +60,73 @@ Room.prototype.roomDebug = function(what)
         this.visual.text(what, 0, this._debugY_++, { align: 'left' });
     }
 };
+
+/**
+Get number of walkable tiles around a position.
+@return {integer} number of walkable tiles.
+**/
+RoomPosition.prototype.walkableTiles: function()
+{
+    var result = [];
+
+    const room = Game.rooms[this.roomName];
+    if (room)
+    {
+        const t = this.y > 0  ? this.y - 1 : 0;
+        const l = this.x > 0  ? this.x - 1 : 0;
+        const b = this.y < 49 ? this.y + 1 : 49;
+        const r = this.x < 49 ? this.x + 1 : 49;
+
+        const around = room.lookAtArea(t, l, b, r);
+
+        for (var x in around)
+        {
+            const ys = around[x];
+
+            for (var y in ys)
+            {
+                if (x == this.x && y == this.y)
+                {
+                    continue;
+                }
+
+                const objs = ys[y];
+
+                if (objs)
+                {
+                    var found = false;
+
+                    for (var i = 0; i < objs.length && !found; ++i)
+                    {
+                        const obj = objs[i];
+
+                        if (obj.type == LOOK_TERRAIN)
+                        {
+                            if (obj.terrain == 'plain' ||
+                                obj.terrain == 'swamp')
+                            {
+                                found = true;
+                            }
+                        }
+
+                        if (obj.type == LOOK_STRUCTURES)
+                        {
+                            if (obj.structure.structureType == STRUCTURE_ROAD)
+                            {
+                                found = true;
+                            }
+                        }
+                    }
+
+                    if (found)
+                    {
+                        result.push(new RoomPosition(x, y, this.roomName));
+                    }
+                }
+            }
+        }
+    }
+
+    // TODO just result
+    return result.length;
+};

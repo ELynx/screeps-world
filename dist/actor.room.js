@@ -87,7 +87,7 @@ var roomActor =
         var total = 0;
         for (var i = 0; i < sources.length; ++i)
         {
-            total = total + globals.walkableTiles(sources[i]);
+            total = total + sources[i].pos.walkableTiles();
         }
 
         return total;
