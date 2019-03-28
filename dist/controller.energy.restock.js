@@ -77,7 +77,7 @@ energyRestockController.dynamicTargets = function(room, creep)
             }
             else if (structure.structureType == STRUCTURE_LINK)
             {
-                return return structure.store[RESOURCE_ENERGY] < LinkRestock * structure.storeCapacity;
+                return structure.store[RESOURCE_ENERGY] < LinkRestock * structure.storeCapacity;
             }
 
             return false;
