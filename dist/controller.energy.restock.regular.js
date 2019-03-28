@@ -5,7 +5,7 @@ var Controller = require('controller.template');
 var energyRestockControllerRegular = new Controller('energy.restock.regular');
 
 // STRATEGY coefficients for restocking
-const TowerRestock     = 0.9;
+const TowerRestock = 0.9;
 
 energyRestockControllerRegular.actRange = 1;
 

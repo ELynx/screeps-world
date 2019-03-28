@@ -90,7 +90,8 @@ repairController.dynamicTargets = function(room, creep)
                     return true;
                 }
             }
-            else if (structure.structureType == STRUCTURE_RAMPART)
+            else if (structure.structureType == STRUCTURE_RAMPART &&
+                     structure.my)
             {
                 if (structure.hits < barrHp)
                 {
