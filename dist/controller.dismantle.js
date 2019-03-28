@@ -8,6 +8,13 @@ dismantleController.actRange = 1;
 
 dismantleController.act = function(structure, creep)
 {
+    if (!structure.room.memory.dism)
+    {
+        structure.room.memory.dism = [];
+    }
+
+    structure.room.mememory.push(structure.id);
+
     var result = false;
 
     // will drop on ground if not enough free space
