@@ -39,7 +39,7 @@ spawnProcess.workUniversal = function(level)
 
     if (cacheHit)
     {
-        return cacheHit;
+        return cacheHit.slice(0);
     }
 
     // total 250 per iteration
@@ -91,7 +91,7 @@ spawnProcess.restocker = function(level)
 
     if (cacheHit)
     {
-        return cacheHit;
+        return cacheHit.slice(0);
     }
 
     // for level 4 and above add 100 energy per level
@@ -221,8 +221,7 @@ spawnProcess.doSpawn = function(spawn, type, roomLevel)
                     btyp: type,
                     levl: strength,
                     hvst: TypeHarvest[type],
-                    rstk: TypeRestock[type],
-                    frsh: true // refresh flag
+                    rstk: TypeRestock[type]
                 }
             }
         ) == OK;
