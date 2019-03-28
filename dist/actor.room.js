@@ -12,6 +12,7 @@ Order of load is priority order for creep assignment.
 **/
 var redAlert                = require('controller.redalert');
 var ttlController           = require('controller.ttl');
+var dismantleController     = require('controller.dismantle');
 var energyHarvestController = require('controller.energy.harvest');
 var energyRestockController = require('controller.energy.restock');
 var repairController        = require('controller.repair');
