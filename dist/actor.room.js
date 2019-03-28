@@ -175,9 +175,6 @@ var roomActor =
         // mark initial time
         const t0 = Game.cpu.getUsed();
 
-        // clean up all temporary room variables
-        room._defaultFilter_ = undefined;
-
         // clean up controllers
         this.roomControllersPrepare(room);
 

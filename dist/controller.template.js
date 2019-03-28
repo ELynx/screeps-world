@@ -3,6 +3,21 @@
 var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
 
+Room.prototype._markDefaultFiltered = function()
+{
+    this._markDefaultFiltered_ = Game.time;
+};
+
+Room.prototype._isDefaultFiltered = function()
+{
+    if (this._markDefaultFiltered_)
+    {
+        return this._markDefaultFiltered_ == Game.time;
+    }
+
+    return false;
+};
+
 function Controller(id)
 {
     /**
@@ -521,7 +536,7 @@ function Controller(id)
 
         if (this._usesDefaultFilter)
         {
-            if (room._defaultFilter_ == false)
+            if (room._isDefaultFiltered())
             {
                 this.debugLine(room, 'Fast exit, no creeps with energy');
                 return roomCreeps;
@@ -547,7 +562,7 @@ function Controller(id)
         {
             if (this._doesDefaultFilter)
             {
-                room._defaultFilter_ = false;
+                room._markDefaultFiltered();
                 this.debugLine(room, 'No creeps with energy found');
             }
             else
@@ -568,7 +583,7 @@ function Controller(id)
         {
             if (this._doesDefaultFilter)
             {
-                room._defaultFilter_ = false;
+                room._markDefaultFiltered();
                 this.debugLine(room, 'All creeps with energy are used');
             }
 
