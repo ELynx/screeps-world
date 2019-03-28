@@ -143,36 +143,6 @@ function Controller(id)
     this.observeMyCreep = undefined;
 
     /**
-    Check for presense of restockers among creeps.
-    @param {array<Creep} creeps.
-    **/
-    this.checkRestockers = function(creeps)
-    {
-        for (var i = 0; i < creeps.length; ++i)
-        {
-            const creep = creeps[i];
-
-            if (creep.room._hasRestockers_ !== undefined)
-            {
-                return creep.room._hasRestockers_;
-            }
-
-            if (creep.memory.rstk == true)
-            {
-                creep.room._hasRestockers_ = true;
-                return true;
-            }
-        }
-
-        if (creeps.length > 0)
-        {
-            creeps[0].room._hasRestockers_ = false;
-        }
-
-        return false;
-    };
-
-    /**
     Observer every creep controlled by the room.
     Duration - room.
     @param {array<Creep>} creeps.

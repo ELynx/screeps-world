@@ -5,14 +5,8 @@ var Controller = require('controller.template');
 var energyHarvestController = new Controller('energy.harvest');
 
 // special for this controller, varying strategy
-energyHarvestController.hasRestockers = undefined;
 energyHarvestController.actRange = 1;
 energyHarvestController.smartTargeting = true; // since sources are crowded
-
-energyHarvestController.observeAllCreeps = function(creeps)
-{
-    this.hasRestockers = this.checkRestockers(creeps);
-};
 
 energyHarvestController.act = function(source, creep)
 {
@@ -34,14 +28,7 @@ energyHarvestController.staticTargets = function(room)
 
 energyHarvestController.filterCreep = function(creep)
 {
-     // STRATEGY don't run restockable creeps to source if there are restockers
-    if (this.hasRestockers && creep.memory.rstk == false)
-    {
-        return false;
-    }
-
     // STRATEGY harvest with empty only, reduce runs to sources
-    // maybe was checked by hotplug in room code
     if (creep.memory.hvst == true && creep.sumCarry() == 0)
     {
         return true;

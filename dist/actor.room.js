@@ -183,7 +183,6 @@ var roomActor =
         const t0 = Game.cpu.getUsed();
 
         // clean up all temporary room variables
-        room._hasRestockers_ = undefined;
         room._hasEnergetic_ = undefined;
 
         // clean up controllers
