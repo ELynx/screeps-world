@@ -102,10 +102,10 @@ energyRestockController.dynamicTargets = function(room, creep)
 
 energyRestockController.filterCreep = function(creep)
 {
-    if (this.hasRestockers && creep.memory.rstk == false)
-    {
-        return false;
-    }
+    //if (this.hasRestockers && creep.memory.rstk == false)
+    //{
+    //    return false;
+    //}
 
     return this._creepHasEnergy(creep);
 };
