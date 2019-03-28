@@ -2,23 +2,24 @@
 
 var globals = require('globals');
 
-var safemodeProcess         = require('process.safemode');
-var mapProcess              = require('process.map');
-var towerProcess            = require('process.tower');
-var linkProcess             = require('process.link');
-var spawnProcess            = require('process.spawn');
+var safemodeProcess          = require('process.safemode');
+var mapProcess               = require('process.map');
+var towerProcess             = require('process.tower');
+var linkProcess              = require('process.link');
+var spawnProcess             = require('process.spawn');
 
 /**
 Order of load is priority order for creep assignment.
 **/
-var redAlert                = require('controller.redalert');
-var ttlController           = require('controller.ttl');
-var energyTakeController    = require('controller.energy.take');
-var energyHarvestController = require('controller.energy.harvest');
-var energyRestockController = require('controller.energy.restock');
-var repairController        = require('controller.repair');
-var buildController         = require('controller.build');
-var controllerController    = require('controller.controller');
+var redAlert                 = require('controller.redalert');
+var ttlController            = require('controller.ttl');
+var energyTakeController     = require('controller.energy.take');
+var energyHarvestController  = require('controller.energy.harvest');
+var energyRestockControllerR = require('controller.energy.restock.regular');
+var energyRestockControllerS = require('controller.energy.restock.specialist');
+var repairController         = require('controller.repair');
+var buildController          = require('controller.build');
+var controllerController     = require('controller.controller');
 
 var roomActor =
 {
