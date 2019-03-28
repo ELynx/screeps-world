@@ -16,7 +16,8 @@ energyTakeController.act = function(structure, creep)
 energyTakeController.dynamicTargets = function(room, creep)
 {
     // TODO limit by walking distance?
-    const nearby = creep.pos.findInRange(FIND_STRUCTURES, 10);
+    //const nearby = creep.pos.findInRange(FIND_STRUCTURES, 10);
+    const nearby = room.find(FIND_STRUCTURES);
 
     return _.filter(
         nearby,
