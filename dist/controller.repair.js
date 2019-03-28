@@ -72,11 +72,23 @@ repairController.dynamicTargets = function(room, creep)
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
     const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl);
 
+    // take care of dismantled structures
+    const dism = room.memory.dism;
+
     return this._lookAroundCreep(
         room,
         LOOK_STRUCTURES,
         function(structure)
         {
+            // check that not in dismantle list
+            if (dism)
+            {
+                if (dism.indexOf(structure.id) != -1)
+                {
+                    return false;
+                }
+            }
+
             if (!structure.hits || structure.hits >= structure.hitsMax)
             {
                 return false;
