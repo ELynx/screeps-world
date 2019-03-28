@@ -56,7 +56,7 @@ linkProcess.work = function(room)
         // quick flags
         if (curr._source_)
         {
-            if (goodToSource(curr)
+            if (goodToSource(curr))
             {
                 sourceLinks.push(curr);
             }
