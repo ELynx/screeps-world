@@ -37,6 +37,12 @@ energyRestockController.roomPrepare = function(room)
 
 energyRestockController.observeMyCreep = function(creep)
 {
+    // ignore specialists
+    if (creep.memory.rstk == true)
+    {
+        return;
+    }
+    
     this._excludeTarget(creep);
 };
 
