@@ -32,7 +32,8 @@ energyTakeController.dynamicTargets = function(room, creep)
 
             if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.energy > 0;
+                // STRATEGY do not steal from firing link
+                return structure.energy > 0 && structure.cooldown == 0;
             }
 
             return false;
