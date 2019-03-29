@@ -52,6 +52,11 @@ energyRestockControllerSpecialist.filterCreep = function(creep)
 
 energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)
 {
+    if (struct1.structureType != struct2.structureType)
+    {
+        return struct1.structureType == STRUCTURE_LINK ? -1 : 1;
+    }
+
     return 0;
 };
 
