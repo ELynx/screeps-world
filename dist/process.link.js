@@ -99,7 +99,7 @@ linkProcess.work = function(room, roomCreeps)
                 {
                     // TODO by cave?
                     // STRATEGY predict where energy will be needed
-                    const targetsNearby = curr.pos.findInRange(allTargets, 5);
+                    const targetsNearby = curr.pos.findInRange(allTargets, 4);
 
                     if (targetsNearby.length > 0)
                     {
