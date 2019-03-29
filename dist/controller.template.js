@@ -437,6 +437,8 @@ function Controller(id)
             }
             else
             {
+                var self = this;
+
                 // starting with closest, Manhattan distance is "good enough"
                 targets.sort(
                     function(t1, t2)
@@ -444,9 +446,9 @@ function Controller(id)
                         const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
                         const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
-                        if (d1 == d2 && this.tiebreaker)
+                        if (d1 == d2 && self.tiebreaker)
                         {
-                            return this.tiebreaker(t1, t2);
+                            return self.tiebreaker(t1, t2);
                         }
 
                         return d1 - d2;
