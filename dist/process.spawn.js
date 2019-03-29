@@ -109,7 +109,13 @@ spawnProcess.doSpawn = function(spawn, type, energyLevel)
                     levl: level,
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
-                }
+                },
+
+                directions:
+                [
+                    TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT,
+                    BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT
+                ]
             }
         ) == OK;
     }
