@@ -444,6 +444,11 @@ function Controller(id)
                         const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
                         const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
+                        if (d1 == d2 && this.tiebreaker)
+                        {
+                            return this.tiebreaker(t1, t2);
+                        }
+
                         return d1 - d2;
                     }
                 );

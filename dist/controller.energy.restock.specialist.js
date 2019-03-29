@@ -50,6 +50,11 @@ energyRestockControllerSpecialist.filterCreep = function(creep)
     return creep.memory.rstk == true && creep.hasEnergy();
 };
 
+energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)
+{
+    return 0;
+};
+
 energyRestockControllerSpecialist.register();
 
 module.exports = energyRestockControllerSpecialist;
