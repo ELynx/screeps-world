@@ -1,10 +1,11 @@
 'use strict';
 
+var globals = require('globals');
 var Process = require('process.template');
 
 var linkProcess = new Process('link');
 
-linkProcess.work = function(room)
+linkProcess.work = function(room, roomCreeps)
 {
     this.debugHeader(room);
 
@@ -36,6 +37,24 @@ linkProcess.work = function(room)
         return;
     }
 
+    // predict creep position
+    var allTargets = [];
+    for (var i = 0; i < roomCreeps.length; ++i)
+    {
+        const creep = roomCreeps[i];
+
+        if (creep.memory.rstk == true)
+        {
+            continue;
+        }
+
+        const target = globals.creepTarget(creep);
+        if (target)
+        {
+            allTargets.push(target);
+        }
+    }
+
     var sourceLinks = [];
     var destLinks  = [];
 
@@ -53,7 +72,7 @@ linkProcess.work = function(room)
     {
         var curr = allLinks[i];
 
-        // quick flags
+        // quick flag, source keeps to be source
         if (curr._source_)
         {
             if (goodToSource(curr))
@@ -61,20 +80,11 @@ linkProcess.work = function(room)
                 sourceLinks.push(curr);
             }
         }
-        else if (curr._dest_)
-        {
-            if (goodToDest(curr))
-            {
-                destLinks.push(curr);
-            }
-        }
         else
         {
             // STRATEGY distance from link to source
             const sourcesNearby = curr.pos.findInRange(allSources, 2);
-
             curr._source_ = sourcesNearby.length > 0;
-            curr._dest_   = !curr._source_;
 
             if (curr._source_)
             {
@@ -87,7 +97,15 @@ linkProcess.work = function(room)
             {
                 if (goodToDest(curr))
                 {
-                    destLinks.push(curr);
+                    // TODO by cave?
+                    // STRATEGY predict where energy will be needed
+                    const targetsNearby = curr.pos.findInRange(allTargets, 4);
+
+                    if (targetsNearby.length > 0)
+                    {
+                        curr._targets_ = targetsNearby.length;
+                        destLinks.push(curr);
+                    }
                 }
             }
         }
@@ -115,8 +133,8 @@ linkProcess.work = function(room)
         destLinks.sort(
             function(l1, l2)
             {
-                // STRATEGY least energy first
-                return l1.energy - l2.energy;
+                // STRATEGY least energy per target first
+                return Math.ceil(l1.energy / l1._targets_) - Math.ceil(l2.energy / l2._targets_);
             }
         );
     }

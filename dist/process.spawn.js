@@ -9,12 +9,13 @@ var spawnProcess = new Process('spawn');
 const TypeBody    = [ bodywork[0], bodywork[1] ];
 const TypeHarvest = [ true,        true        ];
 const TypeRestock = [ false,       true        ];
-const TypeLimit   = [ 5.0,         1.0         ]; // limit by source level
+const TypeLimit   = [ 5.0,         2.0         ]; // limit by source level
 const TypeCount   = [
                     [ 0,           0           ], // level 0, no own controller
-                    [ 4,           0           ], // level 1
+                    [ 6,           0           ], // level 1
                     [ 8,           0           ], // level 2
-                    [ 10,          4           ]  // level 3, crowd enough
+                    [ 10,          2           ], // level 3
+                    [ 10,          4           ]  // level 4
                                                ];
 
 spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
@@ -109,7 +110,13 @@ spawnProcess.doSpawn = function(spawn, type, energyLevel)
                     levl: level,
                     hvst: TypeHarvest[type],
                     rstk: TypeRestock[type]
-                }
+                },
+
+                directions:
+                [
+                    TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT,
+                    BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT
+                ]
             }
         ) == OK;
     }

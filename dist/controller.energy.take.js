@@ -15,13 +15,14 @@ energyTakeController.act = function(structure, creep)
 
 energyTakeController.dynamicTargets = function(room, creep)
 {
-    const structures = room.find(FIND_STRUCTURES);
+    const nearby = room.find(FIND_STRUCTURES);
 
-    // TODO limit grabbing per structure
     return _.filter(
-        structures,
+        nearby,
         function(structure)
         {
+            // TODO limit grabbing
+
             if (structure.structureType == STRUCTURE_CONTAINER)
             {
                 return structure.store[RESOURCE_ENERGY] > 0;
@@ -29,7 +30,14 @@ energyTakeController.dynamicTargets = function(room, creep)
 
             if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.energy > 0;
+                // STRATEGY do not visit link across the map
+                if (structure.pos.getRangeTo(creep.pos) > 5)
+                {
+                    return false;
+                }
+
+                // STRATEGY do not steal from firing link
+                return structure.energy > 0 && structure.cooldown == 0;
             }
 
             return false;
