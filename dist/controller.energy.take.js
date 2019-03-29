@@ -15,8 +15,6 @@ energyTakeController.act = function(structure, creep)
 
 energyTakeController.dynamicTargets = function(room, creep)
 {
-    // TODO limit by walking distance?
-    //const nearby = creep.pos.findInRange(FIND_STRUCTURES, 10);
     const nearby = room.find(FIND_STRUCTURES);
 
     return _.filter(
@@ -32,6 +30,12 @@ energyTakeController.dynamicTargets = function(room, creep)
 
             if (structure.structureType == STRUCTURE_LINK)
             {
+                // STRATEGY do not visit link across the map
+                if (structure.pos.getRangeTo(creep.pos) > 5)
+                {
+                    return false;
+                }
+
                 // STRATEGY do not steal from firing link
                 return structure.energy > 0 && structure.cooldown == 0;
             }
