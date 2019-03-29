@@ -27,17 +27,17 @@ energyTakeController.dynamicTargets = function(room, creep)
             {
                 return structure.store[RESOURCE_ENERGY] > 0;
             }
-
-            if (structure.structureType == STRUCTURE_LINK)
+            else if (structure.structureType == STRUCTURE_LINK)
             {
-                // STRATEGY do not visit link across the map
-                if (structure.pos.getRangeTo(creep.pos) > 5)
+                // STRATEGY do not steal from firing link
+                if (structure.energy == 0 ||
+                    structure.cooldown > 0)
                 {
                     return false;
                 }
 
-                // STRATEGY do not steal from firing link
-                return structure.energy > 0 && structure.cooldown == 0;
+                // STRATEGY do not visit link across the map
+                return structure.pos.getRangeTo(creep.pos) <= 5;
             }
 
             return false;
