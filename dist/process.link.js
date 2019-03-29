@@ -101,10 +101,17 @@ linkProcess.work = function(room, roomCreeps)
                     // STRATEGY predict where energy will be needed
                     const targetsNearby = curr.pos.findInRange(allTargets, 4);
 
+                    destLinks.push(curr);
+
                     if (targetsNearby.length > 0)
                     {
+                        // if there are targets then # of targets matter
                         curr._targets_ = targetsNearby.length;
-                        destLinks.push(curr);
+                    }
+                    else
+                    {
+                        // no targets, go last
+                        curr._targets_ = 0.001;
                     }
                 }
             }
@@ -134,7 +141,8 @@ linkProcess.work = function(room, roomCreeps)
             function(l1, l2)
             {
                 // STRATEGY least energy per target first
-                return Math.ceil(l1.energy / l1._targets_) - Math.ceil(l2.energy / l2._targets_);
+                // trick, keep priority even with zero energy
+                return Math.ceil((l1.energy + 1) / l1._targets_) - Math.ceil((l2.energy + 1) / l2._targets_);
             }
         );
     }
