@@ -4,8 +4,9 @@ var Controller = require('controller.template');
 
 var energyRestockControllerRegular = new Controller('energy.restock.regular');
 
-// STRATEGY coefficients for restocking
-const TowerRestock = 0.9;
+// STRATEGY parameters for restocking
+const TowerRestockMult = 0.9;
+const TerminalRestock  = 500;
 
 energyRestockControllerRegular.actRange = 1;
 
@@ -33,7 +34,8 @@ energyRestockControllerRegular.dynamicTargets = function(room, creep)
         LOOK_STRUCTURES,
         function(structure)
         {
-            if (!structure.my)
+            if (!structure.my ||
+                !structure.isActive())
             {
                 return false;
             }
@@ -41,11 +43,15 @@ energyRestockControllerRegular.dynamicTargets = function(room, creep)
             if (structure.structureType == STRUCTURE_SPAWN ||
                 structure.structureType == STRUCTURE_EXTENSION)
             {
-                return structure.isActive() && structure.energy < structure.energyCapacity;
+                return structure.energy < structure.energyCapacity;
             }
             else if (structure.structureType == STRUCTURE_TOWER)
             {
-                return structure.isActive() && structure.energy < TowerRestock * structure.energyCapacity;
+                return structure.energy < TowerRestockMult * structure.energyCapacity;
+            }
+            else if (structure.structureType == STRUCTURE_TERMINAL)
+            {
+                return structure.store[RESOURCE_ENERGY] < TerminalRestock;
             }
 
             return false;

@@ -1,12 +1,13 @@
 'use strict';
 
-var globals = require('globals');
 var bodywork = require('routine.bodywork');
 var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
 
+// STRATEGY call off creeps with damaged body parts
 const HitsTreshold = 99;
+// STRATEGY time when creep is called for repair
 const Ttl = 100;
 
 ttlController.actRange = 1;
