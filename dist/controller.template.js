@@ -254,15 +254,15 @@ function Controller(id)
             }
 
             // filter cave individually
-            if (this._excludedTargets)
+            if (this._excludedTargets && this._excludedTargets.length > 0)
             {
                 targets = this._filterExcludedTargets(targets, [t, l, b, r]);
             }
 
             // one target per cave if flag is set
-            if (this.focusDynamic && targets.length > 0)
+            if (this.focusDynamic && targets.length > 1)
             {
-                targets = [targets[0]];
+                targets.splice(1, targets.length - 1);
             }
 
             if (!this._dynamicTargetCache)
@@ -344,7 +344,7 @@ function Controller(id)
 
         var targets = this.staticTargets(room);
 
-        if (this._excludedTargets)
+        if (this._excludedTargets && this._excludedTargets.length > 0)
         {
             targets = this._filterExcludedTargets(targets, undefined);
         }
@@ -529,6 +529,15 @@ function Controller(id)
         this._staticTargetCache = undefined;
         this._dynamicTargetCache = undefined;
 
+        if (this._usesDefaultFilter)
+        {
+            if (room._isDefaultFiltered())
+            {
+                this.debugLine(room, 'Fast exit, no creeps with energy');
+                return roomCreeps;
+            }
+        }
+
         // viable for fast check
         if (this.staticTargets && !this.dynamicTargets)
         {
@@ -537,15 +546,6 @@ function Controller(id)
             if (st.length == 0)
             {
                 this.debugLine(room, 'Fast exit, no targets');
-                return roomCreeps;
-            }
-        }
-
-        if (this._usesDefaultFilter)
-        {
-            if (room._isDefaultFiltered())
-            {
-                this.debugLine(room, 'Fast exit, no creeps with energy');
                 return roomCreeps;
             }
         }
