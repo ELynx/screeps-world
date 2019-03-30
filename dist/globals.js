@@ -111,15 +111,6 @@ var globals =
         creep.memory.dest = this.NO_DESTINATION;
         creep.memory.dact = this.NO_ACT_RANGE;
         creep.memory.xtra = this.NO_EXTRA;
-    },
-
-    /**
-    @param {Creep} creep.
-    @return IGame object creep is targeted to.
-    **/
-    creepTarget: function(creep)
-    {
-        return Game.getObjectById(creep.memory.dest);
     }
 };
 

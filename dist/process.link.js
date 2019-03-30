@@ -1,6 +1,5 @@
 'use strict';
 
-var globals = require('globals');
 var Process = require('process.template');
 
 var linkProcess = new Process('link');
@@ -50,7 +49,7 @@ linkProcess.work = function(room, roomCreeps)
             continue;
         }
 
-        const target = globals.creepTarget(creep);
+        const target = creep.target();
         if (target)
         {
             allTargets.push(target);
