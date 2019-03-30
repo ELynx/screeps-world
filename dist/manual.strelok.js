@@ -14,7 +14,6 @@ var strelok = function()
 
         // go down in flames, fire in the room we are hit in
         const dest = Memory.strelok ? Memory.strelok : creep.pos.roomName;
-
         const destRoom = new RoomPosition(25, 25, dest);
 
         if (creep.pos.roomName != destRoom.roomName)

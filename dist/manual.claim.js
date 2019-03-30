@@ -12,12 +12,6 @@ var claim = function()
         }
 
         const dest = Memory.claim ? Memory.claim : creep.pos.roomName;
-
-        if (!dest)
-        {
-           return;
-        }
-
         const destRoom = new RoomPosition(25, 25, dest);
 
         if (creep.pos.roomName != destRoom.roomName)
