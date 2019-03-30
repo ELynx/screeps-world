@@ -16,10 +16,17 @@ mineralHarvestController.act = function(extractor, creep)
         // STRATEGY wait for full carry
         if (extractor.cooldown > 0)
         {
-            return true;
+            result = true;
         }
+        else
+        {
+            const minerals = extractor.pos.lookFor(LOOK_MINERALS);
 
-        result = creep.harvest(extractor) == OK;
+            if (minerals.length > 0)
+            {
+                result = creep.harvest(minerals[0]) == OK;
+            }
+        }
     }
 
     return result;
