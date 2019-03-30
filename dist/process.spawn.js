@@ -6,19 +6,20 @@ var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
-const TypeBody    = [ bodywork[0], bodywork[1] ];
-const TypeHarvest = [ true,        true        ];
-const TypeRestock = [ false,       true        ];
-const TypeLimit   = [ 5.0,         2.0         ]; // limit by source level
+const TypeBody    = [ bodywork[0], bodywork[1], bodywork[2] ];
+const TypeHarvest = [ true,        true,        false       ];
+const TypeRestock = [ false,       true,        false       ];
+const TypeMiner   = [ false,       false,       true        ];
+const TypeLimit   = [ 5.0,         2.0,         1.0         ]; // limit by source level or mining level
 const TypeCount   = [
-                    [ 0,           0           ], // level 0, no own controller
-                    [ 6,           0           ], // level 1
-                    [ 8,           0           ], // level 2
-                    [ 10,          2           ], // level 3
-                    [ 10,          4           ]  // level 4
-                                               ];
+                    [ 0,           0,           0           ], // level 0, no own controller
+                    [ 6,           0,           1           ], // level 1
+                    [ 8,           0,           1           ], // level 2
+                    [ 10,          2,           1           ], // level 3
+                    [ 10,          4,           1           ]  // level 4
+                                                            ];
 
-spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
+spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel)
 {
     if (!this.countCache)
     {
@@ -57,7 +58,16 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel)
             continue;
         }
 
-        limit = Math.ceil(limit * sourceLevel);
+        if (TypeMiner[i])
+        {
+            limit = limit * miningLevel;
+        }
+        else
+        {
+            limit = limit * sourceLevel;
+        }
+
+        limit = Math.ceil(limit);
 
         if (creepsNeeded[i] > limit)
         {
@@ -109,7 +119,8 @@ spawnProcess.doSpawn = function(spawn, type, energyLevel)
                     btyp: type,
                     levl: level,
                     hvst: TypeHarvest[type],
-                    rstk: TypeRestock[type]
+                    rstk: TypeRestock[type],
+                    minr: TypeMiner[type]
                 },
 
                 directions:
