@@ -24,18 +24,13 @@ energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
         LOOK_STRUCTURES,
         function(structure)
         {
-            if (!structure.my && structure.structureType != STRUCTURE_CONTAINER)
-            {
-                return false;
-            }
-
             if (structure.structureType == STRUCTURE_CONTAINER)
             {
                 return structure.store[RESOURCE_ENERGY] < ContainerRestock * structure.storeCapacity;
             }
             else if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.isActive() && structure.energy < LinkRestock * structure.energyCapacity;
+                return structure.my && structure.isActive() && structure.energy < LinkRestock * structure.energyCapacity;
             }
 
             return false;
