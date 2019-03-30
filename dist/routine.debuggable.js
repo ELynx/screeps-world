@@ -1,7 +1,5 @@
 'use strict';
 
-var globals = require('globals');
-
 function makeDebuggable(target, archetype)
 {
     target.archetype = archetype;
@@ -29,7 +27,7 @@ function makeDebuggable(target, archetype)
     {
         if (this.verbose)
         {
-            this.debugLine(room, '<' + this.archetype + ' ' + this.id + '>');
+            this.debugLine(room, '[' + this.archetype + ' ' + this.id + ']');
         }
     };
 };
