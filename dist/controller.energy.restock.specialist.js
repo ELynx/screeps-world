@@ -8,7 +8,6 @@ var energyRestockControllerSpecialist = new Controller('energy.restock.specialis
 const ContainerRestock = 0.99;
 const LinkRestock      = 0.99;
 
-// special for this controller, varying strategy
 energyRestockControllerSpecialist.actRange = 1;
 
 energyRestockControllerSpecialist.act = function(target, creep)
