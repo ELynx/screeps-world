@@ -193,7 +193,8 @@ var roomActor =
 
             mapProcess.work(room);
 
-            room.memory.intl = Game.time;
+            // offset regeneration time randomly so multiple roooms don't do it at same turm
+            room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
         }
 
         // all creeps registered to room
@@ -210,6 +211,12 @@ var roomActor =
         // not all friendly or own creeps are in roomCreeps, but will do for a time
         towerProcess.work(room, roomCreeps, hostileCreeps);
         linkProcess.work(room, roomCreeps);
+
+        // STRATEGY don't rush spawn often
+        if ((room.memory.intl + Game.time) % 10 == 0)
+        {
+            spawnProcess.work(room, roomCreeps);
+        }
 
         // creeps that has no controller assigned will go here
         var unassignedCreeps = [];
@@ -260,7 +267,7 @@ var roomActor =
                     {
                         continue; // to the next creep
                     }
-                }
+                } // end of loop of room change
 
                 // TODO integrate
                 // hotplug - grab resources nearby
@@ -298,7 +305,7 @@ var roomActor =
                             globals.unassignCreep(creep);
                         }
                     }
-                }
+                } // end of grab logic
 
                 if (globals.creepAssigned(creep))
                 {
@@ -346,6 +353,7 @@ var roomActor =
                                         // so assignment is not dropped
                                         rc = OK;
                                         room.roomDebug('Creep ' + creep.name + ' stalls');
+                                        //creep.say('P');
                                     }
                                 }
 
@@ -388,8 +396,6 @@ var roomActor =
 
             this.roomControllersControl(room, unassignedCreeps);
         }
-
-        spawnProcess.work(room, roomCreeps);
 
         room.roomDebug('HCPU: ' + globals.hardCpuUsed(t0) + '%');
 
