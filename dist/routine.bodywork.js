@@ -69,6 +69,15 @@ var bodywork =
 
         // 800       100   100   100   100   100   50     50    50    50    50    50
         return [ 3, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+    },
+
+    /**
+    BODY Miner.
+    Not detailed yet, copy Restocker.
+    **/
+    2: function(energyLevel)
+    {
+        return this[1](energyLevel);
     }
 };
 
