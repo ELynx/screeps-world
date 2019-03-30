@@ -5,6 +5,8 @@ var Process = require('process.template');
 
 var linkProcess = new Process('link');
 
+const Treshold = 50;
+
 linkProcess.work = function(room, roomCreeps)
 {
     this.debugHeader(room);
@@ -65,7 +67,8 @@ linkProcess.work = function(room, roomCreeps)
 
     const goodToDest = function(someLink)
     {
-        return someLink.energy < someLink.energyCapacity;
+        // cut off transfer, due to losses it is never 100% full
+        return someLink.energy < someLink.energyCapacity - Treshold;
     };
 
     for (var i = 0; i < allLinks.length; ++i)
