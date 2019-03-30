@@ -62,6 +62,12 @@ repairController.act = function(target, creep)
 
 repairController.dynamicTargets = function(room, creep)
 {
+    // check for a reason - avoid repairing old walls when there is no power to work with
+    if (room.memory.elvl == 0)
+    {
+        return;
+    }
+
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
