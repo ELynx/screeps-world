@@ -20,6 +20,8 @@ var energyRestockControllerS = require('controller.energy.restock.specialist');
 var repairController         = require('controller.repair');
 var buildController          = require('controller.build');
 var controllerController     = require('controller.controller');
+var controllerMineralHarvest = require('controller.mineral.harvest');
+var controllerMineralRestock = require('controller.mineral.restock');
 
 var roomActor =
 {
@@ -88,6 +90,36 @@ var roomActor =
         const sources = room.find(FIND_SOURCES);
         return sources.length;
     },
+
+    /**
+    Calculate room mining level.
+    @param {Room} room.
+    @return Mining level of room.
+    **/
+    miningLevel: function(room)
+    {
+        const extractors = room.find(
+            FIND_MY_STRUCTURES,
+            {
+                filter: function(structure)
+                {
+                    return structure.structureType == STRUCTURE_EXTRACTOR && structure.my && structure.isActive();
+                }
+            }
+        );
+
+        const terminals = room.find(
+            FIND_MY_STRUCTURES,
+            {
+                filter: function(structure)
+                {
+                    return structure.structureType == STRUCTURE_TERMINAL && structure.my && structure.isActive();
+                }
+            }
+        );
+
+        return (extractors.length > 0 && terminals.length > 0) ? 1 : 0;
+    }
 
     /**
     Prepare controllers for next room.
@@ -190,6 +222,7 @@ var roomActor =
         {
             room.memory.elvl = this.energyLevel(room);
             room.memory.slvl = this.sourceLevel(room);
+            room.memory.mlvl = this.miningLevel(room);
 
             mapProcess.work(room);
 

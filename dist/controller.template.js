@@ -390,7 +390,7 @@ function Controller(id)
     {
         this._usesDefaultFilter = true;
 
-        return creep.hasEnergy() && !creep.memory.rstk;
+        return creep.hasEnergy() && !creep.memory.rstk && !creep.memory.minr;
     };
 
     this._doesDefaultFilter = undefined;
