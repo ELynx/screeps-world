@@ -15,10 +15,11 @@ CLAIM           600
 
 var bodywork =
 {
+    workUniversalCache: { },
+
     /**
     BODY Universal worker.
     Could do any work.
-    Restocks energy while there are no specialists.
     @param {integer} energyLevel.
     @return {Array} level, body.
     **/
@@ -27,11 +28,6 @@ var bodywork =
         if (energyLevel == 0)
         {
             return [ 0, [] ];
-        }
-
-        if (!this.workUniversalCache)
-        {
-            this.workUniversalCache = { };
         }
 
         const cacheHit = this.workUniversalCache[energyLevel];

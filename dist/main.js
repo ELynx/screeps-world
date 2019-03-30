@@ -1,7 +1,7 @@
 'use strict';
 
 var extensions    = require('extensions');
-var memoryManager = require('routine.memory');
+var cleanupMemory = require('routine.memory');
 var roomActor     = require('actor.room');
 var manualStrelok = require('manual.strelok');
 var manualClaim   = require('manual.claim');
@@ -19,7 +19,7 @@ module.exports.loop = function()
 
     //profiler.wrap(function() {
 
-    memoryManager.cleanup();
+    cleanupMemory();
 
     for(const name in Game.rooms)
     {

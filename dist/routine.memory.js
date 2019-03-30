@@ -1,28 +1,22 @@
 'use strict';
 
-var memoryManager =
+function cleanupMemory()
 {
-    /**
-    Looply clean up of objects that Memory remembers but no longer relevant.
-    **/
-    cleanup: function()
+    for(const name in Memory.creeps)
     {
-        for(const name in Memory.creeps)
+        if(!Game.creeps[name])
         {
-            if(!Game.creeps[name])
-            {
-                delete Memory.creeps[name];
-            }
+            delete Memory.creeps[name];
         }
+    }
 
-        for(const name in Memory.rooms)
+    for(const name in Memory.rooms)
+    {
+        if(!Game.rooms[name])
         {
-            if(!Game.rooms[name])
-            {
-                delete Memory.rooms[name];
-            }
+            delete Memory.rooms[name];
         }
     }
 };
 
-module.exports = memoryManager;
+module.exports = cleanupMemory;

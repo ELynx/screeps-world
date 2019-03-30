@@ -536,7 +536,7 @@ function Controller(id)
 
             if (st.length == 0)
             {
-                this.debugLine('Fast exit, no targets');
+                this.debugLine(room, 'Fast exit, no targets');
                 return roomCreeps;
             }
         }
