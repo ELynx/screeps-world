@@ -43,9 +43,20 @@ Creep.prototype.caveIndex = function()
 
         this._cidx_ = cidx;
         this._cidxT_ = Game.time;
+
+        //this.say(this._cidx_);
     }
 
     return this._cidx_;
+};
+
+/**
+@param {Creep} creep.
+@return IGame object creep is targeted to.
+**/
+Creep.prototype.target = function()
+{
+    return Game.getObjectById(this.memory.dest);
 };
 
 Room.prototype._verbose_ = false;

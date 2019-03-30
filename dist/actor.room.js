@@ -305,7 +305,7 @@ var roomActor =
                     // flag if target should be carried to next loop
                     var keepAssignment = false;
 
-                    const destination = globals.creepTarget(creep);
+                    const destination = creep.target();
 
                     if (destination)
                     {
