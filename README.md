@@ -16,7 +16,7 @@ Withdraw from enemy structures.
 Dismantle enemy structures, 50 hits vs melee Attack 30 hits.
 structureType might be faster than instanceof.
 PathFinder opt flee.
-moveTo has same options as PathFinder.
+moveTo has same options as Room.findPath.
 StructureContainer is not owned.
 
 Temporary creeps:
