@@ -119,7 +119,7 @@ var roomActor =
         );
 
         return (extractors.length > 0 && terminals.length > 0) ? 1 : 0;
-    }
+    },
 
     /**
     Prepare controllers for next room.
