@@ -17,7 +17,7 @@ linkProcess.work = function(room, roomCreeps)
             {
                 if (structure.structureType == STRUCTURE_LINK)
                 {
-                    return structure.isActive();
+                    return structure.my && structure.isActive();
                 }
 
                 return false;
@@ -32,7 +32,6 @@ linkProcess.work = function(room, roomCreeps)
 
     const allSources = room.find(FIND_SOURCES);
 
-    // TODO there are other ways to fill in energy
     if (allSources.length == 0)
     {
         return;
@@ -57,14 +56,14 @@ linkProcess.work = function(room, roomCreeps)
     }
 
     var sourceLinks = [];
-    var destLinks  = [];
+    var destLinks   = [];
 
-    const goodToSource = function(someLink)
+    const useAsSource = function(someLink)
     {
         return someLink.cooldown == 0 && someLink.energy > 0;
     };
 
-    const goodToDest = function(someLink)
+    const useAsDest = function(someLink)
     {
         // cut off transfer, due to losses it is never 100% full
         return someLink.energy < someLink.energyCapacity - Treshold;
@@ -77,7 +76,7 @@ linkProcess.work = function(room, roomCreeps)
         // quick flag, source keeps to be source
         if (curr._source_)
         {
-            if (goodToSource(curr))
+            if (useAsSource(curr))
             {
                 sourceLinks.push(curr);
             }
@@ -90,18 +89,18 @@ linkProcess.work = function(room, roomCreeps)
 
             if (curr._source_)
             {
-                if (goodToSource(curr))
+                if (useAsSource(curr))
                 {
                     sourceLinks.push(curr);
                 }
             }
             else
             {
-                if (goodToDest(curr))
+                if (useAsDest(curr))
                 {
                     // TODO by cave?
                     // STRATEGY predict where energy will be needed
-                    const targetsNearby = curr.pos.findInRange(allTargets, 4);
+                    const targetsNearby = curr.pos.findInRange(allTargets, 5);
 
                     destLinks.push(curr);
 

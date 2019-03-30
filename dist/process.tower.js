@@ -16,13 +16,13 @@ towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
         }
     );
 
-    if (friendlyCreeps.length > 0 || damagedCreeps.length > 0)
+    if (hostileCreeps.length > 0 || damagedCreeps.length > 0)
     {
         const towers = room.find(FIND_MY_STRUCTURES,
             {
                 filter: function(structure)
                 {
-                    return structure.structureType == STRUCTURE_TOWER;
+                    return structure.structureType == STRUCTURE_TOWER && structure.my && structure.isActive();
                 }
             }
         );
@@ -33,15 +33,14 @@ towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
             if(closestHostile)
             {
                 towers[i].attack(closestHostile);
-                continue;
+                //continue;
             }
 
             const damagedCreep = towers[i].pos.findClosestByRange(damagedCreeps);
-
             if (damagedCreep)
             {
                 towers[i].heal(damagedCreep);
-                continue;
+                //continue;
             }
         }
     }
