@@ -37,65 +37,69 @@ module.exports.loop = function()
     // <<
     if (Memory.order && Memory.stopPrice)
     {
-        var stopIt = true;
-
-        const orderInfo = Game.market.getOrderById(Memory.order);
-        if (orderInfo)
+        if (Game.rooms['E38N1'].terminal.cooldown == 0 &&
+            Game.rooms['E38N1'].terminal.storage[RESOURCE_ENERGY] > 200)
         {
-            if (orderInfo.price < Memory.stopPrice)
+            var stopIt = true;
+
+            const orderInfo = Game.market.getOrderById(Memory.order);
+            if (orderInfo)
             {
-                const buy = Math.random() < 0.16;
-
-                if (buy)
+                if (orderInfo.price < Memory.stopPrice)
                 {
-                    stopIt = false;
+                    const buy = Math.random() < 0.16;
 
-                    Game.market.deal(Memory.order, 1000, 'E38N1');
-                }
-                else
-                {
-                    const allOrders = Game.market.getAllOrders(
-                        function(order)
-                        {
-                            return order.type == ORDER_BUY &&
-                                   order.resourceType == orderInfo.resourceType &&
-                                   order.price > 2 * orderInfo.price &&
-                                   Game.map.getRoomLinearDistance(order.roomName, 'E39N1', true) < 30;
-                        }
-                    );
-
-                    if (allOrders.length > 0)
+                    if (buy)
                     {
-                        allOrders.sort(
-                            function(o1, o2)
-                            {
-                                if (o1.price == o2.price)
-                                {
-                                    return Game.map.getRoomLinearDistance(o1.roomName, 'E39N1', true) - Game.map.getRoomLinearDistance(o2.roomName, 'E39N1', true);
-                                }
+                        stopIt = false;
 
-                                return o2.price - o1.price;
+                        Game.market.deal(Memory.order, 1000, 'E38N1');
+                    }
+                    else
+                    {
+                        const allOrders = Game.market.getAllOrders(
+                            function(order)
+                            {
+                                return order.type == ORDER_BUY &&
+                                       order.resourceType == orderInfo.resourceType &&
+                                       order.price > 2 * orderInfo.price &&
+                                       Game.map.getRoomLinearDistance(order.roomName, 'E38N1', true) < 30;
                             }
                         );
 
-                        for (var i = 0; i < allOrders.length; ++i)
+                        if (allOrders.length > 0)
                         {
-                            if (Game.market.deal(allOrders[i].id, 500, 'E38N1') == OK)
+                            allOrders.sort(
+                                function(o1, o2)
+                                {
+                                    if (o1.price == o2.price)
+                                    {
+                                        return Game.map.getRoomLinearDistance(o1.roomName, 'E38N1', true) - Game.map.getRoomLinearDistance(o2.roomName, 'E38N1', true);
+                                    }
+
+                                    return o2.price - o1.price;
+                                }
+                            );
+
+                            for (var i = 0; i < allOrders.length; ++i)
                             {
-                                break;
+                                if (Game.market.deal(allOrders[i].id, 500, 'E38N1') == OK)
+                                {
+                                    break;
+                                }
                             }
+
+                            stopIt = false;
                         }
                     }
-
-                    stopIt = false;
                 }
             }
-        }
 
-        if (stopIt)
-        {
-            delete Memory.order;
-            delete Memory.stopPrice;
+            if (stopIt)
+            {
+                delete Memory.order;
+                delete Memory.stopPrice;
+            }
         }
     }
     // >>
