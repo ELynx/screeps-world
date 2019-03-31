@@ -38,7 +38,7 @@ module.exports.loop = function()
     if (Memory.order && Memory.stopPrice)
     {
         if (Game.rooms['E38N1'].terminal.cooldown == 0 &&
-            Game.rooms['E38N1'].terminal.storage[RESOURCE_ENERGY] > 200)
+            Game.rooms['E38N1'].terminal.store[RESOURCE_ENERGY] > 200)
         {
             var stopIt = true;
 
