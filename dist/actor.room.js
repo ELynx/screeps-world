@@ -33,49 +33,46 @@ var roomActor =
     **/
     energyLevel: function(room)
     {
-        if (room.controller && room.controller.my)
+        const structs = room.find(FIND_MY_STRUCTURES,
+            {
+                filter: function(structure)
+                {
+                    return structure.isActive() &&
+                          (structure.structureType == STRUCTURE_SPAWN ||
+                           structure.structureType == STRUCTURE_EXTENSION);
+                }
+            }
+        );
+
+        let energyCapacity = 0;
+
+        for (let i = 0; i < structs.length; ++i)
         {
-            const structs = room.find(FIND_MY_STRUCTURES,
-                {
-                    filter: function(structure)
-                    {
-                        return structure.isActive() &&
-                              (structure.structureType == STRUCTURE_SPAWN ||
-                               structure.structureType == STRUCTURE_EXTENSION);
-                    }
-                }
-            );
-
-            var energyCapacity = 0;
-
-            for (var i = 0; i < structs.length; ++i)
+            if (structs[i].structureType == STRUCTURE_SPAWN)
             {
-                if (structs[i].structureType == STRUCTURE_SPAWN)
-                {
-                    energyCapacity = energyCapacity + 300;
-                }
-
-                if (structs[i].structureType == STRUCTURE_EXTENSION)
-                {
-                    energyCapacity = energyCapacity + 50;
-                }
+                energyCapacity = energyCapacity + 300;
             }
 
-            if (energyCapacity >= 800)
+            if (structs[i].structureType == STRUCTURE_EXTENSION)
             {
-                // above 800 (aka full built RCL 3) go in increments of 500
-                return Math.floor((energyCapacity - 799) / 500) + 3;
+                energyCapacity = energyCapacity + 50;
             }
+        }
 
-            if (energyCapacity >= 550)
-            {
-                return 2;
-            }
+        if (energyCapacity >= 800)
+        {
+            // above 800 (aka full built RCL 3) go in increments of 500
+            return Math.floor((energyCapacity - 799) / 500) + 3;
+        }
 
-            if (energyCapacity >= 300)
-            {
-                return 1;
-            }
+        if (energyCapacity >= 550)
+        {
+            return 2;
+        }
+
+        if (energyCapacity >= 300)
+        {
+            return 1;
         }
 
         return 0;
@@ -244,28 +241,33 @@ var roomActor =
 
         // not all friendly or own creeps are in roomCreeps, but will do for a time
         towerProcess.work(room, roomCreeps, hostileCreeps);
-        linkProcess.work(room, roomCreeps);
 
-        // STRATEGY don't rush spawn often
-        if ((room.memory.intl + Game.time) % 10 == 0)
+        // STRATEGY don't execute certain processes too ofthen
+        let processKey == (room.memory.intl + Game.time) % 10;
+
+        if (processKey == 0)
         {
             spawnProcess.work(room, roomCreeps);
         }
+        else if (processKey === 1)
+        {
+            linkProcess.work(room);
+        }
 
         // creeps that has no controller assigned will go here
-        var unassignedCreeps = [];
+        let unassignedCreeps = [];
 
         if (roomCreeps.length > 0)
         {
             // do some statistics
-            var assigned = 0;
-            var working  = 0;
-            var resting  = 0;
-            var moving   = 0;
+            let assigned = 0;
+            let working  = 0;
+            let resting  = 0;
+            let moving   = 0;
 
-            for (var i = 0; i < roomCreeps.length; ++i)
+            for (let i = 0; i < roomCreeps.length; ++i)
             {
-                var creep = roomCreeps[i];
+                let creep = roomCreeps[i];
 
                 // code that migrate creeps into room of registration
                 if (creep.memory.crum != creep.pos.roomName || creep.memory.roomChange)
@@ -307,11 +309,11 @@ var roomActor =
                 // hotplug - grab resources nearby
                 if (creep.sumCarry() < creep.carryCapacity && !creep.memory.manual)
                 {
-                    var wasGrabbed = false;
+                    let wasGrabbed = false;
 
                     const res = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 1);
 
-                    for (var k = 0; k < res.length && !wasGrabbed; ++k)
+                    for (let k = 0; k < res.length && !wasGrabbed; ++k)
                     {
                         if (res[k].resourceType == RESOURCE_ENERGY)
                         {
@@ -323,7 +325,7 @@ var roomActor =
                     {
                         const tomb = creep.pos.findInRange(FIND_TOMBSTONES, 1);
 
-                        for (var k = 0; k < tomb.length && !wasGrabbed; ++k)
+                        for (let k = 0; k < tomb.length && !wasGrabbed; ++k)
                         {
                             // since internal to room don't bother with hostile ramparts
                             wasGrabbed = creep.withdraw(tomb[k], RESOURCE_ENERGY) == OK;
@@ -344,7 +346,7 @@ var roomActor =
                 if (globals.creepAssigned(creep))
                 {
                     // flag if target should be carried to next loop
-                    var keepAssignment = false;
+                    let keepAssignment = false;
 
                     const destination = creep.target();
 
@@ -367,7 +369,7 @@ var roomActor =
                                 // STRATEGY creep movement, main CPU sink
 
                                 // first move by cached path
-                                var rc = creep.moveTo(destination, { noPathFinding: true });
+                                let rc = creep.moveTo(destination, { noPathFinding: true });
 
                                 // no movement, see if pathfinding is possible
                                 if (rc == ERR_NOT_FOUND)
