@@ -13,7 +13,7 @@ var strelok = function()
 
         // count how many creeps are already going there
         let now = roomCount[creep.memory.dest] || 0;
-        +now;
+        ++now;
         roomCount[creep.memory.dest] = now;
 
         if (creep.pos.roomName != destRoom.roomName)
