@@ -15,12 +15,12 @@ Creep.prototype.caveIndex = function()
     if (!this._cidxT_ ||
          this._cidxT_ != Game.time)
     {
-        var cidx = 0;
+        let cidx = 0;
 
         const caveMap = this.room.memory.caveMap;
         if (caveMap)
         {
-            for (var x = 0; x < caveMap[0].length - 1; ++x)
+            for (let x = 0; x < caveMap[0].length - 1; ++x)
             {
                 if (this.pos.x >= caveMap[0][x] &&
                     this.pos.x <  caveMap[0][x + 1])
@@ -30,7 +30,7 @@ Creep.prototype.caveIndex = function()
                 }
             }
 
-            for (var y = 0; y < caveMap[1].length - 1; ++y)
+            for (let y = 0; y < caveMap[1].length - 1; ++y)
             {
                 if (this.pos.y >= caveMap[1][y] &&
                     this.pos.y <  caveMap[1][y + 1])
@@ -83,7 +83,7 @@ Get number of walkable tiles around a position.
 **/
 RoomPosition.prototype.walkableTiles = function()
 {
-    var result = [];
+    let result = [];
 
     const room = Game.rooms[this.roomName];
     if (room)
@@ -95,11 +95,11 @@ RoomPosition.prototype.walkableTiles = function()
 
         const around = room.lookAtArea(t, l, b, r);
 
-        for (var x in around)
+        for (let x in around)
         {
             const ys = around[x];
 
-            for (var y in ys)
+            for (let y in ys)
             {
                 if (x == this.x && y == this.y)
                 {
@@ -110,9 +110,9 @@ RoomPosition.prototype.walkableTiles = function()
 
                 if (objs)
                 {
-                    var found = false;
+                    let found = false;
 
-                    for (var i = 0; i < objs.length && !found; ++i)
+                    for (let i = 0; i < objs.length && !found; ++i)
                     {
                         const obj = objs[i];
 
