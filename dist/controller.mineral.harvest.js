@@ -24,7 +24,14 @@ mineralHarvestController.act = function(extractor, creep)
 
             if (minerals.length > 0)
             {
-                result = creep.harvest(minerals[0]) == OK;
+                let rc = creep.harvest(minerals[0]);
+
+                if (rc == ERR_NOT_ENOUGH_RESOURCES)
+                {
+                    extractor.room.memory.mlvl = 0;
+                }
+
+                result = rc == OK;
             }
         }
     }
