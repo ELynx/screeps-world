@@ -30,33 +30,8 @@ linkProcess.work = function(room, roomCreeps)
         return;
     }
 
-    const allSources = room.find(FIND_SOURCES);
-
-    if (allSources.length == 0)
-    {
-        return;
-    }
-
-    // predict creep position
-    var allTargets = [];
-    for (var i = 0; i < roomCreeps.length; ++i)
-    {
-        const creep = roomCreeps[i];
-
-        if (creep.memory.rstk == true)
-        {
-            continue;
-        }
-
-        const target = creep.target();
-        if (target)
-        {
-            allTargets.push(target);
-        }
-    }
-
-    var sourceLinks = [];
-    var destLinks   = [];
+    let sourceLinks = [];
+    let destLinks   = [];
 
     const useAsSource = function(someLink)
     {
@@ -69,12 +44,12 @@ linkProcess.work = function(room, roomCreeps)
         return someLink.energy < someLink.energyCapacity - Treshold;
     };
 
-    for (var i = 0; i < allLinks.length; ++i)
+    for (let i = 0; i < allLinks.length; ++i)
     {
-        var curr = allLinks[i];
+        let curr = allLinks[i];
 
         // quick flag, source keeps to be source
-        if (curr._source_)
+        if (curr.isSource())
         {
             if (useAsSource(curr))
             {
@@ -83,41 +58,12 @@ linkProcess.work = function(room, roomCreeps)
         }
         else
         {
-            // STRATEGY distance from link to source
-            const sourcesNearby = curr.pos.findInRange(allSources, 2);
-            curr._source_ = sourcesNearby.length > 0;
-
-            if (curr._source_)
+            if (useAsDest(curr))
             {
-                if (useAsSource(curr))
-                {
-                    sourceLinks.push(curr);
-                }
-            }
-            else
-            {
-                if (useAsDest(curr))
-                {
-                    // TODO by cave?
-                    // STRATEGY predict where energy will be needed
-                    const targetsNearby = curr.pos.findInRange(allTargets, 5);
-
-                    destLinks.push(curr);
-
-                    if (targetsNearby.length > 0)
-                    {
-                        // if there are targets then # of targets matter
-                        curr._targets_ = targetsNearby.length;
-                    }
-                    else
-                    {
-                        // no targets, go last
-                        curr._targets_ = 0.001;
-                    }
-                }
+                destLinks.push(curr);
             }
         }
-    } // end of loop for all links
+    }
 
     if (sourceLinks.length == 0 ||
         destLinks.length == 0)
@@ -125,7 +71,7 @@ linkProcess.work = function(room, roomCreeps)
         return;
     }
 
-    if (sourceLinks.length > 0)
+    if (sourceLinks.length > 1 && destLinks.length > 1)
     {
         sourceLinks.sort(
             function(l1, l2)
@@ -136,23 +82,22 @@ linkProcess.work = function(room, roomCreeps)
         );
     }
 
-    if (destLinks.length > 0)
+    if (destLinks.length > 1)
     {
         destLinks.sort(
             function(l1, l2)
             {
-                // STRATEGY least energy per target first
-                // trick, keep priority even with zero energy
-                return Math.ceil((l1.energy + 1) / l1._targets_) - Math.ceil((l2.energy + 1) / l2._targets_);
+                // STRATEGY keep it CPU-simple
+                return l1.energy - l2.energy;
             }
         );
     }
 
-    var didx = 0;
-    for (var sidx = 0; sidx < sourceLinks.length; ++sidx)
+    let didx = 0;
+    for (let sidx = 0; sidx < sourceLinks.length; ++sidx)
     {
-        var s = sourceLinks[sidx];
-        var d = destLinks[didx];
+        let s = sourceLinks[sidx];
+        let d = destLinks[didx];
 
         s.transferEnergy(d);
 
