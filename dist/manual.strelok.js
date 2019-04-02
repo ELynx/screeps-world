@@ -2,15 +2,19 @@
 
 var strelok = function()
 {
-    var creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
+    let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
+    let roomCount = { };
 
     for (let i = 0; i < creeps.length; ++i)
     {
         let creep  = creeps[i];
 
-        // go down in flames, fire in the room we are hit in
-        const dest = Memory.strelok ? Memory.strelok : creep.pos.roomName;
-        const destRoom = new RoomPosition(25, 25, dest);
+        const destRoom = new RoomPosition(25, 25, creep.memory.dest);
+
+        // count how many creeps are already going there
+        let now = roomCount[creep.memory.dest] || 0;
+        ++now;
+        roomCount[creep.memory.dest] = now;
 
         if (creep.pos.roomName != destRoom.roomName)
         {
@@ -115,37 +119,66 @@ var strelok = function()
                     }
                 }
             }
-            else
-            {
-                Memory.strike = undefined;
-            }
         }
     }
 
-    if (Memory.strelok && Memory.handspawn && Memory.strike && Memory.strike > 0)
+    if (Memory.strelok && Memory.handspawn)
     {
         const spawn = Game.getObjectById(Memory.handspawn);
 
-        if (spawn)
+        if (spawn && !spawn.spawning)
         {
-            let rc = spawn.spawnCreep(
-                [
-                    RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                    MOVE,          MOVE,          MOVE,          MOVE,          MOVE
-                ],
-                'strelok_' + Game.time
-            );
-            
-            if (rc === OK)
+            let destRoom = undefined;
+
+            for (const flagName in Game.flags)
             {
-                if (Memory.strike > 1)
+                if (!flagName.startsWith('strelok'))
                 {
-                    --Memory.strike;
+                    continue;
+                }
+
+                let flag = Game.flags[flagName];
+                
+                let count = 3; // red, for brevity
+
+                if (flag.color == COLOR_YELLOW)
+                {
+                    count = 2;
+                }
+                else if (flag.color == COLOR_GREEN)
+                {
+                    count = 1;
+                }
+                
+                count = count - (roomCount[flag.pos.roomName] || 0);
+                
+                // don't bother if several
+                if (count > 0)
+                {
+                    flag.secondaryColor = COLOR_RED;
+                    destRoom = flag.pos.roomName;
                 }
                 else
                 {
-                    Memory.strike = undefined;
+                    flag.secondaryColor = COLOR_WHITE;
                 }
+            }
+            
+            if (destRoom)
+            {
+                spawn.spawnCreep(
+                    [
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE
+                    ],
+                    'strelok_' + Game.time,
+                    {
+                        memory:
+                        {
+                            dest: destRoom
+                        }
+                    }
+                );
             }
         }
     }
