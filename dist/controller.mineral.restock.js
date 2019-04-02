@@ -23,7 +23,18 @@ mineralHarvestController.act = function(terminal, creep)
             continue;
         }
 
-        creep.transfer(terminal, resourceType);
+        let rc = creep.transfer(terminal, resourceType);
+
+        if (rc == ERR_FULL)
+        {
+            terminal.room.memory.mlvl = 0;
+        }
+
+        if (rc != OK)
+        {
+            return false;
+        }
+
         transferred = true;
     }
 
