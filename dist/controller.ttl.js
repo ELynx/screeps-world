@@ -8,7 +8,7 @@ var ttlController = new Controller('ttl');
 // STRATEGY call off creeps with damaged body parts
 const HitsTreshold = 99;
 // STRATEGY time when creep is called for repair
-const Ttl = 100;
+const Ttl = [100, 100, 200];
 
 ttlController.actRange = 1;
 
@@ -124,7 +124,7 @@ ttlController.filterCreep = function(creep)
         return true;
     }
 
-    return creep.ticksToLive <= Ttl;
+    return creep.ticksToLive <= Ttl[creep.memory.btyp];
 };
 
 ttlController.register();
