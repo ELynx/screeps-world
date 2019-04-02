@@ -243,7 +243,7 @@ var roomActor =
         towerProcess.work(room, roomCreeps, hostileCreeps);
 
         // STRATEGY don't execute certain processes too ofthen
-        let processKey == (room.memory.intl + Game.time) % 10;
+        let processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)
         {
