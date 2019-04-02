@@ -106,6 +106,17 @@ var roomActor =
             }
         );
 
+        // real cheap here, integrate
+        const minerals = room.find(
+            FIND_MINERALS,
+            {
+                filter: function(mineral)
+                {
+                    return mineral.mineralAmount > 0;
+                }
+            }
+        );
+
         const terminals = room.find(
             FIND_MY_STRUCTURES,
             {
@@ -116,7 +127,7 @@ var roomActor =
             }
         );
 
-        return (extractors.length > 0 && terminals.length > 0) ? 1 : 0;
+        return (extractors.length > 0 && terminals.length > 0 && minerals.length > 0) ? 1 : 0;
     },
 
     /**
