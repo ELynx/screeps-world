@@ -164,19 +164,22 @@ var strelok = function()
                 }
             }
             
-            spawn.spawnCreep(
-                [
-                    RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                    MOVE,          MOVE,          MOVE,          MOVE,          MOVE
-                ],
-                'strelok_' + Game.time,
-                {
-                    memory:
+            if (destRoom)
+            {
+                spawn.spawnCreep(
+                    [
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE
+                    ],
+                    'strelok_' + Game.time,
                     {
-                        dest: destRoom
+                        memory:
+                        {
+                            dest: destRoom
+                        }
                     }
-                }
-            );
+                );
+            }
         }
     }
 
