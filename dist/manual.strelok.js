@@ -139,12 +139,14 @@ var strelok = function()
         }
     }
 
-    if (Memory.strelok && Memory.handspawn)
+    if (Memory.strelok)
     {
-        const spawn = Game.getObjectById(Memory.handspawn);
+        const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
 
-        if (spawn && !spawn.spawning)
+        for (let i = 0; i < spawns.length; ++i)
         {
+            let spawn = spawns[i];
+            
             let destRoom = undefined;
 
             for (const flagName in Game.flags)
@@ -158,7 +160,11 @@ var strelok = function()
                 
                 let count = 3; // red, for brevity
 
-                if (flag.color == COLOR_YELLOW)
+                if (flag.color == COLOR_PURPLE)
+                {
+                    count = 6;
+                }
+                else if (flag.color == COLOR_YELLOW)
                 {
                     count = 2;
                 }
@@ -172,15 +178,15 @@ var strelok = function()
                 // don't bother if several
                 if (count > 0)
                 {
-                    flag.secondaryColor = COLOR_RED;
+                    flag.setColor(flag.color, COLOR_RED);
                     destRoom = flag.pos.roomName;
                 }
                 else
                 {
-                    flag.secondaryColor = COLOR_WHITE;
+                    flag.setColor(flag.color, COLOR_WHITE);
                 }
             }
-            
+
             if (destRoom)
             {
                 spawn.spawnCreep(
