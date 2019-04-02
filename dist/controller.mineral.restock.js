@@ -44,9 +44,9 @@ mineralHarvestController.staticTargets = function(room)
                         return _.sum(structure.store) < structure.storeCapacity;
                     }
                 }
-            }
 
-            return false;
+                return false;
+            }
         }
     );
 };
