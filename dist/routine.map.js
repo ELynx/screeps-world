@@ -1,13 +1,7 @@
 'use strict';
 
-var Process = require('process.template');
-
-var mapProcess = new Process('map');
-
-mapProcess.work = function(room)
+function makeCaveMap(room)
 {
-    this.debugHeader(room);
-
     if (!room.memory.caveMap)
     {
         // TODO generate rooms with equal free space
@@ -20,11 +14,11 @@ mapProcess.work = function(room)
                                    ];
     }
 
-    if (this.verbose)
+    if (false)
     {
-        for (var x = 0; x < room.memory.caveMap[0].length - 1; ++x)
+        for (let x = 0; x < room.memory.caveMap[0].length - 1; ++x)
         {
-            for (var y = 0; y < room.memory.caveMap[1].length - 1; ++y)
+            for (let y = 0; y < room.memory.caveMap[1].length - 1; ++y)
             {
                 const x0 = room.memory.caveMap[0][x] - 0.5;
                 const w  = room.memory.caveMap[0][x + 1] - x0 - 0.5;
@@ -40,6 +34,4 @@ mapProcess.work = function(room)
     }
 };
 
-mapProcess.register();
-
-module.exports = mapProcess;
+module.exports = makeCaveMap;
