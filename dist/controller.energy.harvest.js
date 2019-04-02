@@ -9,7 +9,7 @@ energyHarvestController.smartTargeting = true; // since sources are crowded
 
 energyHarvestController.act = function(source, creep)
 {
-    var result = false;
+    let result = false;
 
     // will drop on ground if not enough free space
     if (creep.sumCarry() < creep.carryCapacity)

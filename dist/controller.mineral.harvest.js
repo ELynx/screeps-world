@@ -8,7 +8,7 @@ mineralHarvestController.actRange = 1;
 
 mineralHarvestController.act = function(extractor, creep)
 {
-    var result = false;
+    let result = false;
 
     // will drop on ground if not enough free space
     if (creep.sumCarry() < creep.carryCapacity)
@@ -47,7 +47,9 @@ mineralHarvestController.staticTargets = function(room)
 
 mineralHarvestController.filterCreep = function(creep)
 {
-    if (creep.memory.minr == true && creep.sumCarry() == 0)
+    if (creep.memory.minr == true &&
+        creep.sumCarry() == 0 &&
+        creep.ticksToLive > 200) // TODO integrate
     {
         return true;
     }

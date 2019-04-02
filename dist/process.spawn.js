@@ -39,19 +39,19 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
     }
 
     // cap off at defined
-    var mobLevel = energyLevel;
+    let mobLevel = energyLevel;
     if (mobLevel >= TypeCount.length)
     {
         mobLevel = TypeCount.length - 1;
     }
 
     // copy array
-    var creepsNeeded = TypeCount[mobLevel].slice(0);
+    let creepsNeeded = TypeCount[mobLevel].slice(0);
 
     // limit by source level
-    for (var i = 0; i < creepsNeeded.length; ++i)
+    for (let i = 0; i < creepsNeeded.length; ++i)
     {
-        var limit = TypeLimit[i];
+        let limit = TypeLimit[i];
 
         if (!limit)
         {
@@ -144,22 +144,29 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    var creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl);
+    let creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl);
 
-    for (var i = 0; i < creeps.length; ++i)
+    let hasBelow = false;
+  
+    for (let i = 0; i < creeps.length; ++i)
     {
-        --creepsNeeded[creeps[i].memory.btyp];
+        let some = creepsNeeded[creeps[i].memory.btyp];
+        --some;
+
+        if (some < 0)
+        {
+            hasBelow = true;
+        }
     }
 
-    // remember for TTL
-    room.memory.ccnt = creepsNeeded;
-
-    var hasBelow = false;
-
-    // check
-    for (var i = 0; i < creepsNeeded.length && !hasBelow; ++i)
+    if (hasBelow)
     {
-        hasBelow = creepsNeeded[i] > 0;
+      // remember for TTL
+      room.memory.ccnt = creepsNeeded;
+    }
+    else
+    {
+      room.memory.ccnt = undefined;
     }
 
     if (!hasBelow)
@@ -183,14 +190,14 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    var totalSpawned = 0;
+    let totalSpawned = 0;
 
     // STRATEGY there are less spawns than creep types
-    for (var i = 0; i < spawns.length; ++i)
+    for (let i = 0; i < spawns.length; ++i)
     {
-        var spawned = false;
+        let spawned = false;
 
-        for (var type = 0; type < TypeBody.length && !spawned; ++type)
+        for (let type = 0; type < TypeBody.length && !spawned; ++type)
         {
             if (creepsNeeded[type] > 0)
             {

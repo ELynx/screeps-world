@@ -6,7 +6,7 @@ var energyRestockControllerRegular = new Controller('energy.restock.regular');
 
 // STRATEGY parameters for restocking
 const TowerRestockMult = 0.9;
-const TerminalRestock  = 500;
+const TerminalRestock  = 2000;
 
 energyRestockControllerRegular.actRange = 1;
 

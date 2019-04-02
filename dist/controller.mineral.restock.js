@@ -8,15 +8,26 @@ mineralHarvestController.actRange = 1;
 
 mineralHarvestController.act = function(terminal, creep)
 {
+    let transferred = false;
+
     for(const resourceType in creep.carry)
     {
+        // speedup, if there are more resource types
+        if (transferred)
+        {
+            return true;
+        }
+
         if (resourceType == RESOURCE_ENERGY && creep.carry[resourceType] == 0)
         {
             continue;
         }
 
         creep.transfer(terminal, resourceType);
+        transferred = true;
     }
+
+    return false;
 };
 
 mineralHarvestController.staticTargets = function(room)
@@ -26,8 +37,16 @@ mineralHarvestController.staticTargets = function(room)
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_TERMINAL && structure.my && structure.isActive();
+                if (structure.structureType == STRUCTURE_TERMINAL)
+                {
+                    if (structure.my && structure.isActive())
+                    {
+                        return _.sum(structure.store) < structure.storeCapacity;
+                    }
+                }
             }
+
+            return false;
         }
     );
 };
@@ -36,7 +55,7 @@ mineralHarvestController.filterCreep = function(creep)
 {
     if (creep.memory.minr == true)
     {
-        return true;
+        return creep.sumCarry() > 0;
     }
 
     return false;

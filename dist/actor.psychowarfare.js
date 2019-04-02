@@ -38,7 +38,7 @@ var psychoWarfareActor =
         if (creeps.length == 0)
             return;
 
-        for (var i = 0; i < creeps.length; ++i)
+        for (let i = 0; i < creeps.length; ++i)
         {
             if (this.index >= PotD.length)
                 this.index = 0;
