@@ -6,7 +6,7 @@ var linkProcess = new Process('link');
 
 const Treshold = 50;
 
-linkProcess.work = function(room, roomCreeps)
+linkProcess.work = function(room)
 {
     this.debugHeader(room);
 
