@@ -146,3 +146,16 @@ RoomPosition.prototype.walkableTiles = function()
     // TODO just result
     return result.length;
 };
+
+StructureLink.prototype.isSource = function()
+{
+    if (this._isSource_ !== undefined)
+    {
+        return this._isSource_;
+    }
+
+    let sources = this.pos.findInRange(FIND_SOURCES, 2);
+    this._isSource_ = sources.length > 0;
+
+    return this._isSource_;
+};
