@@ -4,17 +4,25 @@ var strelok = function()
 {
     let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
     let roomCount = { };
+    let roomTargets = { };
+    let roomSpawn = { };
 
     for (let i = 0; i < creeps.length; ++i)
     {
         let creep  = creeps[i];
 
-        const destRoom = new RoomPosition(25, 25, creep.memory.dest);
+        if (creep.hits < creep.hitsMax)
+        {
+            creep.heal(creep);
+        }
+
+        const dest = creep.memory.dest;
+        const destRoom = new RoomPosition(25, 25, dest);
 
         // count how many creeps are already going there
-        let now = roomCount[creep.memory.dest] || 0;
+        let now = roomCount[dest] || 0;
         ++now;
-        roomCount[creep.memory.dest] = now;
+        roomCount[dest] = now;
 
         if (creep.pos.roomName != destRoom.roomName)
         {
@@ -26,8 +34,10 @@ var strelok = function()
         }
         else
         {
-            // first wipe spawn
-            let targets = creep.room.find(
+            if (!roomTargets[dest])
+            {
+                // first wipe spawn
+                let targets = creep.room.find(
                     FIND_HOSTILE_SPAWNS,
                     {
                         filter: function(structure)
@@ -38,30 +48,37 @@ var strelok = function()
                     }
                 );
 
-            const attackSpawn = targets.length > 0;
+                const attackSpawn = targets.length > 0;
 
-            // next wipe creeps and 'killable' buildings
-            const creeps = creep.room.find(FIND_HOSTILE_CREEPS);
-            const structs = creep.room.find(
-                FIND_HOSTILE_STRUCTURES,
-                {
-                    filter: function(structure)
+                // next wipe creeps and 'killable' buildings
+                const creeps = creep.room.find(FIND_HOSTILE_CREEPS);
+                const structs = creep.room.find(
+                    FIND_HOSTILE_STRUCTURES,
                     {
-                        return structure.hits && structure.hitsMax < 10000;
+                        filter: function(structure)
+                        {
+                            return structure.hits && structure.hitsMax < 10000;
+                        }
                     }
+                );
+
+                if (creeps.length > 0)
+                {
+                    targets = targets.concat(creeps);
                 }
-            );
 
-            if (creeps.length > 0)
-            {
-                targets = targets.concat(creeps);
+                if (structs.length > 0)
+                {
+                    targets = targets.concat(structs);
+                }
+                
+                roomTargets[dest] = targets;
+                roomSpawn[dest] = attackSpawn;
             }
 
-            if (structs.length > 0)
-            {
-                targets = targets.concat(structs);
-            }
-
+            let targets = roomTargets[dest];
+            let attackSpawn = roomSpawn[dest];
+ 
             const target =  attackSpawn ? targets[0] : creep.pos.findClosestByRange(targets);
 
             if (target)
@@ -168,8 +185,10 @@ var strelok = function()
             {
                 spawn.spawnCreep(
                     [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        MOVE,          MOVE,          MOVE,          MOVE,
+                        MOVE,
+                        HEAL
                     ],
                     'strelok_' + Game.time,
                     {

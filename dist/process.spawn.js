@@ -26,16 +26,11 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
         this.countCache = { };
     }
 
-    const cacheOuter = this.countCache[energyLevel];
-
-    if (cacheOuter)
+    const cacheKey = energyLevel + 100 * sourceLevel + 1000 * miningLevel;
+    const cacheHit = this.countCache[cacheKey];
+    if (cacheHit)
     {
-        const cacheHit = cacheOuter[sourceLevel];
-
-        if (cacheHit)
-        {
-            return cacheHit.slice(0);
-        }
+        return cacheHit.slice(0);
     }
 
     // cap off at defined
@@ -76,12 +71,7 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
     }
 
     // cache
-    if (!this.countCache[energyLevel])
-    {
-        this.countCache[energyLevel] = { };
-    }
-
-    this.countCache[energyLevel][sourceLevel] = creepsNeeded;
+    this.countCache[cacheKey] = creepsNeeded;
 
     return creepsNeeded.slice(0);
 };
