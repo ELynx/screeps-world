@@ -97,7 +97,7 @@ function Controller(id)
             return targets;
         }
 
-        for (var i = 0; i < this._excludedTargets.length && targets.length > 0; )
+        for (let i = 0; i < this._excludedTargets.length && targets.length > 0; )
         {
             const excludedTarget = this._excludedTargets[i];
 
@@ -122,10 +122,10 @@ function Controller(id)
                 }
             }
 
-            var idx = -1;
+            let idx = -1;
 
             // TODO any faster?
-            for (var j = 0; j < targets.length; ++j)
+            for (let j = 0; j < targets.length; ++j)
             {
                 if (targets[j].id == excludedTarget)
                 {
@@ -230,19 +230,19 @@ function Controller(id)
 
             const looked = room.lookForAtArea(lookForType, t, l, b, r);
 
-            var targets = [];
+            let targets = [];
 
-            for (var x in looked)
+            for (let x in looked)
             {
                 const ys = looked[x];
 
-                for (var y in ys)
+                for (let y in ys)
                 {
                     const objs = ys[y];
 
                     if (objs)
                     {
-                        for (var i = 0; i < objs.length; ++i)
+                        for (let i = 0; i < objs.length; ++i)
                         {
                             if (filter(objs[i]))
                             {
@@ -317,7 +317,7 @@ function Controller(id)
 
         const NavigationRoute = Magic[creep.caveIndex()];
 
-        for (var ridx = 0; ridx < NavigationRoute.length; ++ridx)
+        for (let ridx = 0; ridx < NavigationRoute.length; ++ridx)
         {
             const caveTargets = this._lookInCave(room, lookForType, filter, NavigationRoute[ridx]);
 
@@ -342,7 +342,7 @@ function Controller(id)
             return this._staticTargetCache;
         }
 
-        var targets = this.staticTargets(room);
+        let targets = this.staticTargets(room);
 
         if (this._excludedTargets && this._excludedTargets.length > 0)
         {
@@ -363,7 +363,7 @@ function Controller(id)
     this._findTargetsForCreep = function(room, creep)
     {
         // TODO fast array operations
-        var targets = [];
+        let targets = [];
 
         if (this.staticTargets)
         {
@@ -390,7 +390,12 @@ function Controller(id)
     {
         this._usesDefaultFilter = true;
 
-        return creep.hasEnergy() && !creep.memory.rstk && !creep.memory.minr;
+        if (creep.memory.rstk || creep.memory.minr)
+        {
+            return false;
+        }
+
+        return creep.hasEnergy();
     };
 
     this._doesDefaultFilter = undefined;
@@ -416,11 +421,11 @@ function Controller(id)
     this.assignCreeps = function(room, creeps)
     {
         const checked = creeps.length;
-        var assigned = 0;
+        let assigned = 0;
 
         const assignLimit = this.enough ? this.enough(room) : undefined;
 
-        for (var i = 0; i < creeps.length;)
+        for (let i = 0; i < creeps.length;)
         {
             const creep = creeps[i];
 
@@ -428,7 +433,7 @@ function Controller(id)
             const targets = this._findTargetsForCreep(room, creep);
 
             // of them one that can be reached
-            var target = undefined;
+            let target = undefined;
 
             // STRATEGY few controllers actually need smart movement
             if (this.smartTargeting)
@@ -437,7 +442,7 @@ function Controller(id)
             }
             else
             {
-                var self = this;
+                let self = this;
 
                 // starting with closest, Manhattan distance is "good enough"
                 targets.sort(
@@ -456,10 +461,10 @@ function Controller(id)
                 );
 
                 // check, see if reacheable in any way
-                for (var j = 0; j < targets.length; ++j)
+                for (let j = 0; j < targets.length; ++j)
                 {
                     const tgt = targets[j].pos;
-                    var found = tgt.inRangeTo(creep.pos, this.actRange);
+                    let found = tgt.inRangeTo(creep.pos, this.actRange);
 
                     if (!found)
                     {
@@ -550,10 +555,10 @@ function Controller(id)
             }
         }
 
-        var creepMatch = [];
-        var creepSkip  = [];
+        let creepMatch = [];
+        let creepSkip  = [];
 
-        for (var i = 0; i < roomCreeps.length; ++i)
+        for (let i = 0; i < roomCreeps.length; ++i)
         {
             if (this.filterCreep(roomCreeps[i]))
             {

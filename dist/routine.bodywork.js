@@ -46,8 +46,8 @@ var bodywork =
 
         const total = energyLevel > 3 ? 3 : energyLevel;
 
-        var body = [];
-        for (var i = 0; i < total; ++i)
+        let body = [];
+        for (let i = 0; i < total; ++i)
         {
             body = front.concat(body).concat(back);
         }

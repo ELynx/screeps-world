@@ -20,8 +20,8 @@ ttlController.enough = function(room)
 
 ttlController.act = function(spawn, creep)
 {
-    var recycle = false;
-    var increaseCcnt = false;
+    let recycle = false;
+    let increaseCcnt = false;
 
     // if not needed
     if (spawn.room.memory.ccnt &&
@@ -51,7 +51,7 @@ ttlController.act = function(spawn, creep)
         {
             if (exampleBody.length == creep.body.length)
             {
-                for (var i = 0; i < exampleBody.length && !recycle; ++i)
+                for (let i = 0; i < exampleBody.length && !recycle; ++i)
                 {
                     recycle = exampleBody[i] != creep.body[i].type;
                 }
@@ -63,8 +63,8 @@ ttlController.act = function(spawn, creep)
         }
     }
 
-    var renew = !recycle;
-    var rc = false;
+    let renew = !recycle;
+    let rc = false;
 
     if (renew && spawn.spawning)
     {

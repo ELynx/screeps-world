@@ -27,7 +27,7 @@ towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
             }
         );
 
-        for (var i = 0; i < towers.length; ++i)
+        for (let i = 0; i < towers.length; ++i)
         {
             const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
             if(closestHostile)
