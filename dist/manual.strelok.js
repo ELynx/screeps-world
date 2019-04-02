@@ -2,15 +2,11 @@
 
 var strelok = function()
 {
-    var creep = Game.creeps['strelok'];
+    var creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
 
-    if (creep)
+    for (let i = 0; i < creeps.length; ++i)
     {
-        // safeguard, stop when resistance is met
-        if (creep.hits < creep.hitsMax)
-        {
-            delete Memory.strelok;
-        }
+        let creep  = creeps[i];
 
         // go down in flames, fire in the room we are hit in
         const dest = Memory.strelok ? Memory.strelok : creep.pos.roomName;
@@ -27,7 +23,7 @@ var strelok = function()
         else
         {
             // first wipe spawn
-            var targets = creep.room.find(
+            let targets = creep.room.find(
                     FIND_HOSTILE_SPAWNS,
                     {
                         filter: function(structure)
@@ -75,10 +71,10 @@ var strelok = function()
                     }
 
                     // carpet bombing
-                    var mass = false;
+                    let mass = false;
 
                     // find out if mass will hit someone else
-                    for (var i = 0; i < targets.length && !mass; ++i)
+                    for (let i = 0; i < targets.length && !mass; ++i)
                     {
                         const secondary = targets[i];
 
@@ -121,28 +117,39 @@ var strelok = function()
             }
             else
             {
-                delete Memory.strelok;
+                Memory.strike = undefined;
             }
         }
     }
-    else
-    {
-        if (Memory.strelok && Memory.handspawn)
-        {
-            const spawn = Game.getObjectById(Memory.handspawn);
 
-            if (spawn)
+    if (Memory.strelok && Memory.handspawn && Memory.strike && Memory.strike > 0)
+    {
+        const spawn = Game.getObjectById(Memory.handspawn);
+
+        if (spawn)
+        {
+            let rc = spawn.spawnCreep(
+                [
+                    RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                    MOVE,          MOVE,          MOVE,          MOVE,          MOVE
+                ],
+                'strelok_' + Game.time
+            );
+            
+            if (rc === OK)
             {
-                spawn.spawnCreep(
-                    [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE
-                    ],
-                    'strelok'
-                );
+                if (Memory.strike > 1)
+                {
+                    --Memory.strike;
+                }
+                else
+                {
+                    Memory.strike = undefined;
+                }
             }
         }
     }
+
 };
 
 module.exports = strelok;
