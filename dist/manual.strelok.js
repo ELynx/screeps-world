@@ -173,8 +173,10 @@ var strelok = function()
             {
                 spawn.spawnCreep(
                     [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL,
-                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        MOVE,          MOVE,          MOVE,          MOVE,
+                        MOVE,
+                        HEAL
                     ],
                     'strelok_' + Game.time,
                     {
