@@ -47,15 +47,14 @@ energyTakeController.dynamicTargets = function(room, creep)
 
 energyTakeController.filterCreep = function(creep)
 {
-    // creeps that do not do restocking and are empty
-    if (creep.memory.rstk == false &&
-        creep.memory.minr == false &&
-        creep.sumCarry() == 0)
+    // not specialists
+    if (creep.memory.rstk || creep.memory.minr)
     {
-        return true;
+        return false;
     }
 
-    return false;
+    // is empty
+    return creep.sumCarry() == 0;
 };
 
 energyTakeController.register();
