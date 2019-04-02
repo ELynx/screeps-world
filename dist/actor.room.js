@@ -2,8 +2,9 @@
 
 var globals = require('globals');
 
+var makeCaveMap              = require('routine.map');
+
 var safemodeProcess          = require('process.safemode');
-var mapProcess               = require('process.map');
 var towerProcess             = require('process.tower');
 var linkProcess              = require('process.link');
 var spawnProcess             = require('process.spawn');
@@ -224,7 +225,7 @@ var roomActor =
             room.memory.slvl = this.sourceLevel(room);
             room.memory.mlvl = this.miningLevel(room);
 
-            mapProcess.work(room);
+            makeCaveMap(room);
 
             // offset regeneration time randomly so multiple roooms don't do it at same turm
             room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
