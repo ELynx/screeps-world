@@ -9,6 +9,11 @@ var strelok = function()
     {
         let creep  = creeps[i];
 
+        if (creep.hits < creep.hitsMax)
+        {
+            creep.heal(creep);
+        }
+
         const destRoom = new RoomPosition(25, 25, creep.memory.dest);
 
         // count how many creeps are already going there
@@ -168,7 +173,7 @@ var strelok = function()
             {
                 spawn.spawnCreep(
                     [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL,
                         MOVE,          MOVE,          MOVE,          MOVE,          MOVE
                     ],
                     'strelok_' + Game.time,
