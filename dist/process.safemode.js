@@ -33,7 +33,7 @@ safemodeProcess.work = function(room, hostileCreeps)
                         continue;
                     }
 
-                    var range = 3; // red, for brevity
+                    let range = 3; // red, for brevity
 
                     if (flag.color == COLOR_YELLOW)
                     {
