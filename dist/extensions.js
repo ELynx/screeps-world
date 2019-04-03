@@ -159,3 +159,34 @@ StructureLink.prototype.isSource = function()
 
     return this._isSource_;
 };
+
+Flag.prototype.getValue = function()
+{
+    if (this.color == COLOR_PURPLE)
+    {
+        return 6;
+    }
+    else if (this.color == COLOR_RED)
+    {
+        return 3;
+    }
+    else if (this.color == COLOR_YELLOW)
+    {
+        return 2;
+    }
+    else if (this.color == COLOR_GREEN)
+    {
+        return 1;
+    }
+    else if (this.color == COLOR_BLUE)
+    {
+        return 0;
+    }
+
+    return undefined;
+};
+
+Flag.prototype.setSecondaryColor = function(newColor)
+{
+    this.setColor(this.color, newColor);
+};
