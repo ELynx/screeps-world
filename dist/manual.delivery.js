@@ -8,6 +8,11 @@ var delivery = function()
     {
         let creep = creeps[i];
 
+        if (creep.hits < creep.hitsMax)
+        {
+            delete Memory.delivery;
+        }
+
         if (creep.memory.dest != creep.pos.roomName)
         {
             if (creep.fatigue == 0)
@@ -35,22 +40,26 @@ var delivery = function()
                     else
                     {
                         let found = false;
+                        let allEmpty = true;
 
                         const structs = flag.pos.lookFor(LOOK_STRUCTURES);
                         for (let j = 0; j < structs.length && !found; ++j)
                         {
                             const s = structs[j];
 
-                            if (s.energy)
+                            if (s.energy && s.energy > 0)
                             {
+                                allEmpty = false;
                                 found = creep.withdraw(RESOURCE_ENERGY) == OK;
                             }
                             else if (s.store)
                             {
+
                                 for (const rt in s.store)
                                 {
                                     if (s.store[rt] > 0)
                                     {
+                                        allEmpty = false;
                                         found = creep.withdraw(s, rt) == OK;
                                     }
 
@@ -70,6 +79,11 @@ var delivery = function()
                         if (!found)
                         {
                             creep.memory.dest = creep.memory.from;
+                        }
+                        
+                        if (allEmpty)
+                        {
+                            delete Memory.delivery;
                         }
                     }
                 }
