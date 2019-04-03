@@ -113,7 +113,7 @@ var strelok = function()
                         }
                     }
                 );
-                
+
                 roomTargets[dest] = targets;
                 roomSpawn[dest]   = attackSpawn;
                 roomWounded[dest] = wounded;
@@ -248,7 +248,7 @@ var strelok = function()
                 {
                     count = 1;
                 }
-                
+
                 count = count - (roomCount[flag.pos.roomName] || 0);
                 
                 if (count > 0)
@@ -259,8 +259,8 @@ var strelok = function()
                 {
                     flag.setColor(flag.color, COLOR_WHITE);
                 }
-                
-                if (count > 0 && flag.pos.roomName != Memory.lastRoom)
+
+                if (count > 0)
                 {
                     destRoom = flag.pos.roomName;
                 }
@@ -289,11 +289,6 @@ var strelok = function()
                         }
                     }
                 );
-
-                if (rc == OK)
-                {
-                    Memory.lastDest = destRoom;
-                }
             }
         }
     }
