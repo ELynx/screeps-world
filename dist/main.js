@@ -1,10 +1,10 @@
 'use strict';
 
-var extensions    = require('extensions');
-var cleanupMemory = require('routine.memory');
-var roomActor     = require('actor.room');
-var manualStrelok = require('manual.strelok');
-var manualClaim   = require('manual.claim');
+var extensions     = require('extensions');
+var cleanupMemory  = require('routine.memory');
+var roomActor      = require('actor.room');
+var manualStrelok  = require('manual.strelok');
+var manualDelivery = require('manual.delivery');
 //const profiler  = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
@@ -35,7 +35,7 @@ module.exports.loop = function()
     //});
 
     manualStrelok();
-    manualClaim();
+    manualDelivery();
 
     //console.log('Used       ' + Game.cpu.getUsed());
 }
