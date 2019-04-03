@@ -3,6 +3,7 @@
 var strelok = function()
 {
     let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
+    
     let roomCount = { };
     let roomTargets = { };
     let roomSpawn = { };
@@ -17,19 +18,42 @@ var strelok = function()
         }
 
         const dest = creep.memory.dest;
-        const destRoom = new RoomPosition(25, 25, dest);
 
         // count how many creeps are already going there
         let now = roomCount[dest] || 0;
         ++now;
         roomCount[dest] = now;
 
-        if (creep.pos.roomName != destRoom.roomName)
+        // code that migrate creeps into room of registration
+        if (dest != creep.pos.roomName || creep.memory.roomChange)
         {
+            // flag to handle border transition
+            creep.memory.roomChange = true;
+
+            // TODO only creep with fatugue zero travels border?
             if (creep.fatigue == 0)
             {
-                // STRATEGY cache path roughly for the room, and just find a spot there
-                creep.moveTo(destRoom, { reusePath: 50, range: 24 });
+                // TODO test range from 0,0 and 49,49 to 25,25
+                // get off border area
+                const destRoom = new RoomPosition(25, 25, dest);
+                const destRange = 23;
+
+                if (!creep.pos.inRangeTo(destRoom, destRange))
+                {
+                    creep.moveTo(destRoom, { reusePath: 50, range: destRange });
+
+                    continue; // to next creep
+                }
+                else
+                {
+                    // drop and forget the flag
+                    // not continue, can be used
+                    creep.memory.roomChange = undefined;
+                }
+            }
+            else
+            {
+                continue; // to the next creep
             }
         }
         else
@@ -139,12 +163,14 @@ var strelok = function()
         }
     }
 
-    if (Memory.strelok && Memory.handspawn)
+    if (Memory.strelok)
     {
-        const spawn = Game.getObjectById(Memory.handspawn);
+        const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
 
-        if (spawn && !spawn.spawning)
+        for (let i = 0; i < spawns.length; ++i)
         {
+            let spawn = spawns[i];
+            
             let destRoom = undefined;
 
             for (const flagName in Game.flags)
@@ -158,7 +184,11 @@ var strelok = function()
                 
                 let count = 3; // red, for brevity
 
-                if (flag.color == COLOR_YELLOW)
+                if (flag.color == COLOR_PURPLE)
+                {
+                    count = 6;
+                }
+                else if (flag.color == COLOR_YELLOW)
                 {
                     count = 2;
                 }
@@ -172,15 +202,15 @@ var strelok = function()
                 // don't bother if several
                 if (count > 0)
                 {
-                    flag.secondaryColor = COLOR_RED;
+                    flag.setColor(flag.color, COLOR_RED);
                     destRoom = flag.pos.roomName;
                 }
                 else
                 {
-                    flag.secondaryColor = COLOR_WHITE;
+                    flag.setColor(flag.color, COLOR_WHITE);
                 }
             }
-            
+
             if (destRoom)
             {
                 spawn.spawnCreep(
