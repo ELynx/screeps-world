@@ -14,9 +14,10 @@ var strelok = function()
         let creep  = creeps[i];
 
         // if hit start a war immediately
-        if (creep.hits < creep.hitsMax)
+        if (creep.hits < creep.hitsMax && !creep.memory.war)
         {
             creep.memory.dest = creep.pos.roomName;
+            creep.memory.war = true;
         }
 
         const dest = creep.memory.dest;
@@ -61,7 +62,7 @@ var strelok = function()
             }
             else if (creep.pos.y == 49)
             {
-                creep.move(RIGHT);
+                creep.move(TOP);
             }
             
             if (!roomTargets[dest])
