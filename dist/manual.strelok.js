@@ -134,7 +134,7 @@ var strelok = function()
                         if (smth.structureType == STRUCTURE_RAMPART)
                         {
                             // only forward
-                            return smth.pos.getRangeTo(25, 25) < destToCenter - 2;
+                            return smth.pos.getRangeTo(25, 25) < destToCenter + 2;
                         }
                         
                         return true;
