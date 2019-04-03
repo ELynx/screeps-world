@@ -8,6 +8,7 @@ var strelok = function()
     let roomTargets = { };
     let roomSpawn   = { };
     let roomWounded = { };
+    let xtra = [];
 
     for (let i = 0; i < creeps.length; ++i)
     {
@@ -65,6 +66,11 @@ var strelok = function()
         }
         else
         {
+            if (now > 6)
+            {
+                xtra.push(creep);
+            }
+
             if (!roomTargets[dest])
             {
                 // first wipe spawn
@@ -114,7 +120,26 @@ var strelok = function()
                     }
                 );
 
-                roomTargets[dest] = targets;
+                const destToCenter = creep.pos.getRangeTo(25, 25);
+                
+                roomTargets[dest] = _.filter(
+                    targets,
+                    function(smth)
+                    {
+                        if (smth.structureType == STRUCTURE_STORAGE)
+                        {
+                            return targets.length == 1;
+                        }
+                        
+                        if (smth.structureType == STRUCTURE_RAMPART)
+                        {
+                            // only forward
+                            return smth.pos.getRangeTo(25, 25) < destToCenter + 2;
+                        }
+                        
+                        return true;
+                    }
+                );
                 roomSpawn[dest]   = attackSpawn;
                 roomWounded[dest] = wounded;
             }
@@ -219,6 +244,8 @@ var strelok = function()
     {
         const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
 
+        let xtraRoom = undefined;
+        
         for (let i = 0; i < spawns.length; ++i)
         {
             let spawn = spawns[i];
@@ -236,9 +263,16 @@ var strelok = function()
                 
                 let count = 3; // red, for brevity
 
+                if (flag.color == COLOR_RED)
+                {
+                    if (xtra.length > 0 && Game.map.getRoomLinearDistance(xtra[0].pos.roomName, flag.pos.roomName) == 1)
+                    {
+                        xtraRoom = flag.pos.roomName;
+                    }
+                }
                 if (flag.color == COLOR_PURPLE)
                 {
-                    count = 6;
+                    count = 9;
                 }
                 else if (flag.color == COLOR_YELLOW)
                 {
@@ -289,6 +323,14 @@ var strelok = function()
                         }
                     }
                 );
+            }
+        }
+        
+        if (xtra.length >= 3 && xtraRoom)
+        {
+            for (let i = 0; i < xtra.length; ++i)
+            {
+                xtra[i].memory.dest = xtraRoom;
             }
         }
     }
