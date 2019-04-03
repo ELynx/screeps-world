@@ -89,7 +89,7 @@ spawnProcess.doSpawn = function(spawn, type)
 {
     const name = spawn.id + '_' + Game.time;
 
-    const [level, body] = TypeBody[type](spawn.room.elvl);
+    const [level, body] = TypeBody[type](spawn.room.memory.elvl);
 
     if (level == 0 || body.length == 0 || body.length > 50)
     {
