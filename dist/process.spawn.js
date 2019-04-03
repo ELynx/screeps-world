@@ -6,18 +6,19 @@ var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
-const TypeBody    = [ bodywork[0], bodywork[1], bodywork[2] ];
-const TypeHarvest = [ true,        true,        false       ];
-const TypeRestock = [ false,       true,        false       ];
-const TypeMiner   = [ false,       false,       true        ];
-const TypeLimit   = [ 5.0,         2.0,         1.0         ]; // limit by source level or mining level
-const TypeCount   = [
-                    [ 0,           0,           0           ], // level 0, no own controller
-                    [ 6,           0,           1           ], // level 1
-                    [ 8,           0,           1           ], // level 2
-                    [ 10,          2,           1           ], // level 3
-                    [ 10,          4,           1           ]  // level 4
-                                                            ];
+const TypeBody        = [ bodywork[0], bodywork[1], bodywork[2] ];
+const TypeHarvest     = [ true,        true,        undefined   ];
+const TypeRestock     = [ undefined,   true,        undefined   ];
+const TypeMiner       = [ undefined,   undefined,   true        ];
+const TypeLimitSource = [ 5.0,         2.0,         undefined   ];
+const TypeLimitMining = [ undefined,   undefined,   1.0         ];
+const TypeCount       = [
+                        [ 0,           0,           0           ], // level 0, no own controller
+                        [ 6,           0,           1           ], // level 1
+                        [ 8,           0,           1           ], // level 2
+                        [ 10,          2,           1           ], // level 3
+                        [ 10,          4,           1           ]  // level 4
+                                                                ];
 
 spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel)
 {
@@ -26,7 +27,9 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
         this.countCache = { };
     }
 
-    const cacheKey = energyLevel + 100 * sourceLevel + 1000 * miningLevel;
+    const cacheKey = (energyLevel + 1) * 1 +
+                     (sourceLevel + 1) * 100 +
+                     (miningLevel + 1) * 1000;
     const cacheHit = this.countCache[cacheKey];
     if (cacheHit)
     {
@@ -43,30 +46,29 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
     // copy array
     let creepsNeeded = TypeCount[mobLevel].slice(0);
 
-    // limit by source level
+    // limits
     for (let i = 0; i < creepsNeeded.length; ++i)
     {
-        let limit = TypeLimit[i];
+        let limitSource = TypeLimitSource[i];
 
-        if (!limit)
+        if (limitSource !== undefined)
         {
-            continue;
+            limitSource = Math.ceil(limitSource * sourceLevel);
+            if (creepsNeeded[i] > limitSource)
+            {
+                creepsNeede[i] = limitSource
+            }
         }
 
-        if (TypeMiner[i])
-        {
-            limit = limit * miningLevel;
-        }
-        else
-        {
-            limit = limit * sourceLevel;
-        }
+        let limitMining = TypeLimitMining[i];
 
-        limit = Math.ceil(limit);
-
-        if (creepsNeeded[i] > limit)
+        if (limitMining !== undefined)
         {
-            creepsNeeded[i] = limit;
+            limitMining = Math.ceil(limitMining * miningLevel);
+            if (creepsNeeded[i] > limitMining)
+            {
+                creepsNeede[i] = limitMining
+            }
         }
     }
 
@@ -83,11 +85,11 @@ Spawn implementation.
 @param {integer} energyLevel.
 @return True if creep spawn started.
 **/
-spawnProcess.doSpawn = function(spawn, type, energyLevel)
+spawnProcess.doSpawn = function(spawn, type)
 {
     const name = spawn.id + '_' + Game.time;
 
-    const [level, body] = TypeBody[type](energyLevel);
+    const [level, body] = TypeBody[type](spawn.room.elvl);
 
     if (level == 0 || body.length == 0 || body.length > 50)
     {
@@ -134,16 +136,19 @@ spawnProcess.work = function(room, creeps)
         return;
     }
 
-    let creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl);
+    let creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl, room.memory.mlvl);
 
     let hasBelow = false;
-  
+
     for (let i = 0; i < creeps.length; ++i)
     {
-        let some = creepsNeeded[creeps[i].memory.btyp];
-        --some;
+        let btype = creeps[i].memory.btyp;
 
-        if (some < 0)
+        let count = creepsNeeded[btype];
+        --count;
+        creepsNeeded[btype] = count;
+
+        if (count < 0)
         {
             hasBelow = true;
         }
@@ -151,16 +156,12 @@ spawnProcess.work = function(room, creeps)
 
     if (hasBelow)
     {
-      // remember for TTL
-      room.memory.ccnt = creepsNeeded;
+        // remember for TTL
+        room.memory.ccnt = creepsNeeded;
     }
     else
     {
-      room.memory.ccnt = undefined;
-    }
-
-    if (!hasBelow)
-    {
+        room.memory.ccnt = undefined;
         return;
     }
 
@@ -191,7 +192,12 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = this.doSpawn(spawns[i], type, room.memory.elvl);
+                spawned = this.doSpawn(spawns[i], type);
+
+                if (spawned)
+                {
+                    --creepsNeeded[type];
+                }
             }
         }
 
