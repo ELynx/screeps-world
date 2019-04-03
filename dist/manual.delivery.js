@@ -136,9 +136,9 @@ var delivery = function()
                 }
                 
                 const body = strength > 2 ?
-                    [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+                    [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
                     :
-                    [CARRY, MOVE]
+                    [CARRY, CARRY, MOVE, MOVE]
                 ;
 
                 let rc = spawn.spawnCreep(
