@@ -56,7 +56,7 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
             limitSource = Math.ceil(limitSource * sourceLevel);
             if (creepsNeeded[i] > limitSource)
             {
-                creepsNeede[i] = limitSource
+                creepsNeeded[i] = limitSource;
             }
         }
 
@@ -67,7 +67,7 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
             limitMining = Math.ceil(limitMining * miningLevel);
             if (creepsNeeded[i] > limitMining)
             {
-                creepsNeede[i] = limitMining
+                creepsNeeded[i] = limitMining;
             }
         }
     }
