@@ -173,9 +173,7 @@ var strelok = function()
                 {
                     continue;
                 }
-                
-                Memory.lastFlag = flagName;
-                
+
                 let flag = Game.flags[flagName];
                 
                 let count = 3; // red, for brevity
@@ -220,7 +218,7 @@ var strelok = function()
                         MOVE,          MOVE,          MOVE
                     ];
                 
-                spawn.spawnCreep(
+                let rc = spawn.spawnCreep(
                     body,
                     'strelok_' + Game.time,
                     {
@@ -230,6 +228,11 @@ var strelok = function()
                         }
                     }
                 );
+
+                if (rc == OK)
+                {
+                    Memory.lastFlag = flagName;
+                }
             }
         }
     }
