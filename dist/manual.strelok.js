@@ -211,8 +211,6 @@ var strelok = function()
     {
         const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
 
-        let xtraRoom = undefined;
-        
         for (let i = 0; i < spawns.length; ++i)
         {
             let spawn = spawns[i];
@@ -228,42 +226,23 @@ var strelok = function()
 
                 let flag = Game.flags[flagName];
                 
-                let count = 3; // red, for brevity
-
-                if (flag.color == COLOR_RED)
-                {
-                    if (xtra.length > 0 && Game.map.getRoomLinearDistance(xtra[0].pos.roomName, flag.pos.roomName) == 1)
-                    {
-                        xtraRoom = flag.pos.roomName;
-                    }
-                }
-                if (flag.color == COLOR_PURPLE)
-                {
-                    count = 9;
-                }
-                else if (flag.color == COLOR_YELLOW)
-                {
-                    count = 2;
-                }
-                else if (flag.color == COLOR_GREEN)
-                {
-                    count = 1;
-                }
+                let count = flag.getValue();
 
                 count = count - (roomCount[flag.pos.roomName] || 0);
-                
+
                 if (count > 0)
                 {
-                    flag.setColor(flag.color, COLOR_RED);
+                    flag.setSecondaryColor(COLOR_RED);
                 }
                 else
                 {
-                    flag.setColor(flag.color, COLOR_WHITE);
+                    flag.setSecondaryColor(COLOR_WHITE);
                 }
 
                 if (count > 0)
                 {
                     destRoom = flag.pos.roomName;
+                    break;
                 }
             }
 
@@ -292,16 +271,7 @@ var strelok = function()
                 );
             }
         }
-        
-        if (xtra.length >= 3 && xtraRoom)
-        {
-            for (let i = 0; i < xtra.length; ++i)
-            {
-                xtra[i].memory.dest = xtraRoom;
-            }
-        }
     }
-
 };
 
 module.exports = strelok;
