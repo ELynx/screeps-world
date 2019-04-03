@@ -28,11 +28,6 @@ var strelok = function()
         ++now;
         roomCount[dest] = now;
 
-        if (now > 6)
-        {
-            xtra.push(creep);
-        }
-        
         if (creep.pos.x == 0)
         {
             creep.move(RIGHT);
@@ -71,6 +66,11 @@ var strelok = function()
         }
         else
         {
+            if (now > 6)
+            {
+                xtra.push(creep);
+            }
+
             if (!roomTargets[dest])
             {
                 // first wipe spawn
