@@ -12,7 +12,7 @@ var delivery = function()
         {
             if (creep.fatigue == 0)
             {
-                const destRoom = new RoomPosition(25, 25, dest);
+                const destRoom = new RoomPosition(25, 25, creep.memory.dest);
                 const destRange = 24;
 
                 if (!creep.pos.inRangeTo(destRoom, destRange))
@@ -28,7 +28,7 @@ var delivery = function()
                 const flag = Game.flags[creep.memory.flag];
                 if (flag)
                 {
-                    if (!creep.pos.inNearTo(flag))
+                    if (!creep.pos.isNearTo(flag))
                     {
                         creep.moveTo(flag);
                     }
@@ -51,7 +51,7 @@ var delivery = function()
                                 {
                                     if (s.store[rt] > 0)
                                     {
-                                        found = creep.withdraw(rt) == OK;
+                                        found = creep.withdraw(s, rt) == OK;
                                     }
 
                                     if (found)
@@ -82,29 +82,16 @@ var delivery = function()
                 }
                 else
                 {
-                    let somePos = new RoomPosition(25, 25, creep.pos.roomName);
-                    let someDist = 10;
-                    
-                    const drop = Game.flags['drop'];
-                    if (drop)
+                    if (creep.pos.isNearTo(creep.room.terminal))
                     {
-                        somePos = drop.pos;
-                        someDist = 1;
+                        for(const resourceType in creep.carry)
+                        {
+                            creep.transfer(creep.room.terminal, resourceType);
+                        }
                     }
-
-                    if (creep.inRangeTo(somePos, someDist))
+                    else
                     {
-                        if (creep.ticksToLive <= 400)
-                        {
-                            creep.suicide();
-                        }
-                        else
-                        {
-                            for(const resourceType in creep.carry)
-                            {
-                                creep.drop(resourceType);
-                            }
-                        }
+                        creep.moveTo(creep.room.terminal);
                     }
                 }
             }
