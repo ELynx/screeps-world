@@ -8,6 +8,7 @@ var strelok = function()
     let roomTargets = { };
     let roomSpawn   = { };
     let roomWounded = { };
+    let xtra = [];
 
     for (let i = 0; i < creeps.length; ++i)
     {
@@ -27,6 +28,11 @@ var strelok = function()
         ++now;
         roomCount[dest] = now;
 
+        if (now > 6)
+        {
+            xtra.push(creep);
+        }
+        
         if (creep.pos.x == 0)
         {
             creep.move(RIGHT);
@@ -238,6 +244,8 @@ var strelok = function()
     {
         const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
 
+        let xtraRoom = undefined;
+        
         for (let i = 0; i < spawns.length; ++i)
         {
             let spawn = spawns[i];
@@ -255,9 +263,13 @@ var strelok = function()
                 
                 let count = 3; // red, for brevity
 
+                if (flag.color == COLOR_RED)
+                {
+                    xtraRoom = flag.pos.roomName;
+                }
                 if (flag.color == COLOR_PURPLE)
                 {
-                    count = 6;
+                    count = 9;
                 }
                 else if (flag.color == COLOR_YELLOW)
                 {
@@ -308,6 +320,14 @@ var strelok = function()
                         }
                     }
                 );
+            }
+        }
+        
+        if (xtra.length >= 3 && xtraRoom)
+        {
+            for (let i = 0; i < xtra.length; ++i)
+            {
+                xtra[i].memory.dest = xtraRoom;
             }
         }
     }
