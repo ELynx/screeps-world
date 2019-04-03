@@ -13,7 +13,7 @@ var delivery = function()
             if (creep.fatigue == 0)
             {
                 const destRoom = new RoomPosition(25, 25, creep.memory.dest);
-                const destRange = 24;
+                const destRange = 23;
 
                 if (!creep.pos.inRangeTo(destRoom, destRange))
                 {
@@ -87,6 +87,11 @@ var delivery = function()
                         for(const resourceType in creep.carry)
                         {
                             creep.transfer(creep.room.terminal, resourceType);
+                        }
+                        
+                        if (creep.ticksToLive <= 400)
+                        {
+                            creep.suicide();
                         }
                     }
                     else
