@@ -33,15 +33,11 @@ safemodeProcess.work = function(room, hostileCreeps)
                         continue;
                     }
 
-                    let range = 3; // red, for brevity
+                    let range = flag.getValue();
 
-                    if (flag.color == COLOR_YELLOW)
+                    if (!range)
                     {
-                        range = 2;
-                    }
-                    else if (flag.color == COLOR_GREEN)
-                    {
-                        range = 1;
+                        continue;
                     }
 
                     const trigger = flag.pos.findInRange(hostileCreeps, range);
