@@ -47,6 +47,23 @@ var strelok = function()
         }
         else
         {
+            if (creep.pos.x == 0)
+            {
+                creep.move(RIGHT);
+            }
+            else if (creep.pos.y == 0)
+            {
+                creep.move(BOTTOM);
+            }
+            else if (creep.pos.x == 49)
+            {
+                creep.move(LEFT);
+            }
+            else if (creep.pos.y == 49)
+            {
+                creep.move(RIGHT);
+            }
+            
             if (!roomTargets[dest])
             {
                 // first wipe spawn
@@ -214,11 +231,6 @@ var strelok = function()
                     continue;
                 }
 
-                if (flagName == Memory.lastFlag)
-                {
-                    continue;
-                }
-
                 let flag = Game.flags[flagName];
                 
                 let count = 3; // red, for brevity
@@ -241,19 +253,15 @@ var strelok = function()
                 if (count > 0)
                 {
                     flag.setColor(flag.color, COLOR_RED);
-                    if (!destRoom)
-                    {
-                        destRoom = flag.pos.roomName;
-                    }
                 }
                 else
                 {
                     flag.setColor(flag.color, COLOR_WHITE);
                 }
                 
-                if (destRoom)
+                if (count > 0 && flag.pos.roomName != Memory.lastRoom)
                 {
-                    break;
+                    destRoom = flag.pos.roomName;
                 }
             }
 
@@ -283,7 +291,7 @@ var strelok = function()
 
                 if (rc == OK)
                 {
-                    Memory.lastFlag = flagName;
+                    Memory.lastDest = destRoom;
                 }
             }
         }
