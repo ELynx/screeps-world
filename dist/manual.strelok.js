@@ -265,7 +265,10 @@ var strelok = function()
 
                 if (flag.color == COLOR_RED)
                 {
-                    xtraRoom = flag.pos.roomName;
+                    if (xtra.length > 0 && Game.map.getRoomLinearDistance(xtra[0].pos.roomName, flag.pos.roomName) == 1)
+                    {
+                        xtraRoom = flag.pos.roomName;
+                    }
                 }
                 if (flag.color == COLOR_PURPLE)
                 {
