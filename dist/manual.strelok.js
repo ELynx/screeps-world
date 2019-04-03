@@ -238,31 +238,38 @@ var strelok = function()
                 
                 count = count - (roomCount[flag.pos.roomName] || 0);
                 
-                // don't bother if several
                 if (count > 0)
                 {
                     flag.setColor(flag.color, COLOR_RED);
-                    destRoom = flag.pos.roomName;
+                    if (!destRoom)
+                    {
+                        destRoom = flag.pos.roomName;
+                    }
                 }
                 else
                 {
                     flag.setColor(flag.color, COLOR_WHITE);
                 }
+                
+                if (destRoom)
+                {
+                    break;
+                }
             }
 
             if (destRoom)
             {
-                const body = Math.random() < 0.95 ?
+                const body = Math.random() < 0.85 ?
                     [
                         MOVE,          MOVE,          MOVE,          MOVE,          MOVE,
                         RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL
                     ]
                     :
                     [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                        MOVE,          MOVE,          MOVE
+                        MOVE,          MOVE,          MOVE,
+                        RANGED_ATTACK, RANGED_ATTACK, HEAL
                     ];
-                
+
                 let rc = spawn.spawnCreep(
                     body,
                     'strelok_' + Game.time,
