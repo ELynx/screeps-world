@@ -169,6 +169,13 @@ var strelok = function()
                     continue;
                 }
 
+                if (flagName == Memory.lastFlag)
+                {
+                    continue;
+                }
+                
+                Memory.lastFlag = flagName;
+                
                 let flag = Game.flags[flagName];
                 
                 let count = 3; // red, for brevity
@@ -202,7 +209,7 @@ var strelok = function()
 
             if (destRoom)
             {
-                const body = Math.random() < 0.5 ?
+                const body = Math.random() < 0.95 ?
                     [
                         MOVE,          MOVE,          MOVE,          MOVE,          MOVE,
                         RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL
