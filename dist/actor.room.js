@@ -260,7 +260,7 @@ var roomActor =
         {
             spawnProcess.work(room, roomCreeps);
         }
-        else if (processKey === 1)
+        else if (processKey == 5)
         {
             linkProcess.work(room);
         }
