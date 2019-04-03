@@ -25,11 +25,8 @@ var strelok = function()
         roomCount[dest] = now;
 
         // code that migrate creeps into room of registration
-        if (dest != creep.pos.roomName || creep.memory.roomChange)
+        if (dest != creep.pos.roomName)
         {
-            // flag to handle border transition
-            creep.memory.roomChange = true;
-
             // TODO only creep with fatugue zero travels border?
             if (creep.fatigue == 0)
             {
@@ -43,12 +40,6 @@ var strelok = function()
                     creep.moveTo(destRoom, { reusePath: 50, range: destRange });
 
                     continue; // to next creep
-                }
-                else
-                {
-                    // drop and forget the flag
-                    // not continue, can be used
-                    creep.memory.roomChange = undefined;
                 }
             }
             else
