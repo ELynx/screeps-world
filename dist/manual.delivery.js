@@ -23,7 +23,91 @@ var delivery = function()
         }
         else
         {
-            
+            if (creep.pos.roomName == creep.memory.to)
+            {
+                const flag = Game.flags[creep.memory.flag];
+                if (flag)
+                {
+                    if (!creep.pos.inNearTo(flag))
+                    {
+                        creep.moveTo(flag);
+                    }
+                    else
+                    {
+                        let found = false;
+
+                        const structs = flag.pos.lookFor(LOOK_STRUCTURES);
+                        for (let j = 0; j < structs.length && !found; ++j)
+                        {
+                            const s = structs[j];
+
+                            if (s.energy)
+                            {
+                                found = creep.withdraw(RESOURCE_ENERGY) == OK;
+                            }
+                            else if (s.store)
+                            {
+                                for (const rt in s.store)
+                                {
+                                    if (s.store[rt] > 0)
+                                    {
+                                        found = creep.withdraw(rt) == OK;
+                                    }
+
+                                    if (found)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (found)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            creep.memory.dest = creep.memory.from;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (creep.sumCarry() == 0 && creep.ticksToLive > 400)
+                {
+                    creep.memory.dest = creep.memory.to;
+                }
+                else
+                {
+                    let somePos = new RoomPosition(25, 25, creep.pos.roomName);
+                    let someDist = 10;
+                    
+                    const drop = Game.flags['drop'];
+                    if (drop)
+                    {
+                        somePos = drop.pos;
+                        someDist = 1;
+                    }
+
+                    if (creep.inRangeTo(somePos, someDist))
+                    {
+                        if (creep.ticksToLive <= 400)
+                        {
+                            creep.suicide();
+                        }
+                        else
+                        {
+                            for(const resourceType in creep.carry)
+                            {
+                                creep.drop(resourceType);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -77,6 +161,7 @@ var delivery = function()
                         memory:
                         {
                             dest: flag.pos.roomName,
+                            to:   flag.pos.roomName,
                             from: spawn.pos.roomName,
                             flag: flag.name
                         }
