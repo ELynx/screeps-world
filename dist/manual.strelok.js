@@ -36,7 +36,7 @@ var strelok = function()
                 // TODO test range from 0,0 and 49,49 to 25,25
                 // get off border area
                 const destRoom = new RoomPosition(25, 25, dest);
-                const destRange = 23;
+                const destRange = 24;
 
                 if (!creep.pos.inRangeTo(destRoom, destRange))
                 {
@@ -61,7 +61,7 @@ var strelok = function()
             if (!roomTargets[dest])
             {
                 // first wipe spawn
-                let targets = creep.room.find(
+                /*let targets = creep.room.find(
                     FIND_HOSTILE_SPAWNS,
                     {
                         filter: function(structure)
@@ -70,7 +70,8 @@ var strelok = function()
                             return structure.hits;
                         }
                     }
-                );
+                );*/
+                let targets = [];
 
                 const attackSpawn = targets.length > 0;
 
@@ -81,7 +82,7 @@ var strelok = function()
                     {
                         filter: function(structure)
                         {
-                            return structure.hits && structure.hitsMax < 10000;
+                            return structure.hits/* && structure.hitsMax < 10000*/;
                         }
                     }
                 );
