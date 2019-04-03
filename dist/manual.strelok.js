@@ -114,7 +114,26 @@ var strelok = function()
                     }
                 );
 
-                roomTargets[dest] = targets;
+                const destToCenter = creep.pos.getRangeTo(25, 25);
+                
+                roomTargets[dest] = _.filter(
+                    targets,
+                    function(smth)
+                    {
+                        if (smth.structureType == STRUCTURE_STORAGE)
+                        {
+                            return targets.length == 1;
+                        }
+                        
+                        if (smth.structureType == STRUCTURE_RAMPART)
+                        {
+                            // only forward
+                            return stmh.pos.getRangeTo(25, 25) < destToCenter - 2;
+                        }
+                        
+                        return true;
+                    }
+                );
                 roomSpawn[dest]   = attackSpawn;
                 roomWounded[dest] = wounded;
             }
