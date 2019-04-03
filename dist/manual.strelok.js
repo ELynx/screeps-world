@@ -3,6 +3,7 @@
 var strelok = function()
 {
     let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith('strelok'); });
+    
     let roomCount = { };
     let roomTargets = { };
     let roomSpawn = { };
@@ -17,19 +18,42 @@ var strelok = function()
         }
 
         const dest = creep.memory.dest;
-        const destRoom = new RoomPosition(25, 25, dest);
 
         // count how many creeps are already going there
         let now = roomCount[dest] || 0;
         ++now;
         roomCount[dest] = now;
 
-        if (creep.pos.roomName != destRoom.roomName)
+        // code that migrate creeps into room of registration
+        if (dest != creep.pos.roomName || creep.memory.roomChange)
         {
+            // flag to handle border transition
+            creep.memory.roomChange = true;
+
+            // TODO only creep with fatugue zero travels border?
             if (creep.fatigue == 0)
             {
-                // STRATEGY cache path roughly for the room, and just find a spot there
-                creep.moveTo(destRoom, { reusePath: 50, range: 24 });
+                // TODO test range from 0,0 and 49,49 to 25,25
+                // get off border area
+                const destRoom = new RoomPosition(25, 25, dest);
+                const destRange = 23;
+
+                if (!creep.pos.inRangeTo(destRoom, destRange))
+                {
+                    creep.moveTo(destRoom, { reusePath: 50, range: destRange });
+
+                    continue; // to next creep
+                }
+                else
+                {
+                    // drop and forget the flag
+                    // not continue, can be used
+                    creep.memory.roomChange = undefined;
+                }
+            }
+            else
+            {
+                continue; // to the next creep
             }
         }
         else
