@@ -15,6 +15,7 @@ var strelok = function()
         if (creep.hits < creep.hitsMax)
         {
             creep.heal(creep);
+            creep.memory.dest = creep.pos.roomName;
         }
 
         const dest = creep.memory.dest;
@@ -24,14 +25,10 @@ var strelok = function()
         ++now;
         roomCount[dest] = now;
 
-        // code that migrate creeps into room of registration
         if (dest != creep.pos.roomName)
         {
-            // TODO only creep with fatugue zero travels border?
             if (creep.fatigue == 0)
             {
-                // TODO test range from 0,0 and 49,49 to 25,25
-                // get off border area
                 const destRoom = new RoomPosition(25, 25, dest);
                 const destRange = 24;
 
@@ -205,13 +202,19 @@ var strelok = function()
 
             if (destRoom)
             {
-                spawn.spawnCreep(
+                const body = Math.random() < 0.5 ?
                     [
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
-                        MOVE,          MOVE,          MOVE,          MOVE,
-                        MOVE,
-                        HEAL
-                    ],
+                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE,
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL
+                    ]
+                    :
+                    [
+                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK,
+                        MOVE,          MOVE,          MOVE
+                    ];
+                
+                spawn.spawnCreep(
+                    body,
                     'strelok_' + Game.time,
                     {
                         memory:
