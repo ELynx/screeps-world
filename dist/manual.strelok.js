@@ -14,9 +14,10 @@ var strelok = function()
         let creep  = creeps[i];
 
         // if hit start a war immediately
-        if (creep.hits < creep.hitsMax)
+        if (creep.hits < creep.hitsMax && !creep.memory.war)
         {
             creep.memory.dest = creep.pos.roomName;
+            creep.memory.war = true;
         }
 
         const dest = creep.memory.dest;
@@ -26,6 +27,23 @@ var strelok = function()
         ++now;
         roomCount[dest] = now;
 
+        if (creep.pos.x == 0)
+        {
+            creep.move(RIGHT);
+        }
+        else if (creep.pos.y == 0)
+        {
+            creep.move(BOTTOM);
+        }
+        else if (creep.pos.x == 49)
+        {
+            creep.move(LEFT);
+        }
+        else if (creep.pos.y == 49)
+        {
+            creep.move(TOP);
+        }
+        
         if (dest != creep.pos.roomName)
         {
             if (creep.fatigue == 0)
@@ -95,7 +113,7 @@ var strelok = function()
                         }
                     }
                 );
-                
+
                 roomTargets[dest] = targets;
                 roomSpawn[dest]   = attackSpawn;
                 roomWounded[dest] = wounded;
@@ -214,11 +232,6 @@ var strelok = function()
                     continue;
                 }
 
-                if (flagName == Memory.lastFlag)
-                {
-                    continue;
-                }
-
                 let flag = Game.flags[flagName];
                 
                 let count = 3; // red, for brevity
@@ -235,25 +248,21 @@ var strelok = function()
                 {
                     count = 1;
                 }
-                
+
                 count = count - (roomCount[flag.pos.roomName] || 0);
                 
                 if (count > 0)
                 {
                     flag.setColor(flag.color, COLOR_RED);
-                    if (!destRoom)
-                    {
-                        destRoom = flag.pos.roomName;
-                    }
                 }
                 else
                 {
                     flag.setColor(flag.color, COLOR_WHITE);
                 }
-                
-                if (destRoom)
+
+                if (count > 0)
                 {
-                    break;
+                    destRoom = flag.pos.roomName;
                 }
             }
 
@@ -280,11 +289,6 @@ var strelok = function()
                         }
                     }
                 );
-
-                if (rc == OK)
-                {
-                    Memory.lastFlag = flagName;
-                }
             }
         }
     }
