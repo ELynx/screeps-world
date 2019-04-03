@@ -138,31 +138,30 @@ spawnProcess.work = function(room, creeps)
 
     let creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl, room.memory.mlvl);
 
-    let hasBelow = false;
-
     for (let i = 0; i < creeps.length; ++i)
     {
-        let btype = creeps[i].memory.btyp;
+        --creepsNeeded[creeps[i].memory.btyp];
+    }
+  
+    let allBalanced = true;
 
-        let count = creepsNeeded[btype];
-        --count;
-        creepsNeeded[btype] = count;
-
-        if (count < 0)
+    for (let i = 0; i < creepsNeeded.length && allBalanced; ++i)
+    {
+        if (creepsNeeded[i] != 0)
         {
-            hasBelow = true;
+            allBalanced = false;
         }
     }
 
-    if (hasBelow)
-    {
-        // remember for TTL
-        room.memory.ccnt = creepsNeeded;
-    }
-    else
+    if (allBalanced)
     {
         room.memory.ccnt = undefined;
         return;
+    }
+    else
+    {
+        // remember for TTL
+        room.memory.ccnt = creepsNeeded;
     }
 
     // check for spawns
