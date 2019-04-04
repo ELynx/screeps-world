@@ -54,9 +54,16 @@ var delivery = function()
                             }
                             else if (s.store)
                             {
+                                const skipEnergy = Object.keys(s.store).length > 1;
 
                                 for (const rt in s.store)
                                 {
+                                    if (skipEnergy && rt == RESOURCE_ENERGY)
+                                    {
+                                        allEmpty = false;
+                                        continue;
+                                    }
+
                                     if (s.store[rt] > 0)
                                     {
                                         allEmpty = false;
@@ -103,7 +110,7 @@ var delivery = function()
                             creep.transfer(creep.room.terminal, resourceType);
                         }
                         
-                        if (creep.ticksToLive <= 400)
+                        if (creep.sumCarry() == 0 && creep.ticksToLive <= 400)
                         {
                             creep.suicide();
                         }
@@ -154,11 +161,7 @@ var delivery = function()
                     continue;
                 }
                 
-                const body = strength > 2 ?
-                    [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
-                    :
-                    [CARRY, CARRY, MOVE, MOVE]
-                ;
+                const body = [CARRY, CARRY, MOVE, MOVE];
 
                 let rc = spawn.spawnCreep(
                     body,
