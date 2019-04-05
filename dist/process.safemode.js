@@ -45,7 +45,7 @@ safemodeProcess.work = function(room, hostileCreeps)
                     {
                         const rc = ctrl.activateSafeMode();
 
-                        const notification = 'Room ' + name + ' requested safeMode [' + rc + ']';
+                        const notification = 'Room ' + room.name + ' requested safeMode [' + rc + ']';
 
                         Game.notify(notification);
                         console.log(notification);
