@@ -18,7 +18,7 @@ const TargetRoadHpMultiplier = [
 ];
 
 const TargetStructureHpMultiplier = [
-    0.0,
+    0.75, // repair buildings in rooms that are just attached
     0.8,
     0.85,
     0.9
@@ -62,12 +62,6 @@ repairController.act = function(target, creep)
 
 repairController.dynamicTargets = function(room, creep)
 {
-    // check for a reason - avoid repairing old walls when there is no power to work with
-    if (room.memory.elvl == 0)
-    {
-        return;
-    }
-
     // STRATEGY don't run with every booboo
     const barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
