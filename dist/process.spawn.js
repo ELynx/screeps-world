@@ -154,7 +154,7 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
     }
 
     let creepsNeeded = this.calculateCreepsNeeded(
-        ownerRoom.memory.elvl,
+        ownerRoom.memory.elvl == 0 ? Math.ceil(spawnRoom.memory.elvl / 2) : ownerRoom.memory.elvl,
         ownerRoom.memory.slvl,
         ownerRoom.memory.mlvl
     );
