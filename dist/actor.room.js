@@ -48,15 +48,7 @@ var roomActor =
 
         for (let i = 0; i < structs.length; ++i)
         {
-            if (structs[i].structureType == STRUCTURE_SPAWN)
-            {
-                energyCapacity = energyCapacity + 300;
-            }
-
-            if (structs[i].structureType == STRUCTURE_EXTENSION)
-            {
-                energyCapacity = energyCapacity + 50;
-            }
+            energyCapacity = energyCapacity + structs[i].energyCapacity;
         }
 
         if (energyCapacity >= 800)
