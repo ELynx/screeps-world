@@ -166,10 +166,11 @@ var strelok = function()
                         }
                     }
                 }
-                else
-                {
-                    creep.moveTo(target, { resuePath: 0, flee: true, range: 4 } );
-                }
+                // has no MOVE to flee
+                //else
+                //{
+                //    creep.moveTo(target, { resuePath: 0, flee: true, range: 4 } );
+                //}
             } // end of if target
             else
             {
