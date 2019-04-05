@@ -45,10 +45,18 @@ var roomActor =
         );
 
         let energyCapacity = 0;
+        let hasSpawn = false;
 
         for (let i = 0; i < structs.length; ++i)
         {
             energyCapacity = energyCapacity + structs[i].energyCapacity;
+            hasSpawn = hasSpawn || structs[i].structureType == STRUCTURE_SPAWN;
+        }
+
+        // probably some edge case of war
+        if (!hasSpawn)
+        {
+            return 0;
         }
 
         if (energyCapacity >= 800)
