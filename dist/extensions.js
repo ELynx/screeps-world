@@ -51,12 +51,32 @@ Creep.prototype.caveIndex = function()
 };
 
 /**
-@param {Creep} creep.
-@return IGame object creep is targeted to.
+@return Game object creep is targeted to.
 **/
 Creep.prototype.target = function()
 {
     return Game.getObjectById(this.memory.dest);
+};
+
+/**
+@param {array<Creep>} creeps to heal.
+**/
+Creep.prototype.healClosest = function(creeps)
+{
+    const target = creep.pos.getClosestByRange(creeps);
+    if (target)
+    {
+        if (creep.pos.isNearTo(target))
+        {
+            return creep.heal(target);
+        }
+        else
+        {
+            return creep.rangedHeal(target);
+        }
+    }
+
+    return ERR_NOT_FOUND;
 };
 
 Room.prototype._verbose_ = false;
