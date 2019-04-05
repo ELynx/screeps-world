@@ -82,13 +82,14 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
 Spawn implementation.
 @param {Spawn} spawn.
 @param {integer} type.
-@param {integer} energyLevel.
+@param {string} owner room that will own the creep.
 @return True if creep spawn started.
 **/
-spawnProcess.doSpawn = function(spawn, type)
+spawnProcess.doSpawn = function(spawn, type, owner)
 {
     const name = spawn.id + '_' + Game.time;
 
+    // level and body derived from spawning room, not from owner
     const [level, body] = TypeBody[type](spawn.room.memory.elvl);
 
     if (level == 0 || body.length == 0 || body.length > 50)
@@ -103,7 +104,7 @@ spawnProcess.doSpawn = function(spawn, type)
                 memory:
                 {
                     // 'undefined' is not using memory
-                    crum: spawn.room.name,
+                    crum: owner,
                     ctrl: globals.NO_CONTROL,
                     dest: globals.NO_DESTINATION,
                     dact: globals.NO_ACT_RANGE,
@@ -131,12 +132,32 @@ spawnProcess.work = function(room, creeps)
 {
     this.debugHeader(room);
 
-    if (room.memory.elvl == 0)
+    this.workImpl(room, room, creeps);
+};
+
+spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
+{
+    // if cannot spawn anything ...
+    if (spawnRoom.memory.elvl == 0)
     {
+        // ... ask for help
+        if (spawnRoom.memory.sstr)
+        {
+            let sisterRoom = Game.rooms[spawnRoom.memory.sstr];
+            if (sisterRoom)
+            {
+                this.workImpl(ownerRoom, sisterRoom, creeps);
+            }
+        }
+
         return;
     }
 
-    let creepsNeeded = this.calculateCreepsNeeded(room.memory.elvl, room.memory.slvl, room.memory.mlvl);
+    let creepsNeeded = this.calculateCreepsNeeded(
+        ownerRoom.memory.elvl,
+        ownerRoom.memory.slvl,
+        ownerRoom.memory.mlvl
+    );
 
     for (let i = 0; i < creeps.length; ++i)
     {
@@ -155,17 +176,17 @@ spawnProcess.work = function(room, creeps)
 
     if (allBalanced)
     {
-        room.memory.ccnt = undefined;
+        ownerRoom.memory.ccnt = undefined;
         return;
     }
     else
     {
         // remember for TTL
-        room.memory.ccnt = creepsNeeded;
+        ownerRoom.memory.ccnt = creepsNeeded;
     }
 
     // check for spawns
-    const spawns = room.find(FIND_MY_SPAWNS,
+    const spawns = spawnRoom.find(FIND_MY_SPAWNS,
         {
             filter: function(spawn)
             {
@@ -176,7 +197,7 @@ spawnProcess.work = function(room, creeps)
 
     if (spawns.length == 0)
     {
-        this.debugLine(room, 'No free spawns found');
+        this.debugLine(ownerRoom, 'No free spawns found');
         return;
     }
 
@@ -191,7 +212,7 @@ spawnProcess.work = function(room, creeps)
         {
             if (creepsNeeded[type] > 0)
             {
-                spawned = this.doSpawn(spawns[i], type);
+                spawned = this.doSpawn(spawns[i], type, ownerRoom.name);
 
                 if (spawned)
                 {
@@ -208,7 +229,15 @@ spawnProcess.work = function(room, creeps)
 
     if (totalSpawned > 0)
     {
-        this.debugLine(room, 'Spawned creeps ' + totalSpawned);
+        if (ownerRoom.id == spawnRoom.id)
+        {
+            this.debugLine(ownerRoom, 'Spawned creeps ' + totalSpawned);
+        }
+        else
+        {
+            this.debugLine(ownerRoom, 'Remotely spawned creeps ' + totalSpawned + ' at ' + spawnRoom.name);
+            this.debugLine(spawnRoom, 'Assisted spawned creeps ' + totalSpawned + ' for ' + ownerRoom.name);
+        }
     }
 };
 
