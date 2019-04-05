@@ -54,9 +54,7 @@ mineralHarvestController.staticTargets = function(room)
 
 mineralHarvestController.filterCreep = function(creep)
 {
-    if (creep.memory.minr == true &&
-        creep.sumCarry() == 0 &&
-        creep.ticksToLive > 200) // TODO integrate
+    if (creep.memory.minr == true && creep.sumCarry() == 0)
     {
         return true;
     }
