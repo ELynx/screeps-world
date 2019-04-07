@@ -611,7 +611,7 @@ function Controller(id)
     {
         globals.registerRoomController(this);
 
-        //Game.profiler.registerObject(this, this.id);
+        //profiler.registerObject(this, this.id);
     };
 };
 
