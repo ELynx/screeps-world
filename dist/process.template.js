@@ -2,6 +2,7 @@
 
 var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
+//const profiler = require('screeps-profiler');
 
 function Process(id)
 {
@@ -19,9 +20,10 @@ function Process(id)
     @param {array<Creeps>} creeps that might be interesting for process.
     **/
     this.work = undefined;
-    
+
     this.register = function()
     {
+        //Game.profiler.registerObject(this, this.id);
     };
 };
 
