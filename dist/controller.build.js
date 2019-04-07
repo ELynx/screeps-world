@@ -23,13 +23,15 @@ buildController.act = function(site, creep)
 
 buildController.dynamicTargets = function(room, creep)
 {
+    let self = this;
+
     // TODO OBSTACLE_OBJECT_TYPES
     return this._lookAroundCreep(
         room,
         LOOK_CONSTRUCTION_SITES,
         function(site)
         {
-            return site.my && !site.pos.isEqualTo(creep.pos) && (this.hasSpawn || site.structureType == STRUCTURE_SPAWN);
+            return site.my && !site.pos.isEqualTo(creep.pos) && (self.hasSpawn || site.structureType == STRUCTURE_SPAWN);
         },
         creep
     );
