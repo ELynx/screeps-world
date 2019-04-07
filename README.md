@@ -10,6 +10,8 @@ Proprietary and confidential.
 # Folders
 dist - connected to official server
 
+history - historical data worth saving
+
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
 
