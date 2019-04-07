@@ -323,6 +323,7 @@ var roomActor =
                 } // end of loop of room change
 
                 // TODO integrate
+                // TODO profile and decide how it works
                 // hotplug - grab resources nearby
                 if (creep.sumCarry() < creep.carryCapacity && !creep.memory.manual)
                 {

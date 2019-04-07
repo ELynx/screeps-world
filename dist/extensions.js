@@ -63,6 +63,11 @@ Creep.prototype.target = function()
 **/
 Creep.prototype.healClosest = function(creeps)
 {
+    if (creeps.length == 0)
+    {
+        return;
+    }
+
     const target = this.pos.findClosestByRange(creeps);
     if (target)
     {
