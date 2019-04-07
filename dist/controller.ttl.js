@@ -109,7 +109,7 @@ ttlController.staticTargets = function(room)
         {
             filter: function(spawn)
             {
-                return spawn.isActive() && !spawn.spawning;
+                return spawn.isActiveCache() && !spawn.spawning;
             }
         }
     );
