@@ -241,8 +241,8 @@ var roomActor =
         );
 
         // once in a creep life update room info
-        if (!room.memory.intl ||
-             room.memory.intl < Game.time - 1500)
+        if (room.memory.intl === undefined ||
+            room.memory.intl < Game.time - 1500)
         {
             room.memory.elvl = this.energyLevel(room, roomCreeps);
             room.memory.slvl = this.sourceLevel(room);
