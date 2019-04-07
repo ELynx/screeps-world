@@ -179,6 +179,11 @@ var strelok = function()
                 {
                     roomBored[dest] = true;
                 }
+
+                if (!creep.pos.inRangeTo(25, 25, 15))
+                {
+                    creep.moveTo(25, 25);
+                }
             }
 
             if (canHeal)
