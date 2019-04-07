@@ -210,3 +210,16 @@ Flag.prototype.setSecondaryColor = function(newColor)
 {
     this.setColor(this.color, newColor);
 };
+
+Structure.prototype.isActiveCached = function()
+{
+    if (!this._isActiveT_ ||
+         this._isActiveT_ < Game.time - 1500)
+
+    {
+        this._isActiveCache_ = this.isActive();
+        this._isActiveT_ = Game.time + Math.ceil(Math.random() * 42);
+    }
+
+    return this._isActiveCache_;
+};

@@ -35,7 +35,7 @@ energyRestockControllerRegular.dynamicTargets = function(room, creep)
         function(structure)
         {
             if (!structure.my ||
-                !structure.isActive())
+                !structure.isActiveCache())
             {
                 return false;
             }
