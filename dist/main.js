@@ -8,6 +8,9 @@ var manualStrelok  = require('manual.strelok');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
+//Game.profiler.registerObject(roomActor, 'roomActor');
+//Game.profiler.registerFN(manualStrelok, 'manualStrelok');
+
 //profiler.enable();
 
 module.exports.loop = function()
@@ -31,9 +34,9 @@ module.exports.loop = function()
         }
     }
 
-    //});
-
     manualStrelok();
+
+    //});
 
     //console.log('Used       ' + Game.cpu.getUsed());
 }
