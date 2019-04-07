@@ -38,10 +38,10 @@ function setupProfiler() {
     element.setAttribute('id', '${id}');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,${encodeURIComponent(Profiler.callgrind())}');
     element.setAttribute('download', 'callgrind.out.${Game.time}');
-  
+
     element.style.display = 'none';
     document.body.appendChild(element);
-  
+
     element.click();
   }
 </script>
@@ -217,8 +217,6 @@ function profileObjectFunctions(object, label) {
     const originalFunction = objectToWrap[functionName];
     objectToWrap[functionName] = profileFunction(originalFunction, extendedLabel);
   });
-
-  return objectToWrap;
 }
 
 function profileFunction(fn, functionName) {
@@ -328,8 +326,10 @@ const Profiler = {
 
   prototypes: [
     { name: 'Game', val: Game },
+    // InterShardMemory
     { name: 'Map', val: Game.map },
     { name: 'Market', val: Game.market },
+    // Memory
     { name: 'PathFinder', val: PathFinder },
     { name: 'RawMemory', val: RawMemory },
     { name: 'ConstructionSite', val: ConstructionSite },
@@ -341,6 +341,7 @@ const Profiler = {
     { name: 'CostMatrix', val: PathFinder.CostMatrix },
     { name: 'Resource', val: Resource },
     { name: 'Room', val: Room },
+    { name: 'Terrain', val: Room.Terrain },
     { name: 'RoomObject', val: RoomObject },
     { name: 'RoomPosition', val: RoomPosition },
     { name: 'RoomVisual', val: RoomVisual },
@@ -365,6 +366,7 @@ const Profiler = {
     { name: 'StructureTerminal', val: StructureTerminal },
     { name: 'StructureTower', val: StructureTower },
     { name: 'StructureWall', val: StructureWall },
+    { name: 'Tombstone', val: Tombstone }
   ],
 
   checkMapItem(functionName, map = Memory.profiler.map) {
