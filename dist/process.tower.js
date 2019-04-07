@@ -22,7 +22,7 @@ towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
             {
                 filter: function(structure)
                 {
-                    return structure.structureType == STRUCTURE_TOWER && structure.my && structure.isActiveCache();
+                    return structure.structureType == STRUCTURE_TOWER && structure.my && structure.isActiveCached();
                 }
             }
         );
