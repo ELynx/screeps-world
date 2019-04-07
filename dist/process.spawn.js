@@ -163,7 +163,7 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
     {
         --creepsNeeded[creeps[i].memory.btyp];
     }
-  
+
     let allBalanced = true;
 
     for (let i = 0; i < creepsNeeded.length && allBalanced; ++i)
