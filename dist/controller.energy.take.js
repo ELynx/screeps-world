@@ -6,6 +6,8 @@ var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
 
+energyTakeController.structures = undefined;
+
 energyTakeController.act = function(structure, creep)
 {
     creep.withdraw(structure, RESOURCE_ENERGY);
@@ -13,12 +15,15 @@ energyTakeController.act = function(structure, creep)
     return false;
 };
 
+energyTakeController.roomPrepare = function(room)
+{
+    this.structures = room.find(FIND_STRUCTURES);
+};
+
 energyTakeController.dynamicTargets = function(room, creep)
 {
-    const nearby = room.find(FIND_STRUCTURES);
-
     return _.filter(
-        nearby,
+        this.structures,
         function(structure)
         {
             // TODO limit grabbing
