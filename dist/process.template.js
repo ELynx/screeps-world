@@ -23,7 +23,7 @@ function Process(id)
 
     this.register = function()
     {
-        //Game.profiler.registerObject(this, this.id);
+        //profiler.registerObject(this, this.id);
     };
 };
 
