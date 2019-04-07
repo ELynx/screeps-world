@@ -46,7 +46,7 @@ mineralHarvestController.staticTargets = function(room)
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_EXTRACTOR && structure.my && structure.isActiveCache();
+                return structure.structureType == STRUCTURE_EXTRACTOR && structure.my && structure.isActiveCached();
             }
         }
     );

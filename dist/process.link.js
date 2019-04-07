@@ -17,7 +17,7 @@ linkProcess.work = function(room)
             {
                 if (structure.structureType == STRUCTURE_LINK)
                 {
-                    return structure.my && structure.isActiveCache();
+                    return structure.my && structure.isActiveCached();
                 }
 
                 return false;
