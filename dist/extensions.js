@@ -12,7 +12,7 @@ Creep.prototype.hasEnergy = function()
 
 Creep.prototype.caveIndex = function()
 {
-    if (!this._cidxT_ ||
+    if (this._cidxT_ === undefined ||
          this._cidxT_ != Game.time)
     {
         let cidx = 0;
@@ -85,9 +85,9 @@ Room.prototype.roomDebug = function(what)
 {
     if (this._verbose_)
     {
-        if (!this._debugY_ ||
-            !this._verboseT_ ||
-             this._verboseT_ != Game.time)
+        if (this._debugY_ === undefined ||
+            this._verboseT_ === undefined ||
+            this._verboseT_ != Game.time)
         {
             this._debugY_ = 0;
             this._verboseT_ = Game.time;
@@ -218,9 +218,8 @@ Flag.prototype.setSecondaryColor = function(newColor)
 
 Structure.prototype.isActiveCached = function()
 {
-    if (!this._isActiveT_ ||
-         this._isActiveT_ < Game.time - 1500)
-
+    if (this._isActiveT_ === undefined ||
+        this._isActiveT_ < Game.time - 1500)
     {
         this._isActiveCache_ = this.isActive();
         this._isActiveT_ = Game.time + Math.ceil(Math.random() * 42);
