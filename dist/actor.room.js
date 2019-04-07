@@ -31,8 +31,14 @@ var roomActor =
     @param {Room} room.
     @return Energy level of room.
     **/
-    energyLevel: function(room)
+    energyLevel: function(room, roomCreeps)
     {
+        // check for being wiped out
+        if (roomCreeps.length == 0)
+        {
+            return 0;
+        }
+
         const structs = room.find(FIND_MY_STRUCTURES,
             {
                 filter: function(structure)
@@ -225,20 +231,6 @@ var roomActor =
         const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
         safemodeProcess.work(room, hostileCreeps);
 
-        // once in a creep life update room info
-        if (!room.memory.intl ||
-             room.memory.intl < Game.time - 1500)
-        {
-            room.memory.elvl = this.energyLevel(room);
-            room.memory.slvl = this.sourceLevel(room);
-            room.memory.mlvl = this.miningLevel(room);
-
-            makeCaveMap(room);
-
-            // offset regeneration time randomly so multiple roooms don't do it at same turm
-            room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
-        }
-
         // all creeps registered to room
         const roomCreeps = _.filter(
             Game.creeps,
@@ -247,6 +239,20 @@ var roomActor =
                 return creep.memory.crum == room.name;
             }
         );
+
+        // once in a creep life update room info
+        if (!room.memory.intl ||
+             room.memory.intl < Game.time - 1500)
+        {
+            room.memory.elvl = this.energyLevel(room, roomCreeps);
+            room.memory.slvl = this.sourceLevel(room);
+            room.memory.mlvl = this.miningLevel(room);
+
+            makeCaveMap(room);
+
+            // offset regeneration time randomly so multiple roooms don't do it at same turm
+            room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
+        }
 
         room.roomDebug('Room creeps     ' + roomCreeps.length);
 

@@ -15,9 +15,8 @@ buildController.act = function(site, creep)
 buildController.dynamicTargets = function(room, creep)
 {
     // TODO build priorities
-    //const spawns = room.find(FIND_MY_SPAWNS);
-    //const hasSpawn = spawns.length > 0;
-    //(hasSpawn || site.structureType == STRUCTURE_SPAWN);
+    const spawns = room.find(FIND_MY_SPAWNS);
+    const hasSpawn = spawns.length > 0;
 
     // TODO OBSTACLE_OBJECT_TYPES
     return this._lookAroundCreep(
@@ -25,7 +24,7 @@ buildController.dynamicTargets = function(room, creep)
         LOOK_CONSTRUCTION_SITES,
         function(site)
         {
-            return site.my && !site.pos.isEqualTo(creep.pos);
+            return site.my && !site.pos.isEqualTo(creep.pos) && (hasSpawn || site.structureType == STRUCTURE_SPAWN);
         },
         creep
     );
