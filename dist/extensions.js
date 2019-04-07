@@ -208,6 +208,11 @@ Flag.prototype.getValue = function()
 
 Flag.prototype.setSecondaryColor = function(newColor)
 {
+    if (this.secondaryColor == newColor)
+    {
+        return;
+    }
+
     this.setColor(this.color, newColor);
 };
 
