@@ -224,10 +224,10 @@ function Controller(id)
         if (/*caveX < room.memory.caveMap[0].length - 1 &&*/ // always true
             caveY < room.memory.caveMap[1].length - 1)
         {
-            const t = room.memory.caveMap[1][caveY];
             const l = room.memory.caveMap[0][caveX];
-            const b = room.memory.caveMap[1][caveY + 1] - 1;
             const r = room.memory.caveMap[0][caveX + 1] - 1;
+            const t = room.memory.caveMap[1][caveY];
+            const b = room.memory.caveMap[1][caveY + 1] - 1;
 
             const looked = room.lookForAtArea(lookForType, t, l, b, r);
 
