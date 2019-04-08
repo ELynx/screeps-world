@@ -30,7 +30,7 @@ energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
             }
             else if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.my && structure.isActiveCached() && structure.isSource() && structure.energy < LinkRestock * structure.energyCapacity;
+                return structure.my && structure.energy < LinkRestock * structure.energyCapacity && structure.isActiveCached() && structure.isSource();
             }
 
             return false;

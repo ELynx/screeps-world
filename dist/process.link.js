@@ -15,12 +15,7 @@ linkProcess.work = function(room)
         {
             filter: function(structure)
             {
-                if (structure.structureType == STRUCTURE_LINK)
-                {
-                    return structure.my && structure.isActiveCached();
-                }
-
-                return false;
+                return structure.structureType == STRUCTURE_LINK && structure.isActiveCached();
             }
         }
     );
