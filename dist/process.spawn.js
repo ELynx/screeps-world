@@ -190,7 +190,7 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
         {
             filter: function(spawn)
             {
-                return !spawn.spawning && spawn.isActiveCached();
+                return !spawn.spawning && spawn.isActiveSimple();
             }
         }
     );

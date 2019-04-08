@@ -218,14 +218,14 @@ Flag.prototype.setSecondaryColor = function(newColor)
     this.setColor(this.color, newColor);
 };
 
-Structure.prototype.isActiveCached = function()
+Structure.prototype.isActiveSimple = function()
 {
-    if (this._isActiveT_ === undefined ||
-        this._isActiveT_ < Game.time - 1500)
+    // if special flag is set on the room
+    if (this.room.memory.noSimple)
     {
-        this._isActiveCache_ = this.isActive();
-        this._isActiveT_ = Game.time + Math.ceil(Math.random() * 42);
+        return this.isActive();
     }
 
-    return this._isActiveCache_;
+    // simple strategy, this is most likely any way
+    return true;
 };
