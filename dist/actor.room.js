@@ -45,7 +45,7 @@ var roomActor =
                 {
                     return (structure.structureType == STRUCTURE_SPAWN ||
                             structure.structureType == STRUCTURE_EXTENSION) &&
-                            structure.isActiveCached();
+                            structure.isActiveSimple();
                 }
             }
         );
@@ -107,7 +107,7 @@ var roomActor =
             {
                 filter: function(structure)
                 {
-                    return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveCached();
+                    return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple();
                 }
             }
         );
@@ -128,7 +128,7 @@ var roomActor =
             {
                 filter: function(structure)
                 {
-                    return structure.structureType == STRUCTURE_TERMINAL && structure.isActiveCached();
+                    return structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple();
                 }
             }
         );

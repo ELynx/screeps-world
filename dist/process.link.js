@@ -15,7 +15,7 @@ linkProcess.work = function(room)
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_LINK && structure.isActiveCached();
+                return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
             }
         }
     );

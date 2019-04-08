@@ -48,7 +48,7 @@ mineralHarvestController.staticTargets = function(room)
         {
             filter: function(structure)
             {
-                if (structure.structureType == STRUCTURE_TERMINAL && structure.isActiveCached())
+                if (structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple())
                 {
                     return _.sum(structure.store) < structure.storeCapacity;
                 }
