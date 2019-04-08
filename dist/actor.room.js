@@ -33,12 +33,6 @@ var roomActor =
     **/
     energyLevel: function(room, roomCreeps)
     {
-        // check for being wiped out
-        if (roomCreeps.length == 0)
-        {
-            return 0;
-        }
-
         const structs = room.find(FIND_MY_STRUCTURES,
             {
                 filter: function(structure)
@@ -63,6 +57,13 @@ var roomActor =
         if (!hasSpawn)
         {
             return 0;
+        }
+
+        // has spawn, has no creeps, means creeps wiped
+        if (roomCreeps.length == 0)
+        {
+            // still can try to spawn weaklings
+            return 1;
         }
 
         if (energyCapacity >= 800)
