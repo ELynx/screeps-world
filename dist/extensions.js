@@ -13,7 +13,7 @@ Creep.prototype.hasEnergy = function()
 Creep.prototype.caveIndex = function()
 {
     if (this._cidxT_ === undefined ||
-         this._cidxT_ != Game.time)
+        this._cidxT_ != Game.time)
     {
         let cidx = 0;
 
@@ -90,8 +90,7 @@ Room.prototype.roomDebug = function(what)
 {
     if (this._verbose_)
     {
-        if (this._debugY_ === undefined ||
-            this._verboseT_ === undefined ||
+        if (this._verboseT_ === undefined ||
             this._verboseT_ != Game.time)
         {
             this._debugY_ = 0;
@@ -174,13 +173,11 @@ RoomPosition.prototype.walkableTiles = function()
 
 StructureLink.prototype.isSource = function()
 {
-    if (this._isSource_ !== undefined)
+    if (this._isSource_ === undefined)
     {
-        return this._isSource_;
+        let sources = this.pos.findInRange(FIND_SOURCES, 2);
+        this._isSource_ = sources.length > 0;
     }
-
-    let sources = this.pos.findInRange(FIND_SOURCES, 2);
-    this._isSource_ = sources.length > 0;
 
     return this._isSource_;
 };
