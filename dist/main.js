@@ -3,7 +3,7 @@
 var extensions     = require('extensions');
 var cleanupMemory  = require('routine.memory');
 var roomActor      = require('actor.room');
-var manualStrelok  = require('manual.strelok');
+var warStrelok     = require('war.strelok');
 //const profiler  = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
@@ -34,7 +34,7 @@ module.exports.loop = function()
         }
     }
 
-    manualStrelok();
+    warStrelok();
 
     //});
 
