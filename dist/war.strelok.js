@@ -260,7 +260,17 @@ var strelok = function()
                 let spawn = spawns[i];
 
                 const creepName = flagName + '_' + Game.time + '_' + delta;
-                const creepMemory = { dest: flag.room.name };
+                const creepArgs = {
+                    {
+                        memory: flag.room.name
+                    },
+
+                    directions:
+                    [
+                        TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT,
+                        BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT
+                    ]
+                };
                 const elvl = spawn.room.memory.elvl;
 
                 let rc = undefined;
@@ -268,25 +278,25 @@ var strelok = function()
                 if (elvl < 2)
                 {
                     rc = spawn.spawnCreep(
-                        creepName,
                         [ MOVE, RANGED_ATTACK ],
-                        creepMemory
+                        creepName,
+                        creepArgs
                     );
                 }
                 else if (elvl <= 3)
                 {
                     rc = spawn.spawnCreep(
-                        creepName,
                         [ MOVE, MOVE, RANGED_ATTACK, HEAL ],
-                        creepMemory
+                        creepName,
+                        creepArgs
                     );
                 }
                 else
                 {
                     rc = spawn.spawnCreep(
-                        creepName,
                         [ MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL ],
-                        creepMemory
+                        creepName,
+                        creepArgs
                     );
                 }
 
