@@ -84,6 +84,23 @@ Creep.prototype.healClosest = function(creeps)
     return ERR_NOT_FOUND;
 };
 
+/**
+@param {array<Creep>} creeps to heal.
+**/
+Creep.prototype.healAdjacent = function(creeps)
+{
+    for (let i = 0; i < creeps.length; ++i)
+    {
+        const target = creeps[i];
+        if (this.pos.isNearTo(target))
+        {
+            return this.heal(target);
+        }
+    }
+
+    return ERR_NOT_FOUND;
+};
+
 Room.prototype._verbose_ = false;
 
 Room.prototype.roomDebug = function(what)

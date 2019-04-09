@@ -17,6 +17,7 @@ var strelok = function()
         const canMove   = creep.getActiveBodyparts(MOVE) > 0;
         const canAttack = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
         let canHeal     = creep.getActiveBodyparts(HEAL) > 0;
+        let canHealRanged = canHeal;
 
         // if hit start a war immediately
         // remember this fact to avoid blinking
@@ -159,12 +160,12 @@ var strelok = function()
                         if (mass)
                         {
                             const rc = creep.rangedMassAttack();
-                            canHeal = canHeal && rc == OK;
+                            canHealRanged = canHealRanged && rc != OK;
                         }
                         else
                         {
                             const rc = creep.rangedAttack(target);
-                            canHeal = canHeal && rc == OK;
+                            canHealRanged = canHealRanged && rc != OK;
                         }
                     }
                     else
@@ -196,15 +197,22 @@ var strelok = function()
                 }
             } // end of if no target
 
-            if (canHeal)
+            if (canHeal || canHealRanged)
             {
-                if (creep.hits < creep.hitsMax)
+                if (canHeal && creep.hits < creep.hitsMax)
                 {
                     creep.heal(creep);
                 }
                 else
                 {
-                    creep.healClosest(roomWounded[dest]);
+                    if (canHealRanged)
+                    {
+                        creep.healClosest(roomWounded[dest]);
+                    }
+                    else
+                    {
+                        creep.healAdjacent(roomWounded[dest]);
+                    }
                 }
             }
         } // end of else in which room
@@ -278,7 +286,7 @@ var strelok = function()
 
                 let rc = undefined;
 
-                if (elvl < 2)
+                if (elvl < 1)
                 {
                     rc = spawn.spawnCreep(
                         [ MOVE, RANGED_ATTACK ],
