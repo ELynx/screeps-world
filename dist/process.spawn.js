@@ -13,7 +13,7 @@ const TypeMiner       = [ undefined,   undefined,   true        ];
 const TypeLimitSource = [ 5.0,         2.0,         undefined   ];
 const TypeLimitMining = [ undefined,   undefined,   1.0         ];
 const TypeCount       = [
-                        [ 0,           0,           0           ], // level 0, no own controller
+                        [ 4,           0,           0           ], // level 0
                         [ 6,           0,           1           ], // level 1
                         [ 8,           0,           1           ], // level 2
                         [ 10,          2,           1           ], // level 3
@@ -154,7 +154,7 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
     }
 
     let creepsNeeded = this.calculateCreepsNeeded(
-        ownerRoom.memory.elvl == 0 ? Math.ceil(spawnRoom.memory.elvl / 2) : ownerRoom.memory.elvl,
+        ownerRoom.memory.elvl,
         ownerRoom.memory.slvl,
         ownerRoom.memory.mlvl
     );
