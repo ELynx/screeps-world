@@ -33,6 +33,15 @@ function Tasked(id)
         this._creepRoomTravel(creep);
     };
 
+    this._coastToHalt = function(creep)
+    {
+        // move closer to center
+        if (creep._canMove_ && !creep.pos.inRangeTo(25, 25, 15))
+        {
+            creep.moveTo(25, 25, { maxRooms:1, range: 15 });
+        }
+    };
+
     this.flagPrepare = undefined;
 
     this.makeBody = undefined;
