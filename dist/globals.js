@@ -8,6 +8,11 @@ var globals =
     **/
     hardCpuUsed: function(from)
     {
+        if (!Game.cpu.limit)
+        {
+            return 0;
+        }
+
         return Math.ceil(100 * (Game.cpu.getUsed() - from) / Game.cpu.limit);
     },
 
@@ -17,6 +22,11 @@ var globals =
     **/
     softCpuUsed: function(from)
     {
+        if (!Game.cpu.tickLimit)
+        {
+            return 0;
+        }
+
         return Math.ceil(100 * (Game.cpu.getUsed() - from) / Game.cpu.tickLimit);
     },
 
