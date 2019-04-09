@@ -39,7 +39,8 @@ function Tasked(id)
 
     this.act = function()
     {
-        let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(this.id); });
+        var self = this;
+        let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(self.id); });
 
         this.roomCount = { };
 
