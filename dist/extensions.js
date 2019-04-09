@@ -205,7 +205,38 @@ Flag.prototype.getValue = function()
         return 0;
     }
 
-    return undefined;
+    return -1;
+};
+
+Flag.prototype.setValue = function(newValue)
+{
+    let newColor = COLOR_WHITE;
+
+    if (newValue == 6)
+    {
+        newColor = COLOR_PURPLE;
+    }
+    else if (newValue == 3)
+    {
+        newColor = COLOR_RED;
+    }
+    else if (newValue == 2)
+    {
+        newColor = COLOR_YELLOW;
+    }
+    else if (newValue == 1)
+    {
+        newColor = COLOR_GREEN;
+    }
+    else if (newValue == 0)
+    {
+        newColor = COLOR_BLUE;
+    }
+
+    if (this.color != newColor)
+    {
+        this.setColor(newColor, this.secondaryColor);
+    }
 };
 
 Flag.prototype.setSecondaryColor = function(newColor)

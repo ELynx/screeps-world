@@ -35,7 +35,7 @@ safemodeProcess.work = function(room, hostileCreeps)
 
                     let range = flag.getValue();
 
-                    if (!range)
+                    if (range < 0)
                     {
                         continue;
                     }
