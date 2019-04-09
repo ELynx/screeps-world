@@ -145,7 +145,7 @@ function Tasked(id)
                     ]
                 };
 
-                const rc = rc = spawn.spawnCreep(
+                const rc = spawn.spawnCreep(
                     creepBody,
                     creepName,
                     creepArgs
