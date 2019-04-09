@@ -98,7 +98,7 @@ strelok.creepAtDestination = function(creep)
                 // come a little bit closer
                 if (rangeToTarget > 2)
                 {
-                    if (canMove && creep.fatigue == 0)
+                    if (creep._canMove_ && creep.fatigue == 0)
                     {
                         if (creep.moveTo(target, { noPathFinding: true }) == ERR_NOT_FOUND)
                         {
@@ -162,21 +162,21 @@ strelok.creepAtDestination = function(creep)
         }
 
         // move closer to center
-        if (canMove && !creep.pos.inRangeTo(25, 25, 15))
+        if (creep._canMove_ && !creep.pos.inRangeTo(25, 25, 15))
         {
             creep.moveTo(25, 25, { maxRooms:1, range: 15 });
         }
     } // end of if no target
 
-    if (canHeal || canHealRanged)
+    if (creep._canHeal_ || creep._canHealRanged_)
     {
-        if (canHeal && creep.hits < creep.hitsMax)
+        if (creep._canHeal_ && creep.hits < creep.hitsMax)
         {
             creep.heal(creep);
         }
         else
         {
-            if (canHealRanged)
+            if (creep._canHealRanged_)
             {
                 creep.healClosest(this.roomWounded[dest]);
             }
