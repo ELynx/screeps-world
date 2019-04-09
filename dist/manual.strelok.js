@@ -14,6 +14,10 @@ var strelok = function()
     {
         let creep = creeps[i];
 
+        const canMove   = creep.getActiveBodyparts(MOVE) > 0;
+        const canAttack = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
+        let canHeal     = creep.getActiveBodyparts(HEAL) > 0;
+
         // if hit start a war immediately
         // remember this fact to avoid blinking
         if (creep.hits < creep.hitsMax && !creep.memory.war)
@@ -31,24 +35,31 @@ var strelok = function()
 
         if (dest != creep.pos.roomName)
         {
-            if (creep.fatigue == 0)
+            // code to travel to destination room
+
+            if (canMove && creep.fatigue == 0)
             {
                 const destRoom = new RoomPosition(25, 25, dest);
                 creep.moveTo(destRoom, { reusePath: 50, range: 24 });
             }
 
-            if (creep.hits < creep.hitsMax)
+            if (canHeal)
             {
-                creep.heal(creep);
-            }
-            else if (roomWounded[creep.pos.roomName] &&
-                     roomWounded[creep.pos.roomName].length > 0)
-            {
-                creep.healClosest(roomWounded[creep.pos.roomName]);
+                if (creep.hits < creep.hitsMax)
+                {
+                    creep.heal(creep);
+                }
+                else if (roomWounded[creep.pos.roomName] &&
+                         roomWounded[creep.pos.roomName].length > 0)
+                {
+                    creep.healClosest(roomWounded[creep.pos.roomName]);
+                }
             }
         }
         else
         {
+            // code at destination room
+
             if (!roomTargets[dest])
             {
                 let targets = creep.room.find(FIND_HOSTILE_CREEPS);
@@ -104,20 +115,19 @@ var strelok = function()
                 }
             );
 
-            let canHeal = true;
-
             const target = creep.pos.findClosestByRange(targets);
-
             if (target)
             {
-                if (creep.getActiveBodyparts(RANGED_ATTACK) > 0)
+                if (canAttack)
                 {
-                    if (creep.pos.inRangeTo(target, 3))
+                    const rangeToTarget = creep.pos.getRangeTo(target);
+
+                    if (rangeToTarget <= 3)
                     {
                         // come a little bit closer
-                        if (creep.pos.getRangeTo(target) > 2)
+                        if (rangeToTarget > 2)
                         {
-                            if (creep.fatigue == 0)
+                            if (canMove && creep.fatigue == 0)
                             {
                                 if (creep.moveTo(target, { noPathFinding: true }) == ERR_NOT_FOUND)
                                 {
@@ -148,43 +158,41 @@ var strelok = function()
                         // do actual attack
                         if (mass)
                         {
-                            canHeal = creep.rangedMassAttack() != OK;
+                            canHeal = canHeal && creep.rangedMassAttack() != OK;
                         }
                         else
                         {
-                            canHeal = creep.rangedAttack(target) != OK;
+                            canHeal = canHeal && creep.rangedAttack(target) != OK;
                         }
                     }
                     else
                     {
-                        if (creep.fatigue == 0)
+                        if (canMove && creep.fatigue == 0)
                         {
                             // STRATEGY follow creep tightly
                             const reuse = target.structureType ? 10 : 0;
 
-                            creep.moveTo(target, { maxRooms: 1, reusePath: reuse });
+                            creep.moveTo(target, { maxRooms: 1, reusePath: reuse, range: 3 });
                         }
                     }
-                }
-                // has no MOVE to flee
-                //else
-                //{
-                //    creep.moveTo(target, { resuePath: 0, flee: true, range: 4 } );
-                //}
+                } // end of if has ranged bpart
             } // end of if target
             else
             {
+                // no targets
+
                 // if creep lived long enough
                 if (creep.ticksToLive < 2)
                 {
                     roomBored[dest] = true;
                 }
 
-                if (!creep.pos.inRangeTo(25, 25, 15))
+                // move closer to center
+                if (canMove && !creep.pos.inRangeTo(25, 25, 15))
                 {
                     creep.moveTo(25, 25);
                 }
-            }
+            } // end of if no target
 
             if (canHeal)
             {
@@ -197,98 +205,102 @@ var strelok = function()
                     creep.healClosest(roomWounded[dest]);
                 }
             }
-        } // end of else in different room
+        } // end of else in which room
     } // end of loop for all creeps
 
     if (Memory.strelok)
     {
-        const spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning; });
+        let spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning });
 
-        for (let i = 0; i < spawns.length; ++i)
+        for (const flagName in Game.flags)
         {
-            let spawn = spawns[i];
-
-            let destRoom = undefined;
-
-            for (const flagName in Game.flags)
+            if (spawns.length == 0)
             {
-                if (!flagName.startsWith('strelok'))
+                break; // from flag loop
+            }
+
+            if (!flagName.startsWith('strelok'))
+            {
+                continue;
+            }
+
+            let flag = Game.flags[flagName];
+
+            const want = flag.getValue();
+
+            if (want < 1)
+            {
+                flag.remove();
+                continue;
+            }
+
+            const bored = (flag.room.controller && flag.room.controller.my) ? false : (roomBored[flag.pos.roomName] || false);
+
+            // automatically stop trashing low threat rooms
+            if (want == 1 && bored)
+            {
+                flag.remove();
+                continue;
+            }
+
+            const has = roomCount[flag.pos.roomName] || 0;
+
+            if (has < want)
+            {
+                flag.setSecondaryColor(COLOR_GREY);
+            }
+            else
+            {
+                flag.setSecondaryColor(COLOR_WHITE);
+            }
+
+            let delta = want - has;
+            for (let i = 0; i < spawns.length && delta > 0;)
+            {
+                let spawn = spawns[i];
+
+                const creepName = flagName + '_' + Game.time + '_' + delta;
+                const creepMemory = { dest: flag.room.name };
+                const elvl = spawn.room.memory.elvl;
+
+                let rc = undefined;
+
+                if (elvl < 2)
                 {
-                    continue;
+                    rc = spawn.spawnCreep(
+                        creepName,
+                        [ MOVE, RANGED_ATTACK ],
+                        creepMemory
+                    );
                 }
-
-                let flag = Game.flags[flagName];
-
-                const want = flag.getValue();
-
-                if (want < 0)
+                else if (elvl <= 3)
                 {
-                    flag.remove();
-                    continue;
-                }
-
-                const bored = roomBored[flag.pos.roomName] || false;
-
-                // automatically stop trashing low threat rooms
-                if (want == 1 && bored)
-                {
-                    flag.remove();
-                    continue;
-                }
-
-                const has = roomCount[flag.pos.roomName] || 0;
-
-                if (has == 0)
-                {
-                    flag.setSecondaryColor(COLOR_GREY);
+                    rc = spawn.spawnCreep(
+                        creepName,
+                        [ MOVE, MOVE, RANGED_ATTACK, HEAL ],
+                        creepMemory
+                    );
                 }
                 else
                 {
-                    flag.setSecondaryColor(COLOR_WHITE);
+                    rc = spawn.spawnCreep(
+                        creepName,
+                        [ MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL ],
+                        creepMemory
+                    );
                 }
-
-                if (want - has > 0)
-                {
-                    destRoom = flag.pos.roomName;
-                    break; // from flag cycle
-                }
-            } // end of loop for all flags
-
-            if (destRoom)
-            {
-                // periodically spawn lesser creeps
-                const body = Math.random() < 0.85 ?
-                    [
-                        MOVE,          MOVE,          MOVE,          MOVE,          MOVE,
-                        RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL
-                    ]
-                    :
-                    [
-                        MOVE,          MOVE,          MOVE,
-                        RANGED_ATTACK, RANGED_ATTACK, HEAL
-                    ];
-
-                let rc = spawn.spawnCreep(
-                    body,
-                    'strelok_' + Game.time,
-                    {
-                        memory:
-                        {
-                            dest: destRoom
-                        }
-                    }
-                );
 
                 if (rc == OK)
                 {
-                    let now = roomCount[destRoom] || 0;
-                    --now;
-                    roomCount[destRoom] = now;
-
-                    continue; // to next spawn
+                    --delta;
+                    spawns.splice(i, 1);
                 }
-            } // end of dest room found
-        } // end of spawns loop
+                else
+                {
+                    ++i;
+                }
+            } // end of loop for all remaining spawns
+        } // end of loop for all flags
     } // end of if strelok
 };
 
