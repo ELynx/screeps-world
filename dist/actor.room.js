@@ -251,6 +251,24 @@ var roomActor =
 
             makeCaveMap(room);
 
+            // TODO get rid of hardcode
+            const flagName = 'strelok_' + room.name + '_patrol';
+
+            let flag = Game.flags[flagName];
+            if (flag)
+            {
+                const patrolUnits = Math.min(3, room.memory.elvl + 1);
+                flag.setValue(patrolUnits);
+            }
+            else
+            {
+                // TODO at the "downtown"
+                const flagPos = new RoomPosition(25, 25, room.name);
+                // TODO setValue(1)
+                // new room info, start with single guard
+                flagPos.createFlag(flagName, COLOR_GREEN);
+            }
+
             // offset regeneration time randomly so multiple roooms don't do it at same turm
             room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
         }
