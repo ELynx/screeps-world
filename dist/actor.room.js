@@ -252,7 +252,7 @@ var roomActor =
             makeCaveMap(room);
 
             // TODO get rid of hardcode
-            const flagName = 'strelok_' + room.name + '_patrol';
+            const flagName = 'strelok_' + room.name;
 
             let flag = Game.flags[flagName];
             if (flag)
