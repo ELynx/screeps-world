@@ -154,17 +154,12 @@ strelok.creepAtDestination = function(creep)
     else
     {
         // no targets
+        this._coastToHalt(creep);
 
         // if creep lived long enough
         if (creep.ticksToLive < 2)
         {
             this.roomBored[dest] = true;
-        }
-
-        // move closer to center
-        if (creep._canMove_ && !creep.pos.inRangeTo(25, 25, 15))
-        {
-            creep.moveTo(25, 25, { maxRooms:1, range: 15 });
         }
     } // end of if no target
 
