@@ -4,12 +4,11 @@ var extensions     = require('extensions');
 var cleanupMemory  = require('routine.memory');
 var roomActor      = require('actor.room');
 var warStrelok     = require('war.strelok');
-//const profiler  = require('screeps-profiler');
+//const profiler   = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
 //profiler.registerObject(roomActor, 'roomActor');
-//profiler.registerFN(manualStrelok, 'manualStrelok');
 
 //profiler.enable();
 
@@ -34,7 +33,7 @@ module.exports.loop = function()
         }
     }
 
-    warStrelok();
+    warStrelok.act();
 
     //});
 
