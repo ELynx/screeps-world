@@ -74,6 +74,11 @@ function Tasked(id)
             ++now;
             this.roomCount[creep.memory.dest] = now;
 
+            if (creep.spawning)
+            {
+                continue;
+            }
+
             if (creep.memory.dest == creep.pos.roomName)
             {
                 this.creepAtDestination(creep);
@@ -130,7 +135,7 @@ function Tasked(id)
                 const creepArgs = {
                     memory:
                     {
-                        dest: flag.room.name
+                        dest: flag.room ? flag.room.name : flag.name.substr(this.id.length + 1) // name + separator
                     },
 
                     directions:

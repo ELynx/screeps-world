@@ -28,7 +28,7 @@ claim.creepAtDestination = function(creep)
 claim.flagPrepare = function(flag)
 {
     // done about it
-    if (flag.room.controller && flag.room.controller.my)
+    if (flag.room && flag.room.controller && flag.room.controller.my)
     {
         flag.remove();
         return false;
