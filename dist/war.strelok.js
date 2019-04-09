@@ -158,11 +158,13 @@ var strelok = function()
                         // do actual attack
                         if (mass)
                         {
-                            canHeal = canHeal && creep.rangedMassAttack() != OK;
+                            const rc = creep.rangedMassAttack();
+                            canHeal = canHeal && rc == OK;
                         }
                         else
                         {
-                            canHeal = canHeal && creep.rangedAttack(target) != OK;
+                            const rc = creep.rangedAttack(target);
+                            canHeal = canHeal && rc == OK;
                         }
                     }
                     else
