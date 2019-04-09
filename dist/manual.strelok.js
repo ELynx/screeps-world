@@ -221,7 +221,7 @@ var strelok = function()
 
                 const want = flag.getValue();
 
-                if (!want)
+                if (want < 0)
                 {
                     flag.remove();
                     continue;
