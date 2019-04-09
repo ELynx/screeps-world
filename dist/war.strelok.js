@@ -261,8 +261,9 @@ var strelok = function()
 
                 const creepName = flagName + '_' + Game.time + '_' + delta;
                 const creepArgs = {
+                    memory:
                     {
-                        memory: flag.room.name
+                        dest: flag.room.name
                     },
 
                     directions:
