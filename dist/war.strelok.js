@@ -193,7 +193,7 @@ var strelok = function()
                 // move closer to center
                 if (canMove && !creep.pos.inRangeTo(25, 25, 15))
                 {
-                    creep.moveTo(25, 25);
+                    creep.moveTo(25, 25, { maxRooms:1, range: 15 });
                 }
             } // end of if no target
 
