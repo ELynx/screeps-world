@@ -5,10 +5,8 @@ var Controller = require('controller.template');
 
 var ttlController = new Controller('ttl');
 
-// STRATEGY call off creeps with damaged body parts
-const HitsTreshold = 99;
-// STRATEGY time when creep is called for repair
-const Ttl = [100, 100, 200];
+// STRATEGY time when creep is called for renew
+const Ttl = 100;
 
 ttlController.actRange = 1;
 
@@ -29,13 +27,6 @@ ttlController.act = function(spawn, creep)
     {
         recycle = true;
         increaseCcnt = true;
-    }
-
-    if (!recycle)
-    {
-        // TODO mix with healing
-        // if has disabled body parts
-        recycle = creep.hitsMax - creep.hits > HitsTreshold;
     }
 
     if (!recycle)
@@ -117,14 +108,13 @@ ttlController.staticTargets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    // TODO mix with healing
-    // if has disabled body parts
-    if (creep.hitsMax - creep.hits > HitsTreshold)
+    // STRATEGY don't drag resources around
+    if (creep.sumCarry() > 0)
     {
-        return true;
+        return false;
     }
 
-    return creep.ticksToLive <= Ttl[creep.memory.btyp];
+    return creep.ticksToLive <= Ttl;
 };
 
 ttlController.register();
