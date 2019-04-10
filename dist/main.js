@@ -23,9 +23,32 @@ module.exports.loop = function()
 
     cleanupMemory();
 
+    let limits = { };
+    let total  = 0;
+
+    for (let creepName in Game.creeps)
+    {
+        const creep = Game.creeps[creepName];
+        const room  = creep.room;
+
+        const delta = (room.controller && room.controller.my) ? 3 : 2;
+
+        let now = limits[room.name] || 0;
+        now = now + delta;
+        limits[room.name] = now;
+
+        total = total + delta;
+    }
+
     for(const name in Game.rooms)
     {
-        const room = Game.rooms[name];
+        let room = Game.rooms[name];
+
+        const r = limits[name];
+        const t = total + 1;
+        const l = Math.ceil(100 * r / t);
+
+        room.memory.cpul = l;
 
         // save CPU on all rooms where control is not needed
         if (room.controller && room.controller.my)

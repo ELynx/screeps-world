@@ -423,7 +423,7 @@ var roomActor =
 
                                     // TODO room limit
                                     // TODO other operations take CPU too
-                                    if (cpuUsed < 40)
+                                    if (cpuUsed < room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
                                         rc = creep.moveTo(destination, { ignoreRoads: true, maxRooms: 1, range: creep.memory.dact });
