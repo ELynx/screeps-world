@@ -16,7 +16,7 @@ claim.creepAtDestination = function(creep)
         }
         else
         {
-            creep.moveTo(controller, { maxRooms: 1, reusePath: 50, range: 1 });
+            creep.moveTo(controller, { ignoreRoads: true, maxRooms: 1, reusePath: 50, range: 1 });
         }
     }
     else

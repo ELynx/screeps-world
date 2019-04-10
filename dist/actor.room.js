@@ -320,11 +320,10 @@ var roomActor =
                         // TODO test range from 0,0 and 49,49 to 25,25
                         // get off border area
                         const destRoom = new RoomPosition(25, 25, creep.memory.crum);
-                        const destRange = 23;
 
-                        if (!creep.pos.inRangeTo(destRoom, destRange))
+                        if (!creep.pos.inRangeTo(destRoom, 23))
                         {
-                            creep.moveTo(destRoom, { reusePath: 50, range: destRange });
+                            creep.moveTo(destRoom, { reusePath: 50, range: 23 });
 
                             continue; // to next creep
                         }
@@ -419,7 +418,7 @@ var roomActor =
                                     if (cpuUsed < 40)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        rc = creep.moveTo(destination, { maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveTo(destination, { ignoreRoads: true, maxRooms: 1, range: creep.memory.dact });
                                     }
                                     else
                                     {
