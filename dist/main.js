@@ -46,13 +46,15 @@ module.exports.loop = function()
 
         const r = limits[name];
         const t = total + 1;
-        const l = Math.ceil(100 * r / t);
+        const limit = Math.ceil(100 * r / t);
 
-        room.memory.cpul = l;
+        room.visual.rect(0, 0, 5,         0.5, { fill: '#0f0' });
+        room.visual.rect(0, 0, 5 * r / t, 0.5, { fill: '#0aa' });
 
         // save CPU on all rooms where control is not needed
         if (room.controller && room.controller.my)
         {
+            room.memory.cpul = limit;
             roomActor.act(room);
         }
     }
