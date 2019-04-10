@@ -6,30 +6,31 @@ var strelok = new Tasked('strelok');
 
 strelok.allCreepsPrepare = function()
 {
-    this.roomBored   = { };
     this.roomTargets = { };
     this.roomWounded = { };
+    this.roomBoring  = { };
 };
 
 strelok.creepPrepare = function(creep)
 {
-    creep._canAttack_ = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
-    creep._canHeal_   = creep.getActiveBodyparts(HEAL) > 0;
-
+    creep._canAttack_     = creep.getActiveBodyparts(RANGED_ATTACK) > 0;
+    creep._canHeal_       = creep.getActiveBodyparts(HEAL) > 0;
     creep._canHealRanged_ = creep._canHeal_;
 
     // if hit start a war immediately
     // remember this fact to avoid blinking
     if (creep.hits < creep.hitsMax && !creep.memory.war)
     {
-        creep.memory.dest = creep.pos.roomName;
+        creep.setTaskedRoom(creep.pos.roomName);
         creep.memory.war = true;
     }
 };
 
 strelok.creepAtDestination = function(creep)
 {
-    const dest = creep.memory.dest;
+    const TargetRange = 2;
+
+    const dest = creep.getTaskedRoom();
 
     if (!this.roomTargets[dest])
     {
@@ -39,6 +40,13 @@ strelok.creepAtDestination = function(creep)
             {
                 filter: function(structure)
                 {
+                    // for future marauding
+                    if (hostile.structureType == STRUCTURE_STORAGE ||
+                        hostile.structureType == STRUCTURE_TERMINAL)
+                    {
+                        return false;
+                    }
+
                     return structure.hits;
                 }
             }
@@ -69,13 +77,6 @@ strelok.creepAtDestination = function(creep)
         this.roomTargets[dest],
         function(hostile)
         {
-            // for future marauding
-            if (hostile.structureType == STRUCTURE_STORAGE ||
-                hostile.structureType == STRUCTURE_TERMINAL)
-            {
-                return false;
-            }
-
             if (hostile.structureType == STRUCTURE_RAMPART)
             {
                 // only forward
@@ -96,9 +97,9 @@ strelok.creepAtDestination = function(creep)
             if (rangeToTarget <= 3)
             {
                 // come a little bit closer
-                if (rangeToTarget > 2)
+                if (rangeToTarget > TargetRange)
                 {
-                    if (creep._canMove_ && creep.fatigue == 0)
+                    if (creep._canMove_)
                     {
                         if (creep.moveTo(target, { noPathFinding: true }) == ERR_NOT_FOUND)
                         {
@@ -138,15 +139,15 @@ strelok.creepAtDestination = function(creep)
                 }
 
                 creep._canHealRanged_ = creep._canHealRanged_ && rc != OK;
-            }
+            } // end of traget in firing range
             else
             {
-                if (creep._canMove_ && creep.fatigue == 0)
+                if (creep._canMove_)
                 {
                     // STRATEGY follow creep tightly
                     const reuse = target.structureType ? 10 : 0;
 
-                    creep.moveTo(target, { maxRooms: 1, reusePath: reuse, range: 3 });
+                    creep.moveTo(target, { maxRooms: 1, reusePath: reuse, range: TargetRange });
                 }
             }
         } // end of if has ranged bpart
@@ -159,26 +160,29 @@ strelok.creepAtDestination = function(creep)
         // if creep lived long enough
         if (creep.ticksToLive < 2)
         {
-            this.roomBored[dest] = true;
+            this.roomBoring[dest] = true;
         }
     } // end of if no target
 
     if (creep._canHeal_ || creep._canHealRanged_)
     {
+        const healTargets = this.roomWounded[dest];
+
+        // priority 1 - heal self
         if (creep._canHeal_ && creep.hits < creep.hitsMax)
         {
             creep.heal(creep);
         }
-        else
+        // priority 2 - heal anyone else
+        else if (creep._canHealRanged_)
         {
-            if (creep._canHealRanged_)
-            {
-                creep.healClosest(this.roomWounded[dest]);
-            }
-            else
-            {
-                creep.healAdjacent(this.roomWounded[dest]);
-            }
+            // actually check for creep directly nearby is inside
+            creep.healClosest(healTargets);
+        }
+        // priority 3 - heal anyone else directly nearby - in case of ranged attack
+        else if (creep._canHeal_)
+        {
+            creep.healAdjacent(healTargets);
         }
     }
 };
@@ -211,7 +215,7 @@ strelok.flagPrepare = function(flag)
         return false;
     }
 
-    const bored = (flag.room.controller && flag.room.controller.my) ? false : (this.roomBored[flag.pos.roomName] || false);
+    const bored = (flag.room.controller && flag.room.controller.my) ? false : (this.roomBoring[flag.pos.roomName] || false);
 
     // automatically stop trashing low threat rooms
     if (want == 1 && bored)
