@@ -23,11 +23,6 @@ var bodywork =
     **/
     0: function(energyLevel)
     {
-        if (energyLevel == 0)
-        {
-            return [ 0, [] ];
-        }
-
         if (!this.workUniversalCache)
         {
             this.workUniversalCache = { };
@@ -44,7 +39,9 @@ var bodywork =
         const front = [WORK,  MOVE]; // 150 = 100 50
         const back  = [CARRY, MOVE]; // 100 = 50  50
 
-        const total = energyLevel > 3 ? 3 : energyLevel;
+        // on level 0 make small ones like on level 1
+        // not stronger than level 3
+        const total = Math.max(1, Math.min(3, energyLevel));
 
         let body = [];
         for (let i = 0; i < total; ++i)
@@ -70,17 +67,28 @@ var bodywork =
             return [ 0, [] ];
         }
 
-        // 800       100   100   100   100   100   50     50    50    50    50    50
-        return [ 3, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        if (energyLevel < 5)
+        {
+            // 800       100   100   100   100   100   50     50    50    50    50    50
+            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        }
+
+        // 1550      100   100   100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50    50
+        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
     },
 
     /**
     BODY Miner.
-    Not detailed yet, copy Restocker.
+    Harvest mineral thought extractor, restock to terminal.
+    @param {integer} level.
+    @return {Array} level, body.
     **/
     2: function(energyLevel)
     {
-        return this[1](energyLevel);
+        // STRATEGY each WORK generate cooldown, so multitude of it does not improve the process
+        // STRATEGY harvest for 300 ticks, travel for 30
+        // 450       100   50     50     50     50    50    50    50
+        return [ 1, [WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE] ];
     }
 };
 
