@@ -209,19 +209,32 @@ strelok.flagPrepare = function(flag)
 {
     const want = flag.getValue();
 
+    // sanitize flags
     if (want < 1)
     {
         flag.remove();
         return false;
     }
 
-    const bored = (flag.room.controller && flag.room.controller.my) ? false : (this.roomBoring[flag.pos.roomName] || false);
-
-    // automatically stop trashing low threat rooms
-    if (want == 1 && bored)
+    if (flag.room &&
+        flag.room.controller &&
+        flag.room.controller.my)
     {
-        flag.remove();
-        return false;
+        // if in currently owned room aggro only when threat level is above "minimal"
+        if (!(flag.room.memory.threat > 1))
+        {
+            // keep flag but don't spawn
+            return false;
+        }
+    }
+    else
+    {
+        // automatically stop trashing low threat rooms
+        if (want == 1 && this.roomBoring[flag.pos.roomName])
+        {
+            flag.remove();
+            return false;
+        }
     }
 
     return true;
