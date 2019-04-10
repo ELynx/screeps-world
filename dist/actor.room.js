@@ -92,8 +92,15 @@ var roomActor =
     **/
     sourceLevel: function(room)
     {
+        let walkable = 0;
+
         const sources = room.find(FIND_SOURCES);
-        return sources.length;
+        for (let i = 0; i < sources.length; ++i)
+        {
+            walkable = walkable + sources[i].pos.walkableTiles();
+        }
+
+        return walkable;
     },
 
     /**

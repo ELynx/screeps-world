@@ -10,7 +10,7 @@ const TypeBody        = [ bodywork[0], bodywork[1], bodywork[2] ];
 const TypeHarvest     = [ true,        true,        undefined   ];
 const TypeRestock     = [ undefined,   true,        undefined   ];
 const TypeMiner       = [ undefined,   undefined,   true        ];
-const TypeLimitSource = [ 5.0,         2.0,         undefined   ];
+const TypeLimitSource = [ 2.0,         1.0,         undefined   ];
 const TypeLimitMining = [ undefined,   undefined,   1.0         ];
 const TypeCount       = [
                         [ 4,           0,           0           ], // level 0
