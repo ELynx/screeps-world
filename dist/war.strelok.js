@@ -28,8 +28,6 @@ strelok.creepPrepare = function(creep)
 
 strelok.creepAtDestination = function(creep)
 {
-    const TargetRange = 2;
-
     const dest = creep.getTaskedRoom();
 
     if (!this.roomTargets[dest])
@@ -96,15 +94,34 @@ strelok.creepAtDestination = function(creep)
 
             if (rangeToTarget <= 3)
             {
-                // come a little bit closer
-                if (rangeToTarget > TargetRange)
+                // maintain distance
+                if (creep._canMove_)
                 {
-                    if (creep._canMove_)
+                    let toFrom = 0;
+
+                    if (target.structureType)
                     {
-                        if (creep.moveTo(target, { noPathFinding: true }) == ERR_NOT_FOUND)
+                        if (rangeToTarget > 1)
                         {
-                            creep.move(creep.pos.getDirectionTo(target));
+                            toFrom = 1;
                         }
+                    }
+                    else
+                    {
+                        if (rangeToTarget > 2)
+                        {
+                            toFrom = 1;
+                        }
+                        else if (rangeToTarget < 2)
+                        {
+                            toFrom = -1;
+                        }
+                    }
+
+                    if (toFrom != 0)
+                    {
+                        const direction = toFrom > 0 ? creep.pos.getDirectionTo(target) : target.pos.getDirectionTo(creep);
+                        creep.move(direction);
                     }
                 }
 
@@ -147,7 +164,7 @@ strelok.creepAtDestination = function(creep)
                     // STRATEGY follow creep tightly
                     const reuse = target.structureType ? 10 : 0;
 
-                    creep.moveTo(target, { maxRooms: 1, reusePath: reuse, range: TargetRange });
+                    creep.moveTo(target, { maxRooms: 1, reusePath: reuse, range: 3 });
                 }
             }
         } // end of if has ranged bpart
