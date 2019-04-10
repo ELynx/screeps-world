@@ -85,7 +85,7 @@ var globals =
     **/
     creepAssigned: function(creep)
     {
-        return creep.memory.ctrl != this.NO_CONTROL && !creep.spawning && !creep.memory.manual;
+        return creep.memory.ctrl != this.NO_CONTROL && !creep.spawning;
     },
 
     /**
@@ -94,7 +94,7 @@ var globals =
     **/
     creepNotAssigned: function(creep)
     {
-        return creep.memory.ctrl == this.NO_CONTROL && !creep.spawning && !creep.memory.manual;
+        return creep.memory.ctrl == this.NO_CONTROL && !creep.spawning;
     },
 
     /**
