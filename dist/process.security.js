@@ -16,7 +16,7 @@ secutiryProcess.work = function(room, hostileCreeps)
 
     if (hostileCreeps.length > 0)
     {
-        if (threatTimer + ThreatStep < Game.time)
+        if (threatTimer + ThreatStep <= Game.time)
         {
             if (threatLevel < ThreatMax)
             {
