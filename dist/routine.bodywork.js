@@ -73,8 +73,8 @@ var bodywork =
             return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
         }
 
-        // 1550      100   100   100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50    50
-        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        // 1600      100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50
+        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
     },
 
     /**
