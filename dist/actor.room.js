@@ -421,9 +421,8 @@ var roomActor =
                                     // percent
                                     const cpuUsed = globals.hardCpuUsed(t0);
 
-                                    // TODO room limit
                                     // TODO other operations take CPU too
-                                    if (cpuUsed < room.memory.cpul)
+                                    if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
                                         rc = creep.moveTo(destination, { ignoreRoads: true, maxRooms: 1, range: creep.memory.dact });
@@ -433,7 +432,7 @@ var roomActor =
                                         // so assignment is not dropped
                                         rc = OK;
                                         room.roomDebug('Creep ' + creep.name + ' stalls');
-                                        //creep.say('P');
+                                        creep.say('P');
                                     }
                                 }
 
