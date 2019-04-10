@@ -3,6 +3,16 @@
 var makeDebuggable = require('routine.debuggable');
 //const profiler = require('screeps-profiler');
 
+Creep.prototype.getTaskedRoom = function()
+{
+    return this.memory.dest;
+};
+
+Creep.prototype.setTaskedRoom = function(dest)
+{
+    this.memory.dest = dest;
+};
+
 function Tasked(id)
 {
     /**
@@ -21,9 +31,9 @@ function Tasked(id)
 
     this._creepRoomTravel = function(creep)
     {
-        if (creep._canMove_ && creep.fatigue == 0)
+        if (creep._canMove_)
         {
-            const destRoom = new RoomPosition(25, 25, creep.memory.dest);
+            const destRoom = new RoomPosition(25, 25, creep.getTaskedRoom());
             creep.moveTo(destRoom, { reusePath: 50, range: 24 });
         }
     };
@@ -62,24 +72,26 @@ function Tasked(id)
         {
             let creep = creeps[i];
 
-            creep._canMove_ = creep.getActiveBodyparts(MOVE) > 0;
+            creep._canMove_ = creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue == 0;
 
             if (this.creepPrepare)
             {
                 this.creepPrepare(creep);
             }
 
+            const dest = creep.getTaskedRoom();
+
             // count how many creeps are already going to destination
-            let now = this.roomCount[creep.memory.dest] || 0;
+            let now = this.roomCount[dest] || 0;
             ++now;
-            this.roomCount[creep.memory.dest] = now;
+            this.roomCount[dest] = now;
 
             if (creep.spawning)
             {
                 continue;
             }
 
-            if (creep.memory.dest == creep.pos.roomName)
+            if (creep.pos.roomName == dest)
             {
                 this.creepAtDestination(creep);
             }
@@ -114,7 +126,7 @@ function Tasked(id)
             }
 
             const want = flag.getValue();
-            const has = this.roomCount[flag.pos.roomName] || 0;
+            const has  = this.roomCount[flag.pos.roomName] || 0;
 
             if (has < want)
             {
