@@ -39,9 +39,20 @@ var bodywork =
         const front = [WORK,  MOVE]; // 150 = 100 50
         const back  = [CARRY, MOVE]; // 100 = 50  50
 
-        // on level 0 make small ones like on level 1
-        // not stronger than level 3
-        const total = Math.max(1, Math.min(3, energyLevel));
+        let total = 0;
+
+        if (energyLevel == 0)
+        {
+            total = 1;
+        }
+        else if (energyLevel < 6)
+        {
+            total = Math.min(energyLevel, 3);
+        }
+        else
+        {
+            total = 6;
+        }
 
         let body = [];
         for (let i = 0; i < total; ++i)
@@ -67,7 +78,7 @@ var bodywork =
             return [ 0, [] ];
         }
 
-        if (energyLevel < 5)
+        if (energyLevel < 6)
         {
             // 800       100   100   100   100   100   50     50    50    50    50    50
             return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
