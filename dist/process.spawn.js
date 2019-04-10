@@ -17,7 +17,9 @@ const TypeCount       = [
                         [ 6,           0,           1           ], // level 1
                         [ 8,           0,           1           ], // level 2
                         [ 10,          2,           1           ], // level 3
-                        [ 10,          4,           1           ]  // level 4
+                        [ 10,          4,           1           ], // level 4
+                        [ 10,          4,           1           ], // level 5
+                        [ 6,           2,           1           ]  // level 6
                                                                 ];
 
 spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel)
