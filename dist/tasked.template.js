@@ -34,7 +34,7 @@ function Tasked(id)
         if (creep._canMove_)
         {
             const destRoom = new RoomPosition(25, 25, creep.getTaskedRoom());
-            creep.moveTo(destRoom, { reusePath: 50, range: 24 });
+            creep.moveTo(destRoom, { reusePath: 50, range: 23 });
         }
     };
 
@@ -48,7 +48,7 @@ function Tasked(id)
         // move closer to center
         if (creep._canMove_ && !creep.pos.inRangeTo(25, 25, 15))
         {
-            creep.moveTo(25, 25, { maxRooms:1, range: 15 });
+            creep.moveTo(25, 25, { ignoreRoads: true, maxRooms:1, range: 15 });
         }
     };
 

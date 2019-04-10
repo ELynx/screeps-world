@@ -474,6 +474,7 @@ function Controller(id)
                             creep.pos,
                             tgt,
                             {
+                                ignoreCreeps: true,
                                 ignoreRoads: true,
                                 maxRooms: 1,
                                 range: this.actRange,
