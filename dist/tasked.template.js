@@ -13,6 +13,22 @@ Creep.prototype.setTaskedRoom = function(dest)
     this.memory.dest = dest;
 };
 
+Creep.prototype.getTaskedPos = function()
+{
+    if (this.memory.flag)
+    {
+        const flag = Game.flags[this.memory.flag];
+        if (flag)
+        {
+            return flag.pos;
+        }
+    }
+
+    const roomPos = new RoomPosition(25, 25, this.getTaskedRoom());
+
+    return roomPos;
+};
+
 function Tasked(id)
 {
     /**
@@ -33,8 +49,7 @@ function Tasked(id)
     {
         if (creep._canMove_)
         {
-            const destRoom = new RoomPosition(25, 25, creep.getTaskedRoom());
-            creep.moveTo(destRoom, { reusePath: 50, range: 23 });
+            creep.moveTo(creep.getTaskedPos(), { reusePath: 50, range: 23 });
         }
     };
 
@@ -46,9 +61,12 @@ function Tasked(id)
     this._coastToHalt = function(creep)
     {
         // move closer to center
-        if (creep._canMove_ && !creep.pos.inRangeTo(25, 25, 15))
+        const pos = creep.getTaskedPos();
+        const HaltRange = 15;
+
+        if (creep._canMove_ && !creep.pos.inRangeTo(pos, HaltRange))
         {
-            creep.moveTo(25, 25, { ignoreRoads: true, maxRooms:1, range: 15 });
+            creep.moveTo(pos, { ignoreRoads: true, maxRooms: 1, range: HaltRange });
         }
     };
 
@@ -125,6 +143,20 @@ function Tasked(id)
                 }
             }
 
+            if (spawns.length > 1)
+            {
+                // starting with closest
+                spawns.sort(
+                    function(s1, s2)
+                    {
+                        const d1 = Game.map.getRoomLinearDistance(flag.pos.roomName, s1.room.name);
+                        const d2 = Game.map.getRoomLinearDistance(flag.pos.roomName, s2.room.name);
+
+                        return d1 - d2;
+                    }
+                );
+            }
+
             const want = flag.getValue();
             const has  = this.roomCount[flag.pos.roomName] || 0;
 
@@ -147,7 +179,8 @@ function Tasked(id)
                 const creepArgs = {
                     memory:
                     {
-                        dest: flag.room ? flag.room.name : flag.name.substr(this.id.length + 1) // name + separator
+                        dest: flag.pos.roomName,
+                        flag: flagName
                     },
 
                     directions:
@@ -160,11 +193,15 @@ function Tasked(id)
                 const rc = spawn.spawnCreep(
                     creepBody,
                     creepName,
-                    creepArgs
+                    {
+                        dryRun: true
+                    }
                 );
 
                 if (rc == OK)
                 {
+                    spawn.spawnCreep(creepBody, creepName, creepArgs);
+
                     --delta;
                     spawn._tasked_ = true;
 

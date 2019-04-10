@@ -69,7 +69,8 @@ strelok.creepAtDestination = function(creep)
         this.roomWounded[dest] = wounded;
     }
 
-    const distanceToCenter = creep.pos.getRangeTo(25, 25);
+    const flagPos = creep.getTaskedPos();
+    const distanceToFlag = creep.pos.getRangeTo(flagPos);
 
     let targets = _.filter(
         this.roomTargets[dest],
@@ -78,7 +79,7 @@ strelok.creepAtDestination = function(creep)
             if (hostile.structureType == STRUCTURE_RAMPART)
             {
                 // only forward
-                return hostile.pos.getRangeTo(25, 25) <= distanceToCenter;
+                return hostile.pos.getRangeTo(flagPos) <= distanceToFlag;
             }
 
             return true;
