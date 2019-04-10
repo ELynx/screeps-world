@@ -85,10 +85,13 @@ var bodywork =
     **/
     2: function(energyLevel)
     {
-        // STRATEGY each WORK generate cooldown, so multitude of it does not improve the process
-        // STRATEGY harvest for 300 ticks, travel for 30
-        // 450       100   50     50     50     50    50    50    50
-        return [ 1, [WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE] ];
+        if (energyLevel < 3)
+        {
+            return [ 0, [] ];
+        }
+
+        // 800       100   100   100   100   100   50     50    50    50    50    50
+        return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
     }
 };
 
