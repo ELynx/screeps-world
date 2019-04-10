@@ -4,7 +4,7 @@ var globals = require('globals');
 
 var makeCaveMap              = require('routine.map');
 
-var safemodeProcess          = require('process.safemode');
+var secutiryProcess          = require('process.security');
 var towerProcess             = require('process.tower');
 var linkProcess              = require('process.link');
 var spawnProcess             = require('process.spawn');
@@ -237,7 +237,7 @@ var roomActor =
 
         // priority - safemode
         const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
-        safemodeProcess.work(room, hostileCreeps);
+        secutiryProcess.work(room, hostileCreeps);
 
         // all creeps registered to room
         const roomCreeps = _.filter(

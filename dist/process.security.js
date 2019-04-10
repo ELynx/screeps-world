@@ -2,12 +2,12 @@
 
 var Process = require('process.template');
 
-var safemodeProcess = new Process('safemode');
+var secutiryProcess = new Process('security');
 
 const ThreatStep = 20;
 const ThreatMax  = 5;
 
-safemodeProcess.work = function(room, hostileCreeps)
+secutiryProcess.work = function(room, hostileCreeps)
 {
     this.debugHeader(room);
 
@@ -92,6 +92,6 @@ safemodeProcess.work = function(room, hostileCreeps)
     }
 };
 
-safemodeProcess.register();
+secutiryProcess.register();
 
-module.exports = safemodeProcess;
+module.exports = secutiryProcess;
