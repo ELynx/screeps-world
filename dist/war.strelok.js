@@ -38,8 +38,8 @@ strelok.creepAtDestination = function(creep)
                 filter: function(structure)
                 {
                     // for future marauding
-                    if (hostile.structureType == STRUCTURE_STORAGE ||
-                        hostile.structureType == STRUCTURE_TERMINAL)
+                    if (structure.structureType == STRUCTURE_STORAGE ||
+                        structure.structureType == STRUCTURE_TERMINAL)
                     {
                         return false;
                     }
