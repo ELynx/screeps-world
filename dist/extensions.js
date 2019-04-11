@@ -1,58 +1,5 @@
 'use strict';
 
-/**
-Get amount that can be sent for present energy.
-@see Game.market.calcTransactionCost
-**/
-Game.prototype.caclTransactionAmount = function(energy, roomName1, roomName2)
-{
-    // how much sending 1000 costs
-    const c1000 = this.market.calcTransactionCost(1000, roomName1, roomName2);
-    if (c1000 == 0)
-    {
-        return 0;
-    }
-
-    // how many times 1000 can be sent
-    const times = energy / c1000;
-
-    // how many thousands can be sent
-    return Math.floor(1000 * times);
-};
-
-Game.prototype.maxSell = function(orderId, roomName)
-{
-    const order = this.market.getOrderById(orderId);
-    if (order && order.type == ORDER_BUY)
-    {
-        const room = Game.rooms[roomName];
-        if (room && room.terminal)
-        {
-            const has = room.terminal.store[order.resourceType];
-            if (has === undefined)
-            {
-                return ERR_NOT_ENOUGH_RESOURCES;
-            }
-
-            const energy = room.terminal.store[RESOURCE_ENERGY];
-            const maxAmount = this.caclTransactionAmount(energy, room.name, order.roomName);
-
-            if (maxAmount < 1)
-            {
-                return ERR_NOT_ENOUGH_ENERGY;
-            }
-
-            const amount = Math.min(has, maxAmount, order.amount);
-
-            return this.market.deal(orderId, amount, room.name);
-        }
-
-        return ERR_INVALID_ARGS;
-    }
-
-    return ERR_NOT_FOUND;
-};
-
 Creep.prototype.sumCarry = function()
 {
     return _.sum(this.carry);
