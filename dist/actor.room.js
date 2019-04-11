@@ -26,6 +26,16 @@ var controllerMineralRestock = require('controller.mineral.restock');
 
 var roomActor =
 {
+    verbose: false,
+
+    debugLine: function(room, what)
+    {
+        if (this.verbose)
+        {
+            room.roomDebug(what);
+        }
+    },
+
     /**
     Calculate room energy level.
     @param {Room} room.
@@ -214,12 +224,12 @@ var roomActor =
             // if all creeps had been taken
             if (creeps.length == 0)
             {
-                room.roomDebug('All creeps assigned after controller [' + id + ']');
+                this.debugLine(room, 'All creeps assigned after controller [' + id + ']');
                 return;
             }
             else
             {
-                room.roomDebug('Creeps left ' + creeps.length);
+                this.debugLine(room, 'Creeps left ' + creeps.length);
             }
         }
     },
@@ -280,7 +290,7 @@ var roomActor =
             room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
         }
 
-        room.roomDebug('Room creeps     ' + roomCreeps.length);
+        this.debugLine(room, 'Room creeps     ' + roomCreeps.length);
 
         // not all friendly or own creeps are in roomCreeps, but will do for a time
         towerProcess.work(room, roomCreeps, hostileCreeps);
@@ -431,7 +441,7 @@ var roomActor =
                                     {
                                         // so assignment is not dropped
                                         rc = OK;
-                                        room.roomDebug('Creep ' + creep.name + ' stalls');
+                                        this.debugLine(room, 'Creep ' + creep.name + ' stalls');
                                         creep.say('P');
                                     }
                                 }
@@ -462,11 +472,11 @@ var roomActor =
             } // end of creeps loop
 
             // log statistics
-            room.roomDebug('Assigned creeps ' + assigned);
-            room.roomDebug('-> working      ' + working);
-            room.roomDebug('-> resting      ' + resting);
-            room.roomDebug('-> moving       ' + moving);
-            room.roomDebug('Free creeps     ' + unassignedCreeps.length);
+            this.debugLine(room, 'Assigned creeps ' + assigned);
+            this.debugLine(room, '-> working      ' + working);
+            this.debugLine(room, '-> resting      ' + resting);
+            this.debugLine(room, '-> moving       ' + moving);
+            this.debugLine(room, 'Free creeps     ' + unassignedCreeps.length);
         } // end of roomCreeps
 
         if (unassignedCreeps.length > 0)
@@ -476,7 +486,7 @@ var roomActor =
             this.roomControllersControl(room, unassignedCreeps);
         }
 
-        room.roomDebug('HCPU: ' + globals.hardCpuUsed(t0) + '%');
+        this.debugLine(room, 'HCPU: ' + globals.hardCpuUsed(t0) + '%');
 
     } // end of act method
 };

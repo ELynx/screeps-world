@@ -168,21 +168,16 @@ Flag.prototype.setSecondaryColor = function(newColor)
     this.setColor(this.color, newColor);
 };
 
-Room.prototype._verbose_ = false;
-
 Room.prototype.roomDebug = function(what)
 {
-    if (this._verbose_)
+    if (this._verboseT_ === undefined ||
+        this._verboseT_ != Game.time)
     {
-        if (this._verboseT_ === undefined ||
-            this._verboseT_ != Game.time)
-        {
-            this._debugY_ = 0;
-            this._verboseT_ = Game.time;
-        }
-
-        this.visual.text(what, 0, this._debugY_++, { align: 'left' });
+        this._debugY_ = 0;
+        this._verboseT_ = Game.time;
     }
+
+    this.visual.text(what, 0, this._debugY_++, { align: 'left' });
 };
 
 /**
@@ -251,7 +246,6 @@ RoomPosition.prototype.walkableTiles = function()
         }
     }
 
-    // TODO just result
     return result.length;
 };
 
