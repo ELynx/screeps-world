@@ -101,6 +101,73 @@ Creep.prototype.healAdjacent = function(creeps)
     return ERR_NOT_FOUND;
 };
 
+Flag.prototype.getValue = function()
+{
+    if (this.color == COLOR_PURPLE)
+    {
+        return 6;
+    }
+    else if (this.color == COLOR_RED)
+    {
+        return 3;
+    }
+    else if (this.color == COLOR_YELLOW)
+    {
+        return 2;
+    }
+    else if (this.color == COLOR_GREEN)
+    {
+        return 1;
+    }
+    else if (this.color == COLOR_BLUE)
+    {
+        return 0;
+    }
+
+    return -1;
+};
+
+Flag.prototype.setValue = function(newValue)
+{
+    let newColor = COLOR_WHITE;
+
+    if (newValue == 6)
+    {
+        newColor = COLOR_PURPLE;
+    }
+    else if (newValue == 3)
+    {
+        newColor = COLOR_RED;
+    }
+    else if (newValue == 2)
+    {
+        newColor = COLOR_YELLOW;
+    }
+    else if (newValue == 1)
+    {
+        newColor = COLOR_GREEN;
+    }
+    else if (newValue == 0)
+    {
+        newColor = COLOR_BLUE;
+    }
+
+    if (this.color != newColor)
+    {
+        this.setColor(newColor, this.secondaryColor);
+    }
+};
+
+Flag.prototype.setSecondaryColor = function(newColor)
+{
+    if (this.secondaryColor == newColor)
+    {
+        return;
+    }
+
+    this.setColor(this.color, newColor);
+};
+
 Room.prototype._verbose_ = false;
 
 Room.prototype.roomDebug = function(what)
@@ -188,84 +255,6 @@ RoomPosition.prototype.walkableTiles = function()
     return result.length;
 };
 
-StructureLink.prototype.isSource = function()
-{
-    if (this._isSource_ === undefined)
-    {
-        let sources = this.pos.findInRange(FIND_SOURCES, 2);
-        this._isSource_ = sources.length > 0;
-    }
-
-    return this._isSource_;
-};
-
-Flag.prototype.getValue = function()
-{
-    if (this.color == COLOR_PURPLE)
-    {
-        return 6;
-    }
-    else if (this.color == COLOR_RED)
-    {
-        return 3;
-    }
-    else if (this.color == COLOR_YELLOW)
-    {
-        return 2;
-    }
-    else if (this.color == COLOR_GREEN)
-    {
-        return 1;
-    }
-    else if (this.color == COLOR_BLUE)
-    {
-        return 0;
-    }
-
-    return -1;
-};
-
-Flag.prototype.setValue = function(newValue)
-{
-    let newColor = COLOR_WHITE;
-
-    if (newValue == 6)
-    {
-        newColor = COLOR_PURPLE;
-    }
-    else if (newValue == 3)
-    {
-        newColor = COLOR_RED;
-    }
-    else if (newValue == 2)
-    {
-        newColor = COLOR_YELLOW;
-    }
-    else if (newValue == 1)
-    {
-        newColor = COLOR_GREEN;
-    }
-    else if (newValue == 0)
-    {
-        newColor = COLOR_BLUE;
-    }
-
-    if (this.color != newColor)
-    {
-        this.setColor(newColor, this.secondaryColor);
-    }
-};
-
-Flag.prototype.setSecondaryColor = function(newColor)
-{
-    if (this.secondaryColor == newColor)
-    {
-        return;
-    }
-
-    this.setColor(this.color, newColor);
-};
-
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room
@@ -276,4 +265,15 @@ Structure.prototype.isActiveSimple = function()
 
     // simple strategy, this is most likely any way
     return true;
+};
+
+StructureLink.prototype.isSource = function()
+{
+    if (this._isSource_ === undefined)
+    {
+        let sources = this.pos.findInRange(FIND_SOURCES, 2);
+        this._isSource_ = sources.length > 0;
+    }
+
+    return this._isSource_;
 };
