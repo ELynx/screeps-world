@@ -1,11 +1,12 @@
 'use strict';
 
-var extensions     = require('extensions');
-var cleanupMemory  = require('routine.memory');
-var roomActor      = require('actor.room');
-var warStrelok     = require('war.strelok');
-var taskedClaim    = require('tasked.claim');
-//const profiler   = require('screeps-profiler');
+var extensions      = require('extensions');
+var cleanupMemory   = require('routine.memory');
+var roomActor       = require('actor.room');
+var warStrelok      = require('war.strelok');
+var taskedClaim     = require('tasked.claim');
+var processTerminal = require('process.terminal');
+//const profiler    = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
@@ -56,6 +57,11 @@ module.exports.loop = function()
         {
             room.memory.cpul = limit;
             roomActor.act(room);
+
+            if (Game.cpu.tickLimit == 500)
+            {
+                processTerminal.work(room);
+            }
         }
     }
 
