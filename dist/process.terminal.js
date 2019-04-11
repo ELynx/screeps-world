@@ -5,7 +5,7 @@ var globals = require('globals');
 
 var terminalProcess = new Process('terminal');
 
-const MaxBuy = 20;
+const MaxBuy = 30;
 const Keep = 3000;
 
 terminalProcess.work = function(room)
