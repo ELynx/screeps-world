@@ -72,7 +72,7 @@ Creep.prototype.getSourcePos = function()
 
 RoomPosition.prototype.controlDistance = function()
 {
-    return Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 2;
+    return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0);
 };
 
 function Tasked(id)
@@ -114,7 +114,7 @@ function Tasked(id)
             return;
         }
 
-        const HaltRange = 15;
+        const HaltRange = Math.min(15, pos.controlDistance());
 
         if (creep._canMove_ && !creep.pos.inRangeTo(pos, HaltRange))
         {
