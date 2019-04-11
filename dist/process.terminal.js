@@ -88,6 +88,8 @@ terminalProcess.work = function(room)
 
     for (let i = 0; i < allOrders.length; ++i)
     {
+        const order = allOrders[i];
+
         if (order.type == ORDER_BUY)
         {
             if (order.price > biggestPrice)
