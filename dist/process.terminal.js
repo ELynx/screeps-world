@@ -5,7 +5,7 @@ var globals = require('globals');
 
 var terminalProcess = new Process('terminal');
 
-const MaxBuy = 60;
+const MaxBuy = 30;
 const Keep = 3000;
 
 terminalProcess.work = function(room)
@@ -44,12 +44,7 @@ terminalProcess.work = function(room)
         Memory.prices = { };
     }
 
-    let lastPrice = 0;
-
-    if (Memory.prices[minerals[0].mineralType])
-    {
-        lastPrice = Memory.prices[minerals[0].mineralType];
-    }
+    const lastPrice = Memory.prices[minerals[0].mineralType] || 0;
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
@@ -83,8 +78,6 @@ terminalProcess.work = function(room)
     let smallestPrice = Number.MAX_SAFE_INTEGER;
     // derive biggest buy price
     let biggestPrice = 0;
-    // how many buy orders are in market
-    let buyCount = 0;
 
     for (let i = 0; i < allOrders.length; ++i)
     {
@@ -96,8 +89,6 @@ terminalProcess.work = function(room)
             {
                 biggestPrice = order.price;
             }
-
-            ++buyCount;
         }
         else
         {
@@ -108,8 +99,8 @@ terminalProcess.work = function(room)
         }
     }
 
-    // some bad orders, or orders might be rigged
-    if (biggestPrice <= smallestPrice || buyCount < 3)
+    // some bad orders
+    if (biggestPrice <= smallestPrice)
     {
         return;
     }
