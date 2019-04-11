@@ -3,28 +3,69 @@
 var makeDebuggable = require('routine.debuggable');
 //const profiler = require('screeps-profiler');
 
-Creep.prototype.getTaskedRoom = function()
+Creep.prototype.getFlagName = function()
 {
-    return this.memory.dest;
-};
+    return this.memory.flag;
+}
 
-Creep.prototype.setTaskedRoom = function(dest)
+Creep.prototype.getFlagPos = function()
 {
-    this.memory.dest = dest;
-};
-
-Creep.prototype.getTaskedPos = function()
-{
-    if (this.memory.flag)
+    const flag = Game.flags[this.getFlagName()];
+    if (flag)
     {
-        const flag = Game.flags[this.memory.flag];
-        if (flag)
+        return flag.pos;
+    }
+
+    return undefined;
+};
+
+Creep.prototype.getControlRoom = function()
+{
+    return this.memory.crum;
+};
+
+Creep.prototype.setControlRoom = function(crum)
+{
+    this.memory.crum = crum;
+};
+
+Creep.prototype.getControlPos = function()
+{
+    const crum    = this.getControlRoom();
+    const flagPos = this.getFlagPos();
+
+    if (flagPos)
+    {
+        if (flagPos.roomName == crum)
         {
             return flag.pos;
         }
     }
 
-    const roomPos = new RoomPosition(25, 25, this.getTaskedRoom());
+    const roomPos = new RoomPosition(25, 25, crum);
+
+    return roomPos;
+};
+
+Creep.prototype.getSourceRoom = function()
+{
+    return this.memory.srum;
+};
+
+Creep.prototype.getSourcePos = function()
+{
+    const srum    = this.getSourceRoom();
+    const flagPos = this.getFlagPos();
+
+    if (flagPos)
+    {
+        if (flagPos.roomName == srum)
+        {
+            return flag.pos;
+        }
+    }
+
+    const roomPos = new RoomPosition(25, 25, srum);
 
     return roomPos;
 };
@@ -49,7 +90,7 @@ function Tasked(id)
     {
         if (creep._canMove_)
         {
-            creep.moveTo(creep.getTaskedPos(), { reusePath: 50, range: 23 });
+            creep.moveTo(creep.getControlPos(), { reusePath: 50, range: 23 });
         }
     };
 
@@ -60,8 +101,13 @@ function Tasked(id)
 
     this._coastToHalt = function(creep)
     {
-        // move closer to center
-        const pos = creep.getTaskedPos();
+        const pos = creep.getControlPos();
+
+        if (this.pos.roomName != pos.roomName)
+        {
+            return;
+        }
+
         const HaltRange = 15;
 
         if (creep._canMove_ && !creep.pos.inRangeTo(pos, HaltRange))
@@ -97,19 +143,18 @@ function Tasked(id)
                 this.creepPrepare(creep);
             }
 
-            const dest = creep.getTaskedRoom();
-
             // count how many creeps are already going to destination
-            let now = this.roomCount[dest] || 0;
+            const flag = creep.getFlagName();
+            let now = this.roomCount[flag] || 0;
             ++now;
-            this.roomCount[dest] = now;
+            this.roomCount[flag] = now;
 
             if (creep.spawning)
             {
                 continue;
             }
 
-            if (creep.pos.roomName == dest)
+            if (creep.pos.roomName == creep.getControlRoom())
             {
                 this.creepAtDestination(creep);
             }
@@ -158,7 +203,7 @@ function Tasked(id)
             }
 
             const want = flag.getValue();
-            const has  = this.roomCount[flag.pos.roomName] || 0;
+            const has  = this.roomCount[flag.name] || 0;
 
             if (has < want)
             {
@@ -179,7 +224,8 @@ function Tasked(id)
                 const creepArgs = {
                     memory:
                     {
-                        dest: flag.pos.roomName,
+                        crum: flag.pos.roomName,
+                        srum: spawn.pos.roomName,
                         flag: flagName
                     },
 
