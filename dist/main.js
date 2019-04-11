@@ -44,7 +44,7 @@ module.exports.loop = function()
     {
         let room = Game.rooms[name];
 
-        const r = limits[name];
+        const r = limits[name] || 0;
         const t = total + 1;
         const limit = Math.ceil(100 * r / t);
 
