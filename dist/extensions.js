@@ -4,10 +4,10 @@
 Get amount that can be sent for present energy.
 @see Game.market.calcTransactionCost
 **/
-Game.market.prototype.caclTransactionAmount = function(energy, roomName1, roomName2)
+Game.prototype.caclTransactionAmount = function(energy, roomName1, roomName2)
 {
     // how much sending 1000 costs
-    const c1000 = this.calcTransactionCost(1000, roomName1, roomName2);
+    const c1000 = this.market.calcTransactionCost(1000, roomName1, roomName2);
     if (c1000 == 0)
     {
         return 0;
@@ -20,9 +20,9 @@ Game.market.prototype.caclTransactionAmount = function(energy, roomName1, roomNa
     return Math.floor(1000 * times);
 };
 
-Game.market.prototype.maxSell = function(orderId, roomName)
+Game.prototype.maxSell = function(orderId, roomName)
 {
-    const order = this.getOrderById(orderId);
+    const order = this.market.getOrderById(orderId);
     if (order && order.type == ORDER_BUY)
     {
         const room = Game.rooms[roomName];
@@ -44,7 +44,7 @@ Game.market.prototype.maxSell = function(orderId, roomName)
 
             const amount = Math.min(has, maxAmount, order.amount);
 
-            return this.deal(orderId, amount, room.name);
+            return this.market.deal(orderId, amount, room.name);
         }
 
         return ERR_INVALID_ARGS;
