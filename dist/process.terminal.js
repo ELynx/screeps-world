@@ -12,10 +12,10 @@ terminalProcess.work = function(room)
 {
     this.debugHeader(room);
 
-    if (room.memory.mlvl < 1)
-    {
-        return;
-    }
+    //if (room.memory.mlvl < 1)
+    //{
+    //    return;
+    //}
 
     if (!room.terminal)
     {

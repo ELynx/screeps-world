@@ -58,7 +58,7 @@ module.exports.loop = function()
             room.memory.cpul = limit;
             roomActor.act(room);
 
-            if (Game.cpu.tickLimit == 500)
+            if (Game.cpu.tickLimit - Game.cpu.limit > 450)
             {
                 processTerminal.work(room);
             }
