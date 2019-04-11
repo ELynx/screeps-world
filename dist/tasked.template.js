@@ -103,7 +103,7 @@ function Tasked(id)
     {
         const pos = creep.getControlPos();
 
-        if (this.pos.roomName != pos.roomName)
+        if (creep.pos.roomName != pos.roomName)
         {
             return;
         }
