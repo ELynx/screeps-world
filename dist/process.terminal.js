@@ -5,17 +5,12 @@ var globals = require('globals');
 
 var terminalProcess = new Process('terminal');
 
-const MaxBuy = 30;
+const MaxBuy = 60;
 const Keep = 3000;
 
 terminalProcess.work = function(room)
 {
     this.debugHeader(room);
-
-    //if (room.memory.mlvl < 1)
-    //{
-    //    return;
-    //}
 
     if (!room.terminal)
     {
@@ -23,6 +18,11 @@ terminalProcess.work = function(room)
     }
 
     if (room.terminal.cooldown > 0)
+    {
+        return;
+    }
+
+    if (room.terminal.store[RESOURCE_ENERGY] < 2)
     {
         return;
     }
