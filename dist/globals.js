@@ -126,6 +126,10 @@ var globals =
     /**
     Get amount that can be sent for present energy.
     @see Game.market.calcTransactionCost
+    @param {integer} energy how much can be spent on transaction.
+    @param {string} roomName1 room 1.
+    @param {string} roomName2 room 2.
+    @return how much can be sent.
     **/
     caclTransactionAmount: function(energy, roomName1, roomName2)
     {
@@ -143,7 +147,14 @@ var globals =
         return Math.floor(1000 * times);
     },
 
-    maxSell: function(orderId, roomName)
+    /**
+    Try to sell as much as possible to order from room.
+    @param {string} orderId to be sold to.
+    @param {string} roomName room to be sold from.
+    @param {integer} keep = 0 how many to keep at terminal.
+    @return result of deal or other error codes.
+    **/
+    autoSell: function(orderId, roomName, keep = 0)
     {
         const order = Game.market.getOrderById(orderId);
         if (order && order.type == ORDER_BUY)
@@ -152,7 +163,7 @@ var globals =
             if (room && room.terminal)
             {
                 const has = room.terminal.store[order.resourceType];
-                if (has === undefined)
+                if (has === undefined || has <= keep)
                 {
                     return ERR_NOT_ENOUGH_RESOURCES;
                 }
@@ -165,7 +176,7 @@ var globals =
                     return ERR_NOT_ENOUGH_ENERGY;
                 }
 
-                const amount = Math.min(has, maxAmount, order.amount);
+                const amount = Math.min(has - keep, maxAmount, order.amount);
 
                 return Game.market.deal(orderId, amount, room.name);
             }
