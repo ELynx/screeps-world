@@ -18,10 +18,9 @@ strelok.creepPrepare = function(creep)
     creep._canHealRanged_ = creep._canHeal_;
 
     // if hit start a war immediately
-    // remember this fact to avoid blinking
     if (creep.hits < creep.hitsMax && !creep.memory.war)
     {
-        creep.setTaskedRoom(creep.pos.roomName);
+        creep.setControlRoom(creep.pos.roomName);
         creep.memory.war = true;
     }
 };
@@ -69,8 +68,8 @@ strelok.creepAtDestination = function(creep)
         this.roomWounded[dest] = wounded;
     }
 
-    const flagPos = creep.getTaskedPos();
-    const distanceToFlag = creep.pos.getRangeTo(flagPos);
+    const rushPos = creep.getControlPos();
+    const distanceToFlag = creep.pos.getRangeTo(rushPos);
 
     let targets = _.filter(
         this.roomTargets[dest],
@@ -79,7 +78,7 @@ strelok.creepAtDestination = function(creep)
             if (hostile.structureType == STRUCTURE_RAMPART)
             {
                 // only forward
-                return hostile.pos.getRangeTo(flagPos) <= distanceToFlag;
+                return hostile.pos.getRangeTo(rushPos) <= distanceToFlag;
             }
 
             return true;
