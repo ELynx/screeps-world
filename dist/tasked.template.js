@@ -38,7 +38,7 @@ Creep.prototype.getControlPos = function()
     {
         if (flagPos.roomName == crum)
         {
-            return flag.pos;
+            return flagPos;
         }
     }
 
@@ -61,7 +61,7 @@ Creep.prototype.getSourcePos = function()
     {
         if (flagPos.roomName == srum)
         {
-            return flag.pos;
+            return flagPos;
         }
     }
 
