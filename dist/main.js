@@ -1,14 +1,11 @@
 'use strict';
 
 var extensions     = require('extensions');
-var globals        = require('globals');
 var cleanupMemory  = require('routine.memory');
 var roomActor      = require('actor.room');
 var warStrelok     = require('war.strelok');
 var taskedClaim    = require('tasked.claim');
 //const profiler   = require('screeps-profiler');
-
-Game.autoSell = globals.autoSell;
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
