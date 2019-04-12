@@ -118,7 +118,7 @@ function Tasked(id)
 
         if (creep._canMove_ && !creep.pos.inRangeTo(pos, HaltRange))
         {
-            creep.moveTo(pos, { ignoreRoads: true, maxRooms: 1, range: HaltRange });
+            creep.moveTo(pos, { plainCost: 1, maxRooms: 1, range: HaltRange });
         }
     };
 

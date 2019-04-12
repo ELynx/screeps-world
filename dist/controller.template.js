@@ -468,7 +468,7 @@ function Controller(id)
                             tgt,
                             {
                                 ignoreCreeps: true,
-                                ignoreRoads: true,
+                                //ignoreRoads: true,
                                 maxRooms: 1,
                                 range: this.actRange,
                                 plainCost: 1,
