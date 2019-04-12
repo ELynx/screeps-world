@@ -178,7 +178,7 @@ var roomActor =
             totalHp = totalHp + Math.floor(walls[i].hits / 1000);
         }
 
-        return: Math.floor(totalHp / walls.length);
+        return Math.floor(totalHp / walls.length);
     },
 
     /**
