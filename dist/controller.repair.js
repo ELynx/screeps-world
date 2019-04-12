@@ -72,7 +72,7 @@ repairController.dynamicTargets = function(room, creep)
 
     if (room.memory.elvl > 5)
     {
-        const LevelHp = room.memory.wlvl * 1000;
+        const LevelHp = (room.memory.wlvl || 0) * 1000;
         const NotLessThan = fromArray(TargetBarrierHp, room.memory.elvl - 1);
         const NotMoreThan = barrHp;
 
