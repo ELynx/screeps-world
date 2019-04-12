@@ -435,8 +435,7 @@ var roomActor =
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        const noRoadsNeeded = creep.memory.ctrl != energyHarvestController.id;
-                                        rc = creep.moveTo(destination, { ignoreRoads: noRoadsNeeded, maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveTo(destination, { plainCost: 1, maxRooms: 1, range: creep.memory.dact });
                                     }
                                     else
                                     {
