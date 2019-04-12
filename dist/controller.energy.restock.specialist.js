@@ -51,6 +51,14 @@ energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)
         return struct1.structureType == STRUCTURE_LINK ? -1 : 1;
     }
 
+    // only same-type structures below
+
+    // STRATEGY balance containers
+    if (struct1.structureType == STRUCTURE_CONTAINER)
+    {
+        return struct1.store[RESOURCE_ENERGY] - struct2.store[RESOURCE_ENERGY];
+    }
+
     return 0;
 };
 
