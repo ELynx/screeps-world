@@ -171,7 +171,7 @@ var roomActor =
             return 0;
         }
 
-        const totalHp = 0;
+        let totalHp = 0;
 
         for (let i = 0; i < walls.length; ++i)
         {
