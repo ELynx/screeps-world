@@ -154,6 +154,33 @@ var roomActor =
         return (extractors.length > 0 && terminals.length > 0 && minerals.length > 0) ? 1 : 0;
     },
 
+    wallLevel: function(room)
+    {
+        const walls = room.find(
+            FIND_STRUCTURES,
+            {
+                filter: function(structure)
+                {
+                    return structure.structureType == STRUCTURE_WALL;
+                }
+            }
+        );
+
+        if (walls.length == 0)
+        {
+            return 0;
+        }
+
+        const totalHp = 0;
+
+        for (let i = 0; i < walls.length; ++i)
+        {
+            totalHp = totalHp + Math.floor(walls[i].hits / 1000);
+        }
+
+        return: Math.floor(totalHp / walls.length);
+    },
+
     /**
     Prepare controllers for next room.
     @param {Room} room.
@@ -265,6 +292,7 @@ var roomActor =
             room.memory.elvl = this.energyLevel(room, roomCreeps);
             room.memory.slvl = this.sourceLevel(room);
             room.memory.mlvl = this.miningLevel(room);
+            room.memory.wlvl = this.wallLevel(room);
 
             makeCaveMap(room);
 
