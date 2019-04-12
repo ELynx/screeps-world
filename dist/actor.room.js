@@ -294,6 +294,15 @@ var roomActor =
             room.memory.mlvl = this.miningLevel(room);
             room.memory.wlvl = this.wallLevel(room);
 
+            // from level 6 sometimes add a thousand
+            if (room.memory.elvl > 5)
+            {
+                if (Math.random() < 0.1)
+                {
+                    ++room.memory.wlvl;
+                }
+            }
+
             makeCaveMap(room);
 
             // TODO get rid of hardcode
