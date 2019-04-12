@@ -170,7 +170,7 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
 
     for (let i = 0; i < creepsNeeded.length && allBalanced; ++i)
     {
-        if (creepsNeeded[i] != 0)
+        if (creepsNeeded[i] > 0)
         {
             allBalanced = false;
         }
@@ -178,13 +178,8 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
 
     if (allBalanced)
     {
-        ownerRoom.memory.ccnt = undefined;
+        this.debugLine(ownerRoom, 'No need to spawn');
         return;
-    }
-    else
-    {
-        // remember for TTL
-        ownerRoom.memory.ccnt = creepsNeeded;
     }
 
     // check for spawns
