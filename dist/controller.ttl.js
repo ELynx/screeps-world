@@ -10,12 +10,6 @@ const Ttl = 200;
 
 ttlController.actRange = 1;
 
-ttlController.enough = function(room)
-{
-    const st = this._findStaticTargets(room);
-    return st.length;
-};
-
 ttlController.act = function(spawn, creep)
 {
     // by default creep is here only for renewal

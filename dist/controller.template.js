@@ -40,11 +40,6 @@ function Controller(id)
     this.extra = undefined;
 
     /**
-    Decide whether more creeps are needed or not.
-    **/
-    this.enough = undefined;
-
-    /**
     Flag to check reach-ability of target in expensive hardcode way.
     **/
     this.smartTargeting = false;
@@ -424,8 +419,6 @@ function Controller(id)
         const checked = creeps.length;
         let assigned = 0;
 
-        const assignLimit = this.enough ? this.enough(room) : undefined;
-
         for (let i = 0; i < creeps.length;)
         {
             const creep = creeps[i];
@@ -506,11 +499,6 @@ function Controller(id)
                 creeps.splice(i, 1);
 
                 ++assigned;
-
-                if (assignLimit && assigned >= assignLimit)
-                {
-                    break;
-                }
 
                 continue;
             }
