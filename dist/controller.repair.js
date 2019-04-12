@@ -9,8 +9,8 @@ const TargetBarrierHp = [
     5000,
     10000,
     15000,
-    20000,
-    25000,
+    15000,
+    15000,
     1000000
 ];
 
@@ -88,6 +88,9 @@ repairController.dynamicTargets = function(room, creep)
         }
     }
 
+    // STRATEGY some histeresis
+    const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500);
+
     return this._lookAroundCreep(
         room,
         LOOK_STRUCTURES,
@@ -111,8 +114,7 @@ repairController.dynamicTargets = function(room, creep)
             {
                 if (structure.hits < barrHp)
                 {
-                    // STRATEGY some histeresis
-                    structure._targetHp_ = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500);
+                    structure._targetHp_ = rampHp;
                     return true;
                 }
             }
