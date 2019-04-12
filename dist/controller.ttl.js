@@ -34,14 +34,21 @@ ttlController.act = function(spawn, creep)
         }
     }
 
+    if (renew)
+    {
+        const rc = spawn.renewCreep(creep);
+        if (rc == OK)
+        {
+            return true;
+        }
+
+        // forgetaboutit
+        recycle = true;
+    }
+
     if (recycle)
     {
         return spawn.recycleCreep(creep) == OK;
-    }
-
-    if (renew)
-    {
-        return spawn.renewCreep(creep) == OK;
     }
 
     return true;
