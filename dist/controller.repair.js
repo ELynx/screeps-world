@@ -8,7 +8,10 @@ const TargetBarrierHp = [
     0,
     5000,
     10000,
-    15000
+    15000,
+    20000,
+    25000,
+    1000000
 ];
 
 const TargetRoadHpMultiplier = [
@@ -63,9 +66,27 @@ repairController.act = function(target, creep)
 repairController.dynamicTargets = function(room, creep)
 {
     // STRATEGY don't run with every booboo
-    const barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
+    let   barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
     const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl);
+
+    if (room.memory.elvl > 5)
+    {
+        const LevelHp = room.memory.wlvl * 1000;
+        const NotLessThan = fromArray(TargetBarrierHp, room.memory.elvl - 1);
+        const NotMoreThan = barrHp;
+
+        barrHp = LevelHp;
+
+        if (barrHp < NotLessThan)
+        {
+            barrHp = NotLessThan;
+        }
+        else if (barrHp > NotMoreThan)
+        {
+            barrHp = NotMoreThan;
+        }
+    }
 
     return this._lookAroundCreep(
         room,
@@ -91,7 +112,7 @@ repairController.dynamicTargets = function(room, creep)
                 if (structure.hits < barrHp)
                 {
                     // STRATEGY some histeresis
-                    structure._targetHp_ = Math.ceil(1.2 * barrHp);
+                    structure._targetHp_ = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500);
                     return true;
                 }
             }
