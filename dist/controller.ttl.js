@@ -94,13 +94,13 @@ ttlController.staticTargets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    // STRATEGY don't drag resources around
-    if (creep.sumCarry() > 0)
+    if (creep.ticksToLive > Ttl)
     {
         return false;
     }
 
-    return creep.ticksToLive <= Ttl;
+    // STRATEGY don't drag resources around
+    return creep.sumCarry() > 0;
 };
 
 ttlController.register();
