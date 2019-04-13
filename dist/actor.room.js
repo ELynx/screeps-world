@@ -171,14 +171,21 @@ var roomActor =
             return 0;
         }
 
-        let totalHp = 0;
-
+        // fill in array of wall hits
+        let hits = [];
         for (let i = 0; i < walls.length; ++i)
         {
-            totalHp = totalHp + Math.floor(walls[i].hits / 1000);
+            hits.push(Math.floor(walls[i].hits / 1000));
         }
 
-        return Math.floor(totalHp / walls.length);
+        hits.sort(
+            function(hits1, hits2)
+            {
+                return hits1 - hits2;
+            }
+        );
+
+        return hits[Math.floor(hits.length / 2)];
     },
 
     /**
