@@ -40,9 +40,9 @@ function Controller(id)
     this.extra = undefined;
 
     /**
-    Flag to check reach-ability of target in expensive hardcode way.
+    Flag to check reach-ability of target for creeps during targeting.
     **/
-    this.smartTargeting = false;
+    this.ignoreCreepsForTargeting = false;
 
     /**
     Flag to focus creeps on one target in room.
@@ -429,12 +429,7 @@ function Controller(id)
             // of them one that can be reached
             let target = undefined;
 
-            // STRATEGY few controllers actually need smart movement
-            if (this.smartTargeting)
-            {
-                target = creep.pos.findClosestByPath(targets);
-            }
-            else
+            // legacy scope
             {
                 let self = this;
 
@@ -467,7 +462,7 @@ function Controller(id)
                             creep.pos,
                             tgt,
                             {
-                                ignoreCreeps: true,
+                                ignoreCreeps: this.ignoreCreepsForTargeting,
                                 maxRooms: 1,
                                 range: this.actRange,
                                 plainCost: 1,
