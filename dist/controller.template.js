@@ -42,7 +42,7 @@ function Controller(id)
     /**
     Flag to check reach-ability of target for creeps during targeting.
     **/
-    this.ignoreCreepsForTargeting = false;
+    this.ignoreCreepsForTargeting = true;
 
     /**
     Flag to focus creeps on one target in room.
