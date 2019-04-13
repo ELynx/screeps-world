@@ -9,7 +9,7 @@ const PotD = [
     'E2-E4'
    ,'pew pew 💥'
    ,'im hit 💀'
-   ,'4 da swarm'
+   ,'4 the GCL!'
    ,'heal me 🛠️'
    ,'il be back'
    ,'fus-ro-DAH'
@@ -24,6 +24,9 @@ const PotD = [
    ,'Meme 🚔'
    ,'42 ➗ 0'
    ,'SEND CODES'
+   ,'📟'
+   ,'📄'
+   ,'✂'
 ];
 
 var psychoWarfareActor =
@@ -43,7 +46,7 @@ var psychoWarfareActor =
             if (this.index >= PotD.length)
                 this.index = 0;
 
-            creeps[i].say(PotD[this.index++]);
+            creeps[i].say(PotD[this.index++], true);
         }
     }
 };
