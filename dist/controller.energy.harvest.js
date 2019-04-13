@@ -5,7 +5,6 @@ var Controller = require('controller.template');
 var energyHarvestController = new Controller('energy.harvest');
 
 energyHarvestController.actRange = 1;
-energyHarvestController.smartTargeting = true; // since sources are crowded
 
 energyHarvestController.act = function(source, creep)
 {
