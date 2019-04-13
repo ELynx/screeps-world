@@ -17,6 +17,14 @@ function cleanupMemory()
             delete Memory.rooms[name];
         }
     }
+
+    if (Memory.profiler)
+    {
+        if (!Game.profiler)
+        {
+            delete Memory.profiler;
+        }
+    }
 };
 
 module.exports = cleanupMemory;
