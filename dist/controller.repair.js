@@ -9,8 +9,8 @@ const TargetBarrierHp = [
     5000,
     10000,
     15000,
-    15000,
-    15000,
+    20000,
+    25000,
     1000000
 ];
 
@@ -70,6 +70,7 @@ repairController.dynamicTargets = function(room, creep)
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
     const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl);
 
+    // STRATEGY from level 6 room builds up walls
     if (room.memory.elvl > 5)
     {
         const LevelHp = (room.memory.wlvl || 0) * 1000;
