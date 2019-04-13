@@ -301,10 +301,11 @@ var roomActor =
             room.memory.mlvl = this.miningLevel(room);
             room.memory.wlvl = this.wallLevel(room);
 
-            // from level 6 sometimes add a thousand
-            if (room.memory.elvl > 5)
+            // STRATEGY from level 6 room builds up walls
+            if (room.memory.elvl > 5 &&
+                room.memory.threat === undefined)
             {
-                if (Math.random() < 0.1)
+                if (Math.random() < 0.5)
                 {
                     ++room.memory.wlvl;
                 }
