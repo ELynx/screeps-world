@@ -164,7 +164,7 @@ strelok.creepAtDestination = function(creep)
                     // STRATEGY follow creep tightly
                     const reuse = target.structureType ? 10 : 0;
 
-                    creep.moveTo(target, { plainCost: 1, maxRooms: 1, reusePath: reuse, range: 3 });
+                    creep.moveTo(target, { plainCost: 1, swampCost: 5, maxRooms: 1, reusePath: reuse, range: 3 });
                 }
             }
         } // end of if has ranged bpart

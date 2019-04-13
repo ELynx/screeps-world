@@ -480,7 +480,7 @@ var roomActor =
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        rc = creep.moveTo(destination, { plainCost: 1, maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveTo(destination, { plainCost: 1, swampCost: 5, maxRooms: 1, range: creep.memory.dact });
                                     }
                                     else
                                     {
