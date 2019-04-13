@@ -379,7 +379,6 @@ var roomActor =
                     // TODO only creep with fatugue zero travels border?
                     if (creep.fatigue == 0)
                     {
-                        // TODO test range from 0,0 and 49,49 to 25,25
                         // get off border area
                         const destRoom = new RoomPosition(25, 25, creep.memory.crum);
 
