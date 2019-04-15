@@ -54,7 +54,17 @@ secutiryProcess.work = function(room, hostileCreeps)
                     continue;
                 }
 
-                const trigger = flag.pos.findInRange(hostileCreeps, range);
+                const trigger = flag.pos.findInRange(
+                    hostileCreeps,
+                    range,
+                    {
+                        filter: function(creep)
+                        {
+                            return creep.owner != "Invader";
+                        }
+                    }
+                );
+
                 if (trigger.length > 0)
                 {
                     const rc = ctrl.activateSafeMode();
