@@ -6,6 +6,7 @@ var roomActor       = require('actor.room');
 var warStrelok      = require('war.strelok');
 var taskedClaim     = require('tasked.claim');
 var processTerminal = require('process.terminal');
+var pixelActor      = require('actor.pixelgenerator');
 //const profiler    = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
@@ -67,6 +68,8 @@ module.exports.loop = function()
 
     warStrelok.act();
     taskedClaim.act();
+
+    pixelActor.act();
 
     //});
 
