@@ -17,6 +17,10 @@ history - historical data worth saving
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
 
+Auto set sister room
+
+Find and fix `roomHasSpawn` variable name
+
 # Ideas
 Intent pipeline! Do more things in one turn!
 
