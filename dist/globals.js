@@ -102,6 +102,7 @@ var globals =
     @param {Controller} controller.
     @param {???} target.
     @param {Creep} creep.
+    @param {???} extra value stored in memory.
     **/
     assignCreep: function(controller, target, creep, extra)
     {
@@ -124,7 +125,7 @@ var globals =
     },
 
     /**
-    Get amount that can be sent for present energy.
+    Get amount that can be sent for given energy.
     @see Game.market.calcTransactionCost
     @param {integer} energy how much can be spent on transaction.
     @param {string} roomName1 room 1.
@@ -143,7 +144,7 @@ var globals =
         // how many times 1000 can be sent
         const times = energy / c1000;
 
-        // how many thousands can be sent
+        // how many can be sent
         return Math.floor(1000 * times);
     },
 
