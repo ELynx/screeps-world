@@ -5,7 +5,6 @@ var cleanupMemory   = require('routine.memory');
 var roomActor       = require('actor.room');
 var taskedStrelok   = require('tasked.strelok');
 var taskedClaim     = require('tasked.claim');
-var processTerminal = require('process.terminal');
 var pixelActor      = require('actor.pixelgenerator');
 //const profiler    = require('screeps-profiler');
 
@@ -17,10 +16,6 @@ console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
 module.exports.loop = function()
 {
-    //console.log('Hard limit ' + Game.cpu.limit);
-    //console.log('Soft limit ' + Game.cpu.tickLimit);
-    //console.log('Bucket     ' + Game.cpu.bucket);
-
     //profiler.wrap(function() {
 
     cleanupMemory();
@@ -33,6 +28,7 @@ module.exports.loop = function()
         const creep = Game.creeps[creepName];
         const room  = creep.room;
 
+        // STRATEGY limit weight for controlled vs other rooms, per creep
         const delta = (room.controller && room.controller.my) ? 3 : 2;
 
         let now = limits[room.name] || 0;
@@ -51,18 +47,13 @@ module.exports.loop = function()
         const limit = Math.ceil(100 * r / t);
 
         room.visual.rect(0, 0, 5,         0.5, { fill: '#0f0' });
-        room.visual.rect(0, 0, 5 * r / t, 0.5, { fill: '#0aa' });
+        room.visual.rect(0, 0, 5 * r / t, 0.5, { fill: '#03f' });
 
         // save CPU on all rooms where control is not needed
         if (room.controller && room.controller.my)
         {
             room.memory.cpul = limit;
             roomActor.act(room);
-
-            if (Game.cpu.tickLimit - Game.cpu.limit > 450)
-            {
-                processTerminal.work(room);
-            }
         }
     }
 
@@ -72,6 +63,4 @@ module.exports.loop = function()
     pixelActor.act();
 
     //});
-
-    //console.log('Used       ' + Game.cpu.getUsed());
 }
