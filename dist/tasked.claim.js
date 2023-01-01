@@ -30,11 +30,10 @@ claim.flagPrepare = function(flag)
     // done about it
     if (flag.room && flag.room.controller && flag.room.controller.my)
     {
-        flag.remove();
-        return false;
+        return this.FLAG_REMOVE;
     }
 
-    return true;
+    return this.FLAG_SPAWN;
 };
 
 claim.makeBody = function(spawn)

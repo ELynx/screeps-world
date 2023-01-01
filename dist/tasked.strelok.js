@@ -4,7 +4,7 @@ var Tasked = require('tasked.template');
 
 var strelok = new Tasked('strelok');
 
-strelok.allCreepsPrepare = function()
+strelok.prepare = function()
 {
     this.roomTargets = { };
     this.roomWounded = { };
@@ -226,13 +226,6 @@ strelok.flagPrepare = function(flag)
 {
     const want = flag.getValue();
 
-    // sanitize flags
-    if (want < 1)
-    {
-        flag.remove();
-        return false;
-    }
-
     if (flag.room &&
         flag.room.controller &&
         flag.room.controller.my)
@@ -241,7 +234,7 @@ strelok.flagPrepare = function(flag)
         if (!(flag.room.memory.threat > 1))
         {
             // keep flag but don't spawn
-            return false;
+            return this.FLAG_IGNORE;
         }
     }
     else
@@ -249,12 +242,11 @@ strelok.flagPrepare = function(flag)
         // automatically stop trashing low threat rooms
         if (want == 1 && this.roomBoring[flag.pos.roomName])
         {
-            flag.remove();
-            return false;
+            return this.FLAG_REMOVE;
         }
     }
 
-    return true;
+    return this.FLAG_SPAWN;
 };
 
 strelok.makeBody = function(spawn)

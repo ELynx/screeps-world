@@ -77,6 +77,10 @@ RoomPosition.prototype.controlDistance = function()
 
 function Tasked(id)
 {
+    this.FLAG_REMOVE = 0;
+    this.FLAG_IGNORE = 1;
+    this.FLAG_SPAWN  = 2;
+
     /**
     Unique identifier.
     **/
@@ -85,7 +89,7 @@ function Tasked(id)
     // attach methods that allow fast debug writing
     makeDebuggable(this, 'Tasked');
 
-    this.allCreepsPrepare = undefined;
+    this.prepare = undefined;
 
     this.creepPrepare = undefined;
 
@@ -114,11 +118,11 @@ function Tasked(id)
             return;
         }
 
-        const HaltRange = Math.min(15, pos.controlDistance());
+        const haltRange = Math.min(15, pos.controlDistance());
 
-        if (creep._canMove_ && !creep.pos.inRangeTo(pos, HaltRange))
+        if (creep._canMove_ && !creep.pos.inRangeTo(pos, haltRange))
         {
-            creep.moveTo(pos, { plainCost: 1, swampCost: 5, maxRooms: 1, range: HaltRange });
+            creep.moveTo(pos, { plainCost: 1, swampCost: 5, maxRooms: 1, range: haltRange });
         }
     };
 
@@ -133,9 +137,9 @@ function Tasked(id)
 
         this.roomCount = { };
 
-        if (this.allCreepsPrepare)
+        if (this.prepare)
         {
-            this.allCreepsPrepare();
+            this.prepare();
         }
 
         for (var i = 0; i < creeps.length; ++i)
@@ -150,10 +154,10 @@ function Tasked(id)
             }
 
             // count how many creeps are already going to destination
-            const flag = creep.getFlagName();
-            let now = this.roomCount[flag] || 0;
+            const flagName = creep.getFlagName();
+            let now = this.roomCount[flagName] || 0;
             ++now;
-            this.roomCount[flag] = now;
+            this.roomCount[flagName] = now;
 
             if (creep.spawning)
             {
@@ -186,10 +190,25 @@ function Tasked(id)
 
             let flag = Game.flags[flagName];
 
+            // sanitize flags
+            if (flag.getValue() < 1)
+            {
+                flag.remove();
+                continue;
+            }
+
             if (this.flagPrepare)
             {
-                if (!this.flagPrepare(flag))
+                const decision = this.flagPrepare(flag);
+                if (decision == this.FLAG_IGNORE)
                 {
+                    flag.resetSecondaryColor();
+                    continue;
+                }
+
+                if (decision != this.FLAG_SPAWN)
+                {
+                    flag.remove();
                     continue;
                 }
             }
