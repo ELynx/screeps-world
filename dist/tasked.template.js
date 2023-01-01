@@ -112,6 +112,11 @@ function Tasked(id)
 
     this._coastToHalt = function(creep)
     {
+        if (!creep._canMove_)
+        {
+            return;
+        }
+
         const pos = creep.getControlPos();
 
         if (creep.pos.roomName != pos.roomName)
@@ -121,7 +126,7 @@ function Tasked(id)
 
         const haltRange = Math.min(15, pos.controlDistance());
 
-        if (creep._canMove_ && !creep.pos.inRangeTo(pos, haltRange))
+        if (!creep.pos.inRangeTo(pos, haltRange))
         {
             creep.moveTo(pos, { plainCost: 1, swampCost: 5, maxRooms: 1, range: haltRange });
         }
@@ -196,8 +201,10 @@ function Tasked(id)
 
             let flag = Game.flags[flagName];
 
+            const want = flag.getValue();
+
             // sanitize flags
-            if (flag.getValue() < 1)
+            if (want < 1)
             {
                 flag.remove();
                 continue;
@@ -233,8 +240,7 @@ function Tasked(id)
                 );
             }
 
-            const want = flag.getValue();
-            const has  = this.roomCount[flag.name] || 0;
+            const has = this.roomCount[flag.name] || 0;
 
             if (has < want)
             {
