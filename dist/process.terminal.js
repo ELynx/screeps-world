@@ -5,8 +5,8 @@ var globals = require('globals');
 
 var terminalProcess = new Process('terminal');
 
-const MaxBuy = 30;
-const Keep = 3000;
+const MaxBuyRoomDistance = 30;
+const MineralsToKeep = 3000;
 
 terminalProcess.work = function(room)
 {
@@ -33,8 +33,10 @@ terminalProcess.work = function(room)
         return;
     }
 
-    const has = room.terminal.store[minerals[0].mineralType];
-    if (has === undefined || has <= Keep)
+    let roomMineralType = minerals[mineralIndex].mineralType;
+
+    const has = room.terminal.store[roomMineralType];
+    if (has === undefined || has <= MineralsToKeep)
     {
         return;
     }
@@ -44,14 +46,14 @@ terminalProcess.work = function(room)
         Memory.prices = { };
     }
 
-    const lastPrice = Memory.prices[minerals[0].mineralType] || 0;
+    const lastPrice = Memory.prices[roomMineralType] || 0;
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
     const allOrders = Game.market.getAllOrders(
         function(order)
         {
-            if (order.resourceType != minerals[0].mineralType)
+            if (order.resourceType != roomMineralType)
                 return false;
 
             const roomFrom = Game.rooms[order.roomName];
@@ -66,7 +68,7 @@ terminalProcess.work = function(room)
                     return false;
 
                 const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
-                if (dist > MaxBuy)
+                if (dist > MaxBuyRoomDistance)
                     return false;
             }
 
@@ -121,7 +123,7 @@ terminalProcess.work = function(room)
 
     for (let i = 0; i < buyOrders.length; ++i)
     {
-        const rc = globals.autoSell(buyOrders[i].id, room.name, Keep);
+        const rc = globals.autoSell(buyOrders[i].id, room.name, MineralsToKeep);
 
         if (rc == OK)
         {
