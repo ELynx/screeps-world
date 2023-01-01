@@ -41,7 +41,7 @@ var worldActor =
         // mark initial time
         const t0 = Game.cpu.getUsed();
 
-        taskControllersControl();
+        this.taskControllersControl();
 
         this.debugLine('HCPU: ' + globals.hardCpuUsed(t0) + '%');
 
