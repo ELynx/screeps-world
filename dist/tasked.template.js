@@ -175,6 +175,11 @@ function Tasked(id)
             }
         }
 
+        if (this.makeBody === undefined)
+        {
+            return;
+        }
+
         let spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning && !spawn._tasked_; });
 
         if (spawns.length == 0)

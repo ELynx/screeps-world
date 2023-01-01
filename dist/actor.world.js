@@ -7,6 +7,7 @@ Order of load is priority for task execution.
 **/
 var taskedStrelok = require('tasked.strelok');
 var taskedClaim   = require('tasked.claim');
+var taskedPixel   = require('tasked.pixelgenerator');
 
 var worldActor =
 {
