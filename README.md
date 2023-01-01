@@ -1,5 +1,5 @@
 # LICENSE
-Copyright (C) 2019 by Eduard Lynx.
+Copyright (C) 2023 by Eduard Lynx.
 
 All rights reserved.
 
@@ -8,7 +8,9 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 # Folders
-dist - connected to official server
+.github - github specific items, such as action definitions
+
+dist - deployed to official server
 
 history - historical data worth saving
 
@@ -30,7 +32,7 @@ moveTo has same options as Room.findPath.
 
 StructureContainer is not owned.
 
-### Temporary creeps:
+## Temporary creeps:
 
 -> spawn on demand;
 
