@@ -11,6 +11,7 @@ claim.creepAtDestination = function(creep)
     {
         if (creep.pos.isNearTo(controller))
         {
+            controller.room.memory.sstr = creep.getSourceRoom();
             creep.signController(controller, '');
             creep.claimController(controller);
         }
