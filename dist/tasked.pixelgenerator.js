@@ -2,7 +2,7 @@
 
 var Tasked = require('tasked.template');
 
-var pixelGenerator = Tasked('pixelGenerator');
+var pixelGenerator = new Tasked('pixelGenerator');
 
 pixelGenerator.act = function()
 {
