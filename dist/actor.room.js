@@ -8,6 +8,7 @@ var secutiryProcess          = require('process.security');
 var towerProcess             = require('process.tower');
 var linkProcess              = require('process.link');
 var spawnProcess             = require('process.spawn');
+var terminalProcess          = require('process.terminal');
 
 /**
 Order of load is priority order for creep assignment.
@@ -528,6 +529,12 @@ var roomActor =
             this.roomControllersObserveAll(roomCreeps);
 
             this.roomControllersControl(room, unassignedCreeps);
+        }
+
+        // TODO better logic; now it is just migrated
+        if (Game.cpu.tickLimit - Game.cpu.limit > 450)
+        {
+            terminalProcess.work(room);
         }
 
         this.debugLine(room, 'HCPU: ' + globals.hardCpuUsed(t0) + '%');
