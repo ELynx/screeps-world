@@ -51,6 +51,11 @@ var globals =
     roomControllersObserveAll: { },
 
     /**
+    Object holding references to all registeded task controllers.
+    **/
+    taskControllers: { },
+
+    /**
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/
@@ -72,6 +77,15 @@ var globals =
         {
             this.roomControllersObserveAll[controller.id] = controller;
         }
+    },
+
+    /**
+    Add a tasked to list of task controllers.
+    @param {Tasked} tasked
+    **/
+    registerTaskController: function(tasked)
+    {
+        this.taskControllers[tasked.id] = tasked;
     },
 
     NO_CONTROL: '',

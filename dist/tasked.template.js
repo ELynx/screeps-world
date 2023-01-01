@@ -1,5 +1,6 @@
 'use strict';
 
+var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
 //const profiler = require('screeps-profiler');
 
@@ -288,6 +289,8 @@ function Tasked(id)
 
     this.register = function()
     {
+        globals.registerTaskController(this);
+
         //profiler.registerObject(this, this.id);
     };
 };
