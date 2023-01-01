@@ -22,6 +22,10 @@ jobs:
         node-version: 18.x
 
     - name: Push
+      env:
+        PUSH_EMAIL:  FOO
+        PUSH_TOKEN:  BAR
+        PUSH_BRANCH: ${{ inputs.target_branch }}
       run: |
         npm install
         npm install grunt
