@@ -1,16 +1,17 @@
 'use strict';
 
-var extensions      = require('extensions');
-var cleanupMemory   = require('routine.memory');
-var roomActor       = require('actor.room');
-var taskedStrelok   = require('tasked.strelok');
-var taskedClaim     = require('tasked.claim');
-var pixelActor      = require('actor.pixelgenerator');
+var extensions    = require('extensions');
+
+var cleanupMemory = require('routine.memory');
+var roomActor     = require('actor.room');
+var worldActor    = require('actor.world');
+
 //const profiler    = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
 //profiler.registerObject(roomActor, 'roomActor');
+//profiler.registerObject(worldActor, 'worldActor');
 
 //profiler.enable();
 
@@ -23,7 +24,7 @@ module.exports.loop = function()
     let limits = { };
     let total  = 0;
 
-    for (let creepName in Game.creeps)
+    for (const creepName in Game.creeps)
     {
         const creep = Game.creeps[creepName];
         const room  = creep.room;
@@ -38,11 +39,11 @@ module.exports.loop = function()
         total = total + delta;
     }
 
-    for(const name in Game.rooms)
+    for(const roomName in Game.rooms)
     {
-        let room = Game.rooms[name];
+        let room = Game.rooms[roomName];
 
-        const r = limits[name] || 0;
+        const r = limits[room.name] || 0;
         const t = total + 1;
         const limit = Math.ceil(100 * r / t);
 
@@ -55,12 +56,13 @@ module.exports.loop = function()
             room.memory.cpul = limit;
             roomActor.act(room);
         }
+        else
+        {
+            room.memory.cpul = undefined;
+        }
     }
 
-    taskedStrelok.act();
-    taskedClaim.act();
-
-    pixelActor.act();
+    worldActor.act();
 
     //});
 }
