@@ -168,6 +168,16 @@ Flag.prototype.setSecondaryColor = function(newColor)
     this.setColor(this.color, newColor);
 };
 
+Flag.prototype.resetSecondaryColor = function()
+{
+    if (this.color == this.secondaryColor)
+    {
+        return;
+    }
+
+    this.setColor(this.color, this.color);
+};
+
 Room.prototype.roomDebug = function(what)
 {
     if (this._verboseT_ === undefined ||
