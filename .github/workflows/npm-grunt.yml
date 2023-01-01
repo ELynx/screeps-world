@@ -23,8 +23,8 @@ jobs:
 
     - name: Push
       env:
-        PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
-        PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+        PUSH_EMAIL:  ${{ secrets.PUSH_EMAIL }}
+        PUSH_TOKEN:  ${{ secrets.PUSH_TOKEN }}
         PUSH_BRANCH: ${{ inputs.target_branch }}
       run: |
         npm install
