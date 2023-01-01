@@ -3,7 +3,7 @@
 var extensions      = require('extensions');
 var cleanupMemory   = require('routine.memory');
 var roomActor       = require('actor.room');
-var warStrelok      = require('war.strelok');
+var taskedStrelok   = require('tasked.strelok');
 var taskedClaim     = require('tasked.claim');
 var processTerminal = require('process.terminal');
 var pixelActor      = require('actor.pixelgenerator');
@@ -66,7 +66,7 @@ module.exports.loop = function()
         }
     }
 
-    warStrelok.act();
+    taskedStrelok.act();
     taskedClaim.act();
 
     pixelActor.act();
