@@ -186,7 +186,7 @@ Get number of walkable tiles around a position.
 **/
 RoomPosition.prototype.walkableTiles = function()
 {
-    let result = [];
+    let result = 0;
 
     const room = Game.rooms[this.roomName];
     if (room)
@@ -239,14 +239,14 @@ RoomPosition.prototype.walkableTiles = function()
 
                     if (found)
                     {
-                        result.push(new RoomPosition(x, y, this.roomName));
+                        ++result;
                     }
                 }
             }
         }
     }
 
-    return result.length;
+    return result;
 };
 
 Structure.prototype.isActiveSimple = function()
