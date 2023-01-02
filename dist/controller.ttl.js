@@ -68,6 +68,12 @@ ttlController.staticTargets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
+    // ignore creeps that are not spawned with body type
+    if (creep.memory.btyp === undefined)
+    {
+        return false;
+    }
+
     if (creep.ticksToLive > Ttl)
     {
         return false;
