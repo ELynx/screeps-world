@@ -188,6 +188,13 @@ Room.prototype.roomDebug = function(what)
     this.visual.text(what, 0, this._debugY_++, { align: 'left' });
 };
 
+Room.prototype.clearCache = function()
+{
+    this._hostileCreeps_ = undefined;
+    this._myCreeps_ = undefined;
+    this._roomCreeps_ = undefined;
+}
+
 /**
 Get a list of hostile creeps in a room, cached
 **/
