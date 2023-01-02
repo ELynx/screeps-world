@@ -189,6 +189,51 @@ Room.prototype.roomDebug = function(what)
 };
 
 /**
+Get a list of hostile creeps in a room, cached
+**/
+Room.prototype.getHostileCreeps = function()
+{
+    if (this._hostileCreeps_ === undefined)
+    {
+        this._hostileCreeps_ = this.find(FIND_HOSTILE_CREEPS);
+    }
+
+    return this._hostileCreeps_;
+};
+
+/**
+Get a list of my creeps in a room, cached
+**/
+Room.prototype.getMyCreeps = function()
+{
+    if (this._myCreeps_ === undefined)
+    {
+        this._myCreeps_ = this.find(FIND_MY_CREEPS);
+    }
+
+    return this._myCreeps_;
+};
+
+/**
+Get a list of creeps assigned to a room, cached
+**/
+Room.prototype.getRoomControlledCreeps = function()
+{
+    if (this._roomCreeps_ === undefined)
+    {
+        this._roomCreeps_ = _.filter(
+            Game.creeps,
+            function(creep, name)
+            {
+                return creep.memory.crum == this.name;
+            }
+        );
+    }
+
+    return this._roomCreeps_;
+};
+
+/**
 Get number of walkable tiles around a position.
 @return {integer} number of walkable tiles.
 **/

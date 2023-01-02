@@ -7,12 +7,14 @@ var secutiryProcess = new Process('security');
 const ThreatStep = 20;
 const ThreatMax  = 5;
 
-secutiryProcess.work = function(room, hostileCreeps)
+secutiryProcess.work = function(room)
 {
     this.debugHeader(room);
 
     let threatLevel = room.memory.threat  || 0;
     let threatTimer = room.memory.threatT || (Game.time - ThreatStep);
+
+    const hostileCreeps = room.getHostileCreeps();
 
     if (hostileCreeps.length > 0)
     {
@@ -35,7 +37,7 @@ secutiryProcess.work = function(room, hostileCreeps)
         {
             for (const flagName in Game.flags)
             {
-                if (!flagName.startsWith('fence'))
+                if (!flagName.startsWith(this.id))
                 {
                     continue;
                 }
@@ -47,7 +49,7 @@ secutiryProcess.work = function(room, hostileCreeps)
                     continue;
                 }
 
-                let range = flag.getValue();
+                const range = flag.getValue();
 
                 if (range < 0)
                 {

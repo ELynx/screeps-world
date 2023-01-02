@@ -42,7 +42,7 @@ var roomActor =
     @param {Room} room.
     @return Energy level of room.
     **/
-    energyLevel: function(room, roomCreeps)
+    energyLevel: function(room)
     {
         const structs = room.find(FIND_MY_STRUCTURES,
             {
@@ -71,7 +71,7 @@ var roomActor =
         }
 
         // has spawn, has no creeps, means creeps wiped
-        if (roomCreeps.length == 0)
+        if (room.getRoomControlledCreeps().length == 0)
         {
             // still can try to spawn weaklings
             return 1;
@@ -281,23 +281,13 @@ var roomActor =
         this.roomControllersPrepare(room);
 
         // priority - safemode
-        const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
-        secutiryProcess.work(room, hostileCreeps);
-
-        // all creeps registered to room
-        const roomCreeps = _.filter(
-            Game.creeps,
-            function(creep, name)
-            {
-                return creep.memory.crum == room.name;
-            }
-        );
+        secutiryProcess.work(room);
 
         // once in a creep life update room info
         if (room.memory.intl === undefined ||
             room.memory.intl < Game.time - 1500)
         {
-            room.memory.elvl = this.energyLevel(room, roomCreeps);
+            room.memory.elvl = this.energyLevel(room);
             room.memory.slvl = this.sourceLevel(room);
             room.memory.mlvl = this.miningLevel(room);
             room.memory.wlvl = this.wallLevel(room);
@@ -316,8 +306,7 @@ var roomActor =
 
             // TODO get rid of hardcode
             const flagName = 'strelok_' + room.name;
-
-            let flag = Game.flags[flagName];
+            const flag = Game.flags[flagName];
             if (flag)
             {
                 const patrolUnits = Math.min(3, room.memory.elvl + 1);
@@ -336,17 +325,14 @@ var roomActor =
             room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
         }
 
-        this.debugLine(room, 'Room creeps     ' + roomCreeps.length);
-
-        // not all friendly or own creeps are in roomCreeps, but will do for a time
-        towerProcess.work(room, roomCreeps, hostileCreeps);
+        towerProcess.work(room);
 
         // STRATEGY don't execute certain processes too ofthen
-        let processKey = (room.memory.intl + Game.time) % 10;
+        const processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)
         {
-            spawnProcess.work(room, roomCreeps);
+            spawnProcess.work(room);
         }
         else if (processKey == 5)
         {
@@ -356,6 +342,7 @@ var roomActor =
         // creeps that has no controller assigned will go here
         let unassignedCreeps = [];
 
+        let roomCreeps = room.getRoomControlledCreeps();
         if (roomCreeps.length > 0)
         {
             // do some statistics

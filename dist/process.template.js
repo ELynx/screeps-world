@@ -17,7 +17,6 @@ function Process(id)
     /**
     Work on a room.
     @param {Room} room to process.
-    @param {array<Creeps>} creeps that might be interesting for process.
     **/
     this.work = undefined;
 

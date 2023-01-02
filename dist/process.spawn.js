@@ -130,10 +130,11 @@ spawnProcess.doSpawn = function(spawn, type, owner)
     return false;
 };
 
-spawnProcess.work = function(room, creeps)
+spawnProcess.work = function(room)
 {
     this.debugHeader(room);
 
+    const creeps = room.getRoomControlledCreeps();
     this.workImpl(room, room, creeps);
 };
 
