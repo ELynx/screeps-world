@@ -221,11 +221,13 @@ Room.prototype.getRoomControlledCreeps = function()
 {
     if (this._roomCreeps_ === undefined)
     {
+        let self = this;
+
         this._roomCreeps_ = _.filter(
             Game.creeps,
             function(creep, name)
             {
-                return creep.memory.crum == this.name;
+                return creep.memory.crum == self.name;
             }
         );
     }
