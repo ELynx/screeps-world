@@ -7,7 +7,7 @@ var buildController = new Controller('build');
 buildController.actRange = 3;
 buildController.focusDynamic = true;
 
-buildController.roomHasSpawn = undefined;
+buildController.hasSpawn = undefined;
 
 buildController.roomPrepare = function(room)
 {
