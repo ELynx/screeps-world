@@ -431,6 +431,15 @@ var roomActor =
                         }
                     }
 
+                    if (!wasGrabbed)
+                    {
+                        const ruin = creep.pos.findInRange(FIND_RUINS, 1);
+                        for (let k = 0; k < ruin.length && !wasGrabbed; ++k)
+                        {
+                            wasGrabbed = creep.withdraw(ruin[k], RESOURCE_ENERGY) == OK;
+                        }
+                    }
+
                     if (wasGrabbed)
                     {
                         // TODO integrate
