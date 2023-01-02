@@ -17,7 +17,9 @@ history - historical data worth saving
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
 
-Find and fix `roomHasSpawn` variable name
+Find and fix `roomHasSpawn` variable name.
+
+Tower attack and heal cancel out.
 
 # Ideas
 Intent pipeline! Do more things in one turn!
@@ -36,7 +38,7 @@ StructureContainer is not owned.
 
 ## Temporary creeps:
 
--> spawn on demand;
+-> spawn on demand.
 
 --> recycle by "Dynamic creep life" afterwards.
 
