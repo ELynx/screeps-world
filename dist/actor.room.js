@@ -264,7 +264,7 @@ var roomActor =
             }
             else
             {
-                this.debugLine(room, 'Creeps left ' + creeps.length);
+                this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length);
             }
         }
     },
@@ -276,6 +276,8 @@ var roomActor =
     {
         // mark initial time
         const t0 = Game.cpu.getUsed();
+
+        room.clearCache();
 
         // clean up controllers
         this.roomControllersPrepare(room);
