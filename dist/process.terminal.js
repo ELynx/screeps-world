@@ -1,7 +1,6 @@
 'use strict';
 
 var Process = require('process.template');
-var globals = require('globals');
 
 var terminalProcess = new Process('terminal');
 
@@ -33,7 +32,8 @@ terminalProcess.work = function(room)
         return;
     }
 
-    let roomMineralType = minerals[mineralIndex].mineralType;
+    // there is only one mineral type in a room
+    const roomMineralType = minerals[0].mineralType;
 
     const has = room.terminal.store[roomMineralType];
     if (has === undefined || has <= MineralsToKeep)
@@ -50,27 +50,25 @@ terminalProcess.work = function(room)
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
-    const allOrders = Game.market.getAllOrders(
+    const allBuyOrders  = Game.market.getAllOrders( {type: ORDER_BUY,  resourceType: roomMineralType} );
+    const allSellOrders = Game.market.getAllOrders( {type: ORDER_SELL, resourceType: roomMineralType} );
+
+    let goodBuyOrders = _.filter(allBuyOrders,
         function(order)
         {
-            if (order.resourceType != roomMineralType)
-                return false;
-
             const roomFrom = Game.rooms[order.roomName];
 
             // don't trade with self
             if (roomFrom && roomFrom.controller && roomFrom.controller.my)
                 return false;
 
-            if (order.type == ORDER_BUY)
-            {
-                if (order.price < 0.95 * lastPrice)
-                    return false;
+            // STRATEGY allowed price drop per sell of room resources
+            if (order.price < 0.95 * lastPrice)
+                return false;
 
-                const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
-                if (dist > MaxBuyRoomDistance)
-                    return false;
-            }
+            const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
+            if (dist > MaxBuyRoomDistance)
+                return false;
 
             return true;
         }
@@ -81,23 +79,29 @@ terminalProcess.work = function(room)
     // derive biggest buy price
     let biggestPrice = 0;
 
-    for (let i = 0; i < allOrders.length; ++i)
+    for (let i = 0; i < goodBuyOrders.length; ++i)
     {
-        const order = allOrders[i];
+        const order = goodBuyOrders[i];
 
-        if (order.type == ORDER_BUY)
+        if (order.price > biggestPrice)
         {
-            if (order.price > biggestPrice)
-            {
-                biggestPrice = order.price;
-            }
+            biggestPrice = order.price;
         }
-        else
+    }
+
+    for (let i = 0; i < allSellOrders.length; ++i)
+    {
+        const order = allSellOrders[i];
+
+        const roomFrom = Game.rooms[order.roomName];
+
+        // don't trade with self
+        if (roomFrom && roomFrom.controller && roomFrom.controller.my)
+            continue;
+
+        if (order.price < smallestPrice)
         {
-            if (order.price < smallestPrice)
-            {
-                smallestPrice = order.price;
-            }
+            smallestPrice = order.price;
         }
     }
 
@@ -107,9 +111,7 @@ terminalProcess.work = function(room)
         return;
     }
 
-    let buyOrders = _.filter(allOrders, function(order) { return order.type == ORDER_BUY; });
-
-    buyOrders.sort(
+    goodBuyOrders.sort(
         function(o1, o2)
         {
             if (o1.price != o2.price)
@@ -121,13 +123,13 @@ terminalProcess.work = function(room)
         }
     );
 
-    for (let i = 0; i < buyOrders.length; ++i)
+    for (let i = 0; i < goodBuyOrders.length; ++i)
     {
-        const rc = globals.autoSell(buyOrders[i].id, room.name, MineralsToKeep);
+        const rc = room.terminal.autoSell(goodBuyOrders[i], MineralsToKeep);
 
         if (rc == OK)
         {
-            Memory.prices[buyOrders[i].resourceType] = buyOrders[i].price;
+            Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price;
             break;
         }
     }

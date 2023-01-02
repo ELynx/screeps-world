@@ -281,3 +281,59 @@ StructureLink.prototype.isSource = function()
 
     return this._isSource_;
 };
+
+/**
+Get amount that can be sent for given energy.
+@see Game.market.calcTransactionCost
+@param {integer} energy how much can be spent on transaction.
+@param {string} roomName1 room 1.
+@param {string} roomName2 room 2.
+@return how much can be sent.
+**/
+StructureTerminal.prototype._caclTransactionAmount = function(roomTo)
+{
+    // how much sending 1000 costs
+    const c1000 = Game.market.calcTransactionCost(1000, this.room.name, roomTo);
+    if (c1000 == 0)
+    {
+        return 0;
+    }
+
+    // how many times 1000 can be sent
+    const energy = this.store[RESOURCE_ENERGY];
+    const times = energy / c1000;
+
+    // how many can be sent
+    return Math.floor(1000 * times);
+}
+
+/**
+Try to sell as much as possible for order.
+@param {Order} order to be sold to.
+@param {integer} keep = 0 how many to keep at terminal.
+@return result of deal or other error codes.
+**/
+StructureTerminal.prototype.autoSell = function(order, keep = 0)
+{
+    if (order.type == ORDER_BUY)
+    {
+        const has = this.store[order.resourceType];
+        if (has === undefined || has <= keep)
+        {
+            return ERR_NOT_ENOUGH_RESOURCES;
+        }
+
+        const maxAmount = this._caclTransactionAmount(order.roomName);
+
+        if (maxAmount < 1)
+        {
+            return ERR_NOT_ENOUGH_ENERGY;
+        }
+
+        const amount = Math.min(has - keep, maxAmount, order.amount);
+
+        return Game.market.deal(orderId, amount, room.name);
+    }
+
+    return ERR_INVALID_ARGS;
+}
