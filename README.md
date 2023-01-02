@@ -19,8 +19,6 @@ history - historical data worth saving
 
 Find and fix `roomHasSpawn` variable name.
 
-Tower attack and heal cancel out.
-
 # Ideas
 Intent pipeline! Do more things in one turn!
 

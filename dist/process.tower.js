@@ -4,9 +4,26 @@ var Process = require('process.template');
 
 var towerProcess = new Process('tower');
 
-towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
+towerProcess.work = function(room)
 {
     this.debugHeader(room);
+
+    const towers = room.find(FIND_MY_STRUCTURES,
+        {
+            filter: function(structure)
+            {
+                return structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
+            }
+        }
+    );
+
+    if (towers.length == 0)
+    {
+        return;
+    }
+
+    const hostileCreeps = room.getHostileCreeps();
+    const friendlyCreeps = room.getMyCreeps();
 
     const damagedCreeps = _.filter(
         friendlyCreeps,
@@ -18,29 +35,19 @@ towerProcess.work = function(room, friendlyCreeps, hostileCreeps)
 
     if (hostileCreeps.length > 0 || damagedCreeps.length > 0)
     {
-        const towers = room.find(FIND_MY_STRUCTURES,
-            {
-                filter: function(structure)
-                {
-                    return structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
-                }
-            }
-        );
-
         for (let i = 0; i < towers.length; ++i)
         {
             const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
             if(closestHostile)
             {
-                towers[i].attack(closestHostile);
-                //continue;
+                var rc = towers[i].attack(closestHostile);
+                if (rc == OK) continue;
             }
 
             const damagedCreep = towers[i].pos.findClosestByRange(damagedCreeps);
             if (damagedCreep)
             {
                 towers[i].heal(damagedCreep);
-                //continue;
             }
         }
     }
