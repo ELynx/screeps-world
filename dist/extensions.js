@@ -43,8 +43,6 @@ Creep.prototype.caveIndex = function()
 
         this._cidx_ = cidx;
         this._cidxT_ = Game.time;
-
-        //this.say(this._cidx_);
     }
 
     return this._cidx_;
