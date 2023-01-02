@@ -69,16 +69,16 @@ secutiryProcess.work = function(room, hostileCreeps)
                 {
                     const rc = ctrl.activateSafeMode();
 
-                    const notification = 'Room ' + room.name + ' requested safeMode [' + rc + ']';
+                    const notification = 'Room ' + room.name + ' requested safe mode [' + rc + ']';
 
                     Game.notify(notification);
                     console.log(notification);
 
                     break;
                 }
-            }
-        }
-    }
+            } // end of loop for all flags
+        } // end of "if safe mode reqiest possible"
+    } // end of "if hostile creeps exist"
     else
     {
         if (threatTimer + ThreatStep < Game.time)
@@ -94,6 +94,8 @@ secutiryProcess.work = function(room, hostileCreeps)
     {
         room.memory.threat = threatLevel;
         room.memory.threatT = threatTimer;
+
+        this.debugLine(room, "Threat level " + threatLevel);
     }
     else
     {
