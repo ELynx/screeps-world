@@ -181,7 +181,7 @@ Room.prototype.roomDebug = function(what)
     if (this._verboseT_ === undefined ||
         this._verboseT_ != Game.time)
     {
-        this._debugY_ = 0;
+        this._debugY_ = 1.5;
         this._verboseT_ = Game.time;
     }
 
