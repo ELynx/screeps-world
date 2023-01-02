@@ -224,8 +224,6 @@ strelok.creepRoomTravel = function(creep)
 
 strelok.flagPrepare = function(flag)
 {
-    const want = flag.getValue();
-
     if (flag.room &&
         flag.room.controller &&
         flag.room.controller.my)
@@ -239,6 +237,8 @@ strelok.flagPrepare = function(flag)
     }
     else
     {
+        const want = flag.getValue();
+
         // automatically stop trashing low threat rooms
         if (want == 1 && this.roomBoring[flag.pos.roomName])
         {
