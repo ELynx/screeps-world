@@ -64,15 +64,29 @@ var roomActor =
             hasSpawn = hasSpawn || structs[i].structureType == STRUCTURE_SPAWN;
         }
 
-        // probably some edge case of war
+        // room cold start
         if (!hasSpawn)
         {
             return 0;
         }
 
-        // has spawn, has no creeps, means creeps wiped
-        if (room.getRoomControlledCreeps().length == 0)
+        // has spawn, has no creeps, means creeps wiped or room start
+        const roomCreeps = room.getRoomControlledCreeps();
+        const energyGivingCreeps = _.filter(
+            roomCreeps,
+            function(creep)
+            {
+                if (creep.memory.rstk) return false;
+                if (creep.memory.minr) return false;
+
+                return true;
+            }
+        );
+
+        if (energyGivingCreeps.length == 0)
         {
+            // there is no one to refill spawns, etc
+            // there is only a dribble of energy up to 300
             // still can try to spawn weaklings
             return 1;
         }
@@ -121,6 +135,9 @@ var roomActor =
     **/
     miningLevel: function(room)
     {
+        // quick test
+        if (room.terminal === undefined) return 0;
+
         const extractors = room.find(
             FIND_MY_STRUCTURES,
             {
@@ -130,8 +147,8 @@ var roomActor =
                 }
             }
         );
+        if (extractors.length == 0) return 0;
 
-        // real cheap here, integrate
         const minerals = room.find(
             FIND_MINERALS,
             {
@@ -141,18 +158,9 @@ var roomActor =
                 }
             }
         );
+        if (minerals.length == 0) return 0;
 
-        const terminals = room.find(
-            FIND_MY_STRUCTURES,
-            {
-                filter: function(structure)
-                {
-                    return structure.structureType == STRUCTURE_TERMINAL && structure.isActive();
-                }
-            }
-        );
-
-        return (extractors.length > 0 && terminals.length > 0 && minerals.length > 0) ? 1 : 0;
+        return 1;
     },
 
     wallLevel: function(room)
@@ -321,7 +329,7 @@ var roomActor =
                 flagPos.createFlag(flagName, COLOR_GREEN);
             }
 
-            // offset regeneration time randomly so multiple roooms don't do it at same turm
+            // offset regeneration time randomly so multiple rooms don't do it at same turm
             room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
         }
 
