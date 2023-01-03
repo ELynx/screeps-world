@@ -196,8 +196,7 @@ function Controller(id)
     @param {Room} room.
     @param {LOOK_*} lookForType.
     @param {function} filter.
-    @param {int} caveX.
-    @param {int} caveY.
+    @param {integer} caveIndex to limit search to single cave cell
     @return Found targets.
     **/
     this._lookInCave = function(room, lookForType, filter, caveIndex)
@@ -311,11 +310,11 @@ function Controller(id)
         [24, 18, 23, 19, 14, 22, 17, 13, 12,  9, 21, 16,  8, 11,  7,  6,  0,  5,  1,  4,  3,  2, 20, 15, 10]
                                                                                                            ];
 
-        const NavigationRoute = Magic[creep.caveIndex()];
+        const navigationRoute = Magic[creep.caveIndex()];
 
-        for (let ridx = 0; ridx < NavigationRoute.length; ++ridx)
+        for (let ridx = 0; ridx < navigationRoute.length; ++ridx)
         {
-            const caveTargets = this._lookInCave(room, lookForType, filter, NavigationRoute[ridx]);
+            const caveTargets = this._lookInCave(room, lookForType, filter, navigationRoute[ridx]);
 
             if (caveTargets.length > 0)
             {
@@ -378,7 +377,7 @@ function Controller(id)
     this._usesDefaultFilter = undefined;
 
     /**
-    Creep that has some energy and not a restocker.
+    Creep that has some energy and not a specialist.
     @param {Creep} creep to look at.
     @return If creep matches filter.
     **/
