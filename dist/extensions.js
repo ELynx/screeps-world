@@ -190,7 +190,7 @@ Room.prototype.roomDebug = function(what)
 
 Room.prototype._clearCreepCacheIfOld = function()
 {
-    if (this._cacheT_ == Game.time)
+    if (this._creepCacheT_ && this._creepCacheT_ == Game.time)
     {
         return;
     }
@@ -198,6 +198,7 @@ Room.prototype._clearCreepCacheIfOld = function()
     this._hostileCreeps_ = undefined;
     this._myCreeps_      = undefined;
     this._roomCreeps_    = undefined;
+    this._creepCacheT_   = Game.time;
 }
 
 /**
