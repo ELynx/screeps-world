@@ -26,17 +26,20 @@ energyTakeController.dynamicTargets = function(room, creep)
         this.structures,
         function(structure)
         {
-            // TODO limit grabbing
-
-            if (structure.structureType == STRUCTURE_CONTAINER)
+            if (structure.structureType == STRUCTURE_CONTAINER ||
+                structure.structureType == STRUCTURE_STORAGE)
             {
                 return structure.store[RESOURCE_ENERGY] > 0;
             }
             else if (structure.structureType == STRUCTURE_LINK)
             {
-                // STRATEGY do not steal from firing link
-                if (structure.energy == 0 ||
-                    structure.cooldown > 0)
+                if (structure.store[RESOURCE_ENERGY] == 0)
+                {
+                    return false;
+                }
+
+                // STRATEGY do not steal from source
+                if (structure.isSource())
                 {
                     return false;
                 }
