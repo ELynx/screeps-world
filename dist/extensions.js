@@ -188,11 +188,16 @@ Room.prototype.roomDebug = function(what)
     this.visual.text(what, 0, this._debugY_++, { align: 'left' });
 };
 
-Room.prototype.clearCache = function()
+Room.prototype._clearCreepCacheIfOld = function()
 {
+    if (this._cacheT_ == Game.time)
+    {
+        return;
+    }
+
     this._hostileCreeps_ = undefined;
-    this._myCreeps_ = undefined;
-    this._roomCreeps_ = undefined;
+    this._myCreeps_      = undefined;
+    this._roomCreeps_    = undefined;
 }
 
 /**
@@ -200,6 +205,8 @@ Get a list of hostile creeps in a room, cached
 **/
 Room.prototype.getHostileCreeps = function()
 {
+    this._clearCreepCacheIfOld();
+
     if (this._hostileCreeps_ === undefined)
     {
         this._hostileCreeps_ = this.find(FIND_HOSTILE_CREEPS);
@@ -213,6 +220,8 @@ Get a list of my creeps in a room, cached
 **/
 Room.prototype.getMyCreeps = function()
 {
+    this._clearCreepCacheIfOld();
+
     if (this._myCreeps_ === undefined)
     {
         this._myCreeps_ = this.find(FIND_MY_CREEPS);
@@ -226,6 +235,8 @@ Get a list of creeps assigned to a room, cached
 **/
 Room.prototype.getRoomControlledCreeps = function()
 {
+    this._clearCreepCacheIfOld();
+
     if (this._roomCreeps_ === undefined)
     {
         let self = this;

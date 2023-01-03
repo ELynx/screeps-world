@@ -277,8 +277,6 @@ var roomActor =
         // mark initial time
         const t0 = Game.cpu.getUsed();
 
-        room.clearCache();
-
         // clean up controllers
         this.roomControllersPrepare(room);
 
