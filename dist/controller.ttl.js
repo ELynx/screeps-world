@@ -68,12 +68,6 @@ ttlController.staticTargets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    // ignore creeps that are not spawned with body type
-    if (creep.memory.btyp === undefined)
-    {
-        return false;
-    }
-
     if (creep.ticksToLive > Ttl)
     {
         return false;
@@ -91,15 +85,19 @@ ttlController.filterCreep = function(creep)
         return false;
     }
 
-    // do background check
-    const room = Game.rooms[creep.memory.crum];
-    if (room)
+    // only check creeps with known body type
+    if (creep.memory.btyp)
     {
-        // renew creeps that are higher level than room can produce
-        const [level, exampleBody] = bodywork[creep.memory.btyp](room.memory.elvl);
-        if (creep.memory.levl > level)
+        // do background check
+        const room = Game.rooms[creep.memory.crum];
+        if (room)
         {
-            return true;
+            // renew creeps that are higher level than room can produce
+            const [level, exampleBody] = bodywork[creep.memory.btyp](room.memory.elvl);
+            if (creep.memory.levl > level)
+            {
+                return true;
+            }
         }
     }
 
