@@ -54,6 +54,7 @@ beetle.creepAtDestination = function(creep)
     }
 
     const path = Room.deserializePath(creep.memory._breach_);
+    creep.room.visual.poly(path);
 
     let next = undefined;
     for (let i = 0; i < path.length - BreachCompleteRange; ++i)
@@ -64,6 +65,12 @@ beetle.creepAtDestination = function(creep)
             next = path[i + 1];
             break;
         }
+    }
+
+    // do a 1st step
+    if (next === undefined && path.length > 0)
+    {
+        next = path[0];
     }
 
     if (next)
