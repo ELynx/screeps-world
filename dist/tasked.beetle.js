@@ -8,6 +8,8 @@ const BreachCompleteRange = 1;
 
 beetle.creepAtDestination = function(creep)
 {
+    creep.withdrawFromAdjacentEnemyStructures();
+
     // stop calculations on arrival
     const controlPos = creep.getControlPos();
     if (creep.getRangeTo(controlPos) <= BreachCompleteRange)

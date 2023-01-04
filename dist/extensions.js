@@ -99,6 +99,27 @@ Creep.prototype.healAdjacent = function(creeps)
     return ERR_NOT_FOUND;
 };
 
+Creep.prototype.withdrawFromAdjacentEnemyStructures = function()
+{
+    const targets = this.pos.findInRange
+    (
+        FIND_HOSTILE_STRUCTURES,
+        1,
+        filter: function(structure)
+        {
+            return structure.store && structure.store[RESOURCE_ENERGY] > 0;
+        }
+    );
+
+    for (let target in targets)
+    {
+        if (this.withdraw(target, RESOURCE_ENERGY) == OK)
+        {
+            break;
+        }
+    }
+}
+
 Flag.prototype.getValue = function()
 {
     if (this.color == COLOR_PURPLE)
