@@ -45,7 +45,7 @@ energyTakeController.dynamicTargets = function(room, creep)
                 }
 
                 // STRATEGY do not visit link across the map
-                return structure.pos.getRangeTo(creep.pos) <= 5;
+                return structure.pos.inRangeTo(creep.pos, 5);
             }
 
             return false;
