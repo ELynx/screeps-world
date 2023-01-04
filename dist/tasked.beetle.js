@@ -12,7 +12,7 @@ beetle.creepAtDestination = function(creep)
 
     // stop calculations on arrival
     const controlPos = creep.getControlPos();
-    if (creep.getRangeTo(controlPos) <= BreachCompleteRange)
+    if (creep.pos.getRangeTo(controlPos) <= BreachCompleteRange)
     {
         creep.memory._breach_ = undefined;
         creep.memory._breachT_ = undefined;
@@ -53,7 +53,7 @@ beetle.creepAtDestination = function(creep)
         creep.memory._breachT_ = Game.time;
     }
 
-    const path = creep.room.deserializePath(creep.memory._breach_);
+    const path = Room.deserializePath(creep.memory._breach_);
 
     let next = undefined;
     for (let i = 0; i < path.length - BreachCompleteRange; ++i)
