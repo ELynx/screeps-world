@@ -7,13 +7,52 @@ var claim = new Tasked('claim');
 claim.creepAtDestination = function(creep)
 {
     const controller = creep.room.controller;
+
     if (controller && !controller.my)
     {
         if (creep.pos.isNearTo(controller))
         {
-            controller.room.memory.sstr = creep.getSourceRoom();
-            creep.signController(controller, '');
-            creep.claimController(controller);
+            let sign = '';
+
+            if (controller.owner && controller.owner.username != creep.owner.username)
+            {
+                sign = 'BAHAHAHA';
+                creep.attackController(controller);
+            }
+            else if (controller.reservation && controller.reservation.username != creep.owner.username)
+            {
+                sing = 'Taking over...';
+                creep.attackController(controller);
+            }
+            else
+            {
+                let myRooms = 0;
+                for (let roomName in Game.rooms)
+                {
+                    const someRoom = Game.rooms[roomName];
+                    if (someRoom.controller && someRoom.controller.my)
+                    {
+                        ++myRooms;
+                    }
+                }
+
+                if (Game.gcl.level > myRooms)
+                {
+                    sign = '';
+                    controller.room.memory.sstr = creep.getSourceRoom();
+                    creep.claimController(controller);                    
+                }
+                else
+                {
+                    sign = 'I was here';
+                    creep.reserveController(controller);
+                }
+            }
+
+            if (controller.sign && controller.sign.text != sign)
+            {
+                creep.signController(sign);
+            }
         }
         else
         {
