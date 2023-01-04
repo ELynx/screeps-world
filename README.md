@@ -17,14 +17,10 @@ history - historical data worth saving
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
 
-Find and fix `roomHasSpawn` variable name.
-
 # Ideas
 Intent pipeline! Do more things in one turn!
 
 Withdraw from enemy structures.
-
-Dismantle enemy structures, 50 hits vs melee Attack 30 hits.
 
 structureType might be faster than instanceof.
 
