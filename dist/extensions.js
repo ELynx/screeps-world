@@ -118,7 +118,7 @@ Creep.prototype.withdrawFromAdjacentEnemyStructures = function()
             break;
         }
     }
-}
+};
 
 Flag.prototype.getValue = function()
 {
