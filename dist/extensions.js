@@ -105,9 +105,11 @@ Creep.prototype.withdrawFromAdjacentEnemyStructures = function()
     (
         FIND_HOSTILE_STRUCTURES,
         1,
-        filter: function(structure)
         {
-            return structure.store && structure.store[RESOURCE_ENERGY] > 0;
+            filter: function(structure)
+            {
+                return structure.store && structure.store[RESOURCE_ENERGY] > 0;
+            }
         }
     );
 
@@ -390,7 +392,7 @@ StructureTerminal.prototype._caclTransactionAmount = function(roomTo)
 
     // how many can be sent
     return Math.floor(1000 * times);
-}
+};
 
 /**
 Try to sell as much as possible for order.
