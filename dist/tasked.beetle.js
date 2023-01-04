@@ -8,18 +8,6 @@ const BreachCompleteRange = 1;
 
 beetle.creepAtDestination = function(creep)
 {
-    // stop calculations on arrival
-    const controlPos = creep.getControlPos();
-    if (creep.pos.inRangeTo(controlPos, BreachCompleteRange))
-    {
-        creep.memory._breach_ = undefined;
-        creep.memory._breachT_ = undefined;
-
-        this._coastToHalt(creep);
-
-        return;
-    }
-
     // every N ticks refresh situation
     if (creep.memory._breachT_)
     {
@@ -33,6 +21,22 @@ beetle.creepAtDestination = function(creep)
     // no path known
     if (creep.memory._breach_ === undefined)
     {
+        let controlPos = undefined;
+
+        const flagPos = creep.getFlagPos();
+        if (flagPos)
+        {
+            controlPos = flagPos;
+        }
+        else if (Game.rooms[creep.pos.roomName].controller)
+        {
+            controlPos = Game.rooms[creep.pos.roomName].controller.pos;
+        }
+        else
+        {
+            controlPos = creep.getControlPos();
+        }
+
         const path = creep.room.findPath
         (
             creep.pos,
@@ -75,9 +79,25 @@ beetle.creepAtDestination = function(creep)
     {
         let target = undefined;
 
-        const atNext = creep.room.lookForAt(LOOK_STRUCTURES, next.x, next.y);
-        for (const struct in atNext)
+        const around = creep.room.lookForAt
+        (
+            LOOK_STRUCTURES,
+            creep.pos.y - 1, // top
+            creep.pos.x - 1, // left
+            creep.pos.y + 1, // bottom
+            creep.pos.x + 1, // right
+            true // as array
+        );
+
+        creep.withdrawFromAdjacentEnemyStructures(around);
+
+        for (const item in around)
         {
+            if (item.x != next.x || item.y != next.y)
+                continue;
+
+            const struct = item.structure;
+
             // walkable
             if (struct.structureType == STRUCTURE_CONTAINER ||
                 struct.structureType == STRUCTURE_ROAD)
@@ -94,7 +114,7 @@ beetle.creepAtDestination = function(creep)
             target = struct;
         }
 
-        let rc = ERR_INVALID_TARGET;
+        let rc = ERR_NOT_FOUND;
         if (target)
         {
             rc = creep.dismantle(target);
