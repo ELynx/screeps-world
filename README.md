@@ -20,8 +20,6 @@ history - historical data worth saving
 # Ideas
 Intent pipeline! Do more things in one turn!
 
-Withdraw from enemy structures.
-
 structureType might be faster than instanceof.
 
 PathFinder opt flee.
