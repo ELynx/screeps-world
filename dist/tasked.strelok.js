@@ -27,8 +27,6 @@ strelok.creepPrepare = function(creep)
 
 strelok.creepAtDestination = function(creep)
 {
-    creep.withdrawFromAdjacentEnemyStructures();
-
     const dest = creep.pos.roomName;
 
     if (!this.roomTargets[dest])
@@ -86,6 +84,8 @@ strelok.creepAtDestination = function(creep)
             return true;
         }
     );
+
+    creep.withdrawFromAdjacentEnemyStructures(targets);
 
     const target = creep.pos.findClosestByRange(targets);
     if (target)
