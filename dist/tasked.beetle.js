@@ -124,13 +124,18 @@ beetle.creepAtDestination = function(creep)
     {
         let target = undefined;
 
+        const t = Math.max(creep.pos.y - 1, 0);
+        const l = Math.max(creep.pos.x - 1, 0);
+        const b = Math.min(creep.pos.y + 1, 49);
+        const r = Math.min(creep.pos.x + 1, 49);
+
         const around = creep.room.lookForAtArea
         (
             LOOK_STRUCTURES,
-            creep.pos.y - 1, // top
-            creep.pos.x - 1, // left
-            creep.pos.y + 1, // bottom
-            creep.pos.x + 1, // right
+            t, // top
+            l, // left
+            b, // bottom
+            r, // right
             true // as array
         );
 
