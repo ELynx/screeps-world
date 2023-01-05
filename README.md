@@ -15,25 +15,25 @@ dist - deployed to official server
 history - historical data worth saving
 
 # TODO
-(Module WAR) "Hot" areas to avoid for worker creeps.
+Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
+
+`findInRange` is expensive, make a custom thing
+
+Beetle body
+
+Strelok body
 
 # Ideas
 Intent pipeline! Do more things in one turn!
 
-structureType might be faster than instanceof.
+PathFinder option `flee`.
 
-PathFinder opt flee.
-
-moveTo has same options as Room.findPath.
-
-StructureContainer is not owned.
+Roads in neutral room require change in repair code to work on energy level 0.
 
 ## Temporary creeps:
 
--> spawn on demand.
+Spawn on demand.
 
---> recycle by "Dynamic creep life" afterwards.
-
-Roads in neutral room require change in repair code to work on energy level 0.
+Recycle by "Dynamic creep life" afterwards.

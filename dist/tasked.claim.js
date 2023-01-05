@@ -56,7 +56,7 @@ claim.creepAtDestination = function(creep)
         }
         else
         {
-            creep.moveTo(controller, { plainCost: 1, swampCost: 5, maxRooms: 1, reusePath: 50, range: 1 });
+            creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 });
         }
     }
     else

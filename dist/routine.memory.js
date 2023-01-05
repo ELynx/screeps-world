@@ -18,6 +18,17 @@ function cleanupMemory()
         }
     }
 
+    if (Memory.structures)
+    {
+        for (const id in Memory.structures)
+        {
+            if (!Game.structures[id])
+            {
+                delete Memory.structures[id];
+            }
+        }
+    }
+
     if (Memory.profiler)
     {
         if (!Game.profiler)

@@ -62,7 +62,7 @@ energyTakeController.filterCreep = function(creep)
     }
 
     // is empty
-    return creep.sumCarry() == 0;
+    return creep.store.getUsedCapacity() == 0;
 };
 
 energyTakeController.register();

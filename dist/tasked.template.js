@@ -101,7 +101,7 @@ function Tasked(id)
         if (creep._canMove_)
         {
             const controlPos = creep.getControlPos();
-            creep.moveTo(controlPos, { reusePath: 50, range: controlPos.controlDistance() });
+            creep.moveToWrapper(controlPos, { reusePath: 50, range: controlPos.controlDistance() });
         }
     };
 
@@ -128,7 +128,7 @@ function Tasked(id)
 
         if (!creep.pos.inRangeTo(pos, haltRange))
         {
-            creep.moveTo(pos, { plainCost: 1, swampCost: 5, maxRooms: 1, range: haltRange });
+            creep.moveToWrapper(pos, { maxRooms: 1, range: haltRange });
         }
     };
 

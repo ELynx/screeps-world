@@ -177,7 +177,7 @@ beetle.creepAtDestination = function(creep)
 
         if (withdraws.length > 0)
         {
-            creep.withdrawFromAdjacentEnemyStructures(withdraws);
+            creep.withdrawFromAdjacentStructures(withdraws);
         }
 
         let rc = undefined;
