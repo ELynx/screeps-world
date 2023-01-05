@@ -78,7 +78,12 @@ claim.flagPrepare = function(flag)
 
 claim.makeBody = function(spawn)
 {
-    return [ TOUGH, CLAIM, MOVE, MOVE ];
+    const elvl = spawn.room.memory.elvl;
+
+    if (elvl < 3) return [];
+
+    // 770   10     50    10     50    600    50
+    return [ TOUGH, MOVE, TOUGH, MOVE, CLAIM, MOVE ];
 };
 
 claim.register();
