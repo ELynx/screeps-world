@@ -5,6 +5,7 @@ var Tasked = require('tasked.template');
 var beetle = new Tasked('beetle');
 
 const BreachCompleteRange = 1;
+const BreachEasyRange = 3;
 
 beetle.creepAtDestination = function(creep)
 {
@@ -13,45 +14,89 @@ beetle.creepAtDestination = function(creep)
     {
         if (Game.time - creep.memory._breachT_ > 10)
         {
-            creep.memory._breach_ = undefined;
+            creep.memory._breach_  = undefined;
+            creep.memory._breachI_ = undefined;
             creep.memory._breachT_ = undefined;
         }
+    }
+
+    // at the end of path refresh situation
+    if (creep.memory._breach_ && creep.memory._breachI_)
+    {
+        if (creep.memory._breach_.length <= creep.memory._breachI_)
+        {
+            creep.memory._breach_  = undefined;
+            creep.memory._breachI_ = undefined;
+            creep.memory._breachT_ = undefined;
+        }
+    }
+
+    const controlPos = creep.getControlPos();
+
+    if (creep.pos.inRangeTo(controlPos, BreachCompleteRange))
+    {
+        creep.memory._breach_  = undefined;
+        creep.memory._breachI_ = undefined;
+        creep.memory._breachT_ = undefined;
+
+        return;
     }
 
     // no path known
     if (creep.memory._breach_ === undefined)
     {
-        let controlPos = undefined;
+        const toControlPos = controlPos.getRangeTo(creep.pos);
+        const easyDistance = toControlPos <= BreachEasyRange ? BreachCompleteRange : BreachEasyRange;
 
-        const flagPos = creep.getFlagPos();
-        if (flagPos)
-        {
-            controlPos = flagPos;
-        }
-        else if (Game.rooms[creep.pos.roomName].controller)
-        {
-            controlPos = Game.rooms[creep.pos.roomName].controller.pos;
-        }
-        else
-        {
-            controlPos = creep.getControlPos();
-        }
+        let path = undefined;
 
-        const path = creep.room.findPath
+        const easyPath = creep.room.findPath
         (
             creep.pos,
             controlPos,
             {
-                ignoreCreeps: true,
-                ignoreDestructibleStructures: true,
-                ignoreRoads:true,
+                ignoreCreeps: false,
+                ignoreDestructibleStructures: false,
+                ignoreRoads: true,
                 maxRooms: 1,
-                range: BreachCompleteRange,
-                serialize: true
+                range: easyDistance,
+                maxOps: 500,
+
+                serialize: false // ! to be used for position check
             }
         );
 
-        creep.memory._breach_ = path;
+        if (easyPath.length > 0)
+        {
+            const last = easyPath[easyPath.length - 1];
+
+            if (controlPos.inRangeTo(last.x, last.y, easyDistance))
+            {
+                // because expect serialized
+                path = Room.serializePath(easyPath);
+            }
+        }
+
+        if (path === undefined)
+        {
+            path = creep.room.findPath
+            (
+                creep.pos,
+                controlPos,
+                {
+                    ignoreCreeps: true,
+                    ignoreDestructibleStructures: true,
+                    ignoreRoads:true,
+                    maxRooms: 1,
+                    range: BreachCompleteRange,
+
+                    serialize: true
+                }
+            );            
+        }
+
+        creep.memory._breach_  = path;
+        creep.memory._breachI_ = 0;
         creep.memory._breachT_ = Game.time;
     }
 
@@ -59,27 +104,27 @@ beetle.creepAtDestination = function(creep)
     creep.room.visual.poly(path);
 
     let next = undefined;
-    for (let i = 0; i < path.length - BreachCompleteRange; ++i)
+
+    for (let i = creep.memory._breachI_; i < path.length; ++i)
     {
-        const pathPoint = path[i];
-        if (creep.pos.x == pathPoint.x && creep.pos.y == pathPoint.y)
+        const pathItem = path[i];
+
+        const supposeNowX = pathItem.x - pathItem.dx;
+        const supposeNowY = pathItem.y - pathItem.dy;
+
+        if (creep.pos.x == supposeNowX && creep.pos.y == supposeNowY)
         {
-            next = path[i + 1];
+            next = pathItem;
+            creep.memory._breachI_ = i;
             break;
         }
-    }
-
-    // do a 1st step
-    if (next === undefined && path.length > 0)
-    {
-        next = path[0];
     }
 
     if (next)
     {
         let target = undefined;
 
-        const around = creep.room.lookForAt
+        const around = creep.room.lookForAtArea
         (
             LOOK_STRUCTURES,
             creep.pos.y - 1, // top
@@ -89,14 +134,16 @@ beetle.creepAtDestination = function(creep)
             true // as array
         );
 
-        creep.withdrawFromAdjacentEnemyStructures(around);
+        let withdraws = [];
 
-        for (const item in around)
+        for (const itemKey in around)
         {
+            const item = around[itemKey];
+            const struct = item.structure;
+            withdraws.push(struct);
+
             if (item.x != next.x || item.y != next.y)
                 continue;
-
-            const struct = item.structure;
 
             // walkable
             if (struct.structureType == STRUCTURE_CONTAINER ||
@@ -114,20 +161,37 @@ beetle.creepAtDestination = function(creep)
             target = struct;
         }
 
-        let rc = ERR_NOT_FOUND;
+        if (withdraws.length > 0)
+        {
+            creep.withdrawFromAdjacentEnemyStructures(withdraws);
+        }
+
+        let rc = undefined;
         if (target)
         {
             rc = creep.dismantle(target);
         }
-
-        if (rc != OK)
+        else
         {
-            creep.move(next.direction);
+            rc = creep.move(next.direction);
+            // trick - expect that movement actually happened
+            // search step from +1 of current
+            if (rc == OK)
+            {
+                ++creep.memory._breachI_;
+            }
+        }
+
+        // extend
+        if (rc == OK)
+        {
+            creep.memory._breachT_ = Game.time;
         }
     }
     else
     {
-        creep.memory._breach_ = undefined;
+        creep.memory._breach_  = undefined;
+        creep.memory._breachI_ = undefined;
         creep.memory._breachT_ = undefined;
     }
 };

@@ -17,6 +17,8 @@ history - historical data worth saving
 # TODO
 (Module WAR) "Hot" areas to avoid for worker creeps.
 
+Don't send military to enemy safe mode rooms.
+
 # Ideas
 Intent pipeline! Do more things in one turn!
 
