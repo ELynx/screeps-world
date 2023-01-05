@@ -64,7 +64,6 @@ beetle.creepAtDestination = function(creep)
             {
                 ignoreCreeps: false,
                 ignoreDestructibleStructures: false,
-                ignoreRoads: true,
                 maxRooms: 1,
                 range: easyDistance,
                 maxOps: 500,
@@ -97,7 +96,6 @@ beetle.creepAtDestination = function(creep)
                 {
                     ignoreCreeps: true,
                     ignoreDestructibleStructures: true,
-                    ignoreRoads:true,
                     maxRooms: 1,
                     range: hardDistance,
 
