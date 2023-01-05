@@ -257,6 +257,12 @@ function Tasked(id)
                 let spawn = spawns[i];
 
                 const creepBody = this.makeBody(spawn);
+
+                if (creepBody.length == 0)
+                {
+                    continue; // to next spawn
+                }
+
                 const creepName = flagName + '_' + Game.time + '_' + delta;
                 const creepArgs = {
                     memory:
