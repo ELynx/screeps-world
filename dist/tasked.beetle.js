@@ -198,8 +198,16 @@ beetle.creepAtDestination = function(creep)
 
 beetle.flagPrepare = function(flag)
 {
-    const breechers = flag.pos.findInRange(FIND_MY_CREEPS, BreachCompleteRange);
-    return breechers.length == 0 ? this.FLAG_SPAWN : this.FLAG_REMOVE;
+    if (flag.room)
+    {
+        const breechers = flag.pos.findInRange(FIND_MY_CREEPS, BreachCompleteRange);
+        if (breechers.length > 0)
+        {
+            return this.FLAG_REMOVE;
+        }
+    }
+
+    return this.FLAG_SPAWN;
 };
 
 beetle.makeBody = function(spawn)
