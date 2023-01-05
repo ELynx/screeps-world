@@ -133,10 +133,7 @@ beetle.creepAtDestination = function(creep)
     {
         let target = undefined;
 
-        const t = Math.max(creep.pos.y - 1, 0);
-        const l = Math.max(creep.pos.x - 1, 0);
-        const b = Math.min(creep.pos.y + 1, 49);
-        const r = Math.min(creep.pos.x + 1, 49);
+        const [t, l, b, r] = creep.pos.squareArea(1);
 
         const around = creep.room.lookForAtArea
         (
@@ -213,8 +210,22 @@ beetle.flagPrepare = function(flag)
     if (flag.room)
     {
         // any creep of same alignment work, breach was complete
-        const breechers = flag.pos.findInRange(FIND_MY_CREEPS, BreachCompleteRange);
-        if (breechers.length > 0)
+        const hasMyCreeps = flag.pos.hasInSquareArea
+        (
+            LOOK_CREEPS,
+            BreachCompleteRange,
+            function(creepLook)
+            {
+                if (creepLook.creep && creepLook.creep.my)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        );
+
+        if (hasMyCreeps)
         {
             return this.FLAG_REMOVE;
         }

@@ -56,14 +56,18 @@ secutiryProcess.work = function(room)
                     continue;
                 }
 
-                const trigger = flag.pos.findInRange(
-                    hostileCreeps,
+                const trigger = flag.pos.hasInSquareArea(
+                    LOOK_CREEPS,
                     range,
+                     function(creepLook)
                     {
-                        filter: function(creep)
+                        const creep = creepLook.creep;
+                        if (creep && !creep.my && creep.owner != 'Invader')
                         {
-                            return creep.owner != "Invader";
+                            return true;
                         }
+
+                        return false;
                     }
                 );
 

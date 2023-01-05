@@ -250,6 +250,16 @@ Room.prototype.getRoomControlledCreeps = function()
     return this._roomCreeps_;
 };
 
+RoomPosition.prototype.squareArea = function(squareStep)
+{
+    const t = Math.max(this.y - squareStep, 0);
+    const l = Math.max(this.x - squareStep, 0);
+    const b = Math.min(this.y + squareStep, 49);
+    const r = Math.min(this.x + squareStep, 49);
+
+    return [ t, l, b, r ];
+}
+
 /**
 Get number of walkable tiles around a position.
 @return {integer} number of walkable tiles.
@@ -261,10 +271,7 @@ RoomPosition.prototype.walkableTiles = function()
     const room = Game.rooms[this.roomName];
     if (room)
     {
-        const t = this.y > 0  ? this.y - 1 : 0;
-        const l = this.x > 0  ? this.x - 1 : 0;
-        const b = this.y < 49 ? this.y + 1 : 49;
-        const r = this.x < 49 ? this.x + 1 : 49;
+        const [t, l, b, r] = this.squareArea(1);
 
         const around = room.lookAtArea(t, l, b, r);
 
@@ -319,6 +326,27 @@ RoomPosition.prototype.walkableTiles = function()
     return result;
 };
 
+RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
+{
+    const [t, l, b, r] = this.squareArea(squareStep);
+
+    const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true);
+
+    if (filterFunction === undefined) return items.length > 0;
+
+    for (let itemKey in items)
+    {
+        const item = items[itemKey];
+
+        if (filterFunction(item))
+        {
+            return true
+        }
+    }
+
+    return false;
+};
+
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room
@@ -357,9 +385,7 @@ StructureLink.prototype.isSource = function()
 
     if (result === undefined)
     {
-        let sources = this.pos.findInRange(FIND_SOURCES, 2);
-        result = sources.length > 0;
-
+        result = this.pos.hasInSquareArea(LOOK_SOURCES, 2);
         this.setToMemory(_isSourceKey_, result);
     }
 
