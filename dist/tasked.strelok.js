@@ -277,59 +277,54 @@ strelok.makeBody = function(spawn)
         return cached;
     }
 
-    let toughPair = 0;
-    let pureLegs  = 0;
-    let attack    = 0;
-    let heal      = 0;
+    let tough  = 0;
+    let move   = 0;
+    let attack = 0;
+    let heal   = 0;
 
     let budget = 800 + 500 * (elvl - 3);
 
     // add heal + two attack combo
     // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
-    while (budget >= 700 && (pureLegs + attack + heal <= 50 - 6))
+    while (budget >= 700 && (move + attack + heal <= 50 - 6))
     {
-        pureLegs = pureLegs + 3;
-        attack   = attack   + 2;
-        heal     = heal     + 1;
+        move   = move   + 3;
+        attack = attack + 2;
+        heal   = heal   + 1;
 
-        budget   = budget   - 700;
+        budget = budget - 700;
     }
 
-    // second add attack
+    // add attack
     // 200 is 150 ranged x 1 + 50 move x 1
-    while (budget >= 200 && (pureLegs + attack + heal <= 50 - 2))
+    while (budget >= 200 && (move + attack + heal <= 50 - 2))
     {
-        pureLegs = pureLegs + 1;
-        attack   = attack   + 1;
+        move   = move   + 1;
+        attack = attack + 1;
 
-        budget   = budget   - 200;
+        budget = budget - 200;
     }
 
-    // add tough + move padding
-    // 60 is 10 tough x 1 + 50 move x 1
-    while (budget >= 60 && ((toughPair * 2) + pureLegs + attack + heal <= 50 - 2))
+    // add move padding
+    while (budget >= 50 && (move + attack + heal <= 50 - 1))
     {
-        toughPair = toughPair + 1;
+        move   = move   + 1;
 
-        budget    = budget    - 60;
+        budget = budget - 50;
     }
 
-    // add just legs to buff HP
-    if (budget >= 50 && ((toughPair * 2) + pureLegs + attack + heal <= 50 - 1))
+    // add tough padding
+    if (budget >= 10 && (tough + move + attack + heal <= 50 - 1) && (tough + attack + heal < move))
     {
-        pureLegs = pureLegs + 1;
-        budget   = budget   - 50;
+        tough  = tough  + 1;
+
+        budget = budget - 10;
     }
 
-    let body = [];
+    let a = new Array(tough);
+    a.fill(TOUGH);
 
-    for (let i = 0; i < toughPair; ++i)
-    {
-        body.push(TOUGH);
-        body.push(MOVE);
-    }
-
-    let b = new Array(pureLegs);
+    let b = new Array(move);
     b.fill(MOVE);
 
     let c = new Array(attack);
@@ -338,7 +333,7 @@ strelok.makeBody = function(spawn)
     let d = new Array(heal);
     d.fill(HEAL);
 
-    body = body.concat(b).concat(c).concat(d);
+    const body = a.concat(b).concat(c).concat(d);
 
     this._bodyCache_[elvl] = body;
 

@@ -227,18 +227,42 @@ beetle.makeBody = function(spawn)
 {
     const elvl = spawn.room.memory.elvl;
 
-    if (elvl < 1)
+    if (elvl <= 1)
     {
+        // 150   50    100
         return [ MOVE, WORK ];
     }
-    else if (elvl <= 3)
+    else if (elvl <= 2)
     {
-        return [ MOVE, MOVE, WORK, WORK ];
+        // 450   50    50    50    100   100   100
+        return [ MOVE, MOVE, MOVE, WORK, WORK, WORK ];
     }
-    else
+
+    if (!this._bodyCache_)
     {
-        return [ MOVE, MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK ];
+        this._bodyCache_ = { };
     }
+
+    const cached = this._bodyCache_[elvl];
+    if (cached)
+    {
+        return cached;
+    }
+
+    const budget = 800 + 500 * (elvl - 3);
+    const pairs = Math.min(Math.floor(budget / 150), 25);
+
+    let a = new Array(pairs);
+    a.fill(MOVE);
+
+    let b = new Array(pairs):
+    b.fill(WORK);
+
+    const body = a.concat(b);
+
+    this._bodyCache_[elvl] = body;
+
+    return body;
 };
 
 beetle.register();

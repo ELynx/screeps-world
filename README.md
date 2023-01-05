@@ -21,10 +21,6 @@ Don't send military to enemy safe mode rooms.
 
 `findInRange` is expensive, make a custom thing
 
-Beetle body
-
-Strelok body
-
 # Ideas
 Intent pipeline! Do more things in one turn!
 

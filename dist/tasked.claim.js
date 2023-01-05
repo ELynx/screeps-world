@@ -80,10 +80,21 @@ claim.makeBody = function(spawn)
 {
     const elvl = spawn.room.memory.elvl;
 
+    // cannot spawn 650+
     if (elvl < 3) return [];
 
-    // 770   10     50    10     50    600    50
-    return [ TOUGH, MOVE, TOUGH, MOVE, CLAIM, MOVE ];
+    if (elvl < 4)
+    {
+        // on swamp move 1 unit per 2 ticks
+        // move up front to allow crawl even damaged
+        // 750   50    50    600    50
+        return [ MOVE, MOVE, CLAIM, MOVE ];
+    }
+
+    // on swamp move 1 unit per 1 tick
+    // move up front to allow crawl even damaged
+    // 850   50    50    50    50    600    50
+    return [ MOVE, MOVE, MOVE, MOVE, CLAIM, MOVE ];
 };
 
 claim.register();
