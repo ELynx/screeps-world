@@ -265,6 +265,9 @@ Room.prototype.getRoomControlledCreeps = function()
             Game.creeps,
             function(creep, name)
             {
+                // skip tasked
+                if (creep.memory.flag) return false;
+
                 return creep.memory.crum == self.name;
             }
         );
