@@ -1,14 +1,14 @@
 {
-	"folders":
+	/*"folders":
 	[
-		{
-			"path": ".github",
-		},
-		{
-			"path": "dist",
-		},
 		{
 			"path": "history",
 		},
+	],*/
+	"folders":
+	[
+		{
+			"path": "."
+		}
 	],
 }
