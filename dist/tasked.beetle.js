@@ -7,37 +7,40 @@ var beetle = new Tasked('beetle');
 const BreachCompleteRange = 1;
 const BreachEasyRange = 3;
 
+beetle.wipeBreach = function(creep)
+{
+    creep.memory._breach_  = undefined;
+    creep.memory._breachI_ = undefined;
+    creep.memory._breachT_ = undefined;
+};
+
 beetle.creepAtDestination = function(creep)
 {
-    // every N ticks refresh situation
+    // every N ticks refresh situation if stuck
     if (creep.memory._breachT_)
     {
         if (Game.time - creep.memory._breachT_ > 10)
         {
-            creep.memory._breach_  = undefined;
-            creep.memory._breachI_ = undefined;
-            creep.memory._breachT_ = undefined;
+            this.wipeBreach(creep);
         }
     }
 
-    // at the end of path refresh situation
+    // at the end of path refresh situation immediately
     if (creep.memory._breach_ && creep.memory._breachI_)
     {
         if (creep.memory._breach_.length <= creep.memory._breachI_)
         {
-            creep.memory._breach_  = undefined;
-            creep.memory._breachI_ = undefined;
-            creep.memory._breachT_ = undefined;
+            this.wipeBreach(creep);
         }
     }
 
     const controlPos = creep.getControlPos();
 
+    // stop path calculation on arrival
+    // TODO continue thrashing enemy afterwards
     if (creep.pos.inRangeTo(controlPos, BreachCompleteRange))
     {
-        creep.memory._breach_  = undefined;
-        creep.memory._breachI_ = undefined;
-        creep.memory._breachT_ = undefined;
+        this.wipeBreach(creep);
 
         return;
     }
@@ -45,11 +48,15 @@ beetle.creepAtDestination = function(creep)
     // no path known
     if (creep.memory._breach_ === undefined)
     {
-        const toControlPos = controlPos.getRangeTo(creep.pos);
-        const easyDistance = toControlPos <= BreachEasyRange ? BreachCompleteRange : BreachEasyRange;
-
         let path = undefined;
 
+        // how much long is remaining
+        const toControlPos = controlPos.getRangeTo(creep.pos);
+
+        // try to find a path to nearby location
+        // detect obstacles so there is a chance to go through existing breaches
+        // try to reach the place if nearby
+        const easyDistance = toControlPos <= BreachEasyRange ? BreachCompleteRange : BreachEasyRange;
         const easyPath = creep.room.findPath
         (
             creep.pos,
@@ -66,6 +73,7 @@ beetle.creepAtDestination = function(creep)
             }
         );
 
+        // check if endpoint is within wanted range
         if (easyPath.length > 0)
         {
             const last = easyPath[easyPath.length - 1];
@@ -77,8 +85,11 @@ beetle.creepAtDestination = function(creep)
             }
         }
 
+        // no, easy path was not found, need to look through walls
         if (path === undefined)
         {
+            // come a bit closer, do not plan a trip up to the point
+            const hardDistance = Math.max(toControlPos - BreachEasyRange, BreachCompleteRange);
             path = creep.room.findPath
             (
                 creep.pos,
@@ -88,7 +99,7 @@ beetle.creepAtDestination = function(creep)
                     ignoreDestructibleStructures: true,
                     ignoreRoads:true,
                     maxRooms: 1,
-                    range: BreachCompleteRange,
+                    range: hardDistance,
 
                     serialize: true
                 }
@@ -192,12 +203,10 @@ beetle.creepAtDestination = function(creep)
         {
             creep.memory._breachT_ = Game.time;
         }
-    }
+    } // end of next is present
     else
     {
-        creep.memory._breach_  = undefined;
-        creep.memory._breachI_ = undefined;
-        creep.memory._breachT_ = undefined;
+        this.wipeBreach(creep);
     }
 };
 
@@ -205,6 +214,7 @@ beetle.flagPrepare = function(flag)
 {
     if (flag.room)
     {
+        // any creep of same alignment work, breach was complete
         const breechers = flag.pos.findInRange(FIND_MY_CREEPS, BreachCompleteRange);
         if (breechers.length > 0)
         {
