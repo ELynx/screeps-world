@@ -330,7 +330,7 @@ strelok.makeBody = function(spawn)
     }
 
     let b = new Array(pureLegs);
-    b.fill(MOVE):
+    b.fill(MOVE);
 
     let c = new Array(attack);
     c.fill(RANGED_ATTACK);
@@ -348,4 +348,3 @@ strelok.makeBody = function(spawn)
 strelok.register();
 
 module.exports = strelok;
- 
