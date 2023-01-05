@@ -22,9 +22,21 @@ towerProcess.work = function(room)
         return;
     }
 
-    const hostileCreeps = room.getHostileCreeps();
-    const friendlyCreeps = room.getMyCreeps();
+    const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
 
+    if (hostileCreeps.length > 0)
+    {
+        for (let i = 0; i < towers.length; ++i)
+        {
+            const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
+            if(closestHostile)
+            {
+                towers[i].attack(closestHostile);
+            }
+        }       
+    }
+
+    const friendlyCreeps = room.find(FIND_MY_CREEPS);
     const damagedCreeps = _.filter(
         friendlyCreeps,
         function(creep)
@@ -33,23 +45,16 @@ towerProcess.work = function(room)
         }
     );
 
-    if (hostileCreeps.length > 0 || damagedCreeps.length > 0)
+    if (damagedCreeps.length > 0)
     {
         for (let i = 0; i < towers.length; ++i)
         {
-            const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
-            if(closestHostile)
+            const closestDamaged = towers[i].pos.findClosestByRange(damagedCreeps);
+            if(closestDamaged)
             {
-                var rc = towers[i].attack(closestHostile);
-                if (rc == OK) continue;
+                towers[i].heal(closestDamaged);
             }
-
-            const damagedCreep = towers[i].pos.findClosestByRange(damagedCreeps);
-            if (damagedCreep)
-            {
-                towers[i].heal(damagedCreep);
-            }
-        }
+        }   
     }
 };
 

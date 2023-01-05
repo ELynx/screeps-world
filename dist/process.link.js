@@ -30,13 +30,13 @@ linkProcess.work = function(room)
 
     const useAsSource = function(someLink)
     {
-        return someLink.cooldown == 0 && someLink.energy > 0;
+        return someLink.cooldown == 0 && someLink.getUsedCapacity(RESOURCE_ENERGY) > 0;
     };
 
     const useAsDest = function(someLink)
     {
         // cut off transfer, due to losses it is never 100% full
-        return someLink.energy < someLink.energyCapacity - Treshold;
+        return someLink.getFreeCapacity(RESOURCE_ENERGY) < Treshold;
     };
 
     for (let i = 0; i < allLinks.length; ++i)
@@ -72,7 +72,7 @@ linkProcess.work = function(room)
             function(l1, l2)
             {
                 // STRATEGY most energy first
-                return l2.energy - l1.energy;
+                return l2.store[RESOURCE_ENERGY] - l1.store[RESOURCE_ENERGY];
             }
         );
     }
@@ -83,7 +83,7 @@ linkProcess.work = function(room)
             function(l1, l2)
             {
                 // STRATEGY keep it CPU-simple
-                return l1.energy - l2.energy;
+                return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY];
             }
         );
     }

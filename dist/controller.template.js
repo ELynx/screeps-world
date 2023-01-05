@@ -462,8 +462,8 @@ function Controller(id)
                             tgt,
                             {
                                 ignoreCreeps: this.ignoreCreepsForTargeting,
-                                maxRooms: 1,
                                 range: this.actRange,
+                                maxRooms: 1,
                                 plainCost: 1,
                                 swampCost: 1
                             }

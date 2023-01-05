@@ -1,13 +1,8 @@
 'use strict';
 
-Creep.prototype.sumCarry = function()
-{
-    return _.sum(this.carry);
-};
-
 Creep.prototype.hasEnergy = function()
 {
-    return this.carry.energy > 0;
+    return this.store[RESOURCE_ENERGY] > 0;
 };
 
 Creep.prototype.caveIndex = function()
@@ -99,7 +94,7 @@ Creep.prototype.healAdjacent = function(creeps)
     return ERR_NOT_FOUND;
 };
 
-Creep.prototype.withdrawFromAdjacentEnemyStructures = function(targets)
+Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 {
     for (let target in targets)
     {
@@ -116,6 +111,17 @@ Creep.prototype.withdrawFromAdjacentEnemyStructures = function(targets)
     }
 
     return ERR_NOT_FOUND;
+};
+
+Creep.prototype.moveToWrapper(destination, options = { })
+{
+    if (options.plainCost === undefined)
+        options.plainCost = 1;
+
+    if (options.swampCost === undefined)
+        options.swampCost = 5;
+
+    return this.moveTo(destination, options);
 };
 
 Flag.prototype.getValue = function()
@@ -214,41 +220,9 @@ Room.prototype._clearCreepCacheIfOld = function()
         return;
     }
 
-    this._hostileCreeps_ = undefined;
-    this._myCreeps_      = undefined;
-    this._roomCreeps_    = undefined;
-    this._creepCacheT_   = Game.time;
+    this._roomCreeps_  = undefined;
+    this._creepCacheT_ = Game.time;
 }
-
-/**
-Get a list of hostile creeps in a room, cached
-**/
-Room.prototype.getHostileCreeps = function()
-{
-    this._clearCreepCacheIfOld();
-
-    if (this._hostileCreeps_ === undefined)
-    {
-        this._hostileCreeps_ = this.find(FIND_HOSTILE_CREEPS);
-    }
-
-    return this._hostileCreeps_;
-};
-
-/**
-Get a list of my creeps in a room, cached
-**/
-Room.prototype.getMyCreeps = function()
-{
-    this._clearCreepCacheIfOld();
-
-    if (this._myCreeps_ === undefined)
-    {
-        this._myCreeps_ = this.find(FIND_MY_CREEPS);
-    }
-
-    return this._myCreeps_;
-};
 
 /**
 Get a list of creeps assigned to a room, cached
@@ -357,15 +331,39 @@ Structure.prototype.isActiveSimple = function()
     return true;
 };
 
+Structure.prototype.getFromMemory = function(key)
+{
+    if (!Memory.structures) return undefined;
+
+    if (!Memory.structures[this.id]) return undefined;
+
+    return Memory.structures[this.id][key];
+};
+
+Structure.prototype.setToMemory = function(key, value)
+{
+    if (!Memory.structures) Memory.structures = { };
+
+    if (!Memory.structures[this.id]) Memory.structures[this.id] = { };
+
+    Memory.structures[this.id][key] = value;
+};
+
+const _isSourceKey_ = 'isSource';
+
 StructureLink.prototype.isSource = function()
 {
-    if (this._isSource_ === undefined)
+    let result = this.getFromMemory(_isSourceKey_);
+
+    if (result === undefined)
     {
         let sources = this.pos.findInRange(FIND_SOURCES, 2);
-        this._isSource_ = sources.length > 0;
+        result = sources.length > 0;
+
+        this.setToMemory(_isSourceKey_, result);
     }
 
-    return this._isSource_;
+    return result;
 };
 
 /**

@@ -177,7 +177,7 @@ var roomActor =
 
                         if (!creep.pos.inRangeTo(destRoom, 23))
                         {
-                            creep.moveTo(destRoom, { reusePath: 50, range: 23 });
+                            creep.moveToWrapper(destRoom, { reusePath: 50, range: 23 });
 
                             continue; // to next creep
                         }
@@ -270,7 +270,7 @@ var roomActor =
                                 // STRATEGY creep movement, main CPU sink
 
                                 // first move by cached path
-                                let rc = creep.moveTo(destination, { noPathFinding: true });
+                                let rc = creep.moveToWrapper(destination, { noPathFinding: true });
 
                                 // no movement, see if pathfinding is possible
                                 if (rc == ERR_NOT_FOUND)
@@ -282,14 +282,14 @@ var roomActor =
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        rc = creep.moveTo(destination, { plainCost: 1, swampCost: 5, maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveToWrapper(destination, { maxRooms: 1, range: creep.memory.dact });
                                     }
                                     else
                                     {
                                         // so assignment is not dropped
                                         rc = OK;
                                         this.debugLine(room, 'Creep ' + creep.name + ' stalls');
-                                        creep.say('P');
+                                        creep.say('(P)');
                                     }
                                 }
 

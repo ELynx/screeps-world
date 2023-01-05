@@ -11,7 +11,7 @@ mineralHarvestController.act = function(extractor, creep)
     let result = false;
 
     // will drop on ground if not enough free space
-    if (creep.sumCarry() < creep.carryCapacity)
+    if (creep.getFreeCapacity() > 0)
     {
         // STRATEGY wait for full carry
         if (extractor.cooldown > 0)
@@ -21,17 +21,22 @@ mineralHarvestController.act = function(extractor, creep)
         else
         {
             const minerals = extractor.pos.lookFor(LOOK_MINERALS);
-
-            if (minerals.length > 0)
+            for (let i = 0; i < minerals.length; ++i)
             {
-                let rc = creep.harvest(minerals[0]);
+                const mineral = minerals[i];
 
-                if (rc == ERR_NOT_ENOUGH_RESOURCES)
+                if (mineral.mineralAmount == 0)
                 {
-                    extractor.room.memory.mlvl = 0;
+                    continue;
                 }
 
+                const rc = creep.harvest(mineral);
                 result = rc == OK;
+            }
+
+            if (!result)
+            {
+                extractor.room.memory.mlvl = 0;
             }
         }
     }
@@ -54,7 +59,7 @@ mineralHarvestController.staticTargets = function(room)
 
 mineralHarvestController.filterCreep = function(creep)
 {
-    if (creep.memory.minr == true && creep.sumCarry() == 0)
+    if (creep.memory.minr == true && creep.getUsedCapacity() == 0)
     {
         return true;
     }

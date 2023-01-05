@@ -85,7 +85,7 @@ strelok.creepAtDestination = function(creep)
         }
     );
 
-    creep.withdrawFromAdjacentEnemyStructures(targets);
+    creep.withdrawFromAdjacentStructures(targets);
 
     const target = creep.pos.findClosestByRange(targets);
     if (target)
@@ -166,7 +166,7 @@ strelok.creepAtDestination = function(creep)
                     // STRATEGY follow creep tightly
                     const reuse = target.structureType ? 10 : 0;
 
-                    creep.moveTo(target, { plainCost: 1, swampCost: 5, maxRooms: 1, reusePath: reuse, range: 3 });
+                    creep.moveToWrapper(target, { maxRooms: 1, reusePath: reuse, range: 3 });
                 }
             }
         } // end of if has ranged bpart

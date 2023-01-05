@@ -14,7 +14,7 @@ secutiryProcess.work = function(room)
     let threatLevel = room.memory.threat  || 0;
     let threatTimer = room.memory.threatT || (Game.time - ThreatStep);
 
-    const hostileCreeps = room.getHostileCreeps();
+    const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
 
     if (hostileCreeps.length > 0)
     {

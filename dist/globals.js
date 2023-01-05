@@ -88,10 +88,11 @@ var globals =
         this.taskControllers[tasked.id] = tasked;
     },
 
-    NO_CONTROL: '',
+    // empty string used to allow use as key
+    NO_CONTROL:     '',
     NO_DESTINATION: '',
-    NO_ACT_RANGE: undefined,
-    NO_EXTRA: undefined,
+    NO_ACT_RANGE:   undefined,
+    NO_EXTRA:       undefined,
 
     /**
     @param {Creep} creep.
@@ -100,15 +101,6 @@ var globals =
     creepAssigned: function(creep)
     {
         return creep.memory.ctrl != this.NO_CONTROL && !creep.spawning;
-    },
-
-    /**
-    @param {Creep} creep.
-    @return If creep is not assigned to a controller.
-    **/
-    creepNotAssigned: function(creep)
-    {
-        return creep.memory.ctrl == this.NO_CONTROL && !creep.spawning;
     },
 
     /**
