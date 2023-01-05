@@ -255,20 +255,97 @@ strelok.makeBody = function(spawn)
 {
     const elvl = spawn.room.memory.elvl;
 
-    if (elvl < 1)
+    if (elvl <= 1)
     {
+        // 200   50    150
         return [ MOVE, RANGED_ATTACK ];
     }
-    else if (elvl <= 3)
+    else if (elvl <= 2)
     {
+        // 500   50    50    150            250
         return [ MOVE, MOVE, RANGED_ATTACK, HEAL ];
     }
-    else
+
+    if (!this._bodyCache_)
     {
-        return [ MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL ];
+        this._bodyCache_ = { };
     }
+
+    const cached = this._bodyCache_[elvl];
+    if (cached)
+    {
+        return cached;
+    }
+
+    let toughPair = 0;
+    let pureLegs  = 0;
+    let attack    = 0;
+    let heal      = 0;
+
+    let budget = 800 + 500 * (elvl - 3);
+
+    // add heal + two attack combo
+    // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
+    while (budget >= 700 && (pureLegs + attack + heal <= 50 - 6))
+    {
+        pureLegs = pureLegs + 3;
+        attack   = attack   + 2;
+        heal     = heal     + 1;
+
+        budget   = budget   - 700;
+    }
+
+    // second add attack
+    // 200 is 150 ranged x 1 + 50 move x 1
+    while (budget >= 200 && (pureLegs + attack + heal <= 50 - 2))
+    {
+        pureLegs = pureLegs + 1;
+        attack   = attack   + 1;
+
+        budget   = budget   - 200;
+    }
+
+    // add tough + move padding
+    // 60 is 10 tough x 1 + 50 move x 1
+    while (budget >= 60 && ((toughPair * 2) + pureLegs + attack + heal <= 50 - 2))
+    {
+        toughPair = toughPair + 1;
+
+        budget    = budget    - 60;
+    }
+
+    // add just legs to buff HP
+    if (budget >= 50 && ((toughPair * 2) + pureLegs + attack + heal <= 50 - 1))
+    {
+        pureLegs = pureLegs + 1;
+        budget   = budget   - 50;
+    }
+
+    let body = [];
+
+    for (let i = 0; i < toughPair; ++i)
+    {
+        body.push(TOUGH);
+        body.push(MOVE);
+    }
+
+    let b = new Array(pureLegs);
+    b.fill(MOVE):
+
+    let c = new Array(attack);
+    c.fill(RANGED_ATTACK);
+
+    let d = new Array(heal);
+    d.fill(HEAL);
+
+    body = body.concat(b).concat(c).concat(d);
+
+    this._bodyCache_[elvl] = body;
+
+    return body;
 };
 
 strelok.register();
 
 module.exports = strelok;
+ 
