@@ -11,7 +11,7 @@ mineralHarvestController.act = function(extractor, creep)
     let result = false;
 
     // will drop on ground if not enough free space
-    if (creep.getFreeCapacity() > 0)
+    if (creep.store.getFreeCapacity() > 0)
     {
         // STRATEGY wait for full carry
         if (extractor.cooldown > 0)
@@ -59,7 +59,7 @@ mineralHarvestController.staticTargets = function(room)
 
 mineralHarvestController.filterCreep = function(creep)
 {
-    if (creep.memory.minr == true && creep.getUsedCapacity() == 0)
+    if (creep.memory.minr == true && creep.store.getUsedCapacity() == 0)
     {
         return true;
     }

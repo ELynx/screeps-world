@@ -80,7 +80,7 @@ ttlController.filterCreep = function(creep)
     }
 
     // STRATEGY don't drag resources around
-    if (creep.getUsedCapacity() > 0)
+    if (creep.store.getUsedCapacity() > 0)
     {
         return false;
     }
