@@ -78,14 +78,22 @@ var bodywork =
             return [ 0, [] ];
         }
 
-        if (energyLevel < 6)
+        // special case, limp a bit
+        // don't care about the level
+        if (energyLevel == 3)
         {
             // 800       100   100   100   100   100   50     50    50    50    50    50
             return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
         }
 
-        // 1600      100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50
-        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        if (energyLevel < 6)
+        {
+            // 850       100   100   100   100   100   50     50    50    50    50    50    50
+            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        }
+
+        // 1700      100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50    50    50
+        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
     },
 
     /**
@@ -101,8 +109,16 @@ var bodywork =
             return [ 0, [] ];
         }
 
-        // 800       100   100   100   100   100   50     50    50    50    50    50
-        return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        // special case, limp a bit
+        // don't care about the level
+        if (energyLevel == 3)
+        {
+            // 800       100   100   100   100   100   50     50    50    50    50    50
+            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        }
+
+        // 850       100   100   100   100   100   50     50    50    50    50    50    50
+        return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
     }
 };
 
