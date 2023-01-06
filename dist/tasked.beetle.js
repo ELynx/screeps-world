@@ -266,7 +266,7 @@ beetle.makeBody = function(spawn)
     let a = new Array(pairs);
     a.fill(MOVE);
 
-    let b = new Array(pairs):
+    let b = new Array(pairs);
     b.fill(WORK);
 
     const body = a.concat(b);
