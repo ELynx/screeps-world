@@ -272,8 +272,8 @@ const Profiler = {
     }
 
     const endTick = Math.min(Memory.profiler.disableTick || Game.time, Game.time);
-    const startTick = Memory.profiler.enabledTick + 1;
-    const elapsedTicks = endTick - startTick;
+    const startTick = Memory.profiler.enabledTick;
+    const elapsedTicks = endTick - startTick + 1;
     const header = 'calls\t\ttime\t\tavg\t\tfunction';
     const footer = [
       `Avg: ${(Memory.profiler.totalTime / elapsedTicks).toFixed(2)}`,
@@ -334,6 +334,7 @@ const Profiler = {
     { name: 'RawMemory', val: RawMemory },
     { name: 'ConstructionSite', val: ConstructionSite },
     { name: 'Creep', val: Creep },
+    { name: 'Deposit', val: Deposit },
     { name: 'Flag', val: Flag },
     { name: 'Mineral', val: Mineral },
     { name: 'Nuke', val: Nuke },
@@ -346,12 +347,16 @@ const Profiler = {
     { name: 'RoomObject', val: RoomObject },
     { name: 'RoomPosition', val: RoomPosition },
     { name: 'RoomVisual', val: RoomVisual },
+    { name: 'Ruin', val: Ruin },
     { name: 'Source', val: Source },
+    { name: 'Store', val: Store },
     { name: 'Structure', val: Structure },
     { name: 'StructureContainer', val: StructureContainer },
     { name: 'StructureController', val: StructureController },
     { name: 'StructureExtension', val: StructureExtension },
     { name: 'StructureExtractor', val: StructureExtractor },
+    { name: 'StructureFactory', val: StructureFactory },
+    { name: 'StructureInvaderCode', val: StructureInvaderCode },
     { name: 'StructureKeeperLair', val: StructureKeeperLair },
     { name: 'StructureLab', val: StructureLab },
     { name: 'StructureLink', val: StructureLink },
