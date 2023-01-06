@@ -198,7 +198,7 @@ var roomActor =
                 // TODO profile and decide how it works
                 // TODO why these conditions?
                 // hotplug - grab resources nearby
-                if (creep.sumCarry() < creep.carryCapacity &&
+                if (creep.store.getFreeCapacity() > 0 &&
                   !(creep.memory.rstk && creep.memory.ctrl == energyHarvestController.id))
                 {
                     let wasGrabbed = false;

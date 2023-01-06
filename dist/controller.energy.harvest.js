@@ -13,7 +13,7 @@ energyHarvestController.act = function(source, creep)
     let result = false;
 
     // will drop on ground if not enough free space
-    if (creep.getFreeCapacity() > 0)
+    if (creep.store.getFreeCapacity() > 0)
     {
         result = creep.harvest(source) == OK;
     }
@@ -29,7 +29,7 @@ energyHarvestController.staticTargets = function(room)
 energyHarvestController.filterCreep = function(creep)
 {
     // STRATEGY harvest with empty only, reduce runs to sources
-    if (creep.memory.hvst == true && creep.getUsedCapacity() == 0)
+    if (creep.memory.hvst == true && creep.store.getUsedCapacity() == 0)
     {
         return true;
     }

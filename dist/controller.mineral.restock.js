@@ -67,7 +67,7 @@ mineralHarvestController.filterCreep = function(creep)
 {
     if (creep.memory.minr == true)
     {
-        return creep.getUsedCapacity() > 0;
+        return creep.store.getUsedCapacity() > 0;
     }
 
     return false;
