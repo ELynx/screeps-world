@@ -2,7 +2,8 @@
 
 var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
-//const profiler = require('screeps-profiler');
+
+const profiler = require('screeps-profiler');
 
 Room.prototype._markDefaultFiltered = function()
 {
@@ -593,7 +594,7 @@ function Controller(id)
     {
         globals.registerRoomController(this);
 
-        //profiler.registerObject(this, this.id);
+        profiler.registerObject(this, this.id);
     };
 };
 

@@ -6,18 +6,18 @@ var cleanupMemory = require('routine.memory');
 var roomActor     = require('actor.room');
 var worldActor    = require('actor.world');
 
-//const profiler    = require('screeps-profiler');
+const profiler    = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 
-//profiler.registerObject(roomActor, 'roomActor');
-//profiler.registerObject(worldActor, 'worldActor');
+profiler.registerObject(roomActor, 'roomActor');
+profiler.registerObject(worldActor, 'worldActor');
 
 //profiler.enable();
 
 module.exports.loop = function()
 {
-    //profiler.wrap(function() {
+    profiler.wrap(function() {
 
     cleanupMemory();
 
@@ -64,5 +64,5 @@ module.exports.loop = function()
 
     worldActor.act();
 
-    //});
+    });
 }
