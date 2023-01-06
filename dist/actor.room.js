@@ -203,33 +203,37 @@ var roomActor =
                 {
                     let wasGrabbed = false;
 
-                    const res = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 1);
-
-                    for (let k = 0; k < res.length && !wasGrabbed; ++k)
+                    const [t, l, b, r] = creep.pos.squareArea(1);
+                    const grabbs = room.lookAtArea(t, l, b, r, true);
+                    for (let k = 0; k < grabbs.length && !wasGrabbed; ++k)
                     {
-                        if (res[k].resourceType == RESOURCE_ENERGY)
+                        const grabb = grabbs[k];
+
+                        if (grabb.type == 'tombstone')
                         {
-                            wasGrabbed = creep.pickup(res[k]) == OK;
+                            const ex = grabb.tombstone;
+                            if (ex.store[RESOURCE_ENERGY] > 0)
+                            {
+                                wasGrabbed = creep.withdraw(ex, RESOURCE_ENERGY) == OK;
+                            }
                         }
-                    }
 
-                    if (!wasGrabbed)
-                    {
-                        const tomb = creep.pos.findInRange(FIND_TOMBSTONES, 1);
-
-                        for (let k = 0; k < tomb.length && !wasGrabbed; ++k)
+                        if (grabb.type == 'ruin')
                         {
-                            // since internal to room don't bother with hostile ramparts
-                            wasGrabbed = creep.withdraw(tomb[k], RESOURCE_ENERGY) == OK;
+                            const ex = grabb.ruin;
+                            if (ex.store[RESOURCE_ENERGY] > 0)
+                            {
+                                wasGrabbed = creep.withdraw(ex, RESOURCE_ENERGY) == OK;
+                            }
                         }
-                    }
 
-                    if (!wasGrabbed)
-                    {
-                        const ruin = creep.pos.findInRange(FIND_RUINS, 1);
-                        for (let k = 0; k < ruin.length && !wasGrabbed; ++k)
+                        if (grabb.type == 'resource')
                         {
-                            wasGrabbed = creep.withdraw(ruin[k], RESOURCE_ENERGY) == OK;
+                            const ex = grabb.resource;
+                            if (ex.resourceType == RESOURCE_ENERGY)
+                            {
+                                wasGrabbed = creep.pickup(ex) == OK;
+                            }
                         }
                     }
 
