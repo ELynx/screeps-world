@@ -54,7 +54,7 @@ mineralHarvestController.staticTargets = function(room)
             {
                 if (structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple())
                 {
-                    return structure.getFreeCapacity() > 0;
+                    return structure.store.getFreeCapacity() > 0;
                 }
 
                 return false;
