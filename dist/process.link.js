@@ -36,7 +36,7 @@ linkProcess.work = function(room)
     const useAsDest = function(someLink)
     {
         // cut off transfer, due to losses it is never 100% full
-        return someLink.store.getFreeCapacity(RESOURCE_ENERGY) < Treshold;
+        return someLink.store.getFreeCapacity(RESOURCE_ENERGY) > Treshold;
     };
 
     for (let i = 0; i < allLinks.length; ++i)
