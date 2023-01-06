@@ -2,7 +2,8 @@
 
 var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
-//const profiler = require('screeps-profiler');
+
+const profiler = require('screeps-profiler');
 
 Creep.prototype.getFlagName = function()
 {
@@ -308,7 +309,7 @@ function Tasked(id)
     {
         globals.registerTaskController(this);
 
-        //profiler.registerObject(this, this.id);
+        profiler.registerObject(this, this.id);
     };
 };
 

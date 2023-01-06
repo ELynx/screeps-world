@@ -2,7 +2,8 @@
 
 var globals = require('globals');
 var makeDebuggable = require('routine.debuggable');
-//const profiler = require('screeps-profiler');
+
+const profiler = require('screeps-profiler');
 
 function Process(id)
 {
@@ -22,7 +23,7 @@ function Process(id)
 
     this.register = function()
     {
-        //profiler.registerObject(this, this.id);
+        profiler.registerObject(this, this.id);
     };
 };
 
