@@ -19,8 +19,6 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-`findInRange` is expensive, make a custom thing
-
 # Ideas
 Intent pipeline! Do more things in one turn!
 
