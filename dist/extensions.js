@@ -113,7 +113,7 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
     return ERR_NOT_FOUND;
 };
 
-Creep.prototype.moveToWrapper(destination, options = { })
+Creep.prototype.moveToWrapper = function(destination, options = { })
 {
     if (options.plainCost === undefined)
         options.plainCost = 1;
@@ -222,7 +222,7 @@ Room.prototype._clearCreepCacheIfOld = function()
 
     this._roomCreeps_  = undefined;
     this._creepCacheT_ = Game.time;
-}
+};
 
 /**
 Get a list of creeps assigned to a room, cached
@@ -258,7 +258,7 @@ RoomPosition.prototype.squareArea = function(squareStep)
     const r = Math.min(this.x + squareStep, 49);
 
     return [ t, l, b, r ];
-}
+};
 
 /**
 Get number of walkable tiles around a position.
@@ -446,4 +446,4 @@ StructureTerminal.prototype.autoSell = function(order, keep = 0)
     }
 
     return ERR_INVALID_ARGS;
-}
+};
