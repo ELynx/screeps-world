@@ -13,7 +13,7 @@ console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 profiler.registerObject(roomActor, 'roomActor');
 profiler.registerObject(worldActor, 'worldActor');
 
-//profiler.enable();
+profiler.enable();
 
 module.exports.loop = function()
 {
