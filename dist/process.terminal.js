@@ -50,8 +50,8 @@ terminalProcess.work = function(room)
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
-    const allBuyOrders  = Game.market.getAllOrders( {type: ORDER_BUY,  resourceType: roomMineralType} );
-    const allSellOrders = Game.market.getAllOrders( {type: ORDER_SELL, resourceType: roomMineralType} );
+    const allBuyOrders  = Game.market.getAllOrders({ type: ORDER_BUY,  resourceType: roomMineralType });
+    const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: roomMineralType });
 
     let goodBuyOrders = _.filter(allBuyOrders,
         function(order)
