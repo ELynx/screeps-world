@@ -31,7 +31,7 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
 
     const cacheKey = (energyLevel + 1) * 1 +
                      (sourceLevel + 1) * 100 +
-                     (miningLevel + 1) * 1000;
+                     (miningLevel + 1) * 10000;
     const cacheHit = this.countCache[cacheKey];
     if (cacheHit)
     {
