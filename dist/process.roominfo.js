@@ -173,7 +173,7 @@ roomInfoProcess.work = function(room)
 
     // once in a creep life update room info
     if (room.memory.intl === undefined ||
-        room.memory.intl < Game.time - 1500)
+        room.memory.intl < Game.time - CREEP_LIFE_TIME)
     {
         room.memory.elvl = this.energyLevel(room);
         room.memory.slvl = this.sourceLevel(room);
