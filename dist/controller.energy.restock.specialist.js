@@ -44,7 +44,7 @@ energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
 
 energyRestockControllerSpecialist.filterCreep = function(creep)
 {
-    return creep.memory.rstk == true && creep.hasEnergy();
+    return creep.memory.rstk == true && creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
 };
 
 energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)

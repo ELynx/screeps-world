@@ -391,7 +391,7 @@ function Controller(id)
             return false;
         }
 
-        return creep.hasEnergy();
+        return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
     };
 
     this._doesDefaultFilter = undefined;
