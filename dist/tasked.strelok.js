@@ -31,20 +31,37 @@ strelok.creepAtDestination = function(creep)
 
     if (!this.roomTargets[dest])
     {
-        let targets = creep.room.find(FIND_HOSTILE_CREEPS);
+        const creeps = creep.room.find(FIND_CREEPS);
+
+        let targets = _.filter
+        (
+            creeps,
+            function(creep)
+            {
+                return !creep.my;
+            }
+        );
+
         const structs = creep.room.find(
-            FIND_HOSTILE_STRUCTURES,
+            FIND_STRUCTURES,
             {
                 filter: function(structure)
                 {
                     // for future marauding
                     if (structure.structureType == STRUCTURE_STORAGE ||
+                        structure.structureType == STRUCTURE_CONTAINER ||
                         structure.structureType == STRUCTURE_TERMINAL)
                     {
                         return false;
                     }
 
-                    return structure.hits;
+                    // TODO wall breach
+                    if (structure.structureType == STRUCTURE_WALL)
+                    {
+                        return false;
+                    }
+
+                    return !structure.my && structure.hits;
                 }
             }
         );
@@ -54,13 +71,12 @@ strelok.creepAtDestination = function(creep)
             targets = targets.concat(structs);
         }
 
-        const wounded = creep.room.find(
-            FIND_MY_CREEPS,
+        const wounded = _.filter
+        (
+            creeps,
+            function(creep)
             {
-                filter: function(creep)
-                {
-                    return creep.hits < creep.hitsMax;
-                }
+                return creep.my && creep.hits < creep.hitsMax;
             }
         );
 

@@ -48,11 +48,11 @@ mineralHarvestController.act = function(terminal, creep)
 mineralHarvestController.staticTargets = function(room)
 {
     return room.find(
-        FIND_MY_STRUCTURES,
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                if (structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple())
+                if (structure.my && structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple())
                 {
                     return structure.store.getFreeCapacity() > 0;
                 }

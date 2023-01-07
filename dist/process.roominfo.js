@@ -12,13 +12,15 @@ Calculate room energy level.
 **/
 roomInfoProcess.energyLevel = function(room)
 {
-    const structs = room.find(FIND_MY_STRUCTURES,
+    const structs = room.find(
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
                 return (structure.structureType == STRUCTURE_SPAWN ||
                         structure.structureType == STRUCTURE_EXTENSION) &&
-                        structure.isActive();
+                        structure.isActive() &&
+                        structure.my;
             }
         }
     );
@@ -107,11 +109,11 @@ roomInfoProcess.miningLevel = function(room)
     if (room.terminal === undefined) return 0;
 
     const extractors = room.find(
-        FIND_MY_STRUCTURES,
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActive();
+                return structure.my && structure.structureType == STRUCTURE_EXTRACTOR && structure.isActive();
             }
         }
     );

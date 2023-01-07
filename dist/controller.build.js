@@ -14,8 +14,18 @@ buildController.act = function(site, creep)
 
 buildController.dynamicTargets = function(room, creep)
 {
-    const spawns = room.find(FIND_MY_SPAWNS);
-    const hasSpawn = spawns.length > 0;
+    const structs = room.find(FIND_STRUCTURES);
+    let hasSpawn = false;
+    for (let i = 0; i < structs.length; ++i)
+    {
+        const struct = structs[i];
+
+        if (struct.my && struct.structureType == STRUCTURE_SPAWN)
+        {
+            hasSpawn = true;
+            break;
+        }
+    }
 
     // TODO build priorities
     return this._lookAroundCreep(

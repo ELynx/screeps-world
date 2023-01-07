@@ -47,7 +47,7 @@ mineralHarvestController.act = function(extractor, creep)
 mineralHarvestController.staticTargets = function(room)
 {
     return room.find(
-        FIND_MY_STRUCTURES,
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {

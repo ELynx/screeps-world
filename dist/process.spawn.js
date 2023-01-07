@@ -184,11 +184,17 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
     }
 
     // check for spawns
-    const spawns = spawnRoom.find(FIND_MY_SPAWNS,
+    const spawns = spawnRoom.find(
+        FIND_STRUCTURES,
         {
-            filter: function(spawn)
+            filter: function(structure)
             {
-                return !spawn.spawning && spawn.isActiveSimple();
+                if (structure.my && structure.structureType == STRUCTURE_SPAWN)
+                {
+                    return !structure.spawning && structure.isActiveSimple();
+                }
+
+                return false;
             }
         }
     );

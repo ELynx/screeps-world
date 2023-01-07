@@ -11,11 +11,11 @@ linkProcess.work = function(room)
     this.debugHeader(room);
 
     const allLinks = room.find(
-        FIND_MY_STRUCTURES,
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
+                return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
             }
         }
     );

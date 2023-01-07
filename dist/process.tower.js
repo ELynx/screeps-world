@@ -8,11 +8,12 @@ towerProcess.work = function(room)
 {
     this.debugHeader(room);
 
-    const towers = room.find(FIND_MY_STRUCTURES,
+    const towers = room.find(
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
+                return structure.my && structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
             }
         }
     );
@@ -22,7 +23,14 @@ towerProcess.work = function(room)
         return;
     }
 
-    const hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+    const creeps = room.find(FIND_CREEPS);
+    const hostileCreeps = _.filter(
+        creeps,
+        function(creep)
+        {
+            return !creep.my;
+        }
+    );
 
     if (hostileCreeps.length > 0)
     {
@@ -36,12 +44,11 @@ towerProcess.work = function(room)
         }       
     }
 
-    const friendlyCreeps = room.find(FIND_MY_CREEPS);
     const damagedCreeps = _.filter(
-        friendlyCreeps,
+        creeps,
         function(creep)
         {
-            return creep.hits < creep.hitsMax;
+            return creep.my && creep.hits < creep.hitsMax;
         }
     );
 
