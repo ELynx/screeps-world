@@ -21,10 +21,15 @@ function Process(id)
     **/
     this.work = undefined;
 
-    this.register = function()
+    this._register = function()
     {
         profiler.registerObject(this, this.id);
     };
+
+    this.register = function()
+    {
+        this._register();
+    }
 };
 
 module.exports = Process;
