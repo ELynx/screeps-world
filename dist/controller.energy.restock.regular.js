@@ -27,36 +27,36 @@ energyRestockControllerRegular.act = function(target, creep)
     return false;
 };
 
-energyRestockControllerRegular.dynamicTargets = function(room, creep)
+energyRestockControllerRegular.staticTargets = function(room)
 {
-    return this._lookAroundCreep(
-        room,
-        LOOK_STRUCTURES,
-        function(structure)
+    return room.find
+    (
+        FIND_MY_STRUCTURES,
         {
-            if (!structure.my ||
-                !structure.isActiveSimple())
+            filter: function(structure)
             {
-                return false;
-            }
+                if (!structure.isActiveSimple())
+                {
+                    return false;
+                }
 
-            if (structure.structureType == STRUCTURE_SPAWN ||
-                structure.structureType == STRUCTURE_EXTENSION)
-            {
-                return structure.energy < structure.energyCapacity;
-            }
-            else if (structure.structureType == STRUCTURE_TOWER)
-            {
-                return structure.energy < TowerRestockMult * structure.energyCapacity;
-            }
-            else if (structure.structureType == STRUCTURE_TERMINAL)
-            {
-                return structure.store[RESOURCE_ENERGY] < TerminalRestock;
-            }
+                if (structure.structureType == STRUCTURE_SPAWN ||
+                    structure.structureType == STRUCTURE_EXTENSION)
+                {
+                    return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                }
+                else if (structure.structureType == STRUCTURE_TOWER)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockMult * structure.store.getCapacity(RESOURCE_ENERGY);
+                }
+                else if (structure.structureType == STRUCTURE_TERMINAL)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TerminalRestock;
+                }
 
-            return false;
-        },
-        creep
+                return false;              
+            }
+        }
     );
 };
 
