@@ -1,10 +1,5 @@
 'use strict';
 
-Creep.prototype.hasEnergy = function()
-{
-    return this.store[RESOURCE_ENERGY] > 0;
-};
-
 Creep.prototype.caveIndex = function()
 {
     if (this._cidxT_ === undefined ||
