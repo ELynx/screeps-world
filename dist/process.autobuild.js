@@ -4,6 +4,11 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
+Game.prototype.autobuild = function(roomName)
+{
+    Game.rooms[roomName].memory.autoBuildForce = true;
+};
+
 autobuildProcess.actualWork = function(room)
 {
     // TODO
@@ -15,33 +20,35 @@ autobuildProcess.work = function(room)
 
     let executeAutoBuild = false;
 
-    if (Game.rooms.sim)
+    if (room.memory.autoBuildForce)
     {
-        // in simulator, always plan
+        room.memory.autoBuildForce = undefined;
         executeAutoBuild = true;
     }
     else
     {
-        const wasUndefined = room.memory.abld === undefined;
-
         // once in 6 creep generations
         if (room.memory.abld === undefined ||
             room.memory.abld < Game.time - (6 * CREEP_LIFE_TIME))
         {
-            // offset regeneration time randomly so multiple rooms don't do it at same tick
-            room.memory.abld = Game.time + Math.ceil(Math.random() * 6 * CREEP_LIFE_TIME);
+            executeAutoBuild = !(room.memory.abld === undefined);
         }
-
-        executeAutoBuild = !wasUndefined;
     }
 
     if (executeAutoBuild)
     {
+        // offset regeneration time randomly so multiple rooms don't do it at same tick
+        room.memory.abld = Game.time + Math.ceil(Math.random() * 6 * CREEP_LIFE_TIME);
+
         this.debugLine(room, 'Executing autobuild process');
 
-        console.log('Autobuild for room ' + room.name + ' started');
+        const t0 = Game.cpu.getUsed();
+        console.log('Autobuild for room ' + room.name + ' started at ' + t0);
+
         this.actualWork(room);
-        console.log('Autobuild for room ' + room.name + ' finished');
+
+        const t1 = Game.cpu.getUsed();
+        console.log('Autobuild for room ' + room.name + ' finished at ' + t1 + ' and took ' + (t1 - t0));
     }
 };
 
