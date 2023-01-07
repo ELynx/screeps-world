@@ -8,6 +8,7 @@ var towerProcess             = require('process.tower');
 var linkProcess              = require('process.link');
 var spawnProcess             = require('process.spawn');
 var terminalProcess          = require('process.terminal');
+var autobuildProcess         = require('process.autobuild');
 
 /**
 Order of load is priority order for creep assignment.
@@ -337,7 +338,11 @@ var roomActor =
             this.roomControllersControl(room, unassignedCreeps);
         }
 
-        // percent
+        if (globals.hardCpuUsed(t0) <= room.memory.cpul)
+        {
+            autobuildProcess.work(room);
+        }
+
         if (globals.hardCpuUsed(t0) <= room.memory.cpul)
         {
             terminalProcess.work(room);
