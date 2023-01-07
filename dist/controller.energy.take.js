@@ -7,8 +7,6 @@ var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
 
-energyTakeController.structures = undefined;
-
 energyTakeController.act = function(structure, creep)
 {
     creep.withdraw(structure, RESOURCE_ENERGY);
@@ -16,40 +14,37 @@ energyTakeController.act = function(structure, creep)
     return false;
 };
 
-energyTakeController.roomPrepare = function(room)
-{
-    this.structures = room.find(FIND_STRUCTURES);
-};
-
 energyTakeController.dynamicTargets = function(room, creep)
 {
-    return _.filter(
-        this.structures,
-        function(structure)
+    return room.find(
+        FIND_STRUCTURES,
         {
-            if (structure.structureType == STRUCTURE_CONTAINER ||
-                structure.structureType == STRUCTURE_STORAGE)
+            filter: function(structure)
             {
-                return structure.store[RESOURCE_ENERGY] > 0;
-            }
-            else if (structure.structureType == STRUCTURE_LINK)
-            {
-                if (structure.store[RESOURCE_ENERGY] == 0)
+                if (structure.structureType == STRUCTURE_CONTAINER ||
+                    structure.structureType == STRUCTURE_STORAGE)
                 {
-                    return false;
+                    return structure.store[RESOURCE_ENERGY] > 0;
+                }
+                else if (structure.structureType == STRUCTURE_LINK)
+                {
+                    if (structure.store[RESOURCE_ENERGY] == 0)
+                    {
+                        return false;
+                    }
+
+                    // STRATEGY do not steal from source
+                    if (structure.isSource())
+                    {
+                        return false;
+                    }
+
+                    // STRATEGY do not visit link across the map
+                    return structure.pos.inRangeTo(creep.pos, 5);
                 }
 
-                // STRATEGY do not steal from source
-                if (structure.isSource())
-                {
-                    return false;
-                }
-
-                // STRATEGY do not visit link across the map
-                return structure.pos.inRangeTo(creep.pos, 5);
+                return false;
             }
-
-            return false;
         }
     );
 };

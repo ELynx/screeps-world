@@ -56,11 +56,17 @@ ttlController.act = function(spawn, creep)
 
 ttlController.staticTargets = function(room)
 {
-    return room.find(FIND_MY_SPAWNS,
+    return room.find(
+        FIND_STRUCTURES,
         {
-            filter: function(spawn)
+            filter: function(structure)
             {
-                return !spawn.spawning && spawn.isActiveSimple();
+                if (structure.my && structure.structureType == STRUCTURE_SPAWN)
+                {
+                    return !structure.spawning && structure.isActiveSimple();
+                }
+
+                return false;
             }
         }
     );

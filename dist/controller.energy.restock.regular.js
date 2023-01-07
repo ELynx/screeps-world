@@ -29,13 +29,17 @@ energyRestockControllerRegular.act = function(target, creep)
 
 energyRestockControllerRegular.staticTargets = function(room)
 {
-    return room.find
-    (
-        FIND_MY_STRUCTURES,
+    return room.find(
+        FIND_STRUCTURES,
         {
             filter: function(structure)
             {
                 if (!structure.isActiveSimple())
+                {
+                    return false;
+                }
+
+                if (!structure.my)
                 {
                     return false;
                 }
