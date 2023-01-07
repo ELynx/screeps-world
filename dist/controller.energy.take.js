@@ -2,6 +2,7 @@
 
 var Controller = require('controller.template');
 
+// TODO merge with harvest
 var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
