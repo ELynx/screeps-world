@@ -4,7 +4,7 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
-Game.prototype.autobuild = function(roomName)
+Game.autobuild = function(roomName)
 {
     Game.rooms[roomName].memory.autoBuildForce = true;
 };
