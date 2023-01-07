@@ -63,7 +63,7 @@ autobuildProcess.register = function()
             autobuildProcess.autobuildForce(roomName);
         }
     };
-}
+};
 
 autobuildProcess.register();
 
