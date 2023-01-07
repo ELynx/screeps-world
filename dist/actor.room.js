@@ -348,8 +348,9 @@ var roomActor =
             terminalProcess.work(room);
         }
 
-        this.debugLine(room, 'HCPU: ' + globals.hardCpuUsed(t0) + '% out of assigned ' + room.memory.cpul + '%');
-
+        const usedPercent = globals.hardCpuUsed(t0);
+        this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '%');
+        room.visual.rect(0, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' });
     } // end of act method
 };
 
