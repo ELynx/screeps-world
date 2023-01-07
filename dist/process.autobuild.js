@@ -4,11 +4,6 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
-Game.autobuild = function(roomName)
-{
-    Game.rooms[roomName].memory.autoBuildForce = true;
-};
-
 autobuildProcess.actualWork = function(room)
 {
     // TODO
