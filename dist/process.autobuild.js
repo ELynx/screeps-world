@@ -4,6 +4,11 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
+autobuildProcess.autobuildForce = function(roomName)
+{
+    Game.rooms[roomName].memory.autobuildForce = true;
+};
+
 autobuildProcess.actualWork = function(room)
 {
     // TODO
@@ -15,9 +20,9 @@ autobuildProcess.work = function(room)
 
     let executeAutoBuild = false;
 
-    if (room.memory.autoBuildForce)
+    if (room.memory.autobuildForce)
     {
-        room.memory.autoBuildForce = undefined;
+        room.memory.autobuildForce = undefined;
         executeAutoBuild = true;
     }
     else
@@ -46,6 +51,19 @@ autobuildProcess.work = function(room)
         console.log('Autobuild for room ' + room.name + ' finished at ' + t1 + ' and took ' + (t1 - t0));
     }
 };
+
+autobuildProcess.register = function()
+{
+    this._register();
+
+    Game.autobuild =
+    {
+        force: function(roomName)
+        {
+            autobuildProcess.autobuildForce(roomName);
+        }
+    };
+}
 
 autobuildProcess.register();
 
