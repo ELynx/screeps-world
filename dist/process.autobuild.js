@@ -40,7 +40,7 @@ autobuildProcess.extractor = function(room)
 
             const rc = room.createConstructionSite(mineral, STRUCTURE_EXTRACTOR);
 
-            this.logConstructionSite()
+            this.logConstructionSite(rc, STRUCTURE_EXTRACTOR, mineral);
         }
     }
 };
@@ -81,7 +81,7 @@ autobuildProcess.work = function(room)
         const t0 = Game.cpu.getUsed();
         console.log('Autobuild for room ' + room.name + ' started at ' + t0);
 
-        if (Game.constructionSites.length < 100)
+        if (Object.keys(Game.constructionSites).length < 100)
         {
             this.actualWork(room);
         }
