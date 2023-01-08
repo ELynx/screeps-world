@@ -197,8 +197,9 @@ autobuildProcess.sourceLink = function(room)
                             const at = positions[0];
                             if (at.weight > 0)
                             {
+                                // ERR_FULL means there is site or link on place already
                                 const rc = this.tryPlan(room, at.pos, STRUCTURE_LINK);
-                                if (rc == OK)
+                                if (rc == OK || rc == ERR_FULL)
                                     canHave = canHave - 1;
                             }
                         }
