@@ -139,9 +139,80 @@ autobuildProcess.extractor = function(room)
     }
 };
 
+autobuildProcess.sourceLink = function(room)
+{
+    let canHave = room.controller ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
+
+    // need to have single recipient
+    if (canHave > 1)
+    {
+        const filterForLinks = function(structure)
+        {
+            return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
+        };
+
+        const weightForPlacement = function(x, y, dx, dy, itemsAtXY)
+        {
+            return 1;
+        };
+
+        const links = room.find(
+            FIND_STRUCTURES,
+            {
+                filter: filterForLinks
+            }
+        );
+
+        canHave = canHave - links.length - 1; // one for target
+
+        if (canHave > 0)
+        {
+            let sources = room.find(
+                FIND_SOURCES,
+                {
+                    filter: function(source)
+                    {
+                        return !source.pos.hasInSquareArea(LOOK_STRUCTURES, 2, filterForLinks);
+                    }
+                }
+            );
+
+            if (sources.length > 0)
+            {
+                if (sources.length > 1)
+                {
+                    sources.sort(
+                        function(s1, s2)
+                        {
+                            return s2.pos.walkableTiles() - s1.pos.walkableTiles();
+                        }
+                    );
+
+                    for (let i = 0; i < sources.length && canHave > 0; ++i)
+                    {
+                        const source = sources[i];
+                        const positions = this.bestNeighbour(room, source, weightForPlacement);
+                        if (positions.length > 0)
+                        {
+                            const at = positions[0];
+                            if (at.weight > 0)
+                            {
+                                const rc = this.tryPlan(room, at.pos, STRUCTURE_LINK);
+                                if (rc == OK)
+                                    canHave = canHave - 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 autobuildProcess.actualWork = function(room)
 {
     this.extractor(room);
+    this.sourceLink(room);
 };
 
 autobuildProcess.work = function(room)
