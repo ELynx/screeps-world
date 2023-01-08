@@ -61,6 +61,12 @@ strelok.creepAtDestination = function(creep)
                         return false;
                     }
 
+                    // please don't hunt roads
+                    if (structure.structureType == STRUCTURE_ROAD)
+                    {
+                        return false;
+                    }
+
                     return !structure.my && structure.hits;
                 }
             }
