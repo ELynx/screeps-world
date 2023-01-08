@@ -8,15 +8,16 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 {
     const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
     const [t, l, b, r] = center.squareArea(2);
+    const inArea = room.lookAtArea(t, l, b, r);
 
+    // 5x5
     let weights = new Array(25);
     weights.fill(0);
-
-    const inArea = room.lookAtArea(t, l, b, r);
     for (let dx = -1; dx <= 1; ++dx)
     {
         for (let dy = -1; dy <= +1; ++dy)
         {
+            // don't check center
             if (dx == 0 && dy == 0)
                 continue;
 
@@ -25,11 +26,14 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 
             const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
             const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : []);
+
+            // 7 is the middle of 2nd row
             const index = 7 + dx + (5 * (dy + 1));
             weights[index] = weight;
         }
     }
 
+    // for index `key` array of indexes that affect it's weight
     const Magic =
     {
         0:  [6],
@@ -50,23 +54,27 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         24: [18]
     };
 
+    // output of position and weight
     let positions = [];
 
     for (let index in Magic)
     {
+        // restore dx dy
         const dx = (index % 5) - 2;
         const dy = Math.floor(index / 5) - 2;
 
+        // get the position
         const x = center.x + dx;
         const y = center.y + dy;
 
+        // ignore out of bounds positions completely
         if (x < 0 || x > 49 || y < 0 || y > 49)
             continue;
 
-        const visited = Magic[index];
-        for (let i = 0; i < visited.length; ++i)
+        const toVisits = Magic[index];
+        for (let i = 0; i < toVisits.length; ++i)
         {
-            const subIndex = visited[i];
+            const toVisit = toVisits[i];
             weights[index] += weights[subIndex];
         }
 
