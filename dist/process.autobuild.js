@@ -17,7 +17,7 @@ autobuildProcess.work = function(room)
 
     if (Game.flags.autobuild &&
         Game.flags.autobuild.room &&
-        Game.flags.autobuild.room.id == room.id)
+        Game.flags.autobuild.room.name == room.name)
     {
         Game.flags.autobuild.remove();
         executeAutoBuild = true;
