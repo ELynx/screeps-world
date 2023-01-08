@@ -24,7 +24,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
             const y = center.y + dy;
 
             const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
-            const weight = weightFunction(x, y, itemsAtXY ? itemsAtXY : []);
+            const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : []);
             const index = 7 + dx + (5 * (dy + 1));
             weights[index] = weight;
         }
@@ -32,23 +32,60 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 
     const Magic =
     {
-        0:  [],
-        1:  [],
-        2:  [],
-        3:  [],
-        4:  [],
-        5:  [],
-        9:  [],
-        10: [],
-        14: [],
-        15: [],
-        19: [],
-        20: [],
-        21: [],
-        22: [],
-        23: [],
-        24: []
+        0:  [6],
+        1:  [6, 7],
+        2:  [6, 8, 8],
+        3:  [7, 8],
+        4:  [8],
+        5:  [6, 11],
+        9:  [8, 13],
+        10: [6, 11, 16],
+        14: [8, 13, 18],
+        15: [11, 16],
+        19: [13, 18],
+        20: [16],
+        21: [16, 17],
+        22: [16, 17, 18],
+        23: [17, 18],
+        24: [18]
     };
+
+    let positions = [];
+
+    for (let index in Magic)
+    {
+        const dx = (index % 5) - 2;
+        const dy = Math.floor(index / 5) - 2;
+
+        const x = center.x + dx;
+        const y = center.y + dy;
+
+        if (x < 0 || x > 49 || y < 0 || y > 49)
+            continue;
+
+        const visited = Magic[index];
+        for (int i = 0; i < visited.length; ++i)
+        {
+            const subIndex = visited[i];
+            weights[index] += weights[subIndex];
+        }
+
+        positions.push(
+            {
+                pos: new RoomPosition(x, y, room.name),
+                weight: weights[index]
+            }
+        );
+    }
+
+    positions.sort(
+        function(item1, item2)
+        {
+            return item2.weight - item1.weight;
+        }
+    );
+
+    return positions;
 };
 
 autobuildProcess.logConstructionSite = function(room, posOrRoomObject, structureType, rc)
