@@ -4,10 +4,10 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
-autobuildProcess.logConstructionSite = function(rc, type, posOrRoomObject)
+autobuildProcess.logConstructionSite = function(room, posOrRoomObject, structureType, rc)
 {
     const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-    const message = 'Planned ' + type + ' in room ' + pos.roomName + ' with result code ' + rc;
+    const message = 'Planned ' + structureType + ' in room ' + room.name + ' with result code ' + rc;
 
     console.log(message);
 
@@ -17,30 +17,40 @@ autobuildProcess.logConstructionSite = function(rc, type, posOrRoomObject)
     }
 };
 
+autobuildProcess.tryPlan = function(room, posOrRoomObject, structureType)
+{
+    const sites = room.lookForAt(LOOK_CONSTRUCTION_SITES, posOrRoomObject);
+    if (sites.length > 0)
+    {
+        return ERR_FULL;
+    }
+
+    const structs = room.lookForAt(LOOK_STRUCTURES, posOrRoomObject);
+    for (let i = 0; i < structs.length; ++i)
+    {
+        const struct = structs[i];
+        if (struct.structureType == structureType)
+        {
+            return ERR_FULL;
+        }
+    }
+
+    const rc = room.createConstructionSite(posOrRoomObject, structureType);
+
+    this.logConstructionSite(room, posOrRoomObject, structureType, rc);
+
+    return rc;
+};
+
 autobuildProcess.extractor = function(room)
 {
-    if (room.controller && CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0)
+    if (room.controller &&  > 0)
     {
         const minerals = room.find(FIND_MINERALS);
         for (let i = 0; i < minerals.length; ++i)
         {
             const mineral = minerals[i];
-
-            const sites = room.lookForAt(LOOK_CONSTRUCTION_SITES, mineral);
-            if (sites.length > 0)
-            {
-                continue;
-            }
-
-            const structs = room.lookForAt(LOOK_STRUCTURES, mineral);
-            if (structs.length > 0)
-            {
-                continue;
-            }
-
-            const rc = room.createConstructionSite(mineral, STRUCTURE_EXTRACTOR);
-
-            this.logConstructionSite(rc, STRUCTURE_EXTRACTOR, mineral);
+            this.tryPlan(room, mineral, STRUCTURE_EXTRACTOR);
         }
     }
 };
