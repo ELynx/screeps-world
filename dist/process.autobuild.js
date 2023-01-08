@@ -67,15 +67,38 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         const x = center.x + dx;
         const y = center.y + dy;
 
-        // ignore out of bounds positions completely
+        // ignore room boundary positions completely
         if (x < 0 || x > 49 || y < 0 || y > 49)
             continue;
+
+        // check if there is terrain wall in the way
+        // handle sites, structures, etc, at the caller
+        // because of build-ability depends on cross-types
+        let blocked = false;
+        const itemsAt1 = inArea[x] ? inArea[x][y] : undefined;
+        const itemsAt2 = itemsAt1 ? itemsAt1 : [];
+        for (let i = 0; i < itemsAt2.length; ++i)
+        {
+            const item = itemsAt2[i];
+
+            if (item.type == LOOK_TERRAIN)
+            {
+                if (item.terrain == 'wall')
+                {
+                    blocked = true;
+                }
+            }
+
+            if (blocked) break; // out of items loop
+        }
+
+        if (blocked) continue; // to next index
 
         const toVisits = Magic[index];
         for (let i = 0; i < toVisits.length; ++i)
         {
             const toVisit = toVisits[i];
-            weights[index] += weights[subIndex];
+            weights[index] += weights[toVisit];
         }
 
         positions.push(
