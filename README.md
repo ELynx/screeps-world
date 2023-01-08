@@ -26,6 +26,8 @@ PathFinder option `flee`.
 
 Roads in neutral room require change in repair code to work on energy level 0.
 
+Creeps fight back based on event log.
+
 ## Temporary creeps
 
 Spawn on demand.
