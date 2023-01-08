@@ -4,6 +4,53 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
+autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
+{
+    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
+    const [t, l, b, r] = center.squareArea(2);
+
+    let weights = new Array(25);
+    weights.fill(0);
+
+    const inArea = room.lookAtArea(t, l, b, r);
+    for (let dx = -1; dx <= 1; ++dx)
+    {
+        for (let dy = -1; dy <= +1; ++dy)
+        {
+            if (dx == 0 && dy == 0)
+                continue;
+
+            const x = center.x + dx;
+            const y = center.y + dy;
+
+            const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
+            const weight = weightFunction(x, y, itemsAtXY ? itemsAtXY : []);
+            const index = 7 + dx + (5 * (dy + 1));
+            weights[index] = weight;
+        }
+    }
+
+    const Magic =
+    {
+        0:  [],
+        1:  [],
+        2:  [],
+        3:  [],
+        4:  [],
+        5:  [],
+        9:  [],
+        10: [],
+        14: [],
+        15: [],
+        19: [],
+        20: [],
+        21: [],
+        22: [],
+        23: [],
+        24: []
+    };
+};
+
 autobuildProcess.logConstructionSite = function(room, posOrRoomObject, structureType, rc)
 {
     const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
