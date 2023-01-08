@@ -44,7 +44,7 @@ autobuildProcess.tryPlan = function(room, posOrRoomObject, structureType)
 
 autobuildProcess.extractor = function(room)
 {
-    if (room.controller &&  > 0)
+    if (room.controller && CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0)
     {
         const minerals = room.find(FIND_MINERALS);
         for (let i = 0; i < minerals.length; ++i)
