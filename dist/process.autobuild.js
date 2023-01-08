@@ -4,11 +4,6 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
-autobuildProcess.autobuildForce = function(roomName)
-{
-    Game.rooms[roomName].memory.autobuildForce = true;
-};
-
 autobuildProcess.actualWork = function(room)
 {
     // TODO
@@ -20,9 +15,11 @@ autobuildProcess.work = function(room)
 
     let executeAutoBuild = false;
 
-    if (room.memory.autobuildForce)
+    if (Game.flags.autobuild &&
+        Game.flags.autobuild.room &&
+        Game.flags.autobuild.room.id == room.id)
     {
-        room.memory.autobuildForce = undefined;
+        Game.flags.autobuild.remove();
         executeAutoBuild = true;
     }
     else
@@ -50,19 +47,6 @@ autobuildProcess.work = function(room)
         const t1 = Game.cpu.getUsed();
         console.log('Autobuild for room ' + room.name + ' finished at ' + t1 + ' and took ' + (t1 - t0));
     }
-};
-
-autobuildProcess.register = function()
-{
-    this._register();
-
-    Game.autobuild =
-    {
-        force: function(roomName)
-        {
-            autobuildProcess.autobuildForce(roomName);
-        }
-    };
 };
 
 autobuildProcess.register();
