@@ -91,7 +91,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 autobuildProcess.logConstructionSite = function(room, posOrRoomObject, structureType, rc)
 {
     const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-    const message = 'Planned ' + structureType + ' in room ' + room.name + ' with result code ' + rc;
+    const message = 'Planned ' + structureType + ' at ' + pos + ' with result code ' + rc;
 
     console.log(message);
 
@@ -151,9 +151,64 @@ autobuildProcess.sourceLink = function(room)
             return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
         };
 
+        // STRATEGY where source link goes
         const weightForPlacement = function(x, y, dx, dy, itemsAtXY)
         {
-            return 1;
+            // no harvester can stand on the endge
+            if (x <= 0 || y <= 0 || x >= 49 || y >= 49)
+                return -1000;
+
+            let result = 0;
+
+            for (let i = 0; i < itemsAtXY.length; ++i)
+            {
+                const item = itemsAtXY[i];
+
+                if (item.type == LOOK_TERRAIN)
+                {
+                    if (item.terrain == 'plain')
+                    {
+                        result = result + 10;
+                    }
+
+                    if (item.terrain == 'swamp')
+                    {
+                        result = result + 3;
+                    }
+
+                    if (item.terrain == 'wall')
+                    {
+                        result = result - 10;
+                    }
+                }
+
+                if (item.type == LOOK_STRUCTURES)
+                {
+                    if (item.structure.structureType == STRUCTURE_ROAD)
+                    {
+                        result = result + 10;
+                    }
+                }
+            }
+
+            // orthogonal positions give more advantage when roads are added
+            if (dx == 0 || dy == 0)
+                result = result + 1;
+
+            // going more to the center, suppose
+            if (x < 25 && dx > 0)
+                result = result + 1;
+
+            if (x > 25 && dx < 0)
+                result = result + 1;
+
+            if (y < 25 && dy > 0)
+                result = result + 1;
+
+            if (y > 25 && dy < 0)
+                result = result + 1;
+
+            return result;
         };
 
         const links = room.find(
@@ -163,7 +218,14 @@ autobuildProcess.sourceLink = function(room)
             }
         );
 
-        canHave = canHave - links.length - 1; // one for target
+        const linksCS = room.find(
+            FIND_CONSTRUCTION_SITES,
+            {
+                structureType: STRUCTURE_LINK
+            }
+        );
+
+        canHave = canHave - links.length - linksCS.length - 1; // one for target
 
         if (canHave > 0)
         {
