@@ -4,9 +4,50 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
+autobuildProcess.logConstructionSite = function(rc, type, posOrRoomObject)
+{
+    const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
+    const message = 'Planned ' + type + ' in room ' + pos.roomName + ' with result code ' + rc;
+
+    console.log(message);
+
+    if (!Game.rooms.sim)
+    {
+        Game.notify(message, 30);
+    }
+};
+
+autobuildProcess.extractor = function(room)
+{
+    if (room.controller && CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0)
+    {
+        const minerals = room.find(FIND_MINERALS);
+        for (let i = 0; i < minerals.length; ++i)
+        {
+            const mineral = minerals[i];
+
+            const sites = room.lookForAt(LOOK_CONSTRUCTION_SITES, mineral);
+            if (sites.length > 0)
+            {
+                continue;
+            }
+
+            const structs = room.lookForAt(LOOK_STRUCTURES, mineral);
+            if (structs.length > 0)
+            {
+                continue;
+            }
+
+            const rc = room.createConstructionSite(mineral, STRUCTURE_EXTRACTOR);
+
+            this.logConstructionSite()
+        }
+    }
+};
+
 autobuildProcess.actualWork = function(room)
 {
-    // TODO
+    this.extractor(room);
 };
 
 autobuildProcess.work = function(room)
@@ -37,12 +78,17 @@ autobuildProcess.work = function(room)
         // offset regeneration time randomly so multiple rooms don't do it at same tick
         room.memory.abld = Game.time + Math.ceil(Math.random() * 6 * CREEP_LIFE_TIME);
 
-        this.debugLine(room, 'Executing autobuild process');
-
         const t0 = Game.cpu.getUsed();
         console.log('Autobuild for room ' + room.name + ' started at ' + t0);
 
-        this.actualWork(room);
+        if (Game.constructionSites.length < 100)
+        {
+            this.actualWork(room);
+        }
+        else
+        {
+            console.log('100 or more construction sites, cannot plan more');
+        }
 
         const t1 = Game.cpu.getUsed();
         console.log('Autobuild for room ' + room.name + ' finished at ' + t1 + ' and took ' + (t1 - t0));
