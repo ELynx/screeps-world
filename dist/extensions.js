@@ -321,13 +321,16 @@ RoomPosition.prototype.walkableTiles = function()
     return result;
 };
 
-RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
+RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
 {
     const [t, l, b, r] = this.squareArea(squareStep);
 
     const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true);
 
-    if (filterFunction === undefined) return items.length > 0;
+    if (filterFunction === undefined)
+    {
+        return items.length > 0 ? items[0].id : undefined;
+    }
 
     for (let itemKey in items)
     {
@@ -335,11 +338,16 @@ RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filte
 
         if (filterFunction(item))
         {
-            return true
+            return item.id;
         }
     }
 
-    return false;
+    return undefined;
+};
+
+RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
+{
+    return !(this.findInSquareArea(lookForType, squareStep, filterFunction) === undefined);
 };
 
 Structure.prototype.isActiveSimple = function()
