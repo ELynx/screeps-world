@@ -64,7 +64,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
             continue;
 
         const visited = Magic[index];
-        for (int i = 0; i < visited.length; ++i)
+        for (let i = 0; i < visited.length; ++i)
         {
             const subIndex = visited[i];
             weights[index] += weights[subIndex];
