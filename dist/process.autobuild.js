@@ -4,11 +4,36 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
+autobuildProcess.makeCacheKey = function(posOrRoomObject, keyNumber)
+{
+    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
+    const cacheKey = (center.x + 1) + 100 * (center.y + 1) + 10000 * keyNumber;
+
+    return cacheKey;
+};
+
+autobuildProcess.lookAtArea5x5 = function(room, posOrRoomObject)
+{
+    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
+
+    const cacheKey = this.makeCacheKey(posOrRoomObject, 1);
+    const cached = this._cache_[cacheKey];
+    if (cached)
+    {
+        return cached;
+    }
+
+    const [t, l, b, r] = center.squareArea(2);
+    const inArea = room.lookAtArea(t, l, b, r);
+
+    this._cache_[cacheKey] = inArea;
+    return inArea;
+};
+
 autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 {
     const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-    const [t, l, b, r] = center.squareArea(2);
-    const inArea = room.lookAtArea(t, l, b, r);
+    const inArea = this.lookAtArea5x5(room, posOrRoomObject);
 
     // 5x5
     let weights = new Array(25);
@@ -179,6 +204,14 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
     if (x <= 0 || y <= 0 || x >= 49 || y >= 49)
         return -10;
 
+    const cacheKey = this.makeCacheKey({ x: x, y: y }, 2);
+
+    const cached = this._cache_[cacheKey];
+    if (cached)
+    {
+        return cached;
+    }
+
     // check for walls, they get no bonuses
     for (let i = 0; i < itemsAtXY.length; ++i)
     {
@@ -187,9 +220,10 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
         // one of terrain should happen only
         if (item.type == LOOK_TERRAIN)
         {
+            // can be developed later, but discourage
             if (item.terrain == 'wall')
             {
-                // can be developed later, but discourage
+                this._cache_[cacheKey] = 1;
                 return 1;
             }
         }
@@ -215,22 +249,61 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
     if (y > 25 && dy < 0)
         result = result + 1;
 
+    this._cache_[cacheKey] = result;
     return result;
 };
+
+autobuildProcess.weightSource = function(room, source)
+{
+    const cacheKey = this.makeCacheKey(source, 3);
+    const cached = this._cache_[cacheKey];
+
+    if (cached)
+    {
+        return cached;
+    }
+
+    const center = source.pos;
+    const inArea = this.lookAtArea5x5(room, center);
+
+    let result = 0;
+    for (let dx = -1; dx <= 1; ++dx)
+    {
+        for (let dy = -1; dy <= 1; ++dy)
+        {
+            if (dx == 0 && dy == 0)
+                continue;
+
+            const x = center.x + dx;
+            const y = center.y + dy;
+
+            const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
+            const weight = this.weightAroundTheSource(x, y, dx, dy, itemsAtXY ? itemsAtXY : []);
+
+            result += weight;
+        }
+    }
+
+    this._cache_[cacheKey] = result;
+    return result;
+};
+
+// STRATEGY how many target links to have (reserved) at any given time
+const TargetLinkReserve = 1;
 
 autobuildProcess.sourceLink = function(room)
 {
     let canHave = room.controller ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
 
-    // need to have at least single recipient
-    if (canHave > 1)
+    // out of two, reserve one, otherwise links will wait for whole level to complete
+    const reserve = canHave == 2 ? 1 : TargetLinkReserve;
+
+    if (canHave > reserve)
     {
         const filterForLinks = function(structure)
         {
             return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
         };
-
-
 
         const links = room.find(
             FIND_STRUCTURES,
@@ -246,55 +319,56 @@ autobuildProcess.sourceLink = function(room)
             }
         );
 
-        canHave = canHave - links.length - linksCS.length - 1; // one for target
+        canHave = canHave - links.length - linksCS.length - reserve;
 
+        // if still have links to plan
         if (canHave > 0)
         {
-            let sources = room.find(
-                FIND_SOURCES,
-                {
-                    filter: function(source)
-                    {
-                        return !source.pos.hasInSquareArea(LOOK_STRUCTURES, 2, filterForLinks);
-                    }
-                }
-            );
+            let sources = room.find(FIND_SOURCES);
 
+            // very likely yes, thus check after some expensive checks
             if (sources.length > 0)
             {
                 if (sources.length > 1)
                 {
+                    // pick source with most access first
                     sources.sort(
                         function(s1, s2)
                         {
-                            return s2.pos.walkableTiles() - s1.pos.walkableTiles();
+                            const w1 = this.weightSource(room, s1);
+                            const w2 = this.weightSource(room, s2);
+
+                            return w2 - w1;
                         }
                     );
+                }
 
-                    for (let i = 0; i < sources.length && canHave > 0; ++i)
+                for (let i = 0; i < sources.length && i < canHave; ++i)
+                {
+                    const source = sources[i];
+
+                    const positions = this.bestNeighbour(room, source, this.weightAroundTheSource);
+                    if (positions.length > 0)
                     {
-                        const source = sources[i];
-                        const positions = this.bestNeighbour(room, source, weightForLinkPlacement);
-                        if (positions.length > 0)
+                        // to avoid re-positioning, always pick best
+                        const at = positions[0];
+                        // only when not totally bad decision
+                        if (at.weight > 0)
                         {
-                            const at = positions[0];
-                            if (at.weight > 0)
-                            {
-                                // ERR_FULL means there is site or link on place already
-                                const rc = this.tryPlan(room, at.pos, STRUCTURE_LINK);
-                                if (rc == OK || rc == ERR_FULL)
-                                    canHave = canHave - 1;
-                            }
+                            // always think in like of "one souce - one link"
+                            this.tryPlan(room, at, STRUCTURE_LINK);
                         }
                     }
-                }
-            }
-        }
-    }
+                } // end of sources
+            } // end of have sources
+        } // end of have links to build now
+    } // end of have links in general
 };
 
 autobuildProcess.actualWork = function(room)
 {
+    this._cache_ = { };
+
     this.extractor(room);
     this.sourceLink(room);
 };
