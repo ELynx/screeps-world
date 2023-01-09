@@ -296,7 +296,7 @@ autobuildProcess.sourceLink = function(room)
     let canHave = room.controller ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
 
     // out of two, reserve one, otherwise links will wait for whole level to complete
-    const reserve = canHave == 2 ? 1 : TargetLinkReserve;
+    const reserve = canHave <= 2 ? 1 : TargetLinkReserve;
 
     if (canHave > reserve)
     {
@@ -319,14 +319,11 @@ autobuildProcess.sourceLink = function(room)
             }
         );
 
-        canHave = canHave - links.length - linksCS.length - reserve;
-
         // if still have links to plan
-        if (canHave > 0)
+        if (canHave > links.length + linksCS.length)
         {
             let sources = room.find(FIND_SOURCES);
 
-            // very likely yes, thus check after some expensive checks
             if (sources.length > 0)
             {
                 if (sources.length > 1)
@@ -349,7 +346,7 @@ autobuildProcess.sourceLink = function(room)
                     return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
                 };
 
-                for (let i = 0; i < sources.length && i < canHave; ++i)
+                for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
                 {
                     const source = sources[i];
 
@@ -358,6 +355,7 @@ autobuildProcess.sourceLink = function(room)
                     {
                         // to avoid re-positioning, always pick best
                         const at = positions[0];
+                        
                         // only when not totally bad decision
                         if (at.weight > 0)
                         {
