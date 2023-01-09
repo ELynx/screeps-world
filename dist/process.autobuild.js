@@ -343,11 +343,17 @@ autobuildProcess.sourceLink = function(room)
                     );
                 }
 
+                let self = this;
+                const weightFunction = function(x, y, dx, dy, itemsAtXY)
+                {
+                    return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
+                };
+
                 for (let i = 0; i < sources.length && i < canHave; ++i)
                 {
                     const source = sources[i];
 
-                    const positions = this.bestNeighbour(room, source, this.weightAroundTheSource);
+                    const positions = this.bestNeighbour(room, source, weightFunction);
                     if (positions.length > 0)
                     {
                         // to avoid re-positioning, always pick best
