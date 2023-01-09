@@ -170,11 +170,56 @@ autobuildProcess.extractor = function(room)
     }
 };
 
+// STRATEGY weight of goodness of place near the source
+// return best position regardless of buildings and roads
+// thus always should return same distribution for source
+autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
+{
+    // no harvester can stand on the endge, discourage
+    if (x <= 0 || y <= 0 || x >= 49 || y >= 49)
+        return -10;
+
+    // check for walls, they get no bonuses
+    for (let i = 0; i < itemsAtXY.length; ++i)
+    {
+        const item = itemsAtXY[i];
+
+        // one of terrain should happen only
+        if (item.type == LOOK_TERRAIN)
+        {
+            if (item.terrain == 'wall')
+            {
+                // can be developed later, but discourage
+                return 1;
+            }
+        }
+    }
+ 
+    // orthogonal positions give more advantage when roads are added
+    if (dx == 0 || dy == 0)
+        result = result + 2;
+
+    // going more to the center, suppose
+    if (x < 25 && dx > 0)
+        result = result + 1;
+
+    if (x > 25 && dx < 0)
+        result = result + 1;
+
+    if (y < 25 && dy > 0)
+        result = result + 1;
+
+    if (y > 25 && dy < 0)
+        result = result + 1;
+
+    return result;
+};
+
 autobuildProcess.sourceLink = function(room)
 {
     let canHave = room.controller ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
 
-    // need to have single recipient
+    // need to have at least single recipient
     if (canHave > 1)
     {
         const filterForLinks = function(structure)
@@ -182,65 +227,7 @@ autobuildProcess.sourceLink = function(room)
             return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
         };
 
-        // STRATEGY where source link goes
-        const weightForPlacement = function(x, y, dx, dy, itemsAtXY)
-        {
-            // no harvester can stand on the endge
-            if (x <= 0 || y <= 0 || x >= 49 || y >= 49)
-                return -1000;
 
-            let result = 0;
-
-            for (let i = 0; i < itemsAtXY.length; ++i)
-            {
-                const item = itemsAtXY[i];
-
-                if (item.type == LOOK_TERRAIN)
-                {
-                    if (item.terrain == 'plain')
-                    {
-                        result = result + 10;
-                    }
-
-                    if (item.terrain == 'swamp')
-                    {
-                        result = result + 3;
-                    }
-
-                    if (item.terrain == 'wall')
-                    {
-                        result = result - 10;
-                    }
-                }
-
-                if (item.type == LOOK_STRUCTURES)
-                {
-                    if (item.structure.structureType == STRUCTURE_ROAD)
-                    {
-                        result = result + 10;
-                    }
-                }
-            }
-
-            // orthogonal positions give more advantage when roads are added
-            if (dx == 0 || dy == 0)
-                result = result + 1;
-
-            // going more to the center, suppose
-            if (x < 25 && dx > 0)
-                result = result + 1;
-
-            if (x > 25 && dx < 0)
-                result = result + 1;
-
-            if (y < 25 && dy > 0)
-                result = result + 1;
-
-            if (y > 25 && dy < 0)
-                result = result + 1;
-
-            return result;
-        };
 
         const links = room.find(
             FIND_STRUCTURES,
@@ -284,7 +271,7 @@ autobuildProcess.sourceLink = function(room)
                     for (let i = 0; i < sources.length && canHave > 0; ++i)
                     {
                         const source = sources[i];
-                        const positions = this.bestNeighbour(room, source, weightForPlacement);
+                        const positions = this.bestNeighbour(room, source, weightForLinkPlacement);
                         if (positions.length > 0)
                         {
                             const at = positions[0];
