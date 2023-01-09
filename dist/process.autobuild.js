@@ -50,7 +50,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
             const y = center.y + dy;
 
             const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
-            const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : []);
+            const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : {});
 
             // 7 is the middle of 2nd row
             const index = 7 + dx + (5 * (dy + 1));
@@ -101,8 +101,8 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         // because of build-ability depends on cross-types
         let blocked = false;
         const itemsAt1 = inArea[x] ? inArea[x][y] : undefined;
-        const itemsAt2 = itemsAt1 ? itemsAt1 : [];
-        for (let i = 0; i < itemsAt2.length; ++i)
+        const itemsAt2 = itemsAt1 ? itemsAt1 : {};
+        for (let i in itemsAt2)
         {
             const item = itemsAt2[i];
 
@@ -213,7 +213,7 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
     }
 
     // check for walls, they get no bonuses
-    for (let i = 0; i < itemsAtXY.length; ++i)
+    for (let i in itemsAtXY)
     {
         const item = itemsAtXY[i];
 
@@ -278,7 +278,7 @@ autobuildProcess.weightSource = function(room, source)
             const y = center.y + dy;
 
             const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
-            const weight = this.weightAroundTheSource(x, y, dx, dy, itemsAtXY ? itemsAtXY : []);
+            const weight = this.weightAroundTheSource(x, y, dx, dy, itemsAtXY ? itemsAtXY : {});
 
             result += weight;
         }
@@ -372,7 +372,7 @@ autobuildProcess.sourceLink = function(room)
 
 autobuildProcess.actualWork = function(room)
 {
-    this._cache_ = { };
+    this._cache_ = {};
 
     this.extractor(room);
     this.sourceLink(room);
