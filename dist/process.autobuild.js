@@ -329,25 +329,26 @@ autobuildProcess.sourceLink = function(room)
                 if (sources.length > 1)
                 {
                     // pick source with most access first
+                    let self = this;
                     sources.sort(
                         function(s1, s2)
                         {
-                            const w1 = this.weightSource(room, s1);
-                            const w2 = this.weightSource(room, s2);
+                            const w1 = self.weightSource(room, s1);
+                            const w2 = self.weightSource(room, s2);
 
                             return w2 - w1;
                         }
                     );
                 }
 
-                let self = this;
-                const weightFunction = function(x, y, dx, dy, itemsAtXY)
-                {
-                    return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
-                };
-
                 for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
                 {
+                    let self = this;
+                    const weightFunction = function(x, y, dx, dy, itemsAtXY)
+                    {
+                        return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
+                    };
+
                     const source = sources[i];
 
                     const positions = this.bestNeighbour(room, source, weightFunction);
@@ -355,7 +356,7 @@ autobuildProcess.sourceLink = function(room)
                     {
                         // to avoid re-positioning, always pick best
                         const at = positions[0];
-                        
+
                         // only when not totally bad decision
                         if (at.weight > 0)
                         {
