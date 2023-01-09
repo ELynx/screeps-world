@@ -103,7 +103,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 
         positions.push(
             {
-                pos: new RoomPosition(x, y, room.name),
+                pos:    new RoomPosition(x, y, room.name),
                 weight: weights[index]
             }
         );
@@ -195,11 +195,14 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
         }
     }
  
+    // plain and swamp are relatively equal to develop
+    let result = 5;
+
     // orthogonal positions give more advantage when roads are added
     if (dx == 0 || dy == 0)
         result = result + 2;
 
-    // going more to the center, suppose
+    // going more to the center
     if (x < 25 && dx > 0)
         result = result + 1;
 
