@@ -31,7 +31,7 @@ energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
             else if (structure.structureType == STRUCTURE_LINK)
             {
                 return structure.my &&
-                       structure.store.getUsedCapacity() < LinkRestock * structure.store.getCapacity() &&
+                       structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
                        structure.isActiveSimple() &&
                        structure.isSource();
             }
@@ -57,7 +57,7 @@ energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)
     // only same-type structures below
 
     // STRATEGY balance containers
-    return struct1.store.getUsedCapacity() - struct2.store.getUsedCapacity();
+    return struct1.store.getUsedCapacity(RESOURCE_ENERGY) - struct2.store.getUsedCapacity(RESOURCE_ENERGY);
 };
 
 energyRestockControllerSpecialist.register();
