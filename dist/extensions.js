@@ -255,72 +255,6 @@ RoomPosition.prototype.squareArea = function(squareStep)
     return [ t, l, b, r ];
 };
 
-/**
-Get number of walkable tiles around a position.
-@return {integer} number of walkable tiles.
-**/
-RoomPosition.prototype.walkableTiles = function()
-{
-    let result = 0;
-
-    const room = Game.rooms[this.roomName];
-    if (room)
-    {
-        const [t, l, b, r] = this.squareArea(1);
-
-        const around = room.lookAtArea(t, l, b, r);
-
-        for (let x in around)
-        {
-            const ys = around[x];
-
-            for (let y in ys)
-            {
-                if (x == this.x && y == this.y)
-                {
-                    continue;
-                }
-
-                const objs = ys[y];
-
-                if (objs)
-                {
-                    let found = false;
-
-                    for (let i = 0; i < objs.length && !found; ++i)
-                    {
-                        const obj = objs[i];
-
-                        if (obj.type == LOOK_TERRAIN)
-                        {
-                            if (obj.terrain == 'plain' ||
-                                obj.terrain == 'swamp')
-                            {
-                                found = true;
-                            }
-                        }
-
-                        if (obj.type == LOOK_STRUCTURES)
-                        {
-                            if (obj.structure.structureType == STRUCTURE_ROAD)
-                            {
-                                found = true;
-                            }
-                        }
-                    }
-
-                    if (found)
-                    {
-                        ++result;
-                    }
-                }
-            }
-        }
-    }
-
-    return result;
-};
-
 RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
 {
     const [t, l, b, r] = this.squareArea(squareStep);
@@ -331,7 +265,7 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
     {
         for (let itemKey in items)
         {
-            return items[itemKey].id;
+            return items[itemKey][lookForType].id;
         }
 
         return undefined;
@@ -339,7 +273,7 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
 
     for (let itemKey in items)
     {
-        const item = items[itemKey];
+        const item = items[itemKey][lookForType];
 
         if (filterFunction(item))
         {

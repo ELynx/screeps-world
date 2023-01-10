@@ -67,10 +67,9 @@ secutiryProcess.work = function(room)
                 const trigger = flag.pos.hasInSquareArea(
                     LOOK_CREEPS,
                     range,
-                     function(creepLook)
+                    function(creep)
                     {
-                        const creep = creepLook.creep;
-                        if (creep && !creep.my && creep.owner != 'Invader')
+                        if (!creep.my && creep.owner != 'Invader')
                         {
                             return true;
                         }

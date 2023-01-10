@@ -214,9 +214,9 @@ beetle.flagPrepare = function(flag)
         (
             LOOK_CREEPS,
             BreachCompleteRange,
-            function(creepLook)
+            function(creep)
             {
-                if (creepLook.creep && creepLook.creep.my)
+                if (creep.my)
                 {
                     return true;
                 }
