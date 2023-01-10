@@ -111,7 +111,7 @@ roomInfoProcess.sourceLevel = function(room)
         {
             if (link.isSource())
             {
-                let positions = new Set();
+                let positions = {};
                 for (let j = 0; j < sources.length; ++j)
                 {
                     const source = sources[j];
@@ -119,13 +119,14 @@ roomInfoProcess.sourceLevel = function(room)
 
                     for (let k = 0; k < betweenTwo.length; ++k)
                     {
-                        positions.add(betweenTwo[k]);
+                        const p = betweenTwo[k];
+                        positions[(p.x + 1) + 100 * (p.y + 1)] = p;
                     }
                 }
 
-                for (let j = 0; j < positions.length; ++j)
+                for (let outerIndex in positions)
                 {
-                    const position = positions[j];
+                    const position = positions[outerIndex];
 
                     if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL)
                     {
@@ -136,7 +137,8 @@ roomInfoProcess.sourceLevel = function(room)
                     const atPosition = position.lookFor(LOOK_STRUCTURES);
                     for (let k in atPosition)
                     {
-                        if (k.structureType == STRUCTURE_ROAD)
+                        const struct = atPosition[k];
+                        if (struct.structureType == STRUCTURE_ROAD)
                         {
                             ++soucePositions;
                             break; // from atPosition loop
