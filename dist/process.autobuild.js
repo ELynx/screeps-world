@@ -49,7 +49,10 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
             const x = center.x + dx;
             const y = center.y + dy;
 
-            const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
+            const kx = x.toString();
+            const ky = y.toString();
+
+            const itemsAtXY = inArea[kx] ? inArea[kx][ky] : undefined;
             const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : {});
 
             // 7 is the middle of 2nd row
@@ -92,6 +95,9 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         const x = center.x + dx;
         const y = center.y + dy;
 
+        const kx = x.toString();
+        const ky = y.toString();
+
         // ignore room boundary positions completely
         if (x < 0 || x > 49 || y < 0 || y > 49)
             continue;
@@ -100,7 +106,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         // handle sites, structures, etc, at the caller
         // because of build-ability depends on cross-types
         let blocked = false;
-        const itemsAt1 = inArea[x] ? inArea[x][y] : undefined;
+        const itemsAt1 = inArea[kx] ? inArea[kx][ky] : undefined;
         const itemsAt2 = itemsAt1 ? itemsAt1 : {};
         for (let i in itemsAt2)
         {
