@@ -87,15 +87,49 @@ Calculate room source level.
 **/
 roomInfoProcess.sourceLevel = function(room)
 {
-    let walkable = 0;
+    const links = room.find(
+        FIND_STRUCTURES,
+        {
+            structureType: STRUCTURE_LINK
+        }
+    );
+
+    // don't bother, there is no transfer happening
+    if (links.length < 2) return 0;
 
     const sources = room.find(FIND_SOURCES);
-    for (let i = 0; i < sources.length; ++i)
+
+    let hasDestination = false;
+    let soucePositions = 0;
+
+    for (let i = 0; i < links.length; ++i)
     {
-        walkable = walkable + sources[i].pos.walkableTiles();
+        const link = links[i];
+
+        if (link.my && link.isActiveSimple())
+        {
+            if (link.isSource())
+            {
+                let positions = [];
+                for (let j = 0; j < sources.length; ++j)
+                {
+                    const source = sources[j];
+                    const betweenTwo = link.pos.findSharedAdjacentPositions(source);
+
+                    
+                }
+            }
+            else
+            {
+                hasDestination = true;
+            }
+        }
     }
 
-    return walkable;
+    // no need to optimize energy transfer when there is no destination
+    if (!hasDestination) return 0;
+
+    return soucePositions;
 };
 
 /**

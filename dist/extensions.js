@@ -350,6 +350,44 @@ RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filte
     return !(this.findInSquareArea(lookForType, squareStep, filterFunction) === undefined);
 };
 
+RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
+{
+    if (this.roomName != otherRoomPosition.roomName) return [];
+
+    const dx = this.x - otherRoomPosition.x;
+    const dy = this.y - otherRoomPosition.y;
+
+    // there are no adjacent positions if positions are too far away
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) return [];
+
+    const arrayAround = function(pos)
+    {
+        let result = [];
+
+        for (let dx = -1; dx <= 1; ++dx)
+        {
+            for (let dy = -1; dy <= 1; ++dy)
+            {
+                if (dx == 0 && dy == 0) continue;
+
+                const x = pos.x + dx;
+                const y = pos.y + dy;
+
+                if (x < 0 || x > 49 || y < 0 || y > 49) continue;
+
+                result.push(new RoomPosition(x, y, pos.roomName));
+            }
+        }
+
+        return result;
+    }
+
+    const fromThis  = arrayAround(this);
+    const fromOther = arrayAround(otherRoomPosition);
+
+    return _.intersection(fromThis, fromOther);
+};
+
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room
