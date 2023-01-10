@@ -273,8 +273,6 @@ var roomActor =
                                 {
                                     // percent
                                     const cpuUsed = globals.hardCpuUsed(t0);
-
-                                    // TODO other operations take CPU too
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
