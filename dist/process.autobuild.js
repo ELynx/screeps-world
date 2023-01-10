@@ -242,7 +242,7 @@ autobuildProcess.sourceLink = function(room)
         const linksCS = room.find(
             FIND_CONSTRUCTION_SITES,
             {
-                structureType: STRUCTURE_LINK
+                filter: { structureType: STRUCTURE_LINK }
             }
         );
 
