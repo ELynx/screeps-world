@@ -4,36 +4,12 @@ var Process = require('process.template');
 
 var autobuildProcess = new Process('autobuild');
 
-autobuildProcess.makeCacheKey = function(posOrRoomObject, keyNumber)
-{
-    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-    const cacheKey = (center.x + 1) + 100 * (center.y + 1) + 10000 * keyNumber;
-
-    return cacheKey;
-};
-
-autobuildProcess.lookAtArea5x5 = function(room, posOrRoomObject)
-{
-    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-
-    const cacheKey = this.makeCacheKey(posOrRoomObject, 1);
-    const cached = this._cache_[cacheKey];
-    if (cached)
-    {
-        return cached;
-    }
-
-    const [t, l, b, r] = center.squareArea(2);
-    const inArea = room.lookAtArea(t, l, b, r);
-
-    this._cache_[cacheKey] = inArea;
-    return inArea;
-};
-
 autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
 {
+    // cheap call
+    const terrain = room.getTerrain();
+
     const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
-    const inArea = this.lookAtArea5x5(room, posOrRoomObject);
 
     // 5x5
     let weights = new Array(25);
@@ -49,11 +25,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
             const x = center.x + dx;
             const y = center.y + dy;
 
-            const kx = x.toString();
-            const ky = y.toString();
-
-            const itemsAtXY = inArea[kx] ? inArea[kx][ky] : undefined;
-            const weight = weightFunction(x, y, dx, dy, itemsAtXY ? itemsAtXY : {});
+            const weight = weightFunction(x, y, dx, dy, terrain.get(x, y));
 
             // 7 is the middle of 2nd row
             const index = 7 + dx + (5 * (dy + 1));
@@ -95,33 +67,11 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         const x = center.x + dx;
         const y = center.y + dy;
 
-        const kx = x.toString();
-        const ky = y.toString();
-
         // ignore room boundary positions completely
         if (x < 0 || x > 49 || y < 0 || y > 49)
             continue;
 
-        // check if there is terrain wall in the way
-        // handle sites, structures, etc, at the caller
-        // because of build-ability depends on cross-types
-        let blocked = false;
-        const itemsAt1 = inArea[kx] ? inArea[kx][ky] : undefined;
-        const itemsAt2 = itemsAt1 ? itemsAt1 : {};
-        for (let i in itemsAt2)
-        {
-            const item = itemsAt2[i];
-
-            if (item.type == LOOK_TERRAIN)
-            {
-                if (item.terrain == 'wall')
-                {
-                    blocked = true;
-                }
-            }
-
-            if (blocked) break; // out of items loop
-        }
+        const blocked = terrain.get(x, y) == TERRAIN_MASK_WALL;
 
         if (blocked) continue; // to next index
 
@@ -204,35 +154,17 @@ autobuildProcess.extractor = function(room)
 // STRATEGY weight of goodness of place near the source
 // return best position regardless of buildings and roads
 // thus always should return same distribution for source
-autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
+autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, terrainMask)
 {
     // no harvester can stand on the endge, discourage
     if (x <= 0 || y <= 0 || x >= 49 || y >= 49)
         return -10;
 
-    const cacheKey = this.makeCacheKey({ x: x, y: y }, 2);
-
-    const cached = this._cache_[cacheKey];
-    if (cached)
-    {
-        return cached;
-    }
-
     // check for walls, they get no bonuses
-    for (let i in itemsAtXY)
+    if (terrainMask == TERRAIN_MASK_WALL)
     {
-        const item = itemsAtXY[i];
-
-        // one of terrain should happen only
-        if (item.type == LOOK_TERRAIN)
-        {
-            // can be developed later, but discourage
-            if (item.terrain == 'wall')
-            {
-                this._cache_[cacheKey] = 1;
-                return 1;
-            }
-        }
+        // walls can be develop, but are expensive
+        return 1;
     }
  
     // plain and swamp are relatively equal to develop
@@ -255,22 +187,13 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, itemsAtXY)
     if (y > 25 && dy < 0)
         result = result + 1;
 
-    this._cache_[cacheKey] = result;
     return result;
 };
 
 autobuildProcess.weightSource = function(room, source)
 {
-    const cacheKey = this.makeCacheKey(source, 3);
-    const cached = this._cache_[cacheKey];
-
-    if (cached)
-    {
-        return cached;
-    }
-
+    const terrain = room.getTerrain();
     const center = source.pos;
-    const inArea = this.lookAtArea5x5(room, center);
 
     let result = 0;
     for (let dx = -1; dx <= 1; ++dx)
@@ -283,14 +206,12 @@ autobuildProcess.weightSource = function(room, source)
             const x = center.x + dx;
             const y = center.y + dy;
 
-            const itemsAtXY = inArea[x] ? inArea[x][y] : undefined;
-            const weight = this.weightAroundTheSource(x, y, dx, dy, itemsAtXY ? itemsAtXY : {});
+            const weight = this.weightAroundTheSource(x, y, dx, dy, terrain.get(x, y));
 
             result += weight;
         }
     }
 
-    this._cache_[cacheKey] = result;
     return result;
 };
 
@@ -378,8 +299,6 @@ autobuildProcess.sourceLink = function(room)
 
 autobuildProcess.actualWork = function(room)
 {
-    this._cache_ = {};
-
     this.extractor(room);
     this.sourceLink(room);
 };
