@@ -325,6 +325,7 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
     const fromThis  = arrayAround(this);
     const fromOther = arrayAround(otherRoomPosition);
 
+    // TODO returns zero
     return _.intersection(fromThis, fromOther);
 };
 
