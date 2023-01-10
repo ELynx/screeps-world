@@ -115,11 +115,11 @@ roomInfoProcess.sourceLevel = function(room)
                 for (let j = 0; j < sources.length; ++j)
                 {
                     const source = sources[j];
-                    const betweenTwo = link.pos.findSharedAdjacentPositions(source);
+                    const betweenTwo = link.pos.findSharedAdjacentPositions(source.pos);
 
                     for (let k = 0; k < betweenTwo.length; ++k)
                     {
-                        positions.add(betweenTwo[j]);
+                        positions.add(betweenTwo[k]);
                     }
                 }
 
