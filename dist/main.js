@@ -13,7 +13,11 @@ console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
 profiler.registerObject(roomActor, 'roomActor');
 profiler.registerObject(worldActor, 'worldActor');
 
-profiler.enable();
+// enable profiler with a flag on map during load
+if (Game.flags.profiler)
+{
+    profiler.enable();
+}
 
 module.exports.loop = function()
 {
@@ -39,12 +43,14 @@ module.exports.loop = function()
         total = total + delta;
     }
 
+    if (total == 0) total = 1;
+
     for(const roomName in Game.rooms)
     {
         let room = Game.rooms[roomName];
 
         const r = limits[room.name] || 0;
-        const t = total + 1;
+        const t = total;
         const limit = Math.ceil(100 * r / t);
 
         room.visual.rect(0, 0, 5,         0.5,  { fill: '#0f0' });
