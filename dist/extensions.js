@@ -300,9 +300,9 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
     // there are no adjacent positions if positions are too far away
     if (Math.abs(dx) > 2 || Math.abs(dy) > 2) return [];
 
-    const arrayAround = function(pos)
+    const aroundAsMap = function(pos)
     {
-        let result = [];
+        let result = {};
 
         for (let dx = -1; dx <= 1; ++dx)
         {
@@ -315,18 +315,26 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
 
                 if (x < 0 || x > 49 || y < 0 || y > 49) continue;
 
-                result.push(new RoomPosition(x, y, pos.roomName));
+                result[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, pos.roomName);
             }
         }
 
         return result;
     }
 
-    const fromThis  = arrayAround(this);
-    const fromOther = arrayAround(otherRoomPosition);
+    const fromThis  = aroundAsMap(this);
+    const fromOther = aroundAsMap(otherRoomPosition);
 
-    // TODO returns zero
-    return _.intersection(fromThis, fromOther);
+    const intersections = _.intersection(Object.keys(fromThis), Object.keys(fromOther));
+
+    let result = [];
+    for (let outerIndex in intersections)
+    {
+        const innerIndex = intersections[outerIndex];
+        result.push(fromThis[innerIndex]);
+    }
+
+    return result;
 };
 
 Structure.prototype.isActiveSimple = function()
