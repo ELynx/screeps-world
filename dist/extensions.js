@@ -258,24 +258,20 @@ RoomPosition.prototype.squareArea = function(squareStep)
 RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
 {
     const [t, l, b, r] = this.squareArea(squareStep);
-
     const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true);
-
-    if (filterFunction === undefined)
-    {
-        for (let itemKey in items)
-        {
-            return items[itemKey][lookForType].id;
-        }
-
-        return undefined;
-    }
 
     for (let itemKey in items)
     {
         const item = items[itemKey][lookForType];
 
-        if (filterFunction(item))
+        if (filterFunction)
+        {
+            if (filterFunction(item))
+            {
+                return item.id;
+            }            
+        }
+        else
         {
             return item.id;
         }
@@ -294,11 +290,11 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
 {
     if (this.roomName != otherRoomPosition.roomName) return [];
 
-    const dx = this.x - otherRoomPosition.x;
-    const dy = this.y - otherRoomPosition.y;
+    const adx = this.x - otherRoomPosition.x;
+    const ady = this.y - otherRoomPosition.y;
 
     // there are no adjacent positions if positions are too far away
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) return [];
+    if (Math.abs(adx) > 2 || Math.abs(ady) > 2) return [];
 
     const aroundAsMap = function(pos)
     {
@@ -382,14 +378,6 @@ StructureLink.prototype.isSource = function()
     return result;
 };
 
-/**
-Get amount that can be sent for given energy.
-@see Game.market.calcTransactionCost
-@param {integer} energy how much can be spent on transaction.
-@param {string} roomName1 room 1.
-@param {string} roomName2 room 2.
-@return how much can be sent.
-**/
 StructureTerminal.prototype._caclTransactionAmount = function(roomTo)
 {
     // how much sending 1000 costs
@@ -432,7 +420,7 @@ StructureTerminal.prototype.autoSell = function(order, keep = 0)
 
         const amount = Math.min(has - keep, maxAmount, order.amount);
 
-        return Game.market.deal(orderId, amount, room.name);
+        return Game.market.deal(order.id, amount, this.pos.roomName);
     }
 
     return ERR_INVALID_ARGS;
