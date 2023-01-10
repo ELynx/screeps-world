@@ -232,6 +232,9 @@ roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
 
+    // cached, call often to paint markings
+    makeCaveMap(room);
+
     // once in a creep life update room info
     if (room.memory.intl === undefined ||
         room.memory.intl < Game.time - CREEP_LIFE_TIME)
@@ -250,8 +253,6 @@ roomInfoProcess.work = function(room)
                 ++room.memory.wlvl;
             }
         }
-
-        makeCaveMap(room);
 
         // TODO get rid of hardcode
         const flagName = 'strelok_' + room.name;

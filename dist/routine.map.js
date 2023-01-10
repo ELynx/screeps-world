@@ -14,7 +14,7 @@ function makeCaveMap(room)
                                    ];
     }
 
-    if (false)
+    if (Game.flags.cavemap)
     {
         for (let x = 0; x < room.memory.caveMap[0].length - 1; ++x)
         {
