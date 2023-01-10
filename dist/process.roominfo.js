@@ -90,7 +90,7 @@ roomInfoProcess.sourceLevel = function(room)
     const links = room.find(
         FIND_STRUCTURES,
         {
-            structureType: STRUCTURE_LINK
+            filter: { structureType: STRUCTURE_LINK }
         }
     );
 
