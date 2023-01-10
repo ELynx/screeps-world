@@ -193,7 +193,7 @@ var roomActor =
                     {
                         continue; // to the next creep
                     }
-                } // end of loop of room change
+                } // end of subroutine of room change
 
                 // TODO integrate
                 // TODO profile and decide how it works
@@ -209,31 +209,22 @@ var roomActor =
                     for (let k = 0; k < grabbs.length && !wasGrabbed; ++k)
                     {
                         const grabb = grabbs[k];
+                        const from = grabb[grabb.type];
 
-                        if (grabb.type == 'tombstone')
+                        if (grabb.type == LOOK_TOMBSTONES ||
+                            grabb.type == LOOK_RUINS)
                         {
-                            const ex = grabb.tombstone;
-                            if (ex.store[RESOURCE_ENERGY] > 0)
+                            if (from.store[RESOURCE_ENERGY] > 0)
                             {
-                                wasGrabbed = creep.withdraw(ex, RESOURCE_ENERGY) == OK;
+                                wasGrabbed = creep.withdraw(from, RESOURCE_ENERGY) == OK;
                             }
                         }
 
-                        if (grabb.type == 'ruin')
+                        if (grabb.type == LOOK_RESOURCES)
                         {
-                            const ex = grabb.ruin;
-                            if (ex.store[RESOURCE_ENERGY] > 0)
+                            if (from.resourceType == RESOURCE_ENERGY)
                             {
-                                wasGrabbed = creep.withdraw(ex, RESOURCE_ENERGY) == OK;
-                            }
-                        }
-
-                        if (grabb.type == 'resource')
-                        {
-                            const ex = grabb.resource;
-                            if (ex.resourceType == RESOURCE_ENERGY)
-                            {
-                                wasGrabbed = creep.pickup(ex) == OK;
+                                wasGrabbed = creep.pickup(from) == OK;
                             }
                         }
                     }
