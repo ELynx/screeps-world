@@ -329,7 +329,12 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
 
     if (filterFunction === undefined)
     {
-        return items.length > 0 ? items[0].id : undefined;
+        for (let itemKey in items)
+        {
+            return items[itemKey].id;
+        }
+
+        return undefined;
     }
 
     for (let itemKey in items)
@@ -347,7 +352,8 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
 
 RoomPosition.prototype.hasInSquareArea = function(lookForType, squareStep, filterFunction = undefined)
 {
-    return !(this.findInSquareArea(lookForType, squareStep, filterFunction) === undefined);
+    const id = this.findInSquareArea(lookForType, squareStep, filterFunction);
+    return !(id === undefined);
 };
 
 RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)

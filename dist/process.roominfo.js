@@ -97,6 +97,7 @@ roomInfoProcess.sourceLevel = function(room)
     // don't bother, there is no transfer happening
     if (links.length < 2) return 0;
 
+    const terrain = room.getTerrain();
     const sources = room.find(FIND_SOURCES);
 
     let hasDestination = false;
@@ -110,13 +111,37 @@ roomInfoProcess.sourceLevel = function(room)
         {
             if (link.isSource())
             {
-                let positions = [];
+                let positions = new Set();
                 for (let j = 0; j < sources.length; ++j)
                 {
                     const source = sources[j];
                     const betweenTwo = link.pos.findSharedAdjacentPositions(source);
 
-                    
+                    for (let k = 0; k < betweenTwo.length; ++k)
+                    {
+                        positions.add(betweenTwo[j]);
+                    }
+                }
+
+                for (let j = 0; j < positions.length; ++j)
+                {
+                    const position = positions[j];
+
+                    if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL)
+                    {
+                        ++soucePositions;
+                        continue;
+                    }
+
+                    const atPosition = position.lookFor(LOOK_STRUCTURES);
+                    for (let k in atPosition)
+                    {
+                        if (k.structureType == STRUCTURE_ROAD)
+                        {
+                            ++soucePositions;
+                            break; // from atPosition loop
+                        }
+                    }
                 }
             }
             else
