@@ -313,6 +313,7 @@ function Controller(id)
 
         const navigationRoute = Magic[creep.caveIndex()];
 
+        // TODO visualise route
         for (let ridx = 0; ridx < navigationRoute.length; ++ridx)
         {
             const caveTargets = this._lookInCave(room, lookForType, filter, navigationRoute[ridx]);
