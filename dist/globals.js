@@ -17,20 +17,6 @@ var globals =
     },
 
     /**
-    CPU used from shard limit and bucket.
-    @return integer percent of used shard limit and bucket.
-    **/
-    softCpuUsed: function(from)
-    {
-        if (!Game.cpu.tickLimit)
-        {
-            return 0;
-        }
-
-        return Math.ceil(100 * (Game.cpu.getUsed() - from) / Game.cpu.tickLimit);
-    },
-
-    /**
     Object holding references to all registered room controllers.
     **/
     roomControllers: { },
@@ -100,7 +86,7 @@ var globals =
     **/
     creepAssigned: function(creep)
     {
-        return creep.memory.ctrl != this.NO_CONTROL && !creep.spawning;
+        return creep.memory.ctrl != this.NO_CONTROL;
     },
 
     /**
