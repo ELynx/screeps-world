@@ -12,6 +12,16 @@ Calculate room energy level.
 **/
 roomInfoProcess.energyLevel = function(room)
 {
+    let level = 0;
+    if (room && room.controller)
+    {
+        level = room.controller.level;
+    }
+    else
+    {
+        return 0;
+    }
+
     const structs = room.find(
         FIND_STRUCTURES,
         {
@@ -19,28 +29,37 @@ roomInfoProcess.energyLevel = function(room)
             {
                 return (structure.structureType == STRUCTURE_SPAWN ||
                         structure.structureType == STRUCTURE_EXTENSION) &&
-                        structure.isActive() &&
                         structure.my;
             }
         }
     );
 
-    let energyCapacity = 0;
-    let hasSpawn = false;
+    let spawnCount = 0;
+    let extensionCount = 0;
 
     for (let i = 0; i < structs.length; ++i)
     {
-        energyCapacity = energyCapacity + structs[i].energyCapacity;
-        hasSpawn = hasSpawn || structs[i].structureType == STRUCTURE_SPAWN;
+        const struct = structs[i];
+
+        if (struct.structureType == STRUCTURE_SPAWN)
+        {
+            ++spawnCount;
+        }
+        else if (struct.structureType == STRUCTURE_EXTENSION)
+        {
+            ++extensionCount;
+        }
     }
 
+    spawnCount     = Math.min(spawnCount,     CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][level]);
+    extensionCount = Math.min(extensionCount, CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level]);
+
     // room cold start
-    if (!hasSpawn)
+    if (spawnCount == 0)
     {
         return 0;
     }
 
-    // has spawn, has no creeps, means creeps wiped or room start
     const roomCreeps = room.getRoomControlledCreeps();
     const energyGivingCreeps = _.filter(
         roomCreeps,
@@ -53,6 +72,7 @@ roomInfoProcess.energyLevel = function(room)
         }
     );
 
+    // has spawn, has no creeps, means creeps wiped or room start
     if (energyGivingCreeps.length == 0)
     {
         // there is no one to refill spawns, etc
@@ -60,6 +80,9 @@ roomInfoProcess.energyLevel = function(room)
         // still can try to spawn weaklings
         return 1;
     }
+
+    let energyCapacity = EXTENSION_ENERGY_CAPACITY[level] * extensionCount;
+    energyCapacity    += SPAWN_ENERGY_CAPACITY * spawnCount;
 
     if (energyCapacity >= 800)
     {
@@ -97,10 +120,24 @@ roomInfoProcess.sourceLevel = function(room)
     // don't bother, there is no transfer happening
     if (links.length < 2) return 0;
 
+    let hasDestination = false;
+    for (let i = 0; i < links.length; ++i)
+    {
+        const link = links[i];
+
+        if (link.my && link.isActiveSimple() && !link.isSource())
+        {
+            hasDestination = true;
+            break;
+        }
+    }
+
+    // no need to optimize energy transfer when there is no destination
+    if (!hasDestination) return 0;
+
     const terrain = room.getTerrain();
     const sources = room.find(FIND_SOURCES);
 
-    let hasDestination = false;
     let soucePositions = 0;
 
     for (let i = 0; i < links.length; ++i)
@@ -146,15 +183,8 @@ roomInfoProcess.sourceLevel = function(room)
                     }
                 }
             }
-            else
-            {
-                hasDestination = true;
-            }
         }
     }
-
-    // no need to optimize energy transfer when there is no destination
-    if (!hasDestination) return 0;
 
     return soucePositions;
 };
@@ -174,7 +204,7 @@ roomInfoProcess.miningLevel = function(room)
         {
             filter: function(structure)
             {
-                return structure.my && structure.structureType == STRUCTURE_EXTRACTOR && structure.isActive();
+                return structure.my && structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple();
             }
         }
     );
@@ -201,7 +231,7 @@ roomInfoProcess.wallLevel = function(room)
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_WALL;
+                return structure.structureType == STRUCTURE_WALL && structure.hits && structure.hitsMax;
             }
         }
     );
