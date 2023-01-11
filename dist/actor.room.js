@@ -170,7 +170,6 @@ var roomActor =
                     // flag to handle border transition
                     creep.memory.roomChange = true;
 
-                    // TODO only creep with fatugue zero travels border?
                     if (creep.fatigue == 0)
                     {
                         // get off border area
@@ -196,11 +195,8 @@ var roomActor =
                 } // end of subroutine of room change
 
                 // TODO integrate
-                // TODO profile and decide how it works
-                // TODO why these conditions?
-                // hotplug - grab resources nearby
-                if (creep.store.getFreeCapacity() > 0 &&
-                  !(creep.memory.rstk && creep.memory.ctrl == energyHarvestController.id))
+                // Grab resources nearby
+                if (creep.store.getFreeCapacity() > 0)
                 {
                     let wasGrabbed = false;
 
@@ -232,7 +228,6 @@ var roomActor =
                     if (wasGrabbed)
                     {
                         // TODO integrate
-                        // hotplug 2 - don't go with harvest
                         if (creep.memory.ctrl == energyHarvestController.id)
                         {
                             globals.unassignCreep(creep);

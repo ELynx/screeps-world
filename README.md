@@ -28,6 +28,8 @@ Roads in neutral room require change in repair code to work on energy level 0.
 
 Creeps fight back based on event log.
 
+Grab was disabled for restocker during harvest. Block removed.
+
 ## Temporary creeps
 
 Spawn on demand.
