@@ -161,6 +161,12 @@ var roomActor =
             {
                 let creep = roomCreeps[i];
 
+                // spawning creep can do nothing
+                if (creep.spawning)
+                {
+                    continue;
+                }
+
                 // code that migrate creeps into room of registration
                 if (creep.memory.crum != creep.pos.roomName || creep.memory.roomChange)
                 {
