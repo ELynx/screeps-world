@@ -167,11 +167,14 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
         return;
     }
 
+    let sourceLevel  =          ownerRoom.memory.slvl;
+    let harvestLevel = Math.max(ownerRoom.memory.hlvl - sourceLevel, 0); // takes same harvest slots
+
     let creepsNeeded = this.calculateCreepsNeeded(
         ownerRoom.memory.elvl,
-        ownerRoom.memory.slvl,
+        sourceLevel,
         ownerRoom.memory.mlvl,
-        ownerRoom.memory.hlvl
+        harvestLevel
     );
 
     for (let i = 0; i < creeps.length; ++i)
