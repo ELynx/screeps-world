@@ -8,9 +8,8 @@ var spawnProcess = new Process('spawn');
 
 spawnProcess.calculateCreepsNeeded = function(energyLevel, harvestLevel, sourceLevel, miningLevel)
 {
-    var result = new Array(3);
-    result.fill(0);
-    return result;
+    // TODO (high priority) creep need logic
+    return [Math.ceil(energyLevel * 1.5), sourceLevel > 0 ? 2 : 0, miningLevel];
 };
 
 /**
