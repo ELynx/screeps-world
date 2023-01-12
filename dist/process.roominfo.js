@@ -105,6 +105,7 @@ roomInfoProcess.energyLevel = function(room)
 
 roomInfoProcess.harvestLevel = function(room)
 {
+    // TODO
     return 6;
 };
 
