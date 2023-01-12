@@ -360,7 +360,7 @@ RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
         color = COLOR_BLUE;
     }
 
-    return this.createFlag(flagName, newColor);
+    return this.createFlag(flagName, color);
 };
 
 Structure.prototype.isActiveSimple = function()
