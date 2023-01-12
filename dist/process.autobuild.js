@@ -67,7 +67,7 @@ autobuildProcess.bestNeighbour = function(room, posOrRoomObject, weightFunction)
         const x = center.x + dx;
         const y = center.y + dy;
 
-        // ignore room boundary positions completely
+        // prevent out of bounds
         if (x < 0 || x > 49 || y < 0 || y > 49)
             continue;
 
@@ -253,29 +253,26 @@ autobuildProcess.sourceLink = function(room)
 
             if (sources.length > 0)
             {
-                if (sources.length > 1)
-                {
-                    // pick source with most access first
-                    let self = this;
-                    sources.sort(
-                        function(s1, s2)
-                        {
-                            const w1 = self.weightSource(room, s1);
-                            const w2 = self.weightSource(room, s2);
+                let self = this;
 
-                            return w2 - w1;
-                        }
-                    );
-                }
+                // pick source with most access first
+                sources.sort(
+                    function(s1, s2)
+                    {
+                        const w1 = self.weightSource(room, s1);
+                        const w2 = self.weightSource(room, s2);
+
+                        return w2 - w1;
+                    }
+                );
+
+                const weightFunction = function(x, y, dx, dy, itemsAtXY)
+                {
+                    return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
+                };
 
                 for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
                 {
-                    let self = this;
-                    const weightFunction = function(x, y, dx, dy, itemsAtXY)
-                    {
-                        return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
-                    };
-
                     const source = sources[i];
 
                     const positions = this.bestNeighbour(room, source, weightFunction);
