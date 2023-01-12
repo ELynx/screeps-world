@@ -413,13 +413,7 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
-            // TODO clean up scope jumps
-
-            // of them one that can be reached
-            let target = undefined;
-            let targetMove = undefined;
-
-            // legacy scope
+            // scope to contain "self"
             {
                 let self = this;
 
@@ -438,46 +432,48 @@ function Controller(id)
                         return d1 - d2;
                     }
                 );
+            }
 
-                // check, see if reacheable in any way
-                for (let j = 0; j < targets.length; ++j)
+            // of them one that can be reached
+            let target = undefined;
+            let targetMove = undefined;
+
+            // check, see if reacheable in any way
+            for (let j = 0; j < targets.length; ++j)
+            {
+                const inspected = targets[j].pos;
+
+                if (inspected.inRangeTo(creep.pos, this.actRange))
                 {
-                    const inspected = targets[j].pos;
-                    let found = inspected.inRangeTo(creep.pos, this.actRange);
+                    target = inspected;
+                    break; // from targets loop
+                }
 
-                    if (!found)
-                    {
-                        const solution = room.findPath(
-                            creep.pos,
-                            inspected,
-                            globals.moveOptionsWrapper(
-                                {
-                                    ignoreCreeps: this.ignoreCreepsForTargeting,
-                                    range: this.actRange,
-                                    maxRooms: 1
-                                }
-                            )
-                        );
-
-                        if (solution.length > 0)
+                const solution = room.findPath(
+                    creep.pos,
+                    inspected,
+                    globals.moveOptionsWrapper(
                         {
-                            const last = solution[solution.length - 1];
-                            found = inspected.inRangeTo(last.x, last.y, this.actRange);
-
-                            if (found)
-                            {
-                                targetMove = solution;
-                            }
+                            ignoreCreeps: this.ignoreCreepsForTargeting,
+                            range: this.actRange,
+                            maxRooms: 1
                         }
-                    }
+                    )
+                );
+
+                if (solution.length > 0)
+                {
+                    const last = solution[solution.length - 1];
+                    const found = inspected.inRangeTo(last.x, last.y, this.actRange);
 
                     if (found)
                     {
-                        target = targets[j];
-                        break;
+                        target = inspected;
+                        targetMove = solution;
+                        break; // from targets loop
                     }
                 }
-            }
+            } // end of targets loop
 
             if (target)
             {
