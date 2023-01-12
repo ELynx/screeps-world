@@ -88,21 +88,21 @@ function Controller(id)
     **/
     this._filterExcludedTargets = function(targets)
     {
-        if (targets.length == 0 || _excludedTargets.length == 0)
+        if (targets.length == 0 || this._excludedTargets.length == 0)
         {
             return targets;
         }
 
         let targetIds = _.map(targets, 'id');
-        let exclude = _.intersection(targetIds, _excludedTargets);
+        let exclude = _.intersection(targetIds, this._excludedTargets);
 
-        if (exclude.length == _excludedTargets.length)
+        if (exclude.length == this._excludedTargets.length)
         {
-            _excludedTargets = [];
+            this._excludedTargets = [];
         }
         else
         {
-            _.pullAll(_excludedTargets, exclude):
+            _.pullAll(this._excludedTargets, exclude);
         }
 
         if (targets.length == exclude.length)
@@ -321,7 +321,7 @@ function Controller(id)
         this._staticTargetCache = targets;
 
         return targets;
-    }
+    };
 
     /**
     Default target search for single creep.
@@ -331,32 +331,32 @@ function Controller(id)
     **/
     this._findTargetsForCreep = function(room, creep)
     {
-        let static  = undefined;
-        let dynamic = undefined;
+        let statics  = undefined;
+        let dynamics = undefined;
 
         if (this.staticTargets)
         {
-            static = this._findStaticTargets(room);
+            statics = this._findStaticTargets(room);
         }
 
         if (this.dynamicTargets)
         {
-            dynamic = this.dynamicTargets(room, creep);
+            dynamics = this.dynamicTargets(room, creep);
         }
 
-        if (static && (dynamic !== undefined))
+        if (statics && (dynamics !== undefined))
         {
-            return static;
+            return statics;
         }
 
-        if (dynamic && (static !== undefined))
+        if (dynamics && (statics !== undefined))
         {
-            return dynamic;
+            return dynamics;
         }
 
-        if (static && dynamic)
+        if (statics && dynamics)
         {
-            return static.concat(dynamic);
+            return statics.concat(dynamics);
         }
 
         this.debugLine('Controller missing targets!');
