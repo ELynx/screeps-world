@@ -106,7 +106,7 @@ var globals =
 
         if (targetSolution)
         {
-            const pos = target.pos ? target.pos : target;
+            const pos = target.pos;
 
             // imitate _move cahce
             // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
