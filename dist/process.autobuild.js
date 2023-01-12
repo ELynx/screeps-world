@@ -106,11 +106,7 @@ autobuildProcess.logConstructionSite = function(room, posOrRoomObject, structure
     const message = 'Planned ' + structureType + ' at ' + pos + ' with result code ' + rc;
 
     console.log(message);
-
-    if (!Game.rooms.sim)
-    {
-        Game.notify(message, 30);
-    }
+    Game.notify(message, 30);
 };
 
 autobuildProcess.tryPlan = function(room, posOrRoomObject, structureType)
