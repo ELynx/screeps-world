@@ -5,10 +5,15 @@ var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
 
+Room.prototype.getControlPos = function()
+{
+    return new RoomPosition(25, 25, this.name);
+};
+
 Creep.prototype.getFlagName = function()
 {
     return this.memory.flag;
-}
+};
 
 Creep.prototype.getFlagPos = function()
 {
@@ -44,9 +49,7 @@ Creep.prototype.getControlPos = function()
         }
     }
 
-    const roomPos = new RoomPosition(25, 25, crum);
-
-    return roomPos;
+    return Game.rooms(crum).getControlPos();
 };
 
 Creep.prototype.getSourceRoom = function()
@@ -67,9 +70,7 @@ Creep.prototype.getSourcePos = function()
         }
     }
 
-    const roomPos = new RoomPosition(25, 25, srum);
-
-    return roomPos;
+    return Game.rooms(srum).getControlPos();
 };
 
 RoomPosition.prototype.controlDistance = function()

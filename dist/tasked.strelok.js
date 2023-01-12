@@ -4,11 +4,38 @@ var Tasked = require('tasked.template');
 
 var strelok = new Tasked('strelok');
 
+strelok.patrolRoom = function(room)
+{
+    const flagName = this.id + '_' + room.name;
+
+    const flag = Game.flags[flagName];
+    if (flag)
+    {
+        const patrolUnits = Math.min(3, room.memory.elvl + 1);
+        flag.setValue(patrolUnits);
+    }
+    else
+    {
+        // new room info, start with single guard
+        const flagPos = room.getControlPos();
+        flagPos.createFlagWithValue(flagName, 1);
+    }
+};
+
 strelok.prepare = function()
 {
     this.roomTargets = { };
     this.roomWounded = { };
     this.roomBoring  = { };
+
+    for (const roomName in Game.rooms)
+    {
+        const room = Game.rooms[roomName];
+        if (room && room.controller && room.controller.my)
+        {
+            this.patrolRoom(room);
+        }
+    }
 };
 
 strelok.creepPrepare = function(creep)
