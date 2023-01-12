@@ -128,7 +128,6 @@ var roomActor =
         // clean up controllers
         this.roomControllersPrepare(room);
 
-        // priority - safemode
         secutiryProcess.work(room);
         roomInfoProcess.work(room);
         towerProcess.work(room);
@@ -233,7 +232,6 @@ var roomActor =
 
                     if (wasGrabbed)
                     {
-                        // TODO integrate
                         if (creep.memory.ctrl == energyHarvestController.id)
                         {
                             globals.unassignCreep(creep);
