@@ -9,14 +9,20 @@ var worldActor    = require('actor.world');
 const profiler    = require('screeps-profiler');
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU');
+console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION);
 
 profiler.registerObject(roomActor, 'roomActor');
 profiler.registerObject(worldActor, 'worldActor');
 
 // enable profiler with a flag on map during load
-if (Game.flags.profiler)
+if (Game.flags.profiler && Game.flags.profiler.pos)
 {
+    console.log('Profiler enabled by flag in room ' + Game.flags.profiler.pos.roomName);
     profiler.enable();
+}
+else
+{
+    profiler.disable();
 }
 
 module.exports.loop = function()
