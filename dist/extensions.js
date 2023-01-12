@@ -149,7 +149,7 @@ Flag.prototype.setValue = function(newValue)
 {
     let newColor = COLOR_WHITE;
 
-    if (newValue == 6)
+    if (newValue >= 6)
     {
         newColor = COLOR_PURPLE;
     }

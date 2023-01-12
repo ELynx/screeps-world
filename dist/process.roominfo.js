@@ -103,6 +103,11 @@ roomInfoProcess.energyLevel = function(room)
     return 0;
 };
 
+roomInfoProcess.harvestLevel = function(room)
+{
+    return 3;
+};
+
 /**
 Calculate room source level.
 @param {Room} room.
@@ -258,17 +263,12 @@ roomInfoProcess.wallLevel = function(room)
     return hits[Math.floor(hits.length / 2)];
 };
 
-roomInfoProcess.harvestLevel = function(room)
-{
-    return 3;
-};
-
 roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
 
     // cached
-    // call every time to paint cave map if active
+    // call every time to paint cave map
     makeCaveMap(room);
 
     // once in a creep life update room info
@@ -276,10 +276,10 @@ roomInfoProcess.work = function(room)
         room.memory.intl < Game.time - CREEP_LIFE_TIME)
     {
         room.memory.elvl = this.energyLevel(room);
+        room.memory.hlvl = this.harvestLevel(room);
         room.memory.slvl = this.sourceLevel(room);
         room.memory.mlvl = this.miningLevel(room);
         room.memory.wlvl = this.wallLevel(room);
-        room.memory.hlvl = this.harvestLevel(room);
 
         // STRATEGY from level 6 room builds up walls
         if (room.memory.elvl > 5 &&
@@ -289,23 +289,6 @@ roomInfoProcess.work = function(room)
             {
                 ++room.memory.wlvl;
             }
-        }
-
-        // TODO get rid of hardcode
-        const flagName = 'strelok_' + room.name;
-        const flag = Game.flags[flagName];
-        if (flag)
-        {
-            const patrolUnits = Math.min(3, room.memory.elvl + 1);
-            flag.setValue(patrolUnits);
-        }
-        else
-        {
-            // TODO at the "downtown"
-            const flagPos = new RoomPosition(25, 25, room.name);
-            // TODO setValue(1)
-            // new room info, start with single guard
-            flagPos.createFlag(flagName, COLOR_GREEN);
         }
 
         // offset regeneration time randomly so multiple rooms don't do it at same tick
