@@ -6,32 +6,35 @@ var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
-const TypeBody        = [ bodywork[0], bodywork[1], bodywork[2] ];
-const TypeHarvest     = [ true,        true,        undefined   ];
-const TypeRestock     = [ undefined,   true,        undefined   ];
-const TypeMiner       = [ undefined,   undefined,   true        ];
-const TypeLimitSource = [ undefined,   1.0,         undefined   ];
-const TypeLimitMining = [ undefined,   undefined,   1.0         ];
-const TypeCount       = [
-                        [ 4,           0,           0           ], // level 0
-                        [ 6,           0,           1           ], // level 1
-                        [ 8,           0,           1           ], // level 2
-                        [ 10,          0,           1           ], // level 3
-                        [ 10,          0,           1           ], // level 4
-                        [ 8,           2,           1           ], // level 5
-                        [ 6,           4,           1           ]  // level 6
-                                                                ];
+const TypeBody         = [ bodywork[0], bodywork[1], bodywork[2] ];
+const TypeHarvest      = [ true,        true,        undefined   ];
+const TypeRestock      = [ undefined,   true,        undefined   ];
+const TypeMiner        = [ undefined,   undefined,   true        ];
+const TypeLimitHarvest = [ 1.0,         undefined,   undefined   ];
+const TypeLimitSource  = [ undefined,   1.0,         undefined   ];
+const TypeLimitMining  = [ undefined,   undefined,   1.0         ];
+const TypeCount        = [
+                         [ 4,           0,           0           ], // level 0
+                         [ 6,           0,           0           ], // level 1
+                         [ 8,           0,           0           ], // level 2
+                         [ 10,          0,           0           ], // level 3
+                         [ 10,          0,           0           ], // level 4
+                         [ 8,           2,           0           ], // level 5
+                         [ 6,           4,           1           ]  // level 6
+                                                                 ];
 
-spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel)
+spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel, harvestLevel)
 {
     if (!this.countCache)
     {
         this.countCache = { };
     }
 
-    const cacheKey = (energyLevel + 1) * 1 +
-                     (sourceLevel + 1) * 100 +
-                     (miningLevel + 1) * 10000;
+    const cacheKey = (energyLevel + 1)  * 1 +
+                     (sourceLevel + 1)  * 100 +
+                     (miningLevel + 1)  * 10000 +
+                     (harvestLevel + 1) * 1000000;
+
     const cacheHit = this.countCache[cacheKey];
     if (cacheHit)
     {
@@ -52,7 +55,6 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
     for (let i = 0; i < creepsNeeded.length; ++i)
     {
         let limitSource = TypeLimitSource[i];
-
         if (limitSource !== undefined)
         {
             limitSource = Math.ceil(limitSource * sourceLevel);
@@ -63,13 +65,22 @@ spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLe
         }
 
         let limitMining = TypeLimitMining[i];
-
         if (limitMining !== undefined)
         {
             limitMining = Math.ceil(limitMining * miningLevel);
             if (creepsNeeded[i] > limitMining)
             {
                 creepsNeeded[i] = limitMining;
+            }
+        }
+
+        let limitHarvest = TypeLimitHarvest[i];
+        if (limitHarvest !== undefined)
+        {
+            limitHarvest = Math.ceil(limitHarvest * harvestLevel);
+            if (creepsNeeded[i] > limitHarvest)
+            {
+                creepsNeeded[i] = limitHarvest;
             }
         }
     }
@@ -159,7 +170,8 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
     let creepsNeeded = this.calculateCreepsNeeded(
         ownerRoom.memory.elvl,
         ownerRoom.memory.slvl,
-        ownerRoom.memory.mlvl
+        ownerRoom.memory.mlvl,
+        ownerRoom.memory.hlvl
     );
 
     for (let i = 0; i < creeps.length; ++i)
