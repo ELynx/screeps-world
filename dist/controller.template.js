@@ -194,6 +194,11 @@ function Controller(id)
             const t = room.memory.caveMap[1][caveY];
             const b = room.memory.caveMap[1][caveY + 1] - 1;
 
+            if (Game.flags.cavemap)
+            {
+                room.visual.circle((l + r) / 2, (t + b) / 2, { opacity: 0.2 });
+            }
+
             const looked = room.lookForAtArea(lookForType, t, l, b, r, true);
 
             let targets = [];
@@ -271,7 +276,6 @@ function Controller(id)
 
         const navigationRoute = Magic[creep.caveIndex()];
 
-        // TODO visualise route
         for (let ridx = 0; ridx < navigationRoute.length; ++ridx)
         {
             const caveTargets = this._lookInCave(room, lookForType, filter, navigationRoute[ridx]);
@@ -493,7 +497,7 @@ function Controller(id)
     {
         this.debugHeader(room);
 
-        this._staticTargetCache = undefined;
+        this._staticTargetCache  = undefined;
         this._dynamicTargetCache = undefined;
 
         if (this._usesDefaultFilter)
@@ -508,9 +512,9 @@ function Controller(id)
         // viable for fast check
         if (this.staticTargets && !this.dynamicTargets)
         {
-            const st = this._findStaticTargets(room);
+            const statics = this._findStaticTargets(room);
 
-            if (st.length == 0)
+            if (statics.length == 0)
             {
                 this.debugLine(room, 'Fast exit, no targets');
                 return roomCreeps;
