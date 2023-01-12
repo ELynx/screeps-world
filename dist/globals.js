@@ -106,14 +106,16 @@ var globals =
 
         if (targetSolution)
         {
+            const pos = target.pos ? target.pos : target;
+
             // imitate _move cahce
             // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
             creep.memory._move =
             {
-                dest: { x: target.pos.x, y: target.pos.y, room: target.pos.roomName },
+                dest: pos,
                 time: Game.time,
                 path: Room.serializePath(targetSolution),
-                room: target.pos.roomName
+                room: pos.roomName
             };
         }
         else
