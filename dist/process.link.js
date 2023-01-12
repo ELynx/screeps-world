@@ -41,21 +41,21 @@ linkProcess.work = function(room)
 
     for (let i = 0; i < allLinks.length; ++i)
     {
-        let curr = allLinks[i];
+        let link = allLinks[i];
 
         // quick flag, source keeps to be source
-        if (curr.isSource())
+        if (link.isSource())
         {
-            if (useAsSource(curr))
+            if (useAsSource(link))
             {
-                sourceLinks.push(curr);
+                sourceLinks.push(link);
             }
         }
         else
         {
-            if (useAsDest(curr))
+            if (useAsDest(link))
             {
-                destLinks.push(curr);
+                destLinks.push(link);
             }
         }
     }
@@ -77,16 +77,13 @@ linkProcess.work = function(room)
         );
     }
 
-    if (destLinks.length > 1)
-    {
-        destLinks.sort(
-            function(l1, l2)
-            {
-                // STRATEGY keep it CPU-simple
-                return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY];
-            }
-        );
-    }
+    destLinks.sort(
+        function(l1, l2)
+        {
+            // STRATEGY keep it CPU-simple
+            return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY];
+        }
+    );
 
     let didx = 0;
     for (let sidx = 0; sidx < sourceLinks.length; ++sidx)
