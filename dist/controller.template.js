@@ -49,7 +49,7 @@ function Controller(id)
     Flag to focus creeps on one target in room.
     For dynamic targets.
     **/
-    this.focusDynamic = false;
+    this.focusEffort = false;
 
     /**
     Cache of target IDs that already have creep assigned.
@@ -219,7 +219,7 @@ function Controller(id)
             }
 
             // one target per cave if flag is set
-            if (this.focusDynamic && targets.length > 1)
+            if (this.focusEffort && targets.length > 1)
             {
                 targets.splice(1);
             }
