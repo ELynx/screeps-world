@@ -186,7 +186,7 @@ function Controller(id)
         const caveX = caveIndex % xSize;
         const caveY = Math.floor(caveIndex / xSize);
 
-        if (/*caveX < room.memory.caveMap[0].length - 1 &&*/ // always true
+        if (caveX < room.memory.caveMap[0].length - 1 &&
             caveY < room.memory.caveMap[1].length - 1)
         {
             const l = room.memory.caveMap[0][caveX];
@@ -194,28 +194,16 @@ function Controller(id)
             const t = room.memory.caveMap[1][caveY];
             const b = room.memory.caveMap[1][caveY + 1] - 1;
 
-            const looked = room.lookForAtArea(lookForType, t, l, b, r);
+            const looked = room.lookForAtArea(lookForType, t, l, b, r, true);
 
             let targets = [];
 
-            for (let x in looked)
+            for (let i = 0; i < looked.length; ++i)
             {
-                const ys = looked[x];
-
-                for (let y in ys)
+                const object = looked[i][lookForType];
+                if (filter(object))
                 {
-                    const objs = ys[y];
-
-                    if (objs)
-                    {
-                        for (let i = 0; i < objs.length; ++i)
-                        {
-                            if (filter(objs[i]))
-                            {
-                                targets.push(objs[i]);
-                            }
-                        }
-                    }
+                    targets.push(object);
                 }
             }
 
