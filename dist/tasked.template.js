@@ -187,6 +187,8 @@ function Tasked(id)
             return;
         }
 
+        // TODO integrated spawn queue
+
         let spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning && !spawn._tasked_; });
 
         if (spawns.length == 0)
@@ -228,19 +230,16 @@ function Tasked(id)
                 }
             }
 
-            if (spawns.length > 1)
-            {
-                // starting with closest
-                spawns.sort(
-                    function(s1, s2)
-                    {
-                        const d1 = Game.map.getRoomLinearDistance(flag.pos.roomName, s1.room.name);
-                        const d2 = Game.map.getRoomLinearDistance(flag.pos.roomName, s2.room.name);
+            // starting with closest
+            spawns.sort(
+                function(s1, s2)
+                {
+                    const d1 = Game.map.getRoomLinearDistance(flag.pos.roomName, s1.room.name);
+                    const d2 = Game.map.getRoomLinearDistance(flag.pos.roomName, s2.room.name);
 
-                        return d1 - d2;
-                    }
-                );
-            }
+                    return d1 - d2;
+                }
+            );
 
             const has = this.roomCount[flag.name] || 0;
 
