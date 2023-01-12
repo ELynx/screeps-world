@@ -9,7 +9,7 @@ const BreachEasyRange = 3;
 
 beetle.wipeBreach = function(creep)
 {
-    creep.memory._breach_  = undefined;
+    creep.memory._breachP_ = undefined;
     creep.memory._breachI_ = undefined;
     creep.memory._breachT_ = undefined;
 };
@@ -35,10 +35,11 @@ beetle.creepAtDestination = function(creep)
         }
     }
 
+    // TODO is string length corresponding to path length
     // at the end of path refresh situation immediately
-    if (creep.memory._breach_ && creep.memory._breachI_)
+    if (creep.memory._breachP_ && creep.memory._breachI_)
     {
-        if (creep.memory._breach_.length <= creep.memory._breachI_)
+        if (creep.memory._breachP_.length <= creep.memory._breachI_)
         {
             this.wipeBreach(creep);
         }
@@ -56,7 +57,7 @@ beetle.creepAtDestination = function(creep)
     }
 
     // no path known
-    if (creep.memory._breach_ === undefined)
+    if (creep.memory._breachP_ === undefined)
     {
         let path = undefined;
 
@@ -114,12 +115,12 @@ beetle.creepAtDestination = function(creep)
             );            
         }
 
-        creep.memory._breach_  = path;
+        creep.memory._breachP_ = path;
         creep.memory._breachI_ = 0;
         creep.memory._breachT_ = Game.time;
     }
 
-    const path = Room.deserializePath(creep.memory._breach_);
+    const path = Room.deserializePath(creep.memory._breachP_);
     creep.room.visual.poly(path);
 
     let next = undefined;
@@ -163,6 +164,7 @@ beetle.creepAtDestination = function(creep)
             {
                 const item = around[itemKey];
                 const struct = item.structure;
+
                 withdraws.push(struct);
 
                 if (item.x != next.x || item.y != next.y)
@@ -229,12 +231,7 @@ beetle.flagPrepare = function(flag)
             BreachCompleteRange,
             function(creep)
             {
-                if (creep.my)
-                {
-                    return true;
-                }
-
-                return false;
+                return creep.my;
             }
         );
 
