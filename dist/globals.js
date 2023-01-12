@@ -112,7 +112,7 @@ var globals =
             // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
             creep.memory._move =
             {
-                dest: pos,
+                dest: { x: pos.x, y: pos.y, room: pos.roomName },
                 time: Game.time,
                 path: Room.serializePath(targetSolution),
                 room: pos.roomName
