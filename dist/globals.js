@@ -93,15 +93,33 @@ var globals =
     Assign creep to a target with controller.
     @param {Controller} controller.
     @param {???} target.
+    @param {String} serialized path to solution.
     @param {Creep} creep.
     @param {???} extra value stored in memory.
     **/
-    assignCreep: function(controller, target, creep, extra)
+    assignCreep: function(controller, target, targetSolution, creep, extra)
     {
         creep.memory.ctrl = controller.id;
         creep.memory.dest = target.id;
         creep.memory.dact = controller.actRange;
         creep.memory.xtra = extra;
+
+        if (targetSolution)
+        {
+            // imitate _move cahce
+            // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
+            creep.memory._move =
+            {
+                dest: { x: target.pos.x, y: target.pos.y, room: target.pos.roomName },
+                time: Game.time,
+                path: Room.serializePath(targetSolution),
+                room: target.pos.roomName
+            };
+        }
+        else
+        {
+            creep.memory._move = undefined;
+        }
     },
 
     /**
@@ -110,10 +128,22 @@ var globals =
     **/
     unassignCreep: function(creep)
     {
-        creep.memory.ctrl = this.NO_CONTROL;
-        creep.memory.dest = this.NO_DESTINATION;
-        creep.memory.dact = this.NO_ACT_RANGE;
-        creep.memory.xtra = this.NO_EXTRA;
+        creep.memory.ctrl  = this.NO_CONTROL;
+        creep.memory.dest  = this.NO_DESTINATION;
+        creep.memory.dact  = this.NO_ACT_RANGE;
+        creep.memory.xtra  = this.NO_EXTRA;
+        creep.memory._move = undefined;
+    },
+
+    moveOptionsWrapper: function(options)
+    {
+        if (options.plainCost === undefined)
+            options.plainCost = 1;
+
+        if (options.swampCost === undefined)
+            options.swampCost = 5;
+
+        return options;
     }
 };
 

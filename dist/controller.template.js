@@ -415,8 +415,11 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
+            // TODO clean up scope jumps
+
             // of them one that can be reached
             let target = undefined;
+            let targetMove = undefined;
 
             // legacy scope
             {
@@ -446,23 +449,27 @@ function Controller(id)
 
                     if (!found)
                     {
-                        // TODO (high priority) use this solution to move!
                         const solution = room.findPath(
                             creep.pos,
                             tgt,
-                            {
-                                ignoreCreeps: this.ignoreCreepsForTargeting,
-                                range: this.actRange,
-                                maxRooms: 1,
-                                plainCost: 1,
-                                swampCost: 1
-                            }
+                            globals.moveToWrapper(
+                                {
+                                    ignoreCreeps: this.ignoreCreepsForTargeting,
+                                    range: this.actRange,
+                                    maxRooms: 1
+                                }
+                            )
                         );
 
                         if (solution.length > 0)
                         {
                             const last = solution[solution.length - 1];
                             found = tgt.inRangeTo(last.x, last.y, this.actRange);
+
+                            if (found)
+                            {
+                                targetSolution = solution;
+                            }
                         }
                     }
 
@@ -478,7 +485,7 @@ function Controller(id)
             {
                 const extra = this.extra ? this.extra(target) : undefined;
 
-                globals.assignCreep(this, target, creep, extra);
+                globals.assignCreep(this, target, targetSolution, creep, extra);
                 creeps.splice(i, 1);
 
                 ++assigned;
