@@ -344,12 +344,12 @@ function Controller(id)
             dynamics = this.dynamicTargets(room, creep);
         }
 
-        if (statics && (dynamics !== undefined))
+        if (statics && (dynamics === undefined))
         {
             return statics;
         }
 
-        if (dynamics && (statics !== undefined))
+        if (dynamics && (statics === undefined))
         {
             return dynamics;
         }
