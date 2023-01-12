@@ -22,18 +22,10 @@ Don't send military to enemy safe mode rooms.
 (High importance) spawn lower level creeps when energy is low.
 
 # Ideas
-Intent pipeline! Do more things in one turn!
-
 PathFinder option `flee`.
 
 Roads in neutral room require change in repair code to work on energy level 0.
 
-Creeps fight back based on event log.
+Towers fight back based on event log.
 
 Grab was disabled for restocker during harvest. Block removed.
-
-## Temporary creeps
-
-Spawn on demand.
-
-Recycle by "Dynamic creep life" afterwards.
