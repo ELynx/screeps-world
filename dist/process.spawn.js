@@ -6,6 +6,11 @@ var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
+const TypeBody         = [ bodywork[0], bodywork[1], bodywork[2] ];
+const TypeHarvest      = [ true,        true,        undefined   ];
+const TypeRestock      = [ undefined,   true,        undefined   ];
+const TypeMiner        = [ undefined,   undefined,   true        ];
+
 spawnProcess.calculateCreepsNeeded = function(energyLevel, harvestLevel, sourceLevel, miningLevel)
 {
     // TODO (high priority) creep need logic
