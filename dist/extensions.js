@@ -333,6 +333,34 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
     return result;
 };
 
+RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
+{
+    let color = COLOR_WHITE;
+
+    if (flagValue >= 6)
+    {
+        color = COLOR_PURPLE;
+    }
+    else if (flagValue == 3)
+    {
+        color = COLOR_RED;
+    }
+    else if (flagValue == 2)
+    {
+        color = COLOR_YELLOW;
+    }
+    else if (flagValue == 1)
+    {
+        color = COLOR_GREEN;
+    }
+    else if (flagValue == 0)
+    {
+        color = COLOR_BLUE;
+    }
+
+    return this.createFlag(flagName, newColor);
+};
+
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room
