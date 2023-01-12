@@ -102,7 +102,7 @@ function Controller(id)
         }
         else
         {
-            _.pullAll(this._excludedTargets, exclude);
+            this._excludedTargets = _.difference(this._excludedTargets, exclude);
         }
 
         if (targets.length == exclude.length)
@@ -110,12 +110,10 @@ function Controller(id)
             return [];
         }
 
-        return _.differenceWith(
-            targets,
-            exclude,
-            function(target, excludeId)
+        return _.filter(targets,
+            function(target)
             {
-                return target.id == excludeId;
+                return _.indexOf(exclude, target.id) == -1;
             }
         );
     };
