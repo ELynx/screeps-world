@@ -110,6 +110,8 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 
 Creep.prototype.moveToWrapper = function(destination, options = { })
 {
+    // TODO unify with globals
+
     if (options.plainCost === undefined)
         options.plainCost = 1;
 
