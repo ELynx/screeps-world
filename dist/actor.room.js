@@ -77,17 +77,17 @@ var roomActor =
 
     /**
     Find a controller, execute it's act.
-    @param {Object} destination object.
+    @param {Object} target object.
     @param {Creep} creep.
     @return True if creep was acted upon.
     **/
-    roomControllersAct: function(destination, creep)
+    roomControllersAct: function(target, creep)
     {
         const controller = globals.roomControllers[creep.memory.ctrl];
 
         if (controller)
         {
-            return controller.act(destination, creep);
+            return controller.act(target, creep);
         }
 
         return false;
@@ -177,12 +177,14 @@ var roomActor =
 
                     if (creep.fatigue == 0)
                     {
+                        const offBorderDistance = 23;
+
                         // get off border area
                         const destRoom = new RoomPosition(25, 25, creep.memory.crum);
 
-                        if (!creep.pos.inRangeTo(destRoom, 23))
+                        if (!creep.pos.inRangeTo(destRoom, offBorderDistance))
                         {
-                            creep.moveToWrapper(destRoom, { reusePath: 50, range: 23 });
+                            creep.moveToWrapper(destRoom, { reusePath: 50, range: offBorderDistance });
 
                             continue; // to next creep
                         }
@@ -244,13 +246,13 @@ var roomActor =
                     // flag if target should be carried to next loop
                     let keepAssignment = false;
 
-                    const destination = creep.target();
+                    const target = creep.target();
 
-                    if (destination)
+                    if (target)
                     {
-                        if (creep.pos.inRangeTo(destination, creep.memory.dact))
+                        if (creep.pos.inRangeTo(target, creep.memory.dact))
                         {
-                            keepAssignment = this.roomControllersAct(destination, creep);
+                            keepAssignment = this.roomControllersAct(target, creep);
                             working = working + keepAssignment;
                         }
                         else
@@ -265,7 +267,7 @@ var roomActor =
                                 // STRATEGY creep movement, main CPU sink
 
                                 // first move by cached path
-                                let rc = creep.moveToWrapper(destination, { noPathFinding: true });
+                                let rc = creep.moveToWrapper(target, { noPathFinding: true });
 
                                 // no movement, see if pathfinding is possible
                                 if (rc == ERR_NOT_FOUND)
@@ -275,7 +277,7 @@ var roomActor =
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        rc = creep.moveToWrapper(destination, { maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveToWrapper(target, { maxRooms: 1, range: creep.memory.dact });
                                     }
                                     else
                                     {
@@ -290,7 +292,7 @@ var roomActor =
                                 moving = moving + keepAssignment;
                             } // end of fatigue equals 0
                         } // end of "not in range"
-                    } // end of if destination found
+                    } // end of if target found
 
                     if (keepAssignment)
                     {
