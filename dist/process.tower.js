@@ -41,7 +41,9 @@ towerProcess.work = function(room)
             {
                 towers[i].attack(closestHostile);
             }
-        }       
+        }
+
+        return;
     }
 
     const damagedCreeps = _.filter(
