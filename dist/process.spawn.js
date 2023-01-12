@@ -6,89 +6,11 @@ var Process = require('process.template');
 
 var spawnProcess = new Process('spawn');
 
-const TypeBody         = [ bodywork[0], bodywork[1], bodywork[2] ];
-const TypeHarvest      = [ true,        true,        undefined   ];
-const TypeRestock      = [ undefined,   true,        undefined   ];
-const TypeMiner        = [ undefined,   undefined,   true        ];
-const TypeLimitHarvest = [ 1.0,         undefined,   undefined   ];
-const TypeLimitSource  = [ undefined,   1.0,         undefined   ];
-const TypeLimitMining  = [ undefined,   undefined,   1.0         ];
-const TypeCount        = [
-                         [ 4,           0,           0           ], // level 0
-                         [ 6,           0,           0           ], // level 1
-                         [ 8,           0,           0           ], // level 2
-                         [ 10,          0,           0           ], // level 3
-                         [ 10,          0,           0           ], // level 4
-                         [ 8,           2,           0           ], // level 5
-                         [ 6,           4,           1           ]  // level 6
-                                                                 ];
-
-spawnProcess.calculateCreepsNeeded = function(energyLevel, sourceLevel, miningLevel, harvestLevel)
+spawnProcess.calculateCreepsNeeded = function(energyLevel, harvestLevel, sourceLevel, miningLevel)
 {
-    if (!this.countCache)
-    {
-        this.countCache = { };
-    }
-
-    const cacheKey = (energyLevel + 1)  * 1 +
-                     (sourceLevel + 1)  * 100 +
-                     (miningLevel + 1)  * 10000 +
-                     (harvestLevel + 1) * 1000000;
-
-    const cacheHit = this.countCache[cacheKey];
-    if (cacheHit)
-    {
-        return cacheHit.slice(0);
-    }
-
-    // cap off at defined
-    let mobLevel = energyLevel;
-    if (mobLevel >= TypeCount.length)
-    {
-        mobLevel = TypeCount.length - 1;
-    }
-
-    // copy array
-    let creepsNeeded = TypeCount[mobLevel].slice(0);
-
-    // limits
-    for (let i = 0; i < creepsNeeded.length; ++i)
-    {
-        let limitSource = TypeLimitSource[i];
-        if (limitSource !== undefined)
-        {
-            limitSource = Math.ceil(limitSource * sourceLevel);
-            if (creepsNeeded[i] > limitSource)
-            {
-                creepsNeeded[i] = limitSource;
-            }
-        }
-
-        let limitMining = TypeLimitMining[i];
-        if (limitMining !== undefined)
-        {
-            limitMining = Math.ceil(limitMining * miningLevel);
-            if (creepsNeeded[i] > limitMining)
-            {
-                creepsNeeded[i] = limitMining;
-            }
-        }
-
-        let limitHarvest = TypeLimitHarvest[i];
-        if (limitHarvest !== undefined)
-        {
-            limitHarvest = Math.ceil(limitHarvest * harvestLevel);
-            if (creepsNeeded[i] > limitHarvest)
-            {
-                creepsNeeded[i] = limitHarvest;
-            }
-        }
-    }
-
-    // cache
-    this.countCache[cacheKey] = creepsNeeded;
-
-    return creepsNeeded.slice(0);
+    var result = new Array(3);
+    result.fill(0);
+    return result;
 };
 
 /**
@@ -167,14 +89,11 @@ spawnProcess.workImpl = function(ownerRoom, spawnRoom, creeps)
         return;
     }
 
-    let sourceLevel  =          ownerRoom.memory.slvl;
-    let harvestLevel = Math.max(ownerRoom.memory.hlvl - sourceLevel, 0); // takes same harvest slots
-
     let creepsNeeded = this.calculateCreepsNeeded(
         ownerRoom.memory.elvl,
-        sourceLevel,
-        ownerRoom.memory.mlvl,
-        harvestLevel
+        ownerRoom.memory.hlvl,
+        ownerRoom.memory.slvl,
+        ownerRoom.memory.mlvl
     );
 
     for (let i = 0; i < creeps.length; ++i)
