@@ -16,6 +16,16 @@ beetle.wipeBreach = function(creep)
 
 beetle.creepAtDestination = function(creep)
 {
+    let beHostile = true;
+
+    if (Game.rooms.sim === undefined)
+    {
+        if (creep.room.controller && creep.room.controller.my)
+        {
+            beHostile = false;
+        }
+    }
+
     // every N ticks refresh situation if stuck
     if (creep.memory._breachT_)
     {
@@ -95,7 +105,7 @@ beetle.creepAtDestination = function(creep)
                 controlPos,
                 {
                     ignoreCreeps: true,
-                    ignoreDestructibleStructures: true,
+                    ignoreDestructibleStructures: beHostile,
                     maxRooms: 1,
                     range: hardDistance,
 
@@ -133,48 +143,51 @@ beetle.creepAtDestination = function(creep)
     {
         let target = undefined;
 
-        const [t, l, b, r] = creep.pos.squareArea(1);
-
-        const around = creep.room.lookForAtArea
-        (
-            LOOK_STRUCTURES,
-            t, // top
-            l, // left
-            b, // bottom
-            r, // right
-            true // as array
-        );
-
-        let withdraws = [];
-
-        for (const itemKey in around)
+        if (beHostile)
         {
-            const item = around[itemKey];
-            const struct = item.structure;
-            withdraws.push(struct);
+            const [t, l, b, r] = creep.pos.squareArea(1);
 
-            if (item.x != next.x || item.y != next.y)
-                continue;
+            const around = creep.room.lookForAtArea
+            (
+                LOOK_STRUCTURES,
+                t, // top
+                l, // left
+                b, // bottom
+                r, // right
+                true // as array
+            );
 
-            // walkable
-            if (struct.structureType == STRUCTURE_CONTAINER ||
-                struct.structureType == STRUCTURE_ROAD)
+            let withdraws = [];
+
+            for (const itemKey in around)
             {
-                continue;
-            }
+                const item = around[itemKey];
+                const struct = item.structure;
+                withdraws.push(struct);
 
-            if (struct.structureType == STRUCTURE_RAMPART)
-            {
+                if (item.x != next.x || item.y != next.y)
+                    continue;
+
+                // walkable
+                if (struct.structureType == STRUCTURE_CONTAINER ||
+                    struct.structureType == STRUCTURE_ROAD)
+                {
+                    continue;
+                }
+
+                if (struct.structureType == STRUCTURE_RAMPART)
+                {
+                    target = struct;
+                    break;
+                }
+
                 target = struct;
-                break;
             }
 
-            target = struct;
-        }
-
-        if (withdraws.length > 0)
-        {
-            creep.withdrawFromAdjacentStructures(withdraws);
+            if (withdraws.length > 0)
+            {
+                creep.withdrawFromAdjacentStructures(withdraws);
+            }
         }
 
         let rc = undefined;
