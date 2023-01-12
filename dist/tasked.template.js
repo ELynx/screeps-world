@@ -49,7 +49,7 @@ Creep.prototype.getControlPos = function()
         }
     }
 
-    return Game.rooms(crum).getControlPos();
+    return Game.rooms[crum].getControlPos();
 };
 
 Creep.prototype.getSourceRoom = function()
@@ -70,7 +70,7 @@ Creep.prototype.getSourcePos = function()
         }
     }
 
-    return Game.rooms(srum).getControlPos();
+    return Game.rooms[srum].getControlPos();
 };
 
 RoomPosition.prototype.controlDistance = function()
