@@ -1,5 +1,7 @@
 'use strict';
 
+var globals = require('globals');
+
 Creep.prototype.caveIndex = function()
 {
     if (this._cidxT_ === undefined ||
@@ -110,15 +112,7 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 
 Creep.prototype.moveToWrapper = function(destination, options = { })
 {
-    // TODO unify with globals
-
-    if (options.plainCost === undefined)
-        options.plainCost = 1;
-
-    if (options.swampCost === undefined)
-        options.swampCost = 5;
-
-    return this.moveTo(destination, options);
+    return this.moveTo(destination, globals.moveOptionsWrapper(options));
 };
 
 Flag.prototype.getValue = function()
