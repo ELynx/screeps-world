@@ -258,11 +258,17 @@ roomInfoProcess.wallLevel = function(room)
     return hits[Math.floor(hits.length / 2)];
 };
 
+roomInfoProcess.harvestLevel = function(room)
+{
+    return 3;
+};
+
 roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
 
-    // cached, call often to paint markings
+    // cached
+    // call every time to paint cave map if active
     makeCaveMap(room);
 
     // once in a creep life update room info
@@ -273,6 +279,7 @@ roomInfoProcess.work = function(room)
         room.memory.slvl = this.sourceLevel(room);
         room.memory.mlvl = this.miningLevel(room);
         room.memory.wlvl = this.wallLevel(room);
+        room.memory.hlvl = this.harvestLevel(room);
 
         // STRATEGY from level 6 room builds up walls
         if (room.memory.elvl > 5 &&
