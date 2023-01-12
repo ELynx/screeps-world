@@ -154,7 +154,7 @@ roomInfoProcess.sourceLevel = function(room)
         {
             if (link.isSource())
             {
-                let positions = {};
+                let positions = { };
                 for (let j = 0; j < sources.length; ++j)
                 {
                     const source = sources[j];
