@@ -84,68 +84,40 @@ function Controller(id)
     Filter targets by exclusion.
     When target is filtered out excluded target list is reduced.
     @param {array<Object>} targets to filter.
-    @param {array<integer>} cave corners, or undefined.
     @return Targets that can be used.
     **/
-    this._filterExcludedTargets = function(targets, caveTLBR)
+    this._filterExcludedTargets = function(targets)
     {
-        if (targets.length == 0)
+        if (targets.length == 0 || _excludedTargets.length == 0)
         {
             return targets;
         }
 
-        for (let i = 0; i < this._excludedTargets.length && targets.length > 0; )
+        let targetIds = _.map(targets, 'id');
+        let exclude = _.intersection(targetIds, _excludedTargets);
+
+        if (exclude.length == _excludedTargets.length)
         {
-            const excludedTarget = this._excludedTargets[i];
+            _excludedTargets = [];
+        }
+        else
+        {
+            _.pullAll(_excludedTargets, exclude):
+        }
 
-            if (caveTLBR)
+        if (targets.length == exclude.length)
+        {
+            return [];
+        }
+
+        return _.differenceWith(
+            targets,
+            exclude,
+            function(target, excludeId)
             {
-                const pos = Game.getObjectById(excludedTarget).pos;
-
-                const x = pos.x;
-
-                if (x < caveTLBR[1] || x > caveTLBR[3])
-                {
-                    ++i;
-                    continue;
-                }
-
-                const y = pos.y;
-
-                if (y < caveTLBR[0] || y > caveTLBR[2])
-                {
-                    ++i;
-                    continue;
-                }
+                return target.id == excludeId;
             }
-
-            let idx = -1;
-
-            // TODO any faster?
-            for (let j = 0; j < targets.length; ++j)
-            {
-                if (targets[j].id == excludedTarget)
-                {
-                    idx = j;
-                    break;
-                }
-            }
-
-            if (idx >= 0)
-            {
-                // remove from result
-                targets.splice(idx, 1);
-
-                // remove from cache, target is found once
-                this._excludedTargets.splice(i, 1);
-            }
-            else
-            {
-                ++i;
-            }
-        } // end of loop for excluded target
-
-        return targets;
+        );
     };
 
     /**
@@ -250,15 +222,15 @@ function Controller(id)
             }
 
             // filter cave individually
-            if (this._excludedTargets && this._excludedTargets.length > 0)
+            if (this._excludedTargets)
             {
-                targets = this._filterExcludedTargets(targets, [t, l, b, r]);
+                targets = this._filterExcludedTargets(targets);
             }
 
             // one target per cave if flag is set
             if (this.focusDynamic && targets.length > 1)
             {
-                targets.splice(1, targets.length - 1);
+                targets.splice(1);
             }
 
             if (!this._dynamicTargetCache)
@@ -341,9 +313,9 @@ function Controller(id)
 
         let targets = this.staticTargets(room);
 
-        if (this._excludedTargets && this._excludedTargets.length > 0)
+        if (this._excludedTargets)
         {
-            targets = this._filterExcludedTargets(targets, undefined);
+            targets = this._filterExcludedTargets(targets);
         }
 
         this._staticTargetCache = targets;
@@ -359,21 +331,37 @@ function Controller(id)
     **/
     this._findTargetsForCreep = function(room, creep)
     {
-        // TODO fast array operations
-        let targets = [];
+        let static  = undefined;
+        let dynamic = undefined;
 
         if (this.staticTargets)
         {
-            targets = this._findStaticTargets(room);
+            static = this._findStaticTargets(room);
         }
 
         if (this.dynamicTargets)
         {
-            const dt = this.dynamicTargets(room, creep);
-            targets = targets.concat(dt);
+            dynamic = this.dynamicTargets(room, creep);
         }
 
-        return targets;
+        if (static && (dynamic !== undefined))
+        {
+            return static;
+        }
+
+        if (dynamic && (static !== undefined))
+        {
+            return dynamic;
+        }
+
+        if (static && dynamic)
+        {
+            return static.concat(dynamic);
+        }
+
+        this.debugLine('Controller missing targets!');
+
+        return [];
     };
 
     this._usesDefaultFilter = undefined;
@@ -458,7 +446,7 @@ function Controller(id)
 
                     if (!found)
                     {
-                        // TODO so much tweaking here
+                        // TODO (high priority) use this solution to move!
                         const solution = room.findPath(
                             creep.pos,
                             tgt,
