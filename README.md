@@ -19,6 +19,8 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
+(High importance) spawn lower level creeps when energy is low.
+
 # Ideas
 Intent pipeline! Do more things in one turn!
 

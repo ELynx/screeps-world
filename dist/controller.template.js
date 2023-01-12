@@ -444,15 +444,15 @@ function Controller(id)
                 // check, see if reacheable in any way
                 for (let j = 0; j < targets.length; ++j)
                 {
-                    const tgt = targets[j].pos;
-                    let found = tgt.inRangeTo(creep.pos, this.actRange);
+                    const inspected = targets[j].pos;
+                    let found = inspected.inRangeTo(creep.pos, this.actRange);
 
                     if (!found)
                     {
                         const solution = room.findPath(
                             creep.pos,
-                            tgt,
-                            globals.moveToWrapper(
+                            inspected,
+                            globals.moveOptionsWrapper(
                                 {
                                     ignoreCreeps: this.ignoreCreepsForTargeting,
                                     range: this.actRange,
@@ -464,11 +464,11 @@ function Controller(id)
                         if (solution.length > 0)
                         {
                             const last = solution[solution.length - 1];
-                            found = tgt.inRangeTo(last.x, last.y, this.actRange);
+                            found = inspected.inRangeTo(last.x, last.y, this.actRange);
 
                             if (found)
                             {
-                                targetSolution = solution;
+                                targetMove = solution;
                             }
                         }
                     }
@@ -485,7 +485,7 @@ function Controller(id)
             {
                 const extra = this.extra ? this.extra(target) : undefined;
 
-                globals.assignCreep(this, target, targetSolution, creep, extra);
+                globals.assignCreep(this, target, targetMove, creep, extra);
                 creeps.splice(i, 1);
 
                 ++assigned;
