@@ -136,7 +136,6 @@ strelok.creepAtDestination = function(creep)
 
     creep.withdrawFromAdjacentStructures(targets);
 
-    // TODO less expensive OP
     const target = creep.pos.findClosestByRange(targets);
     if (target)
     {
