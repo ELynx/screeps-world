@@ -294,7 +294,7 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
 
     const aroundAsMap = function(pos)
     {
-        let result = {};
+        let result = { };
 
         for (let dx = -1; dx <= 1; ++dx)
         {
