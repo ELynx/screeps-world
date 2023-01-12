@@ -445,7 +445,7 @@ function Controller(id)
 
                 if (inspected.inRangeTo(creep.pos, this.actRange))
                 {
-                    target = inspected;
+                    target = targets[j];
                     break; // from targets loop
                 }
 
@@ -468,7 +468,7 @@ function Controller(id)
 
                     if (found)
                     {
-                        target = inspected;
+                        target = targets[j];
                         targetMove = solution;
                         break; // from targets loop
                     }
