@@ -38,6 +38,7 @@ secutiryProcess.work = function(room)
         }
 
         const ctrl = room.controller;
+
         if (!ctrl.safeMode &&
             !ctrl.safeModeCooldown &&
             !ctrl.upgradeBlocked &&
@@ -84,8 +85,8 @@ secutiryProcess.work = function(room)
 
                     const notification = 'Room ' + room.name + ' requested safe mode [' + rc + ']';
 
-                    Game.notify(notification);
                     console.log(notification);
+                    Game.notify(notification);
 
                     break;
                 }
@@ -105,14 +106,14 @@ secutiryProcess.work = function(room)
 
     if (threatLevel > 0)
     {
-        room.memory.threat = threatLevel;
+        room.memory.threat  = threatLevel;
         room.memory.threatT = threatTimer;
 
         this.debugLine(room, "Threat level " + threatLevel);
     }
     else
     {
-        room.memory.threat = undefined;
+        room.memory.threat  = undefined;
         room.memory.threatT = undefined;
     }
 };
