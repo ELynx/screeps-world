@@ -82,17 +82,17 @@ var spawn =
 
         if (Memory.spawn_v1.urgent.length > 0)
         {
-            return Memory.spawn_v1.urgent[0];
+            return _.extend(Memory.spawn_v1.urgent[0], { priority: 'urgent' });
         }
 
         if (Memory.spawn_v1.normal.length > 0)
         {
-            return Memory.spawn_v1.normal[0];
+            return _.extend(Memory.spawn_v1.normal[0], { priority: 'normal' });
         }
 
         if (Memory.spawn_v1.lowkey.length > 0)
         {
-            return Memory.spawn_v1.lowkey[0];
+            return _.extend(Memory.spawn_v1.lowkey[0], { priority: 'lowkey' });
         }
 
         return undefined;
@@ -112,17 +112,17 @@ var spawn =
 
         if (Memory.spawn_v1.urgent.length > 0)
         {
-            return Memory.spawn_v1.urgent.shift();
+            return _.extend(Memory.spawn_v1.urgent.shift(), { priority: 'urgent' });
         }
 
         if (Memory.spawn_v1.normal.length > 0)
         {
-            return Memory.spawn_v1.normal.shift();
+            return _.extend(Memory.spawn_v1.normal.shift(), { priority: 'normal' });
         }
 
         if (Memory.spawn_v1.lowkey.length > 0)
         {
-            return Memory.spawn_v1.lowkey.shift();
+            return _.extend(Memory.spawn_v1.lowkey.shift(), { priority: 'lowkey' });
         }
 
         return undefined;        
