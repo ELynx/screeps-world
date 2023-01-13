@@ -3,7 +3,6 @@
 var spawn =
 {
     ANY_ROOM_FROM: 'ANY',
-    ANY_ROOM_TO:   'ANY',
 
     withBodyFunctions: { },
 
@@ -29,7 +28,7 @@ var spawn =
         {
             let emptyStructure = this.makeEmptyStructure();
 
-            console.log('Generating empty structure for spawn, v1');
+            console.log('Generating empty structure for spawn_v1');
             console.log(JSON.stringify(emptyStructure));
 
             Memory.spawn_v1 = emptyStructure;
@@ -44,11 +43,12 @@ var spawn =
             {
                 id:     id,
                 body:   body,
-                name:   name + i,
+                name:   name + '_' + Game.time + '_' + i,
                 memory: memory,
                 from:   from,
                 to:     to,
-                time:   Game.time
+
+                _time:  Game.time
             };
 
             target.push(model);
