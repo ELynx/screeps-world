@@ -3,6 +3,7 @@
 var extensions    = require('extensions');
 
 var cleanupMemory = require('routine.memory');
+var spawn         = require('routine.spawn');
 var roomActor     = require('actor.room');
 var worldActor    = require('actor.world');
 
@@ -30,6 +31,8 @@ module.exports.loop = function()
     profiler.wrap(function() {
 
     cleanupMemory();
+
+    spawn.unpackMemory();
 
     let limits = { };
     let total  = 0;
@@ -75,6 +78,8 @@ module.exports.loop = function()
     }
 
     worldActor.act();
+
+    spawn.packMemory();
 
     });
 }
