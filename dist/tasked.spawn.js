@@ -137,7 +137,7 @@ spawn.spawnNext = function()
     }
     else
     {
-        // "from" is tested as well, then other as backups
+        // "from" is tested as well, then others as backups
         sourceRooms = this.findClosestSpawnRoom(nextModel.from);
     }
 
