@@ -5,6 +5,8 @@ var Process = require('process.template');
 
 var roomInfoProcess = new Process('roomInfo');
 
+// STRATEGY this does not account for sources being close enough to share walkables
+
 /**
 Calculate room energy level.
 @param {Room} room.
@@ -103,10 +105,69 @@ roomInfoProcess.energyLevel = function(room)
     return 0;
 };
 
+roomInfoProcess._walkable = function(terrain, position)
+{
+    if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL)
+    {
+        return true;
+    }
+
+    const atPosition = position.lookFor(LOOK_STRUCTURES);
+    for (let k in atPosition)
+    {
+        const struct = atPosition[k];
+        if (struct.structureType == STRUCTURE_ROAD)
+        {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+roomInfoProcess._walkableAround = function(terrain, posOrRoomObject)
+{
+    const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject;
+
+    let walkable = 0;
+    for (let dx = -1; dx <= 1; ++dx)
+    {
+        for (let dy = -1; dy <= 1; ++dy)
+        {
+            if (dx == 0 && dy == 0)
+                continue;
+
+            const x = center.x + dx;
+            const y = center.y + dy;
+
+            if (x < 0 || x > 49 || y < 0 || y > 49)
+                continue;
+
+            if (this._walkable(terrain, new RoomPosition(x, y, center.roomName)))
+            {
+                ++walkable;
+            }
+        }
+    }
+
+    return walkable;
+};
+
 roomInfoProcess.harvestLevel = function(room)
 {
-    // TODO
-    return 6;
+    const terrain = room.getTerrain();
+    const sources = room.find(FIND_SOURCES);
+
+    let totalWalkable = 0;
+    for (let i = 0; i < sources.length; ++i)
+    {
+        const source = sources[i];
+        const walkable = this._walkableAround(terrain, source);
+
+        totalWalkable += walkable;
+    }
+
+    return totalWalkable;
 };
 
 /**
@@ -170,22 +231,9 @@ roomInfoProcess.sourceLevel = function(room)
                 for (let outerIndex in positions)
                 {
                     const position = positions[outerIndex];
-
-                    if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL)
+                    if (this._walkable(terrain, position))
                     {
                         ++soucePositions;
-                        continue;
-                    }
-
-                    const atPosition = position.lookFor(LOOK_STRUCTURES);
-                    for (let k in atPosition)
-                    {
-                        const struct = atPosition[k];
-                        if (struct.structureType == STRUCTURE_ROAD)
-                        {
-                            ++soucePositions;
-                            break; // from atPosition loop
-                        }
                     }
                 }
             }
