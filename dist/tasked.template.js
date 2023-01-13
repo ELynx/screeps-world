@@ -223,13 +223,13 @@ function Tasked(id)
             };
 
             spawn.addNormal(
-                flagName,            // used to clean up when flag is removed
-                this.id,             // string indicates to call body function
-                creepNamePrefix,     // correlate to flag and time
-                creepMemory,         // meager content
-                spawn.ANY_ROOM_FROM, // find spawn by spawn logic
-                flag.pos.roomName,   // remember where to go
-                want - has           // how much
+                flagName,            // id in queue
+                this.id,             // body, string indicates to call body function
+                creepNamePrefix,     // name
+                creepMemory,         // memory
+                spawn.ANY_ROOM_FROM, // from
+                flag.pos.roomName,   // to
+                want - has           // n
             );
         } // end of loop for all flags
     }; // end of act
