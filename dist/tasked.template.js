@@ -1,6 +1,7 @@
 'use strict';
 
-var globals = require('globals');
+var globals        = require('globals');
+var spawn          = require('routine.spawn');
 var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
@@ -50,27 +51,6 @@ Creep.prototype.getControlPos = function()
     }
 
     return Game.rooms[crum].getControlPos();
-};
-
-Creep.prototype.getSourceRoom = function()
-{
-    return this.memory.srum;
-};
-
-Creep.prototype.getSourcePos = function()
-{
-    const srum    = this.getSourceRoom();
-    const flagPos = this.getFlagPos();
-
-    if (flagPos)
-    {
-        if (flagPos.roomName == srum)
-        {
-            return flagPos;
-        }
-    }
-
-    return Game.rooms[srum].getControlPos();
 };
 
 RoomPosition.prototype.controlDistance = function()
@@ -143,8 +123,6 @@ function Tasked(id)
         var self = this;
         let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(self.id); });
 
-        this.roomCount = { };
-
         if (this.prepare)
         {
             this.prepare();
@@ -187,15 +165,6 @@ function Tasked(id)
             return;
         }
 
-        // TODO integrated spawn queue
-
-        let spawns = _.filter(Game.spawns, function(spawn) { return !spawn.spawning && !spawn._tasked_; });
-
-        if (spawns.length == 0)
-        {
-            return;
-        }
-
         for (const flagName in Game.flags)
         {
             if (!flagName.startsWith(this.id))
@@ -210,7 +179,9 @@ function Tasked(id)
             // sanitize flags
             if (want < 1)
             {
+                spawn.erase(flagName);
                 flag.remove();
+
                 continue;
             }
 
@@ -225,23 +196,14 @@ function Tasked(id)
 
                 if (decision != this.FLAG_SPAWN)
                 {
+                    spawn.erase(flagName);
                     flag.remove();
+
                     continue;
                 }
             }
 
-            // starting with closest
-            spawns.sort(
-                function(s1, s2)
-                {
-                    const d1 = Game.map.getRoomLinearDistance(flag.pos.roomName, s1.room.name);
-                    const d2 = Game.map.getRoomLinearDistance(flag.pos.roomName, s2.room.name);
-
-                    return d1 - d2;
-                }
-            );
-
-            const has = this.roomCount[flag.name] || 0;
+            const has = spawn.count(flagName);
 
             if (has < want)
             {
@@ -252,62 +214,29 @@ function Tasked(id)
                 flag.setSecondaryColor(COLOR_WHITE);
             }
 
-            let delta = want - has;
-            for (let i = 0; i < spawns.length && delta > 0;)
+            const creepNamePrefix = flagName + '_' + Game.time + '_';
+            const creepMemory =
             {
-                let spawn = spawns[i];
+                crum: flag.pos.roomName,
+                flag: flagName
+            };
 
-                const creepBody = this.makeBody(spawn);
-
-                if (creepBody.length == 0)
-                {
-                    continue; // to next spawn
-                }
-
-                const creepName = flagName + '_' + Game.time + '_' + delta;
-                const creepArgs = {
-                    memory:
-                    {
-                        crum: flag.pos.roomName,
-                        srum: spawn.pos.roomName,
-                        flag: flagName
-                    },
-
-                    directions:
-                    [
-                        TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT,
-                        BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT
-                    ]
-                };
-
-                const rc = spawn.spawnCreep(
-                    creepBody,
-                    creepName,
-                    {
-                        dryRun: true
-                    }
-                );
-
-                if (rc == OK)
-                {
-                    spawn.spawnCreep(creepBody, creepName, creepArgs);
-
-                    --delta;
-                    spawn._tasked_ = true;
-
-                    spawns.splice(i, 1);
-                }
-                else
-                {
-                    ++i;
-                }
-            } // end of loop for all remaining spawns
+            spawn.addNormal(
+                flagName,            // used to clean up when flag is removed
+                this.id,             // string indicates to call body function
+                creepNamePrefix,     // correlate to flag and time
+                creepMemory,         // meager content
+                spawn.ANY_ROOM_FROM, // find spawn by spawn logic
+                flag.pos.roomName,   // remember where to go
+                want - has           // how much
+            );
         } // end of loop for all flags
     }; // end of act
 
     this.register = function()
     {
         globals.registerTaskController(this);
+        spawn.registerBodyFunction(this);
 
         profiler.registerObject(this, this.id);
     };

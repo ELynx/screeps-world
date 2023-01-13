@@ -39,7 +39,6 @@ claim.creepAtDestination = function(creep)
                 if (Game.gcl.level > myRooms)
                 {
                     sign = '';
-                    controller.room.memory.sstr = creep.getSourceRoom();
                     creep.claimController(controller);                    
                 }
                 else
