@@ -141,8 +141,8 @@ var globals =
     {
         _.defaults(
             options,
-            { plainCost, 1 },
-            { swampCost, 5 }
+            { plainCost: 1 },
+            { swampCost: 5 }
         );
 
         return options;
