@@ -15,7 +15,6 @@ var spawn =
     makeEmptyStructure: function()
     {
         let result = { urgent: [], normal: [], low: [] };
-
         return result;
     },
 
@@ -45,13 +44,13 @@ var spawn =
         {
             target.push(
                 {
-                    id: id,
-                    body: body,
-                    name: name + i,
+                    id:     id,
+                    body:   body,
+                    name:   name + i,
                     memory: memory,
-                    from: from,
-                    to: to,
-                    time: Game.time
+                    from:   from,
+                    to:     to,
+                    time:   Game.time
                 }
             );
         }
@@ -69,7 +68,7 @@ var spawn =
 
     addLow: function(id, body, name, memory, from, to, n = 1)
     {
-        this._add(Memory.spawn_v1.low, id, body, name, memory, from, to, n);
+        this._add(Memory.spawn_v1.low,    id, body, name, memory, from, to, n);
     },
 
     _peek: function()
@@ -170,7 +169,7 @@ var spawn =
 
     __erase: function(target, id)
     {
-
+        // TODO
     },
 
     _erase: function(id)
