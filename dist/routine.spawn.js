@@ -2,6 +2,16 @@
 
 var spawn =
 {
+    ANY_ROOM_FROM: 'ANY',
+    ANY_ROOM_TO:   'ANY',
+
+    withBodyFunctions: { },
+
+    registerBodyFunction: function(withBodyFunction)
+    {
+        this.withBodyFunctions[id] = withBodyFunction;
+    }
+
     makeEmptyStructure: function()
     {
         let result =
@@ -32,31 +42,37 @@ var spawn =
         }
     },
 
-    _add: function(target, id, body, name, memory)
+    _add: function(target, id, body, name, memory, from, to, n)
     {
         this.prepareMemory();
 
-        target.push(
-            id: id,
-            body: body,
-            name: name,
-            memory: memory
-        );
+        for (let i = 0; i < n; ++i)
+        {
+            target.push(
+                id: id,
+                body: body,
+                name: name + i,
+                memory: memory,
+                from: from,
+                to: to,
+                time: Game.time
+            );
+        }
     },
 
-    addUrgent: function(id, body, name, memory)
+    addUrgent: function(id, body, name, memory, from, to, n = 1)
     {
-        this._add(Memory.spawn_v1.urgent, id, body, name, memory);
+        this._add(Memory.spawn_v1.urgent, id, body, name, memory, from, to, n);
     },
 
-    addNormal: function(id, body, name, memory)
+    addNormal: function(id, body, name, memory, from, to, n = 1)
     {
-        this._add(Memory.spawn_v1.normal, id, body, name, memory);
+        this._add(Memory.spawn_v1.normal, id, body, name, memory, from, to, n);
     },
 
-    addLow: function(id, body, name, memory)
+    addLow: function(id, body, name, memory, from, to, n = 1)
     {
-        this._add(Memory.spawn_v1.low, id, body, name, memory);
+        this._add(Memory.spawn_v1.low, id, body, name, memory, from, to, n);
     },
 
     _peek: function()
@@ -137,7 +153,7 @@ var spawn =
 
     _count: function(id)
     {
-        if (this.noMemory)
+        if (this.noMemory())
         {
             return 0;
         }
@@ -153,6 +169,28 @@ var spawn =
     count: function(id)
     {
         return this._count(id);
+    },
+
+    __erase: function(target, id)
+    {
+
+    }
+
+    _erase: function(id)
+    {
+        if (this.noMemory())
+        {
+            return;
+        }
+
+        this.__erase(Memory.spawn_v1.urgent, id);
+        this.__erase(Memory.spawn_v1.normal, id);
+        this.__erase(Memory.spawn_v1.low,    id);
+    },
+
+    erase: function(id)
+    {
+        this._erase(id);
     }
 };
 
