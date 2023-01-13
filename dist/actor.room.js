@@ -6,7 +6,6 @@ var secutiryProcess          = require('process.security');
 var roomInfoProcess          = require('process.roominfo');
 var towerProcess             = require('process.tower');
 var linkProcess              = require('process.link');
-var spawnProcess             = require('process.spawn');
 var terminalProcess          = require('process.terminal');
 var autobuildProcess         = require('process.autobuild');
 
@@ -132,14 +131,10 @@ var roomActor =
         roomInfoProcess.work(room);
         towerProcess.work(room);
 
-        // STRATEGY don't execute certain processes too ofthen
+        // STRATEGY don't execute certain processes too ofthen and on the same tick
         const processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)
-        {
-            spawnProcess.work(room);
-        }
-        else if (processKey == 5)
         {
             linkProcess.work(room);
         }
