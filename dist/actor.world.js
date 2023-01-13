@@ -5,9 +5,13 @@ var globals = require('globals');
 /**
 Order of load is priority for task execution.
 **/
+// generate spawn(s)
 var taskedStrelok = require('tasked.strelok');
 var taskedBeetle  = require('tasked.beetle');
 var taskedClaim   = require('tasked.claim');
+// consume spawn(s)
+var taskedSpawn   = require('tasked.spawn');
+// other
 var taskedPixel   = require('tasked.pixelgenerator');
 
 var worldActor =
