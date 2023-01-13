@@ -249,22 +249,23 @@ autobuildProcess.sourceLink = function(room)
 
             if (sources.length > 0)
             {
-                let self = this;
-
                 // pick source with most access first
                 sources.sort(
-                    function(s1, s2)
-                    {
-                        const w1 = self.weightSource(room, s1);
-                        const w2 = self.weightSource(room, s2);
+                    _.bind(
+                        function(s1, s2)
+                        {
+                            const w1 = this.weightSource(room, s1);
+                            const w2 = this.weightSource(room, s2);
 
-                        return w2 - w1;
-                    }
+                            return w2 - w1;
+                        },
+                        this
+                    )
                 );
 
                 const weightFunction = function(x, y, dx, dy, itemsAtXY)
                 {
-                    return self.weightAroundTheSource(x, y, dx, dy, itemsAtXY);
+                    return _.bind(weightAroundTheSource(x, y, dx, dy, itemsAtXY), this);
                 };
 
                 for (let i = 0; i < sources.length && i < canHave - reserve; ++i)

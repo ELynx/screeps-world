@@ -120,8 +120,7 @@ function Tasked(id)
 
     this.act = function()
     {
-        var self = this;
-        let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(self.id); });
+        let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(this.id); }, this);
 
         if (this.prepare)
         {

@@ -58,7 +58,7 @@ terminalProcess.work = function(room)
         {
             const roomFrom = Game.rooms[order.roomName];
 
-            // don't trade with self
+            // don't trade with own orders
             if (roomFrom && roomFrom.controller && roomFrom.controller.my)
                 return false;
 
@@ -95,7 +95,7 @@ terminalProcess.work = function(room)
 
         const roomFrom = Game.rooms[order.roomName];
 
-        // don't trade with self
+        // don't trade with own orders
         if (roomFrom && roomFrom.controller && roomFrom.controller.my)
             continue;
 

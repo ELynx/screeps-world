@@ -405,26 +405,24 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargetsForCreep(room, creep);
 
-            // scope to contain "self"
-            {
-                let self = this;
-
-                // starting with closest, Manhattan distance is "good enough"
-                targets.sort(
+            // starting with closest, Manhattan distance is "good enough"
+            targets.sort(
+                _.bind(
                     function(t1, t2)
                     {
                         const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
                         const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
-                        if (d1 == d2 && self.tiebreaker)
+                        if (d1 == d2 && this.tiebreaker)
                         {
-                            return self.tiebreaker(t1, t2);
+                            return this.tiebreaker(t1, t2);
                         }
 
                         return d1 - d2;
-                    }
-                );
-            }
+                    },
+                    this
+                )
+            );
 
             // of them one that can be reached
             let target = undefined;

@@ -236,7 +236,7 @@ strelok.creepAtDestination = function(creep)
     {
         const healTargets = this.roomWounded[dest];
 
-        // priority 1 - heal self
+        // priority 1 - heal this
         if (creep._canHeal_ && creep.hits < creep.hitsMax)
         {
             creep.heal(creep);
