@@ -139,11 +139,11 @@ var globals =
 
     moveOptionsWrapper: function(options)
     {
-        if (options.plainCost === undefined)
-            options.plainCost = 1;
-
-        if (options.swampCost === undefined)
-            options.swampCost = 5;
+        _.defaults(
+            options,
+            { plainCost, 1 },
+            { swampCost, 5 }
+        );
 
         return options;
     }
