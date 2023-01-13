@@ -237,7 +237,7 @@ roomInfoProcess.wallLevel = function(room)
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_WALL && structure.hits && structure.hitsMax;
+                return structure.structureType == STRUCTURE_WALL && structure.hits;
             }
         }
     );
