@@ -1,34 +1,29 @@
 'use strict';
 
-var temporaryStorage = undefined;
-
 var spawn =
 {
     makeEmptyStructure: function()
     {
-        return
+        let result =
         {
-            TO: 'DO'
+            urgent: [],
+            normal: [],
+            low:    []
         };
+
+        return result;
     },
 
-    unpackMemory: function()
+    prepareMemory: function()
     {
-        if (Memory.spawn_v1)
+        if (_.isUndefined(Memory.spawn_v1) || _.isEmpty(Memory.spawn_v1))
         {
-            temporaryStorage = JSON.parse(Memory.spawn_v1);
-        }
-        else
-        {
-            temporaryStorage = makeEmptyStructure();
-        }
-    },
+            let emptyStructure = this.makeEmptyStructure();
 
-    packMemory: function()
-    {
-        if (temporaryStorage)
-        {
-            Memory.spawn_v1 = JSON.stringify(temporaryStorage);
+            console.log('Generating empty structure for spawn, v1');
+            console.log(JSON.stringify(emptyStructure));
+
+            Memory.spawn_v1 = emptyStructure;
         }
     }
 };
