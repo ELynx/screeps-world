@@ -225,7 +225,7 @@ function Tasked(id)
                 this.id,             // body, string indicates to call body function
                 this.id,             // name (prefix)
                 creepMemory,         // memory
-                spawn.ANY_ROOM_FROM, // from
+                spawn.FROM_ANY_ROOM, // from
                 flag.pos.roomName,   // to
                 want - has           // n
             );
