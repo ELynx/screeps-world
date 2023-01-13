@@ -38,36 +38,38 @@ var spawn =
 
     _add: function(target, id, body, name, memory, from, to, n)
     {
-        this.prepareMemory();
-
         for (let i = 0; i < n; ++i)
         {
-            target.push(
-                {
-                    id:     id,
-                    body:   body,
-                    name:   name + i,
-                    memory: memory,
-                    from:   from,
-                    to:     to,
-                    time:   Game.time
-                }
-            );
+            const model = 
+            {
+                id:     id,
+                body:   body,
+                name:   name + i,
+                memory: memory,
+                from:   from,
+                to:     to,
+                time:   Game.time
+            };
+
+            target.push(model);
         }
     },
 
     addUrgent: function(id, body, name, memory, from, to, n = 1)
     {
+        this.prepareMemory();
         this._add(Memory.spawn_v1.urgent, id, body, name, memory, from, to, n);
     },
 
     addNormal: function(id, body, name, memory, from, to, n = 1)
     {
+        this.prepareMemory();
         this._add(Memory.spawn_v1.normal, id, body, name, memory, from, to, n);
     },
 
     addLow: function(id, body, name, memory, from, to, n = 1)
     {
+        this.prepareMemory();
         this._add(Memory.spawn_v1.low,    id, body, name, memory, from, to, n);
     },
 
