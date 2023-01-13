@@ -24,8 +24,6 @@ Don't send military to enemy safe mode rooms.
 # Ideas
 PathFinder option `flee`.
 
-Roads in neutral room require change in repair code to work on energy level 0.
+Lodash `Chain`.
 
 Towers fight back based on event log.
-
-Grab was disabled for restocker during harvest. Block removed.
