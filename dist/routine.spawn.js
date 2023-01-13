@@ -9,17 +9,12 @@ var spawn =
 
     registerBodyFunction: function(withBodyFunction)
     {
-        this.withBodyFunctions[id] = withBodyFunction;
-    }
+        this.withBodyFunctions[withBodyFunction.id] = withBodyFunction;
+    },
 
     makeEmptyStructure: function()
     {
-        let result =
-        {
-            urgent: [],
-            normal: [],
-            low:    []
-        };
+        let result = { urgent: [], normal: [], low: [] };
 
         return result;
     },
@@ -49,13 +44,15 @@ var spawn =
         for (let i = 0; i < n; ++i)
         {
             target.push(
-                id: id,
-                body: body,
-                name: name + i,
-                memory: memory,
-                from: from,
-                to: to,
-                time: Game.time
+                {
+                    id: id,
+                    body: body,
+                    name: name + i,
+                    memory: memory,
+                    from: from,
+                    to: to,
+                    time: Game.time
+                }
             );
         }
     },
@@ -174,7 +171,7 @@ var spawn =
     __erase: function(target, id)
     {
 
-    }
+    },
 
     _erase: function(id)
     {
