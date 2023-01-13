@@ -47,6 +47,8 @@ mineralHarvestController.act = function(terminal, creep)
 
 mineralHarvestController.staticTargets = function(room)
 {
+    if (room.memory.mlvl == 0) return [];
+
     return room.find(
         FIND_STRUCTURES,
         {
