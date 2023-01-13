@@ -70,10 +70,89 @@ spawn.get = function()
     return this._peekOrGet(this._queueCallGet);
 };
 
+spawn._spawnRoomFilter = function(room)
+{
+    if (room && room.controller && room.controller.my)
+    {
+        return room.memory.elvl > 0;
+    }
+
+    return false;
+};
+
+spawn._findAllSpawnRooms = function()
+{
+    let sourceRooms = [];
+    for (const roomName in Game.rooms)
+    {
+        const room = Game.rooms[roomName];
+        if (this._spawnRoomFilter(room))
+        {
+            sourceRooms.push(room);
+        }
+    }
+
+    return sourceRooms;
+};
+
+spawn.findStrongestSpawnRoom = function()
+{
+    let sourceRooms = this._findAllSpawnRooms();
+    sourceRooms.sort(
+        function(room1, room2)
+        {
+            return room2.memory.elvl - room1.memory.elvl;
+        }
+    );
+
+    return sourceRooms;
+};
+
+spawn.findClosestSpawnRoom = function(targetRoomName)
+{
+    let sourceRooms = this._findAllSpawnRooms();
+    sourceRooms.sort(
+        function(room1, room2)
+        {
+            const d1 = Game.map.getRoomLinearDistance(room1.name, targetRoomName);
+            const d2 = Game.map.getRoomLinearDistance(room2.name, targetRoomName);
+
+            return d1 - d2;
+        }
+    );
+
+    return sourceRooms;
+};
+
+spawn.spawnNext = function()
+{
+    const nextModel = this.peek();
+
+    îf (nextModel === undefined) return false;
+
+    let sourceRooms = undefined;
+    if (nextModel.from == queue.FROM_ANY_ROOM)
+    {
+        sourceRooms = this.findStrongestSpawnRoom();
+    }
+    else
+    {
+        // "from" is tested as well, then other as backups
+        sourceRooms = this.findClosestSpawnRoom(nextModel.from);
+    }
+
+    if (sourceRooms.length == 0) return false;
+
+    return false;
+}
+
 spawn.act = function()
 {
-    // TODO
-    console.log(JSON.stringify(this.peek()));
+    let spawned = 0;
+    while (this.spawnNext())
+    {
+        ++spawned;
+    }
 };
 
 spawn.register();

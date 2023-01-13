@@ -2,13 +2,24 @@
 
 var spawn =
 {
-    ANY_ROOM_FROM: 'ANY',
+    FROM_ANY_ROOM: 'ANY',
 
     withBodyFunctions: { },
 
     registerBodyFunction: function(withBodyFunction)
     {
         this.withBodyFunctions[withBodyFunction.id] = withBodyFunction;
+    },
+
+    getBodyFunction: function(id)
+    {
+        const withBodyFunction = this.withBodyFunctions[id];
+        if (withBodyFunction && withBodyFunction.makeBody)
+        {
+            return withBodyFunction.makeBody;
+        }
+
+        return undefined;
     },
 
     makeEmptyStructure: function()
