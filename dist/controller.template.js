@@ -113,7 +113,7 @@ function Controller(id)
         return _.filter(targets,
             function(target)
             {
-                return _.indexOf(exclude, target.id) == -1;
+                return !_.some(exclude, target.id);
             }
         );
     };
