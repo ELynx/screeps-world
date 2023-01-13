@@ -212,6 +212,7 @@ function Tasked(id)
             else
             {
                 flag.setSecondaryColor(COLOR_WHITE);
+                continue;
             }
 
             const creepNamePrefix = flagName + '_' + Game.time + '_';
