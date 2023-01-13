@@ -169,11 +169,6 @@ var spawn =
         return this._count(id);
     },
 
-    __erase: function(target, id)
-    {
-        // TODO
-    },
-
     _erase: function(id)
     {
         if (this.noMemory())
@@ -181,9 +176,14 @@ var spawn =
             return;
         }
 
-        this.__erase(Memory.spawn_v1.urgent, id);
-        this.__erase(Memory.spawn_v1.normal, id);
-        this.__erase(Memory.spawn_v1.low,    id);
+        const filter = function(stored)
+        {
+            return stored.id == id;
+        };
+
+        Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter);
+        Memory.spawn_v1.normal = _.filter(Memory.spawn_v1.normal, filter);
+        Memory.spawn_v1.low    = _.filter(Memory.spawn_v1.low,    filter);
     },
 
     erase: function(id)
