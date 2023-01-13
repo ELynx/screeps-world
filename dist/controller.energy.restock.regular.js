@@ -34,12 +34,12 @@ energyRestockControllerRegular.staticTargets = function(room)
         {
             filter: function(structure)
             {
-                if (!structure.isActiveSimple())
+                if (!structure.my)
                 {
                     return false;
                 }
 
-                if (!structure.my)
+                if (!structure.isActiveSimple())
                 {
                     return false;
                 }
