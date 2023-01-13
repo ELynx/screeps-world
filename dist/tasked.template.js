@@ -214,7 +214,6 @@ function Tasked(id)
                 continue;
             }
 
-            const creepNamePrefix = flagName + '_' + Game.time + '_';
             const creepMemory =
             {
                 crum: flag.pos.roomName,
@@ -224,7 +223,7 @@ function Tasked(id)
             spawn.addNormal(
                 flagName,            // id in queue
                 this.id,             // body, string indicates to call body function
-                creepNamePrefix,     // name
+                this.id,             // name (prefix)
                 creepMemory,         // memory
                 spawn.ANY_ROOM_FROM, // from
                 flag.pos.roomName,   // to
