@@ -13,7 +13,7 @@ var spawn =
 
     makeEmptyStructure: function()
     {
-        let result = { urgent: [], normal: [], low: [] };
+        let result = { urgent: [], normal: [], lowkey: [] };
         return result;
     },
 
@@ -67,10 +67,10 @@ var spawn =
         this._add(Memory.spawn_v1.normal, id, body, name, memory, from, to, n);
     },
 
-    addLow: function(id, body, name, memory, from, to, n = 1)
+    addLowkey: function(id, body, name, memory, from, to, n = 1)
     {
         this.prepareMemory();
-        this._add(Memory.spawn_v1.low,    id, body, name, memory, from, to, n);
+        this._add(Memory.spawn_v1.lowkey, id, body, name, memory, from, to, n);
     },
 
     _peek: function()
@@ -90,9 +90,9 @@ var spawn =
             return Memory.spawn_v1.normal[0];
         }
 
-        if (Memory.spawn_v1.low.length > 0)
+        if (Memory.spawn_v1.lowkey.length > 0)
         {
-            return Memory.spawn_v1.low[0];
+            return Memory.spawn_v1.lowkey[0];
         }
 
         return undefined;
@@ -120,9 +120,9 @@ var spawn =
             return Memory.spawn_v1.normal.shift();
         }
 
-        if (Memory.spawn_v1.low.length > 0)
+        if (Memory.spawn_v1.lowkey.length > 0)
         {
-            return Memory.spawn_v1.low.shift();
+            return Memory.spawn_v1.lowkey.shift();
         }
 
         return undefined;        
@@ -159,7 +159,7 @@ var spawn =
         let total = 0;
         total += this.__count(Memory.spawn_v1.urgent, id);
         total += this.__count(Memory.spawn_v1.normal, id);
-        total += this.__count(Memory.spawn_v1.low,    id);
+        total += this.__count(Memory.spawn_v1.lowkey, id);
 
         return total;
     },
@@ -183,7 +183,7 @@ var spawn =
 
         Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter);
         Memory.spawn_v1.normal = _.filter(Memory.spawn_v1.normal, filter);
-        Memory.spawn_v1.low    = _.filter(Memory.spawn_v1.low,    filter);
+        Memory.spawn_v1.lowkey = _.filter(Memory.spawn_v1.lowkey, filter);
     },
 
     erase: function(id)
