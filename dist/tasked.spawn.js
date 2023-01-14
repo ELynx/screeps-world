@@ -73,8 +73,7 @@ spawn.get = function()
 
 spawn.postpone = function()
 {
-    // TODO
-    return false;
+    return queue.postpone();
 };
 
 spawn._spawnRoomMarkCheck = function(room)
