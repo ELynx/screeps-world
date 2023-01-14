@@ -1,5 +1,7 @@
 'use strict';
 
+var spawn = require('routine.spawn');
+
 /**
 MEMO - body part cost
 
@@ -119,7 +121,31 @@ var bodywork =
 
         // 850       100   100   100   100   100   50     50    50    50    50    50    50
         return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+    },
+
+    _injectIntoSpawnPool: function(id, routine)
+    {
+        const bound = _.bind(routine, this);
+
+        spawn.registerBodyFunction(
+            {
+                id: id,
+                makeBody: function(spawn)
+                {
+                    return bound(spawn.room.memory.elvl);
+                }
+            }
+        );
+    },
+
+    injectIntoSpawnPool: function()
+    {
+        this._injectIntoSpawnPool('worker',    this.worker);
+        this._injectIntoSpawnPool('restocker', this.restocker);
+        this._injectIntoSpawnPool('miner',     this.miner);
     }
 };
+
+bodywork.injectIntoSpawnPool();
 
 module.exports = bodywork;
