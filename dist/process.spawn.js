@@ -28,8 +28,7 @@ spawnProcess.work = function(room)
                 dest: globals.NO_DESTINATION,
                 dact: globals.NO_ACT_RANGE,
                 xtra: globals.NO_EXTRA,
-                btyp: undefined,
-                levl: undefined,
+                btyp: 'worker',
                 hvst: true,
                 rstk: undefined,
                 minr: undefined

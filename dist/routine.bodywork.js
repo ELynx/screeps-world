@@ -30,10 +30,9 @@ var bodywork =
         }
 
         const cacheHit = this.workUniversalCache[energyLevel];
-
         if (cacheHit)
         {
-            return cacheHit.stored;
+            return cacheHit;
         }
 
         // total 250 per iteration
@@ -61,12 +60,9 @@ var bodywork =
             body = front.concat(body).concat(back);
         }
 
-        this.workUniversalCache =
-        {
-            stored: [ total, body ]
-        };
+        this.workUniversalCache[energyLevel] = body;
 
-        return [total, body];
+        return body;
     },
 
     /**
@@ -78,25 +74,25 @@ var bodywork =
     {
         if (energyLevel < 3)
         {
-            return [ 0, [] ];
+            return [];
         }
 
         // special case, limp a bit
         // don't care about the level
         if (energyLevel == 3)
         {
-            // 800       100   100   100   100   100   50     50    50    50    50    50
-            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+            // 800  100   100   100   100   100   50     50    50    50    50    50
+            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
         }
 
         if (energyLevel < 6)
         {
-            // 850       100   100   100   100   100   50     50    50    50    50    50    50
-            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+            // 850  100   100   100   100   100   50     50    50    50    50    50    50
+            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
         }
 
-        // 1700      100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50    50    50
-        return [ 2, [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        // 1700 100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
     },
 
     /**
@@ -108,19 +104,19 @@ var bodywork =
     {
         if (energyLevel < 3)
         {
-            return [ 0, [] ];
+            return [];
         }
 
         // special case, limp a bit
         // don't care about the level
         if (energyLevel == 3)
         {
-            // 800       100   100   100   100   100   50     50    50    50    50    50
-            return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+            // 800  100   100   100   100   100   50     50    50    50    50    50
+            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
         }
 
-        // 850       100   100   100   100   100   50     50    50    50    50    50    50
-        return [ 1, [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] ];
+        // 850  100   100   100   100   100   50     50    50    50    50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
     },
 
     _injectIntoSpawnPool: function(id, routine)
@@ -132,7 +128,7 @@ var bodywork =
                 id: id,
                 makeBody: function(spawn)
                 {
-                    return bound(spawn.room.memory.elvl)[1];
+                    return bound(spawn.room.memory.elvl);
                 }
             }
         );
