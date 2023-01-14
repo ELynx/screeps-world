@@ -225,7 +225,7 @@ function Tasked(id)
             spawn.addNormal(
                 flagName,            // id in queue
                 this.id,             // body, string indicates to call body function
-                this.id,             // name (prefix)
+                flagName,            // name (prefix)
                 creepMemory,         // memory
                 spawn.FROM_ANY_ROOM, // from
                 flag.pos.roomName,   // to
