@@ -22,7 +22,8 @@ spawn.dismiss = function(model)
 spawn._peekOrGet = function(queueCall)
 {
     // prevent forever loop, should not happen
-    let emergencyStop = 1000;
+    let emergencyStop = Game.gcl.level * CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][8] + 1;
+
     while (emergencyStop > 0)
     {
         --emergencyStop;
@@ -72,12 +73,19 @@ spawn.get = function()
 
 spawn._spawnRoomFilter = function(room)
 {
+    if (room._spawnMark_ == Game.time) return false;
+
     if (room && room.controller && room.controller.my)
     {
         return room.memory.elvl > 0;
     }
 
     return false;
+};
+
+spawn._spawnRoomMark = function(room)
+{
+    room._spawnMark_ = Game.time;
 };
 
 spawn._findAllSpawnRooms = function()
@@ -95,7 +103,7 @@ spawn._findAllSpawnRooms = function()
     return sourceRooms;
 };
 
-spawn.findStrongestSpawnRoom = function()
+spawn.findStrongestSpawnRooms = function()
 {
     let sourceRooms = this._findAllSpawnRooms();
     sourceRooms.sort(
@@ -108,14 +116,15 @@ spawn.findStrongestSpawnRoom = function()
     return sourceRooms;
 };
 
-spawn.findClosestSpawnRoom = function(targetRoomName)
+spawn.findSpawnRoomsFor = function(model)
 {
+    // TODO don't run creeps across the map for lowkey
     let sourceRooms = this._findAllSpawnRooms();
     sourceRooms.sort(
         function(room1, room2)
         {
-            const d1 = Game.map.getRoomLinearDistance(room1.name, targetRoomName);
-            const d2 = Game.map.getRoomLinearDistance(room2.name, targetRoomName);
+            const d1 = Game.map.getRoomLinearDistance(room1.name, model.from);
+            const d2 = Game.map.getRoomLinearDistance(room2.name, model.from);
 
             return d1 - d2;
         }
@@ -124,10 +133,44 @@ spawn.findClosestSpawnRoom = function(targetRoomName)
     return sourceRooms;
 };
 
+spawn._spawnFilter = function(spawn)
+{
+    return spawn.my && spawn.isActiveSimple() && !spawn.spawning;
+};
+
+spawn.makeBody = function(spawn, model)
+{
+    // TODO
+    return [WORK, MOVE, CARRY, MOVE];
+};
+
+spawn.spawnNextErrorHandler = function(spawn, model, index, rc = undefined)
+{
+    let message = 
+        'spawn.spawnNext error condition ' + index +
+        ' detected for ' + JSON.stringify(model) +
+        ' at ' + JSON.stringify(spawn);
+
+    if (rc)
+    {
+        message += ' with rc ' + rc;
+    }
+
+    console.log(message);
+
+    // dispose of model
+    queue.get();
+
+    // try next model
+    return true;
+};
+
 spawn.spawnNext = function()
 {
+    // not known if model can be spawned
     const nextModel = this.peek();
 
+    // queue is empty
     îf (nextModel === undefined) return false;
 
     let sourceRooms = undefined;
@@ -137,21 +180,95 @@ spawn.spawnNext = function()
     }
     else
     {
-        // "from" is tested as well, then others as backups
-        sourceRooms = this.findClosestSpawnRoom(nextModel.from);
+        sourceRooms = this.findSpawnRoomFor(nextModel);
     }
 
     if (sourceRooms.length == 0) return false;
 
+    for (let i = 0; i < sourceRooms.length; ++i)
+    {
+        const sourceRoom = sourceRooms[i];
+
+        const spawns = sourceRoom.find(
+            FIND_STRUCTURES,
+            {
+                filter: this._spawnFilter
+            }
+        );
+
+        if (spawns.length == 0)
+        {
+            this._spawnRoomMark(sourceRoom);
+            continue;
+        }
+
+        for (let j = 0; j < spawns.length; ++j)
+        {
+            const spawn = spawns[j];
+
+            const body = this.makeBody(spawn, nextModel);
+            if (body === undefined)
+            {
+                return this.spawnNextErrorHandler(spawn, nextModel, 1);
+            }
+
+            const dryRun = spawn.spawnCreep(
+                body,
+                nextModel.name,
+                {
+                    dryRun: true
+                }
+            );
+
+            if (dryRun == ERR_NOT_ENOUGH_ENERGY)
+            {
+                break; // from spawns cycle
+            }
+
+            if (dryRun != OK)
+            {
+                return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun);
+            }
+
+            const actualRun = spawn.spawnCreep(
+                body,
+                nextModel.name,
+                {
+                    memory: nextModel.memory
+                }
+            );
+
+            if (actualRun != OK)
+            {
+                return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun);
+            }
+
+            // remove the model
+            queue.get();
+
+            // TODO handle multiple spawns faster
+            // STRATEGY don't spawn more creeps in same room to prevent energy owerdraft
+            this._spawnRoomMark(sourceRoom);
+
+            return true;
+        } // end of spawn loop
+    } // end of loop for rooms
+
     return false;
-}
+};
 
 spawn.act = function()
 {
-    let spawned = 0;
-    while (this.spawnNext())
+    // prevent forever loop, should not happen
+    let emergencyStop = Game.gcl.level * CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][8] + 1;
+    while (this.spawnNext() && emergencyStop > 0)
     {
-        ++spawned;
+        --emergencyStop;
+    }
+
+    if (emergencyStop == 0)
+    {
+        console.log('spawn.act error condition detected');
     }
 };
 
