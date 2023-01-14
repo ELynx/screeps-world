@@ -197,7 +197,7 @@ spawn.spawnNextErrorHandler = function(spawn, model, index, rc = undefined)
     let message = 
         'spawn.spawnNext error condition ' + index +
         ' detected for ' + JSON.stringify(model) +
-        ' at ' + JSON.stringify(spawn);
+        ' at ' + spawn.room.name + ' [' + spawn.id + ']';
 
     if (rc)
     {
