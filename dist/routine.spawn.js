@@ -195,7 +195,7 @@ var spawn =
 
         const filter = function(stored)
         {
-            return stored.id == id;
+            return stored.id != id;
         };
 
         Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter);

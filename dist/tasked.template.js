@@ -191,6 +191,7 @@ function Tasked(id)
                 const decision = this.flagPrepare(flag);
                 if (decision == this.FLAG_IGNORE)
                 {
+                    spawn.erase(flagName); // to free up queue
                     flag.resetSecondaryColor();
                     continue;
                 }
