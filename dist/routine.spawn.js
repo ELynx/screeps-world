@@ -208,12 +208,33 @@ var spawn =
         this._erase(id);
     },
 
+    __postpone: function(target)
+    {
+        return false;
+    },
+
     _postpone: function()
     {
         if (this.noMemory())
         {
             return false;
         }
+
+        // logic
+        // if priority list is empty, skip it
+        // if has one element, sorry, no postpone
+        // if more than one, postpone within single priority
+
+        const lu = Memory.spawn_v1.urgent.length;
+        if (lu == 1) return false;
+        if (lu > 1)  return this.__postpone(Memory.spawn_v1.urgent);
+
+        const ln = Memory.spawn_v1.normal.length;
+        if (ln == 1) return false;
+        if (ln > 1)  return this.__postpone(Memory.spawn_v1.normal);
+
+        const ll = Memory.spawn_v1.lowkey.length;
+        if (ll > 1)  return this.__postpone(Memory.spawn_v1.lowkey);
 
         return false;
     },
