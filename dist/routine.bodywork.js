@@ -132,7 +132,7 @@ var bodywork =
                 id: id,
                 makeBody: function(spawn)
                 {
-                    return bound(spawn.room.memory.elvl);
+                    return bound(spawn.room.memory.elvl)[1];
                 }
             }
         );
