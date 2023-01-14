@@ -151,8 +151,20 @@ spawn._spawnFilter = function(structure)
 
 spawn.makeBody = function(spawn, model)
 {
-    // TODO
-    return [WORK, MOVE, CARRY, MOVE];
+    if (_.isArray(model.body))
+    {
+        return model.body;
+    }
+
+    if (_.isString(model.body))
+    {
+        const bodyFunction = queue.getBodyFunction(model.body);
+        if (bodyFunction === undefined) return undefined;
+
+        return bodyFunction(spawn);
+    }
+
+    return undefined;
 };
 
 spawn.spawnNextErrorHandler = function(spawn, model, index, rc = undefined)

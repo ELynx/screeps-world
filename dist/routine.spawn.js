@@ -8,6 +8,12 @@ var spawn =
 
     registerBodyFunction: function(withBodyFunction)
     {
+        if (withBodyFunction.makeBody === undefined)
+        {
+            console.log('Cannot register ' + withBodyFunction.id + ' as maker');
+            return;
+        }
+
         this.withBodyFunctions[withBodyFunction.id] = withBodyFunction;
     },
 
