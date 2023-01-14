@@ -208,10 +208,35 @@ var spawn =
         this._erase(id);
     },
 
-    // internals of this function should not be used outside
+    // internals of this function should not be used
     __postpone: function(target)
     {
-        return false;
+        // resetter
+        if (this.__postpone_t != Game.time)
+        {
+            this.__postpone_n = undefined;
+        }
+
+        // define value per tick
+        if (this.__postpone_n === undefined)
+        {
+            // STRATEGY how many shuffles in queue is allowed
+            this.__postpone_n = Math.floor(target.length / 2);
+            this.__postpone_t = Game.time;
+        }
+
+        // denier
+        if (this.__postpone_n == 0)
+        {
+            return false;
+        }
+
+        this.__postpone_n = this.__postpone_n - 1;
+
+        const taken = target.shift();
+        target.push(taken);
+
+        return true;
     },
 
     _postpone: function()
