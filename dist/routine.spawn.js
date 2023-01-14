@@ -206,6 +206,17 @@ var spawn =
     erase: function(id)
     {
         this._erase(id);
+    },
+
+    _postpone: function()
+    {
+        // TODO
+        return false;
+    },
+
+    postpone: function()
+    {
+        return this._postpone();
     }
 };
 
