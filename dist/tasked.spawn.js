@@ -177,16 +177,16 @@ spawn.spawnNext = function()
     const nextModel = this.peek();
 
     // queue is empty
-    îf (nextModel === undefined) return false;
+    if (nextModel === undefined) return false;
 
     let sourceRooms = undefined;
     if (nextModel.from == queue.FROM_ANY_ROOM)
     {
-        sourceRooms = this.findStrongestSpawnRoom();
+        sourceRooms = this.findStrongestSpawnRooms();
     }
     else
     {
-        sourceRooms = this.findSpawnRoomFor(nextModel);
+        sourceRooms = this.findSpawnRoomsFor(nextModel);
     }
 
     if (sourceRooms.length == 0) return false;
