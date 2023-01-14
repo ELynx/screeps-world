@@ -139,9 +139,14 @@ spawn.findSpawnRoomsFor = function(model)
     return sourceRooms;
 };
 
-spawn._spawnFilter = function(spawn)
+spawn._spawnFilter = function(structure)
 {
-    return spawn.my && spawn.isActiveSimple() && !spawn.spawning;
+    if (structure.structureType == STRUCTURE_SPAWN)
+    {
+        return structure.my && structure.isActiveSimple() && !structure.spawning;
+    }
+
+    return false;
 };
 
 spawn.makeBody = function(spawn, model)
