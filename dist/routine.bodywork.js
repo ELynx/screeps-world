@@ -17,11 +17,10 @@ var bodywork =
 {
     /**
     BODY Universal worker.
-    Could do any work.
     @param {integer} energyLevel.
     @return {Array} level, body.
     **/
-    0: function(energyLevel)
+    worker: function(energyLevel)
     {
         if (!this.workUniversalCache)
         {
@@ -32,7 +31,7 @@ var bodywork =
 
         if (cacheHit)
         {
-            return cacheHit.slice(0);
+            return cacheHit.stored;
         }
 
         // total 250 per iteration
@@ -60,18 +59,20 @@ var bodywork =
             body = front.concat(body).concat(back);
         }
 
-        this.workUniversalCache[energyLevel] = [total, body];
+        this.workUniversalCache =
+        {
+            stored: [ total, body ]
+        };
 
         return [total, body];
     },
 
     /**
     BODY Restocker.
-    Harvest source, restock containers and links.
     @param {integer} level.
     @return {Array} level, body.
     **/
-    1: function(energyLevel)
+    restocker: function(energyLevel)
     {
         if (energyLevel < 3)
         {
@@ -98,11 +99,10 @@ var bodywork =
 
     /**
     BODY Miner.
-    Harvest mineral thought extractor, restock to terminal.
     @param {integer} level.
     @return {Array} level, body.
     **/
-    2: function(energyLevel)
+    miner: function(energyLevel)
     {
         if (energyLevel < 3)
         {
