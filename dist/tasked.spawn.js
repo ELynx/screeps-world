@@ -77,9 +77,14 @@ spawn.postpone = function()
     return false;
 };
 
+spawn._spawnRoomMarkCheck = function(room)
+{
+    return room._spawnMark_ == Game.time;
+};
+
 spawn._spawnRoomFilter = function(room)
 {
-    if (room._spawnMark_ == Game.time) return false;
+    if (this._spawnRoomMarkCheck(room)) return false;
 
     if (room && room.controller && room.controller.my)
     {
@@ -124,7 +129,30 @@ spawn.findStrongestSpawnRooms = function()
 
 spawn.findSpawnRoomsFor = function(model)
 {
-    // TODO don't run creeps across the map for lowkey
+    // STRATEGY lowkey creeps are spawned in their own room, unless room cannot spawn them
+    // n.b. spawn them at all, not "right now" because spawn points are busy, etc
+    if (model.priority == 'lowkey')
+    {
+        // find room in general
+        const room = Game.rooms[model.from];
+        if (room && room.controller && room.controller.my)
+        {
+            // test spawn-ability
+            if (room.memory.elvl > 0)
+            {
+                if (this._spawnRoomMarkCheck(room))
+                {
+                    // room was already used this tick
+                    return [];
+                }
+                else
+                {
+                    return [ room ];
+                }
+            }
+        }
+    }
+
     let sourceRooms = this._findAllSpawnRooms();
     sourceRooms.sort(
         function(room1, room2)

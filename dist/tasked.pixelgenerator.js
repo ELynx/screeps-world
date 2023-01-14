@@ -10,6 +10,12 @@ pixelGenerator.act = function()
     {
         Game.cpu.generatePixel();
     }
+};
+
+// to make routine.spawn stop complaining
+pixelGenerator.makeBody = function(spawn)
+{
+    return undefined;
 }
 
 pixelGenerator.register();
