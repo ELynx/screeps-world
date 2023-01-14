@@ -5,6 +5,7 @@ var globals = require('globals');
 var secutiryProcess          = require('process.security');
 var roomInfoProcess          = require('process.roominfo');
 var towerProcess             = require('process.tower');
+var spawnProcess             = require('process.spawn');
 var linkProcess              = require('process.link');
 var terminalProcess          = require('process.terminal');
 var autobuildProcess         = require('process.autobuild');
@@ -135,6 +136,10 @@ var roomActor =
         const processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)
+        {
+            spawnProcess.work(room);
+        }
+        else if (processKey == 5)
         {
             linkProcess.work(room);
         }
