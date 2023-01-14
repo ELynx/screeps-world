@@ -92,15 +92,16 @@ ttlController.filterCreep = function(creep)
     }
 
     // only check creeps with known body type
-    if (creep.memory.btyp)
+    const btyp = creep.memory.btyp;
+    if (btyp && bodywork[btyp])
     {
         // do background check
         const room = Game.rooms[creep.memory.crum];
         if (room)
         {
             // renew creeps that are higher level than room can produce
-            const [level, exampleBody] = bodywork[creep.memory.btyp](room.memory.elvl);
-            if (creep.memory.levl > level)
+            const exampleBody = bodywork[btyp](room.memory.elvl);
+            if (exampleBody.length > creep.body.length)
             {
                 return true;
             }
