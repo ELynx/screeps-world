@@ -127,6 +127,8 @@ function Tasked(id)
             this.prepare();
         }
 
+        let flagCount = { };
+
         for (var i = 0; i < creeps.length; ++i)
         {
             let creep = creeps[i];
@@ -140,9 +142,9 @@ function Tasked(id)
 
             // count how many creeps are already going to destination
             const flagName = creep.getFlagName();
-            let now = this.roomCount[flagName] || 0;
+            let now = flagCount[flagName] || 0;
             ++now;
-            this.roomCount[flagName] = now;
+            flagCount[flagName] = now;
 
             if (creep.spawning)
             {
@@ -202,7 +204,7 @@ function Tasked(id)
                 }
             }
 
-            const has = spawn.count(flagName);
+            const has = (flagCount[flagName] || 0) + spawn.count(flagName);
 
             if (has < want)
             {
