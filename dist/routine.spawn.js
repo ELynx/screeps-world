@@ -208,6 +208,7 @@ var spawn =
         this._erase(id);
     },
 
+    // internals of this function should not be used outside
     __postpone: function(target)
     {
         return false;

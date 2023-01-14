@@ -21,15 +21,13 @@ spawn.dismiss = function(model)
 
 spawn._peekOrGet = function(queueCall)
 {
-    // prevent forever loop, should not happen
-    let emergencyStop = Game.gcl.level * CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][8] + 1;
-
-    while (emergencyStop > 0)
+    // prevent forever loop
+    let maxAttempts = 10;
+    while (maxAttempts > 0)
     {
-        --emergencyStop;
+        --maxAttempts;
 
         const inQueue = queueCall();
-
         if (inQueue === undefined)
         {
             return undefined;
@@ -46,7 +44,7 @@ spawn._peekOrGet = function(queueCall)
         }
     }
 
-    console.log('spawn._peekOrGet error condition detected');
+    console.log('spawn._peekOrGet only cleanup duty on ' + Game.time);
 
     return undefined;
 };
@@ -311,16 +309,12 @@ spawn.spawnNext = function()
 
 spawn.act = function()
 {
-    // prevent forever loop, should not happen
-    let emergencyStop = Game.gcl.level * CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][8] + 1;
-    while (this.spawnNext() && emergencyStop > 0)
-    {
-        --emergencyStop;
-    }
+    // STRATEGY spawn attemps per tick
+    let maxAttempts = Object.keys(Game.rooms) * 2;
 
-    if (emergencyStop == 0)
+    while (this.spawnNext() && maxAttempts > 0)
     {
-        console.log('spawn.act error condition detected');
+        --maxAttempts;
     }
 };
 
