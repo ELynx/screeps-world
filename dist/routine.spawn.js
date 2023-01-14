@@ -210,7 +210,11 @@ var spawn =
 
     _postpone: function()
     {
-        // TODO
+        if (this.noMemory())
+        {
+            return false;
+        }
+
         return false;
     },
 
