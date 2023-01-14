@@ -71,6 +71,12 @@ spawn.get = function()
     return this._peekOrGet(this._queueCallGet);
 };
 
+spawn.postpone = function()
+{
+    // TODO
+    return false;
+};
+
 spawn._spawnRoomFilter = function(room)
 {
     if (room._spawnMark_ == Game.time) return false;
@@ -222,7 +228,7 @@ spawn.spawnNext = function()
 
             if (dryRun == ERR_NOT_ENOUGH_ENERGY)
             {
-                break; // from spawns cycle
+                break; // from spawns cycle, room will not have more energy
             }
 
             if (dryRun != OK)
@@ -254,7 +260,9 @@ spawn.spawnNext = function()
         } // end of spawn loop
     } // end of loop for rooms
 
-    return false;
+    // maybe move model in queue
+    // if movement was successful, try next one
+    return this.postpone();
 };
 
 spawn.act = function()
