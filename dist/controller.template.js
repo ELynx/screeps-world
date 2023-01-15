@@ -365,7 +365,7 @@ function Controller(id)
     {
         this._usesDefaultFilter = true;
 
-        if (creep.memory.rstk || creep.memory.minr)
+        if (creep.memory.minr)
         {
             return false;
         }
