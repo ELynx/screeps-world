@@ -46,14 +46,16 @@ outlast.creepRoomTravel = function(creep)
 {
     this._defaultAction(creep);
 
+    const theoreticalRoomHeal = this._roomCanHeal(creep.room);
+
     const damage      = creep.hitsMax - creep.hits;
     const selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
-    const roomCanHeal = creep.memory.trustRoom ? this._roomCanHeal(creep.room) : 0;
+    const roomCanHeal = creep.memory.trustRoom ? theoreticalRoomHeal : 0;
 
     // to verify on entry
     creep.memory.hits        = creep.hits;
     creep.memory.selfCanHeal = selfCanHeal;
-    creep.memory.roomCanHeal = roomCanHeal;
+    creep.memory.roomCanHeal = theoreticalRoomHeal;
 
     let manualMove = false;
     if (damage <= selfCanHeal + roomCanHeal)
