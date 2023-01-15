@@ -55,16 +55,53 @@ spawnProcess.addToQueue = function(room, type, memory, n, priority)
     }
 };
 
+spawnProcess._hasAndPlanned = function(room, live, type)
+{
+    const has = live[type] || 0;
+    const planned = queue.count(this.makeKey(room, type));
+
+    return has + planned;
+};
+
 spawnProcess.workers = function(room, live)
 {
 };
 
 spawnProcess.restockers = function(room, live)
 {
+    const want = Math.round(room.memory.slvl / 2);
+    if (want > 0)
+    {
+        const now = this._hasAndPlanned(room, live, 'restocker');
+        this.addToQueue(
+            room,
+            'restocker',
+            {
+                hvst: true,
+                rstk: true
+            },
+            want - now,
+            'lowkey'
+        );
+    }
 };
 
 spawnProcess.miners = function(room, live)
 {
+    const want = room.memory.mlvl;
+    if (want > 0)
+    {
+        const now = this._hasAndPlanned(room, live, 'miner');
+        this.addToQueue(
+            room,
+            'miner',
+            {
+                minr: true
+            },
+            want - now,
+            'lowkey'
+        );
+    }
 };
 
 spawnProcess.work = function(room)
