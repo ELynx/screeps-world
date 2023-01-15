@@ -19,7 +19,9 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-(High importance) spawn lower level creeps when energy is low.
+Source containers analogous to source links.
+
+Reuse miners.
 
 # Ideas
 PathFinder option `flee`.
