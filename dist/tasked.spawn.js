@@ -282,7 +282,8 @@ spawn.spawnNext = function()
                 body,
                 nextModel.name,
                 {
-                    memory: nextModel.memory
+                    memory: nextModel.memory,
+                    directions: [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT]
                 }
             );
 
