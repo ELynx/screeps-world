@@ -64,6 +64,17 @@ energyRestockControllerRegular.staticTargets = function(room)
     );
 };
 
+energyRestockControllerRegular.filterCreep = function(creep)
+{
+    // rely on specialist controller grabbing restockers first
+    if (creep.memory.minr)
+    {
+        return false;
+    }
+
+    return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+};
+
 energyRestockControllerRegular.register();
 
 module.exports = energyRestockControllerRegular;
