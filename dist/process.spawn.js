@@ -65,6 +65,29 @@ spawnProcess._hasAndPlanned = function(room, live, type)
 
 spawnProcess.workers = function(room, live)
 {
+    const addWorker = function(n, priority)
+    {
+        this.addToQueue(
+            room,
+            'worker',
+            {
+                hvst: true
+            },
+            n,
+            priority
+        );
+    };
+
+    const nowWorkers = this._hasAndPlanned(room, live, 'worker');
+    if (nowWorkers == 0)
+    {
+        addWorker(1, 'urgent');
+        addWorker(1, 'normal');
+
+        return;
+    }
+
+    const nowRestockers = this._hasAndPlanned(room, live, 'restocker');
 };
 
 spawnProcess.restockers = function(room, live)
