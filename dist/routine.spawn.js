@@ -54,13 +54,15 @@ var spawn =
 
     _add: function(target, id, body, name, memory, from, to, n)
     {
+        const extra = this.__add_extra || 0;
+
         for (let i = 0; i < n; ++i)
         {
             const model = 
             {
                 id:     id,
                 body:   body,
-                name:   name + '_' + Game.time + '_' + i,
+                name:   name + '_' + Game.time + '_' + (i + extra),
                 memory: memory,
                 from:   from,
                 to:     to,
@@ -70,6 +72,8 @@ var spawn =
 
             target.push(model);
         }
+
+        this.__add_extra = extra + n;
     },
 
     addUrgent: function(id, body, name, memory, from, to, n = 1)
