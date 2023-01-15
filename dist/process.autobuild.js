@@ -291,10 +291,86 @@ autobuildProcess.sourceLink = function(room)
     } // end of have links in general
 };
 
+autobuildProcess.coverRamparts = function(room)
+{
+    // this function has potential to create a lot of sites
+    // as such, unfiy look for sites and locations here, not in generic planner
+
+    const terrain           = room.getTerrain();
+    const constructionSites = room.lookForAtArea(LOOK_CONSTRUCTION_SITES, 0, 0, 49, 49);
+    const structures        = room.lookForAtArea(LOOK_STRUCTURES,         0, 0, 49, 49);
+
+    // since call is TOP, LEFT, result is Y, then X...
+    for (let ky in structures)
+    {
+        const atY   = structures[ky];
+        const csAtY = constructionSites[ky];
+
+        for (let kx in atY)
+        {
+            // no ramparts on walls
+            if (terrain.get(parseInt(kx), parseInt(ky)) == TERRAIN_MASK_WALL)
+            {
+                continue; // to next y
+            }
+
+            if (csAtY)
+            {
+                const csAtXY = csAtY[kx];
+                if (csAtXY)
+                {
+                    continue; // to next y
+                }
+            }
+
+            const atXY = atY[kx];
+
+            let onlyRoad = true;
+            let hasWall  = false;
+            let hasRamp  = false;
+
+            for (let i = 0; i < atXY.length; ++i)
+            {
+                const structure = atXY[i];
+
+                if (structure.structureType != STRUCTURE_ROAD)
+                {
+                    onlyRoad = false;
+                }
+
+                if (structure.structureType == STRUCTURE_WALL)
+                {
+                    hasWall = true;
+                    break;
+                }
+
+                if (structure.structureType == STRUCTURE_RAMPART)
+                {
+                    hasRamp = true;
+                    break;
+                }
+            }
+
+            if (onlyRoad || hasRamp || hasWall) continue; // to next y
+
+            // terrain is not natural wall
+            // there are no construction sites
+            // there are structures other than road
+            // there is no ramp
+            // this presumably can be covered
+
+            const pos = new RoomPosition(parseInt(kx), parseInt(ky), room.name);
+            const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART);
+            this.logConstructionSite(room, pos, STRUCTURE_RAMPART, rc);
+        }
+    }
+};
+
 autobuildProcess.actualWork = function(room)
 {
     this.extractor(room);
     this.sourceLink(room);
+    this.coverRamparts(room);
 };
 
 autobuildProcess.work = function(room)
