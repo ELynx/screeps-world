@@ -4,9 +4,22 @@ var Tasked = require('tasked.template');
 
 var plunder = new Tasked('plunder');
 
+plunder.prepare = function()
+{
+};
+
+plunder.creepPrepare = function(creep)
+{
+};
+
 plunder.creepAtDestination = function(creep)
 {
     this._coastToHalt(creep);
+};
+
+plunder.creepRoomTravel = function(creep)
+{
+    this._creepRoomTravel(creep);
 };
 
 plunder.flagPrepare = function(flag)
