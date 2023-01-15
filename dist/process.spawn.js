@@ -27,13 +27,13 @@ spawnProcess._addToQueue = function(room, type, memoryAddon, n, adderFunction)
     _.assign(memory, memoryAddon);
 
     adderFunction(
-        key,            // id in queue
-        type,           // body function
-        key,            // name prefix
-        memory: memory, // memory
-        room.name,      // from
-        room.name,      // to
-        n               // how much to add
+        key,       // id in queue
+        type,      // body function
+        key,       // name prefix
+        memory,    // memory
+        room.name, // from
+        room.name, // to
+        n          // how much to add
     );
 };
 
@@ -43,15 +43,15 @@ spawnProcess.addToQueue = function(room, type, memory, n, priority)
 
     if (priority == 'urgent')
     {
-        this._addToQueue(room, type, memory, n, queue.addUrgent);
+        this._addToQueue(room, type, memory, n, _.bind(queue.addUrgent, queue));
     }
     else if (priority == 'normal')
     {
-        this._addToQueue(room, type, memory, n, queue.addNormal);
+        this._addToQueue(room, type, memory, n, _.bind(queue.addNormal, queue));
     }
     else if (priority == 'lowkey')
     {
-        this._addToQueue(room, type, memory, n, queue.addLowkey);
+        this._addToQueue(room, type, memory, n, _.bind(queue.addLowkey, queue));
     }
 };
 
@@ -65,18 +65,21 @@ spawnProcess._hasAndPlanned = function(room, live, type)
 
 spawnProcess.workers = function(room, live)
 {
-    const addWorker = function(n, priority)
-    {
-        this.addToQueue(
-            room,
-            'worker',
-            {
-                hvst: true
-            },
-            n,
-            priority
-        );
-    };
+    const addWorker = _.bind(
+        function(n, priority)
+        {
+            this.addToQueue(
+                room,
+                'worker',
+                {
+                    hvst: true
+                },
+                n,
+                priority
+            );
+        },
+        this
+    );
 
     const nowWorkers = this._hasAndPlanned(room, live, 'worker');
     if (nowWorkers == 0)
