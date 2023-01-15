@@ -4,10 +4,6 @@ var Tasked = require('tasked.template');
 
 var outlast = new Tasked('outlast');
 
-outlast.prepare = function()
-{
-};
-
 outlast._defaultAction = function(creep)
 {
     // TODO heal around
@@ -15,6 +11,10 @@ outlast._defaultAction = function(creep)
     {
         creep.heal(creep);
     }
+
+    const healHelp    = creep.hits - creep.memory.hits - creep.memory.selfCanHeal;
+    const trustworthy = healHelp >= creep.memory.roomCanHeal;
+    creep.memory.trustRoom = trustworthy;
 };
 
 outlast.creepAtDestination = function(creep)
@@ -26,6 +26,19 @@ outlast.creepAtDestination = function(creep)
 
 outlast._roomCanHeal = function(room)
 {
+    if (room.controller && room.controller.my)
+    {
+        const towers = room.find(
+            FIND_STRUCTURES,
+            {
+                filter: { structureType: STRUCTURE_TOWER }
+            }
+        );
+
+        // rely on towers being charged
+        return Math.floor(TOWER_POWER_HEAL * (1 - TOWER_FALLOFF)) * towers.length;
+    }
+
     return 0;
 };
 
@@ -35,7 +48,12 @@ outlast.creepRoomTravel = function(creep)
 
     const damage      = creep.hitsMax - creep.hits;
     const selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
-    const roomCanHeal = this._roomCanHeal(creep.room);
+    const roomCanHeal = creep.memory.trustRoom ? this._roomCanHeal(creep.room) : 0;
+
+    // to verify on entry
+    creep.memory.hits        = creep.hits;
+    creep.memory.selfCanHeal = selfCanHeal;
+    creep.memory.roomCanHeal = roomCanHeal;
 
     let manualMove = false;
     if (damage <= selfCanHeal + roomCanHeal)
@@ -71,7 +89,8 @@ outlast.creepRoomTravel = function(creep)
         manualMove = rc == OK;
     }
 
-    if (!manualMove)
+    // flag can be false if fatigue prevented manual move
+    if (!manualMove && creep.fatigue == 0)
     {
         this._creepRoomTravel(creep);
     }
