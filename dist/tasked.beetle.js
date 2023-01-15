@@ -7,6 +7,12 @@ var beetle = new Tasked('beetle');
 const BreachCompleteRange = 1;
 const BreachEasyRange = 3;
 
+beetle.breachSerializedLength = function(breach)
+{
+    // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
+    return breach.length - 4;
+};
+
 beetle.wipeBreach = function(creep)
 {
     creep.memory._breachP_ = undefined;
@@ -35,11 +41,10 @@ beetle.creepAtDestination = function(creep)
         }
     }
 
-    // TODO is string length corresponding to path length
     // at the end of path refresh situation immediately
     if (creep.memory._breachP_ && creep.memory._breachI_)
     {
-        if (creep.memory._breachP_.length <= creep.memory._breachI_)
+        if (this.breachSerializedLength(creep.memory._breachP_) <= creep.memory._breachI_)
         {
             this.wipeBreach(creep);
         }
