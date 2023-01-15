@@ -10,6 +10,13 @@ var spawn = new Tasked('spawn');
  **/
 spawn.dismiss = function(model)
 {
+    // sanitize of old models
+    if (model._time < Game.time - CREEP_LIFE_TIME)
+    {
+        return true;
+    }
+
+    // sanitize of manually deleted flags
     if (model.memory && model.memory.flag)
     {
         const flag = Game.flags[model.memory.flag];
