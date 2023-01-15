@@ -9,6 +9,7 @@ Order of load is priority for task execution.
 var taskedStrelok = require('tasked.strelok');
 var taskedBeetle  = require('tasked.beetle');
 var taskedClaim   = require('tasked.claim');
+var taskedPlunder = require('tasked.plunder');
 // consume spawn(s)
 var taskedSpawn   = require('tasked.spawn');
 // other
