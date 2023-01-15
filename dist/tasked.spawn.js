@@ -267,6 +267,11 @@ spawn.spawnNext = function()
                 return this.spawnNextErrorHandler(spawn, nextModel, 1);
             }
 
+            if (body.length == 0)
+            {
+                break; // from spawns cycle, room is not powerfull enough
+            }
+
             const dryRun = spawn.spawnCreep(
                 body,
                 nextModel.name,
