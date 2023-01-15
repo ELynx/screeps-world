@@ -88,6 +88,16 @@ spawnProcess.workers = function(room, live)
     }
 
     const nowRestockers = this._hasAndPlanned(room, live, 'restocker');
+    const freeHarvestSlots = room.memory.hlvl - nowRestockers;
+
+    // STRATEGY how many workers per free slot
+    const wantWorkersHarvest = Math.floor(freeHarvestSlots * 1.4);
+    const wantWorkersCpu = 10;
+    const wantWorkersEnergyLevel = (room.memory.elvl + 1) * 2; // 2 at 0, 4 at 1, 6 8 10 and so on per elvl
+
+    const want = Math.min(wantWorkersHarvest, wantWorkersCpu, wantWorkersEnergyLevel);
+
+    addWorker(want - nowWorkers, 'lowkey');
 };
 
 spawnProcess.restockers = function(room, live)
