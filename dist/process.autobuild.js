@@ -293,9 +293,17 @@ autobuildProcess.sourceLink = function(room)
 
 autobuildProcess.coverRamparts = function(room)
 {
+    let level = 0;
+    if (room.controller && room.controller.my)
+    {
+        level = room.controller.level;
+    }
+
+    const can = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][level] || 0;
+    if (can == 0) return;
+
     // this function has potential to create a lot of sites
     // as such, unfiy look for sites and locations here, not in generic planner
-
     const terrain           = room.getTerrain();
     const constructionSites = room.lookForAtArea(LOOK_CONSTRUCTION_SITES, 0, 0, 49, 49);
     const structures        = room.lookForAtArea(LOOK_STRUCTURES,         0, 0, 49, 49);
