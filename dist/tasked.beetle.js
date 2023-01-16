@@ -24,7 +24,6 @@ beetle.wipeBreach = function(creep)
 beetle.creepAtDestination = function(creep)
 {
     let beHostile = true;
-    let flee = false;
 
     if (Game.rooms.sim === undefined)
     {
@@ -52,13 +51,14 @@ beetle.creepAtDestination = function(creep)
         }
     }
 
-    const controlPos = creep.getControlPos();
+    let controlPos = creep.getControlPos();
 
     // after arriving on the spot, start running like headless chicken
     if (creep.pos.inRangeTo(controlPos, BreachCompleteRange))
     {
-        this.wipeBreach(creep);
-        flee = true;
+        // biased to center, as we need
+        controlPos.x = Math.floor(Math.random() * 49);
+        controlPos.y = Math.floor(Math.random() * 49);
     }
 
     // no path known
@@ -81,8 +81,7 @@ beetle.creepAtDestination = function(creep)
                 ignoreCreeps: false,
                 ignoreDestructibleStructures: false,
                 maxRooms: 1,
-                range: flee ? BreachFleeRange : easyDistance,
-                flee: flee,
+                range: easyDistance,
                 maxOps: 500,
 
                 serialize: false // ! to be used for position check
@@ -93,8 +92,7 @@ beetle.creepAtDestination = function(creep)
         if (easyPath.length > 0)
         {
             const last = easyPath[easyPath.length - 1];
-
-            if (controlPos.inRangeTo(last.x, last.y, easyDistance))
+            if (controlPos.inRangeTo(last, easyDistance))
             {
                 // because expect serialized
                 path = Room.serializePath(easyPath);
@@ -114,8 +112,7 @@ beetle.creepAtDestination = function(creep)
                     ignoreCreeps: true,
                     ignoreDestructibleStructures: beHostile,
                     maxRooms: 1,
-                    range: flee ? BreachFleeRange : hardDistance,
-                    flee: flee,
+                    range: hardDistance,
 
                     serialize: true
                 }
