@@ -19,21 +19,23 @@ outlast._defaultAction = function(creep)
 
 outlast.creepPrepare = function(creep)
 {
-    if (creep.memory.outlast) return;
+    if (creep.memory.counted) return;
 
     let flag = Game.flags[creep.memory.flag];
     if (flag && flag.memory.counter)
     {
         --flag.memory.counter;
-        creep.memory.outlast = true;
+        creep.memory.counted = true;
     }
 };
 
 outlast.creepAtDestination = function(creep)
 {
-    // do not move away from border, warp back
-
+    // heal
     this._defaultAction(creep);
+
+    // remember blink start
+    creep.memory.blink = true;
 };
 
 outlast._roomCanHeal = function(room)
@@ -57,6 +59,12 @@ outlast._roomCanHeal = function(room)
 outlast.creepRoomTravel = function(creep)
 {
     this._defaultAction(creep);
+
+    if (creep.memory.blink === undefined)
+    {
+        this._creepRoomTravel(creep);
+        return;
+    }
 
     const theoreticalRoomHeal = this._roomCanHeal(creep.room);
 
@@ -113,7 +121,7 @@ outlast.creepRoomTravel = function(creep)
 outlast.flagPrepare = function(flag)
 {
     if (flag.memory.counter === undefined)
-        flag.memory.counter = 21;
+        flag.memory.counter = 20;
 
     if (flag.memory.counter >= 10)
         return this.FLAG_SPAWN;
