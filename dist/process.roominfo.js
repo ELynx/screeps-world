@@ -312,6 +312,56 @@ roomInfoProcess.wallLevel = function(room)
     return hits[Math.floor(hits.length / 2)];
 };
 
+// STRATEGY wall build-up
+roomInfoProcess._walls = function(room)
+{
+    // walls can be inherited and force room into over-repair
+    // control the wlvl to not increment in great steps
+
+    const roomPlanned = room.memory.wlvl;
+    if (roomPlanned)
+    {
+        const roomHas = this.wallLevel(room);
+
+        // if walls are under-level, build up from what is available
+        if (roomHas < roomPlanned) return roomHas + 1;
+
+        // walls are equal or greater
+        // may be significantly greater
+
+        if (room.memory.threat === undefined)
+        {
+            if (Math.random() < 1/6)
+            {
+                return roomPlanned + 1;
+            }
+        }
+
+        // no growth
+        return roomPlanned;
+    }
+    else
+    {
+        // no previous value
+        // start with recommended value
+
+        // TODO integrate with repair controller
+        const TargetBarrierHp = [
+            0,
+            5,
+            10,
+            15,
+            20,
+            25
+        ];
+
+        let elvl = room.memory.elvl;
+        if (elvl > TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1;
+
+        return TargetBarrierHp[elvl];
+    }
+};
+
 roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
@@ -328,17 +378,7 @@ roomInfoProcess.work = function(room)
         room.memory.hlvl = this.harvestLevel(room);
         room.memory.slvl = this.sourceLevel(room);
         room.memory.mlvl = this.miningLevel(room);
-        room.memory.wlvl = this.wallLevel(room);
-
-        // STRATEGY from level 6 room builds up walls
-        if (room.memory.elvl > 5 &&
-            room.memory.threat === undefined)
-        {
-            if (Math.random() < 0.5)
-            {
-                ++room.memory.wlvl;
-            }
-        }
+        room.memory.wlvl = this._walls(room);
 
         // offset regeneration time randomly so multiple rooms don't do it at same tick
         room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
