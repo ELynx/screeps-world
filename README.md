@@ -29,3 +29,6 @@ PathFinder option `flee`.
 Lodash `Chain`.
 
 Towers fight back based on event log.
+
+https://wiki.screepspl.us/index.php/Automatic_base_building
+https://github.com/The-International-Screeps-Bot/The-International-Open-Source/blob/7fb3ccb5ecae4ab7f5eb5dcf9bbd13c022ba30c2/src/international/constants.ts#L399
