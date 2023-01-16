@@ -140,9 +140,9 @@ outlast.makeBody = function(spawn)
     }
 
     // takes 300 damage
-    // full heal in 5 turns
-    // 1330 10     10     10     50    250   250   250   250   250
-    return [TOUGH, TOUGH, TOUGH, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL];
+    // heal damage in 5 turns
+    // 1500 50    50    50    50    50    250   250   250   250   250
+    return [MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL];
 };
 
 outlast.register();
