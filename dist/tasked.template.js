@@ -50,7 +50,10 @@ Creep.prototype.getControlPos = function()
         }
     }
 
-    return Game.rooms[crum].getControlPos();
+    const room = Game.rooms[crum];
+    if (room) return room.getControlPos();
+
+    return new RoomPosition(25, 25, crum);
 };
 
 RoomPosition.prototype.controlDistance = function()
