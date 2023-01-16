@@ -17,6 +17,18 @@ outlast._defaultAction = function(creep)
     creep.memory.trustRoom = trustworthy;
 };
 
+outlast.creepPrepare = function(creep)
+{
+    if (creep.memory.outlast) return;
+
+    let flag = Game.flags[creep.memory.flag];
+    if (flag && flag.memory.counter)
+    {
+        --flag.memory.counter;
+        creep.memory.outlast = true;
+    }
+};
+
 outlast.creepAtDestination = function(creep)
 {
     // do not move away from border, warp back
@@ -102,8 +114,6 @@ outlast.flagPrepare = function(flag)
 {
     if (flag.memory.counter === undefined)
         flag.memory.counter = 21;
-
-    --flag.memory.counter;
 
     if (flag.memory.counter >= 10)
         return this.FLAG_SPAWN;
