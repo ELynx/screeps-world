@@ -18,6 +18,14 @@ function cleanupMemory()
         }
     }
 
+    for (const name in Memory.flags)
+    {
+        if (!Game.flags[name])
+        {
+            delete Memory.flags[name];
+        }
+    }
+
     if (Memory.structures)
     {
         for (const id in Memory.structures)
