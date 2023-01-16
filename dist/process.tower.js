@@ -39,7 +39,6 @@ towerProcess.work = function(room)
             const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps);
             if(closestHostile)
             {
-                // TODO no overkill, complex
                 towers[i].attack(closestHostile);
             }
         }
@@ -51,7 +50,8 @@ towerProcess.work = function(room)
         creeps,
         function(creep)
         {
-            return creep.my && creep.hits < creep.hitsMax;
+            const selfCanHeal = creep.memory.selfCanHeal || 0;
+            return creep.my && creep.hits < creep.hitsMax - selfCanHeal;
         }
     );
 
@@ -62,7 +62,6 @@ towerProcess.work = function(room)
             const closestDamaged = towers[i].pos.findClosestByRange(damagedCreeps);
             if(closestDamaged)
             {
-                // TODO not overheal, simple
                 towers[i].heal(closestDamaged);
             }
         }   
