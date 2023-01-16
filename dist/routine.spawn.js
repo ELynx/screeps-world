@@ -4,28 +4,16 @@ var spawn =
 {
     FROM_ANY_ROOM: 'ANY',
 
-    withBodyFunctions: { },
+    bodyFunctions: { },
 
-    registerBodyFunction: function(withBodyFunction)
+    registerBodyFunction: function(id, bodyFunction)
     {
-        if (withBodyFunction.makeBody === undefined)
-        {
-            console.log('Cannot register ' + withBodyFunction.id + ' as maker');
-            return;
-        }
-
-        this.withBodyFunctions[withBodyFunction.id] = withBodyFunction;
+        this.bodyFunctions[id] = bodyFunction;
     },
 
     getBodyFunction: function(id)
     {
-        const withBodyFunction = this.withBodyFunctions[id];
-        if (withBodyFunction && withBodyFunction.makeBody)
-        {
-            return withBodyFunction.makeBody;
-        }
-
-        return undefined;
+        return this.bodyFunctions[id];
     },
 
     makeEmptyStructure: function()
