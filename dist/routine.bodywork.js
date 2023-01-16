@@ -121,17 +121,13 @@ var bodywork =
 
     _injectIntoSpawnPool: function(id, routine)
     {
-        const bound = _.bind(routine, this);
+        const bound   = _.bind(routine, this);
+        const wrapped = function(spawn)
+        {
+            return bound(spawn.room.memory.elvl);
+        };
 
-        spawn.registerBodyFunction(
-            {
-                id: id,
-                makeBody: function(spawn)
-                {
-                    return bound(spawn.room.memory.elvl);
-                }
-            }
-        );
+        spawn.registerBodyFunction(id, wrapped);
     },
 
     injectIntoSpawnPool: function()

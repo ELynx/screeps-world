@@ -238,7 +238,11 @@ function Tasked(id)
     this.register = function()
     {
         globals.registerTaskController(this);
-        spawn.registerBodyFunction(this);
+
+        if (this.makeBody)
+        {
+            spawn.registerBodyFunction(this.id, _.bind(this.makeBody, this));
+        }
 
         profiler.registerObject(this, this.id);
     };

@@ -12,12 +12,6 @@ pixelGenerator.act = function()
     }
 };
 
-// to make routine.spawn stop complaining
-pixelGenerator.makeBody = function(spawn)
-{
-    return undefined;
-}
-
 pixelGenerator.register();
 
 module.exports = pixelGenerator;
