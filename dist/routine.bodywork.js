@@ -20,55 +20,31 @@ var bodywork =
     /**
     BODY Universal worker.
     @param {integer} energyLevel.
-    @return {Array} level, body.
+    @return {Array} body.
     **/
     worker: function(energyLevel)
     {
-        if (!this.workUniversalCache)
+        if (energyLevel <= 1)
         {
-            this.workUniversalCache = { };
+            // 250  100   50     50    50
+            return [WORK, CARRY, MOVE, MOVE];
         }
 
-        const cacheHit = this.workUniversalCache[energyLevel];
-        if (cacheHit)
+        if (energyLevel == 2)
         {
-            return cacheHit;
+            // 500  100   100   50     50     50    50    50    50
+            return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
         }
 
-        // total 250 per iteration
-        const front = [WORK,  MOVE]; // 150 = 100 50
-        const back  = [CARRY, MOVE]; // 100 = 50  50
-
-        let total = 0;
-
-        if (energyLevel == 0)
-        {
-            total = 1;
-        }
-        else if (energyLevel < 6)
-        {
-            total = Math.min(energyLevel, 3);
-        }
-        else
-        {
-            total = 6;
-        }
-
-        let body = [];
-        for (let i = 0; i < total; ++i)
-        {
-            body = front.concat(body).concat(back);
-        }
-
-        this.workUniversalCache[energyLevel] = body;
-
-        return body;
+        // 3 and above
+        // 750  100   100   100   50     50     50     50    50    50    50    50    50
+        return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     },
 
     /**
     BODY Restocker.
     @param {integer} level.
-    @return {Array} level, body.
+    @return {Array} body.
     **/
     restocker: function(energyLevel)
     {
@@ -78,45 +54,25 @@ var bodywork =
         }
 
         // special case, limp a bit
-        // don't care about the level
         if (energyLevel == 3)
         {
             // 800  100   100   100   100   100   50     50    50    50    50    50
             return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
         }
 
-        if (energyLevel < 6)
-        {
-            // 850  100   100   100   100   100   50     50    50    50    50    50    50
-            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-        }
-
-        // 1700 100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+        // 4 and above
+        // 850  100   100   100   100   100   50     50    50    50    50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
     },
 
     /**
     BODY Miner.
     @param {integer} level.
-    @return {Array} level, body.
+    @return {Array} body.
     **/
     miner: function(energyLevel)
     {
-        if (energyLevel < 3)
-        {
-            return [];
-        }
-
-        // special case, limp a bit
-        // don't care about the level
-        if (energyLevel == 3)
-        {
-            // 800  100   100   100   100   100   50     50    50    50    50    50
-            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
-        }
-
-        // 850  100   100   100   100   100   50     50    50    50    50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+        return this.restocker(energyLevel);
     },
 
     _injectIntoSpawnPool: function(id, routine)
