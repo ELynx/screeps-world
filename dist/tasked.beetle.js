@@ -259,8 +259,8 @@ beetle.makeBody = function(spawn)
     }
     else if (elvl <= 2)
     {
-        // 450   50    50    50    100   100   100
-        return [ MOVE, MOVE, MOVE, WORK, WORK, WORK ];
+        // 300   50    50    100   100
+        return [ MOVE, MOVE, WORK, WORK ];
     }
 
     if (!this._bodyCache_)
@@ -274,7 +274,8 @@ beetle.makeBody = function(spawn)
         return cached;
     }
 
-    const budget = 800 + 500 * (elvl - 3);
+    // 300 for base combo and 150 per big room climb after 3
+    const budget = 300 + 150 * Math.floor((elvl - 3) / 4);
     const pairs = Math.min(Math.floor(budget / 150), 25);
 
     let a = new Array(pairs);
