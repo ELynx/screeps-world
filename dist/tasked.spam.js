@@ -4,7 +4,7 @@ var Tasked = require('tasked.template');
 
 var spam = new Tasked('spam');
 
-plunder.creepAtDestination = function(creep)
+spam.creepAtDestination = function(creep)
 {
     // die at the border, draw enemy scavengers
 };
