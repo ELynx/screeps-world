@@ -12,9 +12,8 @@ outlast._defaultAction = function(creep)
         creep.heal(creep);
     }
 
-    const healHelp    = creep.hits - creep.memory.hits - creep.memory.selfCanHeal;
-    const trustworthy = healHelp >= creep.memory.roomCanHeal;
-    creep.memory.trustRoom = trustworthy;
+    const healed = creep.hits - creep.memory.hits;
+    creep.memory.trustRoom = healed > creep.memory.selfCanHeal;
 };
 
 outlast.creepPrepare = function(creep)
@@ -75,7 +74,6 @@ outlast.creepRoomTravel = function(creep)
     // to verify on entry
     creep.memory.hits        = creep.hits;
     creep.memory.selfCanHeal = selfCanHeal;
-    creep.memory.roomCanHeal = theoreticalRoomHeal;
 
     let manualMove = false;
     if (damage <= selfCanHeal + roomCanHeal)
