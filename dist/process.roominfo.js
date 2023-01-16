@@ -356,6 +356,7 @@ roomInfoProcess._walls = function(room)
         ];
 
         let elvl = room.memory.elvl;
+        if (elvl >= TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1;
 
         return TargetBarrierHp[elvl];
     }
