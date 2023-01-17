@@ -98,7 +98,6 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
     for (let targetKey in targets)
     {
         const target = targets[targetKey];
-
         if (target.structureType &&
             target.store &&
             target.store[RESOURCE_ENERGY] > 0 &&
