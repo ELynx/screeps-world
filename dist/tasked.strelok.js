@@ -135,9 +135,25 @@ strelok.creepAtDestination = function(creep)
         }
     );
 
-    creep.withdrawFromAdjacentStructures(targets);
+    let target = undefined;
 
-    const target = creep.pos.findClosestByRange(targets);
+    const prio = _.filter(
+        targets,
+        function(target)
+        {
+            return target.pos.x == rushPos.x && target.pos.y == rushPos.y;
+        }
+    );
+
+    if (prio.length > 0)
+    {
+        target = prio[0];
+    }
+    else
+    {
+        target = creep.pos.findClosestByRange(targets);        
+    }
+
     if (target)
     {
         if (creep._canAttack_)
