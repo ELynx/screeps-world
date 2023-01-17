@@ -135,8 +135,9 @@ strelok.creepAtDestination = function(creep)
         }
     );
 
-    let target = undefined;
+    const fireTarget = creep.pos.findClosestByRange(targets);
 
+    let moveTarget = undefined;
     const prio = _.filter(
         targets,
         function(target)
@@ -147,52 +148,21 @@ strelok.creepAtDestination = function(creep)
 
     if (prio.length > 0)
     {
-        target = prio[0];
+        moveTarget = prio[0];
     }
     else
     {
-        target = creep.pos.findClosestByRange(targets);        
+        moveTarget = target;
     }
 
-    if (target)
+    if (fireTarget)
     {
+        const rangeToFireTarget = creep.pos.getRangeTo(fireTarget);
+
         if (creep._canAttack_)
         {
-            const rangeToTarget = creep.pos.getRangeTo(target);
-
-            if (rangeToTarget <= 3)
+            if (rangeToFireTarget <= 3)
             {
-                // maintain distance
-                if (creep._canMove_)
-                {
-                    let toFrom = 0;
-
-                    if (target.structureType)
-                    {
-                        if (rangeToTarget > 1)
-                        {
-                            toFrom = 1;
-                        }
-                    }
-                    else
-                    {
-                        if (rangeToTarget > 2)
-                        {
-                            toFrom = 1;
-                        }
-                        else if (rangeToTarget < 2)
-                        {
-                            toFrom = -1;
-                        }
-                    }
-
-                    if (toFrom != 0)
-                    {
-                        const direction = toFrom > 0 ? creep.pos.getDirectionTo(target) : target.pos.getDirectionTo(creep);
-                        creep.move(direction);
-                    }
-                }
-
                 // carpet bombing
                 let mass = false;
 
@@ -201,7 +171,7 @@ strelok.creepAtDestination = function(creep)
                 {
                     const secondary = targets[i];
 
-                    if (secondary.id == target.id)
+                    if (secondary.id == fireTarget.id)
                     {
                         continue;
                     }
@@ -220,22 +190,54 @@ strelok.creepAtDestination = function(creep)
                 }
                 else
                 {
-                    rc = creep.rangedAttack(target);
+                    rc = creep.rangedAttack(fireTarget);
                 }
 
                 creep._canHealRanged_ = creep._canHealRanged_ && rc != OK;
             } // end of traget in firing range
-            else
-            {
-                if (creep._canMove_)
-                {
-                    // STRATEGY follow creep tightly
-                    const reuse = target.structureType ? 10 : 0;
+        } // end of if has ranged bpart
 
-                    creep.moveToWrapper(target, { maxRooms: 1, reusePath: reuse, range: 3 });
+        if (creep._canMove_)
+        {
+            // maintain distance
+            if (fireTarget.id == moveTarget.id)
+            {
+                let toFrom = 0;
+
+                if (fireTarget.structureType)
+                {
+                    if (rangeToFireTarget > 1)
+                    {
+                        toFrom = 1;
+                    }
+                }
+                else
+                {
+                    if (rangeToFireTarget > 2)
+                    {
+                        toFrom = 1;
+                    }
+                    else if (rangeToFireTarget < 2)
+                    {
+                        toFrom = -1;
+                    }
+                }
+
+                if (toFrom != 0)
+                {
+                    const direction = toFrom > 0 ? creep.pos.getDirectionTo(fireTarget) : fireTarget.pos.getDirectionTo(creep);
+                    creep.move(direction);
                 }
             }
-        } // end of if has ranged bpart
+            else
+            {
+                // STRATEGY follow creep tightly
+                const reuse = moveTarget.structureType ? 10 : 0;
+                // STRATEGY bump into structure
+                const range = moveTarget.structureType ?  1 : 3;
+                creep.moveToWrapper(moveTarget, { maxRooms: 1, reusePath: reuse, range: range });
+            }
+        }
     } // end of if target
     else
     {
