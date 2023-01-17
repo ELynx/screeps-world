@@ -28,7 +28,7 @@ plunder.moveAndUnload = function(creep, target)
     else
     {
         range = 5; // good enough
-        pos   ? target;
+        pos   = target;
     }
 
     if (creep.pos.inRangeTo(pos, range))
@@ -64,7 +64,7 @@ plunder.moveAndUnload = function(creep, target)
     }
 };
 
-pluner.creepAtOwnRoom = function(creep)
+plunder.creepAtOwnRoom = function(creep)
 {
     if (creep.room.storage)
     {
