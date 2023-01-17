@@ -99,8 +99,27 @@ plunder.creepAtOtherRooms = function(creep)
     let targets = this.roomTargets[creep.pos.roomName];
     if (targets === undefined)
     {
-        // TODO
-        targets = [];
+        const allStructures = creep.room.find(FIND_STRUCTURES);
+        const ramparts = _.filter(allStructures, { structureType: STRUCTURE_RAMPART });
+
+        targets = _.filter(
+            allStructures,
+            function(structure)
+            {
+                if (structure.store === undefined) return false;
+                if (structure.store.getUsedCapacity() == 0) return false;
+
+                const hasRamp = _.some(
+                    ramparts,
+                    function(ramp)
+                    {
+                        return ramp.pos.x == structure.pos.x && ramp.pos.y == structure.pos.y;
+                    }
+                );
+
+                return !hasRamp;
+            }
+        );
 
         this.roomTargets[creep.pos.roomName] = targets;
     }
