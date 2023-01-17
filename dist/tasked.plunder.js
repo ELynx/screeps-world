@@ -94,6 +94,22 @@ plunder.getSomeOwnRoomName = function(creep)
     return undefined;
 };
 
+plunder.moveAndLoad = function(creep, target)
+{
+    if (creep.pos.isNearTo(target))
+    {
+        for (let resourceType in target.store)
+        {
+            const rc = creep.withdraw(target, resourceType);
+            if (rc != OK) break;
+        }
+    }
+    else
+    {
+        creep.moveToWrapper(target, { reusePath: 50, range: 1 });
+    }
+};
+
 plunder.creepAtOtherRooms = function(creep)
 {
     let targets = this.roomTargets[creep.pos.roomName];
@@ -133,6 +149,9 @@ plunder.creepAtOtherRooms = function(creep)
     {
         creep.memory.crum = this.getSomeOwnRoomName(creep);
     }
+
+    const target = creep.pos.findClosestByRange(targets);
+    this.moveAndLoad(creep, target);
 };
 
 plunder.creepAtDestination = function(creep)
