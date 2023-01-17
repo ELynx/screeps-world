@@ -259,8 +259,8 @@ beetle.makeBody = function(spawn)
     }
     else if (elvl <= 2)
     {
-        // 300   50    50    100   100
-        return [ MOVE, MOVE, WORK, WORK ];
+        // 250   50    50    50     100
+        return [ MOVE, MOVE, CARRY, WORK ];
     }
 
     if (!this._bodyCache_)
@@ -281,10 +281,11 @@ beetle.makeBody = function(spawn)
     let a = new Array(pairs);
     a.fill(MOVE);
 
-    let b = new Array(pairs);
+    let b = new Array(pairs - 1);
     b.fill(WORK);
 
-    const body = a.concat(b);
+    // one spot for withdraw
+    const body = a.concat([CARRY]).concat(b);
 
     this._bodyCache_[elvl] = body;
 
