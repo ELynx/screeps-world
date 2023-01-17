@@ -23,6 +23,8 @@ beetle.wipeBreach = function(creep)
 
 beetle.creepAtDestination = function(creep)
 {
+    creep.purgeEnergy();
+
     let beHostile = true;
 
     if (Game.rooms.sim === undefined)

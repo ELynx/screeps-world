@@ -91,11 +91,14 @@ Creep.prototype.healAdjacent = function(creeps)
     return ERR_NOT_FOUND;
 };
 
+Creep.prototype.purgeEnergy = function()
+{
+    if (this.store[RESOURCE_ENERGY] > 0) this.drop(RESOURCE_ENERGY);
+};
+
 Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 {
     if (this.getActiveBodyparts(CARRY) == 0) return ERR_FULL;
-
-    if (this.store[RESOURCE_ENERGY] > 0) this.drop(RESOURCE_ENERGY);
 
     for (let targetKey in targets)
     {
