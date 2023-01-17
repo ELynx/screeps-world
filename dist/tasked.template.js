@@ -126,6 +126,32 @@ function Tasked(id)
 
     this.makeBody = undefined;
 
+    this._flagCountCreep = function(creep)
+    {
+        if (creep.memory.fcnt) return;
+
+        let flag = Game.flags[creep.memory.flag];
+        if (flag)
+        {
+            const now = flag.memory.fcnt || 0;
+            flag.memory.fcnt = now + 1;
+            creep.memory.fcnt = true;
+        }
+    };
+
+    this._flagCount = function(flag)
+    {
+        return flag.memory.fcnt || 0;
+    };
+
+    this._flagCountBasic = function(flag, spawnLimit, totalLimit)
+    {
+        const had = this._flagCount(flag);
+        if (had < spawnLimit) return this.FLAG_SPAWN;
+        if (had < totalLimit) return this.FLAG_IGNORE;
+        return this.FLAG_REMOVE;
+    };
+
     this.act = function()
     {
         let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(this.id); }, this);
