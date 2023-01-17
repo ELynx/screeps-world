@@ -71,7 +71,7 @@ outlast.creepRoomTravel = function(creep)
 
     const damage      = creep.hitsMax - creep.hits;
     const selfCanHeal = creep.memory.selfCanHeal;
-    if (damage <= selfCanHeal)
+    if (damage <= selfCanHeal || creep.ticksToLive == 2)
     {
         let erasePath = false;
 
