@@ -6,14 +6,29 @@ var outlast = new Tasked('outlast');
 
 outlast._defaultAction = function(creep)
 {
-    // TODO heal around
     if (creep.hits < creep.hitsMax)
     {
         creep.heal(creep);
     }
-
-    const healed = creep.hits - creep.memory.hits;
-    creep.memory.trustRoom = healed > creep.memory.selfCanHeal;
+    else
+    {
+        const creeps = creep.room.find(
+            FIND_CREEPS,
+            {
+                filter: _.bind(
+                    function(someCreep)
+                    {
+                        return someCreep.my &&
+                               someCreep.id != this.id &&
+                               someCreep.hits < someCreep.hitsMax &&
+                               someCreep.pos.inRangeTo(this, 3);
+                    },
+                    creep
+                )
+            }
+        );
+        creep.healClosest(creeps);
+    }
 };
 
 outlast.creepPrepare = function(creep)
@@ -30,87 +45,72 @@ outlast.creepPrepare = function(creep)
 
 outlast.creepAtDestination = function(creep)
 {
-    // heal
     this._defaultAction(creep);
-
-    // remember blink start
-    creep.memory.blink = true;
-};
-
-outlast._roomCanHeal = function(room)
-{
-    if (room.controller && room.controller.my)
-    {
-        const towers = room.find(
-            FIND_STRUCTURES,
-            {
-                filter: { structureType: STRUCTURE_TOWER }
-            }
-        );
-
-        // rely on towers being charged
-        return Math.floor(TOWER_POWER_HEAL * (1 - TOWER_FALLOFF)) * towers.length;
-    }
-
-    return 0;
+    creep.memory.selfCanHeal = undefined; // point towers at this
+    creep.memory.blink = true; // mark blinking
 };
 
 outlast.creepRoomTravel = function(creep)
 {
     this._defaultAction(creep);
 
-    if (creep.memory.blink === undefined)
+    const selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
+    creep.memory.selfCanHeal = selfCanHeal; // safe, tell towers
+
+    if (!creep.memory.blink)
     {
         this._creepRoomTravel(creep);
         return;
     }
 
-    const theoreticalRoomHeal = this._roomCanHeal(creep.room);
+    // don't waste CPU
+    if (!creep._canMove_) return;
 
-    const damage      = creep.hitsMax - creep.hits;
-    const selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
-    const roomCanHeal = creep.memory.trustRoom ? theoreticalRoomHeal : 0;
+    // let room travel do the step
+    let autoMove = true;
 
-    // to verify on entry
-    creep.memory.hits        = creep.hits;
-    creep.memory.selfCanHeal = selfCanHeal;
-
-    let manualMove = false;
-    if (damage <= selfCanHeal + roomCanHeal)
+    const damage = creep.hitsMax - creep.hits;
+    if (damage <= selfCanHeal)
     {
-        let rc = undefined;
         // stay on transit
-        if      (creep.pos.x ==  0) rc = OK;
-        else if (creep.pos.x == 49) rc = OK;
-        else if (creep.pos.y ==  0) rc = OK;
-        else if (creep.pos.y == 49) rc = OK;
-        // step towards transit
-        else if (creep.pos.x ==  1) rc = creep.move(LEFT);
-        else if (creep.pos.x == 48) rc = creep.move(RIGHT);
-        else if (creep.pos.y ==  1) rc = creep.move(TOP);
-        else if (creep.pos.y == 48) rc = creep.move(BOTTOM);
+        if      (creep.pos.x ==  0) autoMove = false;
+        else if (creep.pos.x == 49) autoMove = false;
+        else if (creep.pos.y ==  0) autoMove = false;
+        else if (creep.pos.y == 49) autoMove = false;
+        // step towards room, check for collisions
+        else if (creep.pos.x ==  1) erasePath = true;
+        else if (creep.pos.x == 48) erasePath = true;
+        else if (creep.pos.y ==  1) erasePath = true;
+        else if (creep.pos.y == 48) erasePath = true;
 
-        manualMove = rc == OK;
+        if (erasePath) creep.memory._move = undefined;
     }
     else
     {
-        let rc = undefined;
-        // step away from transit
-        if      (creep.pos.x ==  0) rc = creep.move(RIGHT);
-        else if (creep.pos.x == 49) rc = creep.move(LEFT);
-        else if (creep.pos.y ==  0) rc = creep.move(BOTTOM);
-        else if (creep.pos.y == 49) rc = creep.move(TOP);
-        // stay one step away from transit
-        else if (creep.pos.x ==  1) rc = OK;
-        else if (creep.pos.x == 48) rc = OK;
-        else if (creep.pos.y ==  1) rc = OK;
-        else if (creep.pos.y == 48) rc = OK;
+        let flee = false;
 
-        manualMove = rc == OK;
+        // step away from transit
+        if      (creep.pos.x ==  0) flee = true;
+        else if (creep.pos.x == 49) flee = true;
+        else if (creep.pos.y ==  0) flee = true;
+        else if (creep.pos.y == 49) flee = true;
+        // stay one step away from transit
+        else if (creep.pos.x ==  1) autoMove = false;
+        else if (creep.pos.x == 48) autoMove = false;
+        else if (creep.pos.y ==  1) autoMove = false;
+        else if (creep.pos.y == 48) autoMove = false;
+
+        if (flee)
+        {
+            autoMove = false;
+            const pos = creep.room.getControlPos();
+            const range = pos.controlDistance();
+
+            creep.moveToWrapper(pos, { range: range });
+        }
     }
 
-    // flag can be false if fatigue prevented manual move
-    if (!manualMove && creep.fatigue == 0)
+    if (autoMove)
     {
         this._creepRoomTravel(creep);
     }
