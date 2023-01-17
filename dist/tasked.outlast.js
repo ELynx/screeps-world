@@ -72,6 +72,8 @@ outlast.creepRoomTravel = function(creep)
     const damage = creep.hitsMax - creep.hits;
     if (damage <= selfCanHeal)
     {
+        let erasePath = false;
+
         // stay on transit
         if      (creep.pos.x ==  0) autoMove = false;
         else if (creep.pos.x == 49) autoMove = false;
