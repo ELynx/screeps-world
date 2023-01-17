@@ -181,7 +181,7 @@ function Tasked(id)
             const want = flag.getValue();
 
             // sanitize flags
-            if (want < 1)
+            if (want < 0)
             {
                 spawn.erase(flagName);
                 flag.remove();
