@@ -47,6 +47,19 @@ plunder.moveAndUnload = function(creep, target)
     {
         creep.moveToWrapper(pos, { reusePath: 50, range: range });
     }
+
+    if (creep.store.getUsedCapacity() == 0)
+    {
+        const whereFlag = creep.getFlagPos();
+        if (whereFlag)
+        {
+            creep.memory.crum = whereFlag.roomName;
+        }
+        else
+        {
+            creep.unlive();
+        }
+    }
 };
 
 pluner.creepAtOwnRoom = function(creep)

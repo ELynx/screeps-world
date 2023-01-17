@@ -2,6 +2,11 @@
 
 var globals = require('globals');
 
+Creep.prototype.unlive = function()
+{
+    return this.suicide();
+};
+
 Creep.prototype.caveIndex = function()
 {
     if (this._cidxT_ === undefined ||
