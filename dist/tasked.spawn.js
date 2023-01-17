@@ -201,7 +201,7 @@ spawn.makeBody = function(spawn, model)
 
 spawn.spawnNextErrorHandler = function(spawn, model, index, rc = undefined)
 {
-    let message = 
+    let message =
         'spawn.spawnNext error condition ' + index +
         ' detected for ' + JSON.stringify(model) +
         ' at ' + spawn.room.name + ' [' + spawn.id + ']';

@@ -66,7 +66,7 @@ towerProcess.work = function(room)
             {
                 towers[i].heal(closestDamaged);
             }
-        }   
+        }
     }
 };
 

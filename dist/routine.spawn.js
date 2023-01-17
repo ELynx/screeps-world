@@ -46,7 +46,7 @@ var spawn =
 
         for (let i = 0; i < n; ++i)
         {
-            const model = 
+            const model =
             {
                 id:     id,
                 body:   body,
@@ -134,7 +134,7 @@ var spawn =
             return _.extend(Memory.spawn_v1.lowkey.shift(), { priority: 'lowkey' });
         }
 
-        return undefined;        
+        return undefined;
     },
 
     get: function()

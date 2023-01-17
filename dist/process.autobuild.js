@@ -162,7 +162,7 @@ autobuildProcess.weightAroundTheSource = function(x, y, dx, dy, terrainMask)
         // walls can be develop, but are expensive
         return 1;
     }
- 
+
     // plain and swamp are relatively equal to develop
     let result = 5;
 

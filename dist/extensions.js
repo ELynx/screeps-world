@@ -272,7 +272,7 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
             if (filterFunction(item))
             {
                 return item.id;
-            }            
+            }
         }
         else
         {
