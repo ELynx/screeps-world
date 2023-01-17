@@ -93,8 +93,12 @@ Creep.prototype.healAdjacent = function(creeps)
 
 Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 {
-    for (let target in targets)
+    if (this.getActiveBodyparts(CARRY) == 0) return ERR_FULL;
+
+    for (let targetKey in targets)
     {
+        const target = targets[targetKey];
+
         if (target.structureType &&
             target.store &&
             target.store[RESOURCE_ENERGY] > 0 &&
