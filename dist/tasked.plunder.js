@@ -13,20 +13,86 @@ plunder.creepPrepare = function(creep)
     this._flagCountCreep(creep);
 };
 
+plunder.moveAndUnload = function(creep, target)
+{
+    let range = undefined;
+    let pos   = undefined;
+
+    if (target.pos)
+    {
+        range = 1;
+        pos   = target.pos;
+    }
+    else
+    {
+        range = 5; // good enough
+        pos   ? target;
+    }
+
+    if (creep.pos.inRangeTo(pos, range))
+    {
+        for (const resourceType in creep.store)
+        {
+            if (target.store && target.store.getFreeCapacity(resourceType) > 0)
+            {
+                creep.transfer(target, resourceType);
+            }
+            else
+            {
+                creep.drop(resourceType);
+            }
+        }
+    }
+    else
+    {
+        creep.moveToWrapper(pos, { reusePath: 50, range: range });
+    }
+};
+
+pluner.creepAtOwnRoom = function(creep)
+{
+    if (creep.room.storage)
+    {
+        this.moveAndUnload(creep, creep.room.storage);
+    }
+    else if (creep.room.terminal)
+    {
+        this.moveAndUnload(creep, creep.room.terminal);
+    }
+    else
+    {
+        this.moveAndUnload(creep, creep.getControlPos());
+    }
+};
+
+plunder.creepAtOtherRooms = function(creep)
+{
+};
+
 plunder.creepAtDestination = function(creep)
 {
-    this._coastToHalt(creep);
+    if (creep.room.controller && creep.room.controller.my)
+    {
+        this.creepAtOwnRoom(creep);
+    }
+    else
+    {
+        this.creepAtOtherRooms(creep);
+    }
 };
 
 plunder.creepRoomTravel = function(creep)
 {
     // keep track of closest owned stuff
 
+    if (creep.room.storage && creep.room.storage.my)
+        creep.memory.storage = creep.room.storage.id;
+
     if (creep.room.terminal && creep.room.terminal.my)
         creep.memory.terminal = creep.room.terminal.id;
 
-    if (creep.room.storage  && creep.room.storage.my)
-        creep.memory.storage  = creep.room.storage.id;
+    if (creep.room.controller && creep.room.controller.my)
+        creep.memory.controller = creep.room.controller.id;
 
     this._creepRoomTravel(creep);
 };
