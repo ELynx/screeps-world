@@ -8,6 +8,11 @@ const profiler = require('screeps-profiler');
 
 Room.prototype.getControlPos = function()
 {
+    // some interesting positions first
+    if (this.storage)    return this.storage.pos;
+    if (this.terminal)   return this.terminal.pos;
+    if (this.controller) return this.controller.pos;
+
     return new RoomPosition(25, 25, this.name);
 };
 
