@@ -77,7 +77,8 @@ strelok.creepAtDestination = function(creep)
                     // for future marauding
                     if (structure.structureType == STRUCTURE_STORAGE ||
                         structure.structureType == STRUCTURE_CONTAINER ||
-                        structure.structureType == STRUCTURE_TERMINAL)
+                        structure.structureType == STRUCTURE_TERMINAL ||
+                        structure.structureType == STRUCTURE_EXTRACTOR)
                     {
                         return false;
                     }
