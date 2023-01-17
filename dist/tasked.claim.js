@@ -41,8 +41,8 @@ claim.creepAtDestination = function(creep)
                 if (Game.gcl.level > myRooms)
                 {
                     sign = '';
-                    const rc = creep.claimController(controller);    
-                    //console.log(rc + ' claiming ' + controller.id);                
+                    const rc = creep.claimController(controller);
+                    //console.log(rc + ' claiming ' + controller.id);
                 }
                 else
                 {

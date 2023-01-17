@@ -118,7 +118,7 @@ beetle.creepAtDestination = function(creep)
 
                     serialize: true
                 }
-            );            
+            );
         }
 
         creep.memory._breachP_ = path;

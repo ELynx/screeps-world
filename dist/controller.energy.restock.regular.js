@@ -43,7 +43,7 @@ energyRestockControllerRegular.staticTargets = function(room)
                     }
                 }
 
-                return false;              
+                return false;
             }
         }
     );
@@ -72,7 +72,7 @@ energyRestockControllerRegular.staticTargets = function(room)
                     }
                 }
 
-                return false;              
+                return false;
             }
         }
     );
