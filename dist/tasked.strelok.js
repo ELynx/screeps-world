@@ -152,7 +152,7 @@ strelok.creepAtDestination = function(creep)
     }
     else
     {
-        moveTarget = target;
+        moveTarget = fireTarget;
     }
 
     if (fireTarget)
