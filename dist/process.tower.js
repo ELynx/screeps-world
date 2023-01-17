@@ -53,7 +53,7 @@ towerProcess.work = function(room)
             // callous
             if (creep.memory.selfCanHeal) return false;
 
-            return creep.my && creep.hits < creep.hitsMax - selfCanHeal;
+            return creep.my && creep.hits < creep.hitsMax;
         }
     );
 
