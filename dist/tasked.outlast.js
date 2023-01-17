@@ -6,6 +6,8 @@ var outlast = new Tasked('outlast');
 
 outlast._defaultAction = function(creep)
 {
+    if (creep.memory.selfCanHeal <= 0) return;
+
     if (creep.hits < creep.hitsMax)
     {
         creep.heal(creep);
@@ -33,6 +35,8 @@ outlast._defaultAction = function(creep)
 
 outlast.creepPrepare = function(creep)
 {
+    creep.memory.selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
+
     if (creep.memory.counted) return;
 
     let flag = Game.flags[creep.memory.flag];
@@ -46,16 +50,12 @@ outlast.creepPrepare = function(creep)
 outlast.creepAtDestination = function(creep)
 {
     this._defaultAction(creep);
-    creep.memory.selfCanHeal = undefined; // point towers at this
-    creep.memory.blink = true; // mark blinking
+    creep.memory.blink = true;
 };
 
 outlast.creepRoomTravel = function(creep)
 {
     this._defaultAction(creep);
-
-    const selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
-    creep.memory.selfCanHeal = selfCanHeal; // safe, tell towers
 
     if (!creep.memory.blink)
     {
@@ -69,7 +69,8 @@ outlast.creepRoomTravel = function(creep)
     // let room travel do the step
     let autoMove = true;
 
-    const damage = creep.hitsMax - creep.hits;
+    const damage      = creep.hitsMax - creep.hits;
+    const selfCanHeal = creep.memory.selfCanHeal;
     if (damage <= selfCanHeal)
     {
         let erasePath = false;
