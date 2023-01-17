@@ -17,12 +17,14 @@ claim.creepAtDestination = function(creep)
             if (controller.owner && controller.owner.username != creep.owner.username)
             {
                 sign = 'BAHAHAHA';
-                creep.attackController(controller);
+                const rc = creep.attackController(controller);
+                //console.log(rc + ' attacking1 ' + controller.id);
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
             {
                 sing = 'Taking over...';
-                creep.attackController(controller);
+                const rc = creep.attackController(controller);
+                //console.log(rc + ' attacking2 ' + controller.id);
             }
             else
             {
@@ -39,18 +41,29 @@ claim.creepAtDestination = function(creep)
                 if (Game.gcl.level > myRooms)
                 {
                     sign = '';
-                    creep.claimController(controller);                    
+                    const rc = creep.claimController(controller);    
+                    //console.log(rc + ' claiming ' + controller.id);                
                 }
                 else
                 {
                     sign = 'I was here';
-                    creep.reserveController(controller);
+                    const rc = creep.reserveController(controller);
+                    //console.log(rc + ' reserving ' + controller.id);
                 }
             }
 
-            if (controller.sign && controller.sign.text != sign)
+            if (controller.sign)
             {
-                creep.signController(sign);
+                if (controller.sign.text != sign || controller.sign.username != creep.owner.username)
+                {
+                    const rc = creep.signController(controller, sign);
+                    //console.log(rc + ' signing1 ' + controller.id);
+                }
+            }
+            else if (sign.length > 0)
+            {
+                    const rc = creep.signController(controller, sign);
+                    //console.log(rc + ' signing1 ' + controller.id);
             }
         }
         else
