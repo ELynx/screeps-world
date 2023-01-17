@@ -10,6 +10,7 @@ plunder.prepare = function()
 
 plunder.creepPrepare = function(creep)
 {
+    this._flagCountCreep(creep);
 };
 
 plunder.creepAtDestination = function(creep)
@@ -19,12 +20,20 @@ plunder.creepAtDestination = function(creep)
 
 plunder.creepRoomTravel = function(creep)
 {
+    // keep track of closest owned stuff
+
+    if (creep.room.terminal && creep.room.terminal.my)
+        creep.memory.terminal = creep.room.terminal.id;
+
+    if (creep.room.storage  && creep.room.storage.my)
+        creep.memory.storage  = creep.room.storage.id;
+
     this._creepRoomTravel(creep);
 };
 
 plunder.flagPrepare = function(flag)
 {
-    return this.FLAG_IGNORE;
+    return this._flagCountBasic(flag, 10, 20);
 };
 
 plunder.makeBody = function(spawn)
