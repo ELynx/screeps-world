@@ -35,16 +35,8 @@ outlast._defaultAction = function(creep)
 
 outlast.creepPrepare = function(creep)
 {
+    this._flagCountCreep(creep);
     creep.memory.selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER;
-
-    if (creep.memory.counted) return;
-
-    let flag = Game.flags[creep.memory.flag];
-    if (flag && flag.memory.counter)
-    {
-        --flag.memory.counter;
-        creep.memory.counted = true;
-    }
 };
 
 outlast.creepAtDestination = function(creep)
@@ -121,16 +113,7 @@ outlast.creepRoomTravel = function(creep)
 
 outlast.flagPrepare = function(flag)
 {
-    if (flag.memory.counter === undefined)
-        flag.memory.counter = 20;
-
-    if (flag.memory.counter >= 10)
-        return this.FLAG_SPAWN;
-
-    if (flag.memory.counter >= 0)
-        return this.FLAG_IGNORE;
-
-    return this.FLAG_REMOVE;
+    return this._flagCountBasic(flag, 10, 20);
 };
 
 outlast.makeBody = function(spawn)
