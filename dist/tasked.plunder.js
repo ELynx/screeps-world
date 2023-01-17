@@ -6,6 +6,8 @@ var plunder = new Tasked('plunder');
 
 plunder.prepare = function()
 {
+    this.roomTargets = { };
+    this.roomBoring  = { };
 };
 
 plunder.creepPrepare = function(creep)
@@ -78,8 +80,40 @@ pluner.creepAtOwnRoom = function(creep)
     }
 };
 
+plunder.getSomeOwnRoomName = function(creep)
+{
+    const storage = creep.memory.storage ? Game.getObjectById(creep.memory.storage) : undefined;
+    if (storage) return storage.pos.roomName;
+
+    const terminal = creep.memory.terminal ? Game.getObjectById(creep.memory.terminal) : undefined;
+    if (terminal) return terminal.pos.roomName;
+
+    const controller = creep.memory.controller ? Game.getObjectById(creep.memory.controller) : undefined;
+    if (controller) return controller.pos.roomName;
+
+    return undefined;
+};
+
 plunder.creepAtOtherRooms = function(creep)
 {
+    let targets = this.roomTargets[creep.pos.roomName];
+    if (targets === undefined)
+    {
+        // TODO
+        targets = [];
+
+        this.roomTargets[creep.pos.roomName] = targets;
+    }
+
+    if (targets.length == 0)
+    {
+        this.roomBoring[creep.pos.roomName] = true;
+    }
+
+    if (targets.length == 0 || creep.store.getFreeCapacity() == 0)
+    {
+        creep.memory.crum = this.getSomeOwnRoomName(creep);
+    }
 };
 
 plunder.creepAtDestination = function(creep)
@@ -112,6 +146,8 @@ plunder.creepRoomTravel = function(creep)
 
 plunder.flagPrepare = function(flag)
 {
+    if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE;
+
     return this._flagCountBasic(flag, 10, 20);
 };
 
