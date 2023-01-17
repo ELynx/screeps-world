@@ -95,6 +95,8 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 {
     if (this.getActiveBodyparts(CARRY) == 0) return ERR_FULL;
 
+    if (this.store[RESOURCE_ENERGY] > 0) this.drop(RESOURCE_ENERGY);
+
     for (let targetKey in targets)
     {
         const target = targets[targetKey];
