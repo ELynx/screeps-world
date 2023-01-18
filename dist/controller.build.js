@@ -5,37 +5,36 @@ var Controller = require('controller.template');
 var buildController = new Controller('build');
 
 buildController.actRange = 3;
-buildController.focusEffort = true;
 
 buildController.act = function(site, creep)
 {
     return creep.build(site) == OK;
 };
 
-buildController.dynamicTargets = function(room, creep)
+// TODO build priorities
+buildController.staticTargets = function(room)
 {
-    const structs = room.find(FIND_STRUCTURES);
     let hasSpawn = false;
-    for (let i = 0; i < structs.length; ++i)
-    {
-        const struct = structs[i];
 
-        if (struct.my && struct.structureType == STRUCTURE_SPAWN)
+    const structures = room.find(FIND_STRUCTURES);
+    for (let i = 0; i < structures.length; ++i)
+    {
+        const structure = structures[i];
+        if (structure.my && structure.structureType == STRUCTURE_SPAWN)
         {
             hasSpawn = true;
             break;
         }
     }
 
-    // TODO build priorities
-    return this._lookAroundCreep(
-        room,
-        LOOK_CONSTRUCTION_SITES,
-        function(site)
+    return room.find(
+        FIND_CONSTRUCTION_SITES,
         {
-            return site.my && !site.pos.isEqualTo(creep.pos) && (hasSpawn || site.structureType == STRUCTURE_SPAWN);
-        },
-        creep
+            filter: function(site)
+            {
+                return site.my && (hasSpawn || site.structureType == STRUCTURE_SPAWN);
+            }
+        }
     );
 };
 
