@@ -12,7 +12,7 @@ buildController.act = function(site, creep)
 };
 
 // TODO build priorities
-buildController.staticTargets = function(room)
+buildController.targets = function(room)
 {
     let hasSpawn = false;
 

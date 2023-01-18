@@ -54,7 +54,7 @@ ttlController.act = function(spawn, creep)
     return true;
 };
 
-ttlController.staticTargets = function(room)
+ttlController.targets = function(room)
 {
     return room.find(
         FIND_STRUCTURES,

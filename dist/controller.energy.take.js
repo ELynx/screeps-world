@@ -44,7 +44,7 @@ energyTakeController.validateTarget = function(target, creep)
     return has - toKeep - othersWant > 0;
 };
 
-energyTakeController.staticTargets = function(room)
+energyTakeController.targets = function(room)
 {
     return room.find(
         FIND_STRUCTURES,

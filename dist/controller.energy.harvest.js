@@ -21,7 +21,7 @@ energyHarvestController.act = function(source, creep)
     return result;
 };
 
-energyHarvestController.staticTargets = function(room)
+energyHarvestController.targets = function(room)
 {
     return room.find(FIND_SOURCES_ACTIVE);
 };

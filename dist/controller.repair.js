@@ -63,7 +63,7 @@ repairController.act = function(target, creep)
     return creep.repair(target) == OK;
 };
 
-repairController.staticTargets = function(room)
+repairController.targets = function(room)
 {
     // STRATEGY don't run with every booboo
     let   barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);

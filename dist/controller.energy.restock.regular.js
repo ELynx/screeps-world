@@ -28,7 +28,7 @@ energyRestockControllerRegular.act = function(target, creep)
     return false;
 };
 
-energyRestockControllerRegular.staticTargets = function(room)
+energyRestockControllerRegular.targets = function(room)
 {
     const critical = room.find(
         FIND_STRUCTURES,

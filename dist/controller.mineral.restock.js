@@ -45,7 +45,7 @@ mineralHarvestController.act = function(terminal, creep)
     return false;
 };
 
-mineralHarvestController.staticTargets = function(room)
+mineralHarvestController.targets = function(room)
 {
     if (room.memory.mlvl == 0) return [];
 
