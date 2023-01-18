@@ -372,13 +372,11 @@ function Controller(id)
         const roomCreeps = room.getRoomControlledCreeps();
         return _.filter(
             roomCreeps,
-            _.bind(
-                function(creep)
-                {
-                    return creep.memory.ctrl == this.id && creep.memory.dest == target.id;
-                },
-                this
-            )
+            function(creep)
+            {
+                return creep.memory.ctrl == this.id && creep.memory.dest == target.id;
+            },
+            this
         );
     };
 
