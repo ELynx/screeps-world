@@ -243,7 +243,7 @@ function Controller(id)
         this.debugLine(room, 'Creeps checked  ' + roomCreeps.length);
 
         let assigned = 0;
-        for (let i = 0; i < targets.length)
+        for (let i = 0; i < targets.length; ++i)
         {
             if (roomCreeps.length == 0)
             {
