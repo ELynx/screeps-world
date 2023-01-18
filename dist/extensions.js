@@ -162,7 +162,7 @@ Flag.prototype.setValue = function(newValue)
     {
         newColor = COLOR_PURPLE;
     }
-    else if (newValue == 3)
+    else if (newValue >= 3)
     {
         newColor = COLOR_RED;
     }
