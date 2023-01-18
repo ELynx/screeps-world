@@ -364,6 +364,21 @@ function Controller(id)
     **/
     this.targetAssigned = undefined;
 
+    this._allAssignedTo = function(target)
+    {
+        const room = Game.rooms[target.pos.roomName];
+        if (room === undefined) return [];
+
+        const roomCreeps = room.getRoomControlledCreeps();
+        return _.filter(
+            roomCreeps,
+            function(creep)
+            {
+                return creep.memory.ctrl == this.id && creep.memory.dest == target.id;
+            }
+        );
+    };
+
     this._usesDefaultFilter = undefined;
 
     /**
