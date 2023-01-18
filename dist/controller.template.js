@@ -37,7 +37,7 @@ function Controller(id)
     /**
     Max creeps per valid target
     **/
-    this.maxCreepsPerTargetPerTick = 1;
+    this.maxCreepsPerTargetPerCheck = 1;
 
     /**
     Extra value stored to creep memory.
@@ -318,7 +318,7 @@ function Controller(id)
                     takenIds.push(creep.id);
                 }
 
-                if (takenIds.length >= this.maxCreepsPerTargetPerTick)
+                if (takenIds.length >= this.maxCreepsPerTargetPerCheck)
                 {
                     break; // from creep cycle
                 }
