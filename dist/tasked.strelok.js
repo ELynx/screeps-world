@@ -203,8 +203,8 @@ strelok.creepAtDestination = function(creep)
 
         if (creep._canMove_)
         {
-            // maintain distance
-            if (fireTarget.id == moveTarget.id)
+            // ballet when close
+            if (rangeToFireTarget <= 3 && fireTarget.id == moveTarget.id)
             {
                 let toFrom = 0;
 
