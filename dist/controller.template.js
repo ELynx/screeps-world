@@ -35,6 +35,11 @@ function Controller(id)
     this.actRange = 1;
 
     /**
+    Max creeps per valid target
+    **/
+    this.maxCreepsPerTarget = 1;
+
+    /**
     Extra value stored to creep memory.
     **/
     this.extra = undefined;
@@ -43,11 +48,6 @@ function Controller(id)
     Flag to check reach-ability of target for creeps during targeting.
     **/
     this.ignoreCreepsForTargeting = true;
-
-    /**
-    Flag to focus creep actions.
-    **/
-    this.focusEffort = false;
 
     /**
     Cache of target IDs that already have creep assigned.
@@ -220,13 +220,46 @@ function Controller(id)
     /**
     Default implementation.
     @param {Room} room
-    @param {array<Creep>} creeps.
+    @param {array<Creep>} roomCreeps.
     @return Not assigned creeps.
     **/
-    this.assignCreeps = function(room, creeps)
+    this.assignCreeps = function(room, roomCreeps)
     {
-        const checked = creeps.length;
+        const targets = this._findTargets(room);
+        this.debugLine(room, 'Targets checked ' + targets.length);
+
         let assigned = 0;
+        for (let i = 0; i < targets.length)
+        {
+            const target = targets[i];
+
+            // starting with closest, Manhattan distance is "good enough"
+            let creeps = roomCreeps.slice(0);
+            creeps.sort(
+                function(c1, c2)
+                {
+                    const d1 = Math.abs(target.pos.x - c1.pos.x) + Math.abs(target.pos.y - c1.pos.y);
+                    const d2 = Math.abs(target.pos.x - c2.pos.x) + Math.abs(target.pos.y - c2.pos.y);
+
+                    return d1 - d2;
+                }
+            );
+
+            let takenIds = [];
+
+            for (let j = 0; j < creeps.length; ++j)
+            {
+                const creep = creeps[j];
+
+                if (this.validateTarget)
+                {
+                    if (this.validateTarget(target, creep) == false)
+                    {
+                        continue; // to next creep
+                    }
+                }
+            }
+        }
 
         for (let i = 0; i < creeps.length;)
         {
@@ -236,24 +269,7 @@ function Controller(id)
             // all suitable targets
             const targets = this._findTargets(room);
 
-            // starting with closest, Manhattan distance is "good enough"
-            targets.sort(
-                _.bind(
-                    function(t1, t2)
-                    {
-                        const d1 = Math.abs(creep.pos.x - t1.pos.x) + Math.abs(creep.pos.y - t1.pos.y);
-                        const d2 = Math.abs(creep.pos.x - t2.pos.x) + Math.abs(creep.pos.y - t2.pos.y);
 
-                        if (d1 == d2 && this.tiebreaker)
-                        {
-                            return this.tiebreaker(t1, t2);
-                        }
-
-                        return d1 - d2;
-                    },
-                    this
-                )
-            );
 
             // of them one that can be reached
             let target = undefined;
