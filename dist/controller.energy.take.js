@@ -14,45 +14,57 @@ energyTakeController.act = function(structure, creep)
     return false;
 };
 
-// TODO don't aim several creeps at structure above what it can give
-energyTakeController.dynamicTargets = function(room, creep)
+energyTakeController.wantToKeep = function(structure)
+{
+    // TODO global constant
+    if (structure.structureType == STRUCTURE_TERMINAL) return 300;
+
+    return -1; // to the last drop
+};
+
+energyTakeController.validateTarget = function(target, creep)
+{
+    const has    = target.store[RESOURCE_ENERGY];
+    const toKeep = this.wantToKeep(target);
+
+    let othersWant = 0;
+    const others = this._allAssignedTo(target);
+    for (let i = 0; i < others.length; ++i)
+    {
+        const other = others[i];
+        othersWant += other.getFreeCapacity(RESOURCE_ENERGY);
+    }
+
+    const checkedWant = creep.getFreeCapacity(RESOURCE_ENERGY);
+
+    return has - toKeep >= othersWant + checkedWant;
+};
+
+energyTakeController.staticTargets = function(room)
 {
     return room.find(
         FIND_STRUCTURES,
         {
             filter: function(structure)
             {
+                const toKeep = this.wantToKeep(structure);
+
                 if (structure.structureType == STRUCTURE_CONTAINER ||
-                    structure.structureType == STRUCTURE_STORAGE)
+                    structure.structureType == STRUCTURE_STORAGE ||
+                    // STRATEGY allow to take from terminal, maybe airdrop energy
+                    structure.structureType == STRUCTURE_TERMINAL)
                 {
-                    return structure.store[RESOURCE_ENERGY] > 0;
+                    return structure.store[RESOURCE_ENERGY] > toKeep;
                 }
                 else if (structure.structureType == STRUCTURE_LINK)
                 {
-                    if (structure.store[RESOURCE_ENERGY] == 0)
+                    if (structure.store[RESOURCE_ENERGY] > toKeep)
                     {
-                        return false;
+                        // STRATEGY do not steal from source
+                        return !structure.isSource();
                     }
 
-                    // STRATEGY do not steal from source
-                    if (structure.isSource())
-                    {
-                        return false;
-                    }
-
-                    // STRATEGY do not visit link across the map
-                    return structure.pos.inRangeTo(creep.pos, 5);
-                }
-                // STRATEGY allow to take from terminal, maybe airdrop energy
-                else if (structure.structureType == STRUCTURE_TERMINAL)
-                {
-                    // TODO global constant
-                    if (structure.store[RESOURCE_ENERGY] <= 300)
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return false;
                 }
 
                 return false;
