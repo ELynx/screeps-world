@@ -128,24 +128,23 @@ function Controller(id)
     this.act = undefined;
 
     /**
-    TODO rename
     Targets within room.
     @param {Room} room.
-    @return Found  static targets.
+    @return Found targets.
     **/
     this.targets = undefined;
 
     /**
-    Cache of static targets per loop per room.
+    Cache of targets per loop per room.
     **/
     this._targetCache = undefined;
 
     /**
-    Caching getter for static targets.
+    Caching getter for targets.
     @param {Room} room.
-    @return Possible static targets.
+    @return Possible targets.
     **/
-    this._findtargets = function(room)
+    this._findTargets = function(room)
     {
         if (this._targetCache)
         {
@@ -233,9 +232,9 @@ function Controller(id)
         {
             const creep = creeps[i];
 
-            // all suitable targets
             // TODO rotation point
-            const targets = this._findtargets(room);
+            // all suitable targets
+            const targets = this._findTargets(room);
 
             // starting with closest, Manhattan distance is "good enough"
             targets.sort(
@@ -337,7 +336,7 @@ function Controller(id)
 
         if (!this.targets)
         {
-            this.debugLine('Controller missing targets!');
+            this.debugLine('Controller missing targets method!');
             return roomCreeps;
         }
 
@@ -351,8 +350,7 @@ function Controller(id)
         }
 
         this._targetCache  = undefined;
-        const statics = this._findtargets(room);
-        if (statics.length == 0)
+        if (this._findTargets(room).length == 0)
         {
             this.debugLine(room, 'Fast exit, no targets');
             return roomCreeps;
