@@ -55,7 +55,7 @@ plunder.moveAndUnload = function(creep, target)
         const whereFlag = creep.getFlagPos();
         if (whereFlag)
         {
-            creep.memory.crum = whereFlag.roomName;
+            creep.setControlRoom(whereFlag.roomName);
         }
         else
         {
@@ -151,7 +151,7 @@ plunder.creepAtOtherRooms = function(creep)
 
     if (targets.length == 0 || creep.store.getFreeCapacity() == 0)
     {
-        creep.memory.crum = this.getSomeOwnRoomName(creep);
+        creep.setControlRoom(this.getSomeOwnRoomName(creep));
         return;
     }
 
@@ -202,7 +202,7 @@ plunder.flagPrepare = function(flag)
 {
     if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE;
 
-    return this._flagCountBasic(flag, 10);
+    return this._flagCountBasic(flag, 100);
 };
 
 plunder.makeBody = function(spawn)

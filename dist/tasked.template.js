@@ -130,7 +130,7 @@ function Tasked(id)
     {
         if (creep.memory.fcnt) return;
 
-        let flag = Game.flags[creep.memory.flag];
+        let flag = Game.flags[creep.getFlagName()];
         if (flag)
         {
             const now = flag.memory.fcnt || 0;

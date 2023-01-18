@@ -18,13 +18,11 @@ claim.creepAtDestination = function(creep)
             {
                 sign = 'BAHAHAHA';
                 const rc = creep.attackController(controller);
-                //console.log(rc + ' attacking1 ' + controller.id);
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
             {
                 sing = 'Taking over...';
                 const rc = creep.attackController(controller);
-                //console.log(rc + ' attacking2 ' + controller.id);
             }
             else
             {
@@ -42,13 +40,11 @@ claim.creepAtDestination = function(creep)
                 {
                     sign = '';
                     const rc = creep.claimController(controller);
-                    //console.log(rc + ' claiming ' + controller.id);
                 }
                 else
                 {
                     sign = 'I was here';
                     const rc = creep.reserveController(controller);
-                    //console.log(rc + ' reserving ' + controller.id);
                 }
             }
 
@@ -57,13 +53,11 @@ claim.creepAtDestination = function(creep)
                 if (controller.sign.text != sign || controller.sign.username != creep.owner.username)
                 {
                     const rc = creep.signController(controller, sign);
-                    //console.log(rc + ' signing1 ' + controller.id);
                 }
             }
             else if (sign.length > 0)
             {
                     const rc = creep.signController(controller, sign);
-                    //console.log(rc + ' signing1 ' + controller.id);
             }
         }
         else
