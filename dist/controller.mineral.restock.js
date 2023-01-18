@@ -24,7 +24,6 @@ mineralHarvestController.act = function(terminal, creep)
         }
 
         let canReceive = terminal.store.getFreeCapacity(resourceType);
-
         if (canReceive == 0)
         {
             terminal.room.memory.mlvl = 0;

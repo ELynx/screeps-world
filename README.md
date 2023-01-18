@@ -21,6 +21,8 @@ Don't send military to enemy safe mode rooms.
 
 Stash some energy.
 
+Predictive controller drop.
+
 # Ideas
 PathFinder option `flee`.
 
