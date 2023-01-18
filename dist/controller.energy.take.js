@@ -11,7 +11,7 @@ energyTakeController.wantToKeep = function(structure)
     // TODO global constant
     if (structure.structureType == STRUCTURE_TERMINAL) return 300;
 
-    return -1; // to the last drop
+    return 0;
 };
 
 energyTakeController.act = function(structure, creep)
