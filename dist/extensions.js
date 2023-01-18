@@ -331,6 +331,11 @@ RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
     return this.createFlag(flagName, color);
 };
 
+RoomPosition.prototype.manhattanDistance = function(otherRoomPosition)
+{
+    return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y);
+};
+
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room

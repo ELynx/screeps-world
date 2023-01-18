@@ -219,8 +219,8 @@ function Controller(id)
 
     this._creepPerTargetSortManhattanClosest = function(target, c1, c2)
     {
-        const d1 = Math.abs(target.pos.x - c1.pos.x) + Math.abs(target.pos.y - c1.pos.y);
-        const d2 = Math.abs(target.pos.x - c2.pos.x) + Math.abs(target.pos.y - c2.pos.y);
+        const d1 = target.pos.manhattanDistance(c1.pos);
+        const d2 = target.pos.manhattanDistance(c2.pos);
 
         return d1 - d2;
     };
