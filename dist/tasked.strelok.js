@@ -11,7 +11,7 @@ strelok.markRoomForPatrol = function(room)
     const flag = Game.flags[flagName];
     if (flag)
     {
-        const patrolUnits = room.memory.elvl + 1;
+        const patrolUnits = Math.min(3, room.memory.elvl + 1);
         flag.setValue(patrolUnits);
     }
     else
