@@ -11,7 +11,7 @@ controllerController.act = function(controller, creep)
     return creep.upgradeController(controller) == OK;
 };
 
-controllerController.staticTargets = function(room)
+controllerController.targets = function(room)
 {
     if (room.controller && room.controller.my)
     {

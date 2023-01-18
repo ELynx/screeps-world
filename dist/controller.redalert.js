@@ -22,7 +22,7 @@ redAlert.act = function(controller, creep)
     return creep.upgradeController(controller) == OK;
 };
 
-redAlert.staticTargets = function(room)
+redAlert.targets = function(room)
 {
     if (room.controller &&
         room.controller.my &&

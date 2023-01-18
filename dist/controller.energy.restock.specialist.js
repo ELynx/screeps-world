@@ -17,7 +17,7 @@ energyRestockControllerSpecialist.act = function(target, creep)
     return false;
 };
 
-energyRestockControllerSpecialist.staticTargets = function(room)
+energyRestockControllerSpecialist.targets = function(room)
 {
     return room.find(
         FIND_STRUCTURES,
