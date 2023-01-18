@@ -74,16 +74,19 @@ strelok.creepAtDestination = function(creep)
             {
                 filter: function(structure)
                 {
-                    // for future marauding
-                    if (structure.structureType == STRUCTURE_STORAGE ||
-                        structure.structureType == STRUCTURE_CONTAINER ||
-                        structure.structureType == STRUCTURE_TERMINAL ||
-                        structure.structureType == STRUCTURE_EXTRACTOR)
+                    // STRATEGY ingore resource management, even though it can be military
+                    if (structure.structureType == STRUCTURE_CONTAINER ||
+                        structure.structureType == STRUCTURE_EXTRACTOR ||
+                        structure.structureType == STRUCTURE_FACTORY ||
+                        structure.structureType == STRUCTURE_LAB ||
+                        structure.structureType == STRUCTURE_LINK ||
+                        structure.structureType == STRUCTURE_STORAGE ||
+                        structure.structureType == STRUCTURE_TERMINAL)
                     {
                         return false;
                     }
 
-                    // TODO wall breach
+                    // TODO wall breach coordination
                     if (structure.structureType == STRUCTURE_WALL)
                     {
                         return false;
@@ -95,6 +98,7 @@ strelok.creepAtDestination = function(creep)
                         return false;
                     }
 
+                    // ignore everything without hit points
                     return !structure.my && structure.hits;
                 }
             }
