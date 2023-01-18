@@ -18,26 +18,27 @@ energyRestockControllerSpecialist.act = function(target, creep)
 };
 
 // TODO priorities
-
 energyRestockControllerSpecialist.targets = function(room)
 {
     return room.find(
         FIND_STRUCTURES,
-        function(structure)
         {
-            if (structure.structureType == STRUCTURE_CONTAINER)
+            filter: function(structure)
             {
-                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
-            }
-            else if (structure.structureType == STRUCTURE_LINK)
-            {
-                return structure.my &&
-                       structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
-                       structure.isActiveSimple() &&
-                       structure.isSource();
-            }
+                if (structure.structureType == STRUCTURE_CONTAINER)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
+                }
+                else if (structure.structureType == STRUCTURE_LINK)
+                {
+                    return structure.my &&
+                           structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
+                           structure.isActiveSimple() &&
+                           structure.isSource();
+                }
 
-            return false;
+                return false;
+            }
         }
     );
 };
