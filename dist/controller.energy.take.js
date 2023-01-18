@@ -7,19 +7,25 @@ var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
 
-energyTakeController.act = function(structure, creep)
-{
-    creep.withdraw(structure, RESOURCE_ENERGY);
-
-    return false;
-};
-
 energyTakeController.wantToKeep = function(structure)
 {
     // TODO global constant
     if (structure.structureType == STRUCTURE_TERMINAL) return 300;
 
     return -1; // to the last drop
+};
+
+energyTakeController.act = function(structure, creep)
+{
+    const has    = structure.store[RESOURCE_ENERGY];
+    const toKeep = this.wantToKeep(structure);
+    const want   = creep.store.getFreeCapacity(RESOURCE_ENERGY);
+
+    const howMuch = has - toKeep >= want ? undefined : has - toKeep;
+
+    creep.withdraw(structure, RESOURCE_ENERGY, howMuch);
+
+    return false;
 };
 
 energyTakeController.validateTarget = function(target, creep)
