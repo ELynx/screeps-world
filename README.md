@@ -19,7 +19,7 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-Static targets are tested target to creep, not creep to target.
+Stash some energy.
 
 # Ideas
 PathFinder option `flee`.
