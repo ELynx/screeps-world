@@ -6,6 +6,9 @@ var controllerController = new Controller('controller');
 
 controllerController.actRange = 3;
 
+// STRATEGY upgrade creep limit per room
+controllerController.maxCreepsPerTarget = 5;
+
 controllerController.act = function(controller, creep)
 {
     return creep.upgradeController(controller) == OK;
