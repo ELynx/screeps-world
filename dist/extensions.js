@@ -60,7 +60,7 @@ Creep.prototype.healClosest = function(creeps)
 {
     if (creeps.length == 0)
     {
-        return;
+        return ERR_NOT_FOUND;
     }
 
     const target = this.pos.findClosestByRange(creeps);
