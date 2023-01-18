@@ -2,7 +2,6 @@
 
 var Controller = require('controller.template');
 
-// TODO merge with harvest
 var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
@@ -41,9 +40,8 @@ energyTakeController.validateTarget = function(target, creep)
         othersWant += other.store.getFreeCapacity(RESOURCE_ENERGY);
     }
 
-    const checkedWant = creep.store.getFreeCapacity(RESOURCE_ENERGY);
-
-    return has - toKeep >= othersWant + checkedWant;
+    // can fit one more draw
+    return has - toKeep - othersWant > 0;
 };
 
 energyTakeController.staticTargets = function(room)
