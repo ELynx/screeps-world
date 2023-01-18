@@ -354,6 +354,16 @@ function Controller(id)
         return [];
     };
 
+    /**
+    Check if target is take-able.
+    **/
+    this.validateTarget = undefined;
+
+    /**
+    Called when target was assigned.
+    **/
+    this.targetAssigned = undefined;
+
     this._usesDefaultFilter = undefined;
 
     /**
@@ -431,6 +441,14 @@ function Controller(id)
             // check, see if reacheable in any way
             for (let j = 0; j < targets.length; ++j)
             {
+                if (this.validateTarget)
+                {
+                    if (this.validateTarget(targets[j], creep) == false)
+                    {
+                        continue; // to another target
+                    }
+                }
+
                 const inspected = targets[j].pos;
 
                 if (inspected.inRangeTo(creep.pos, this.actRange))
@@ -470,6 +488,11 @@ function Controller(id)
                 const extra = this.extra ? this.extra(target) : undefined;
 
                 globals.assignCreep(this, target, targetMove, creep, extra);
+                if (this.targetAssigned)
+                {
+                    this.targetAssigned(target, creep);
+                }
+
                 creeps.splice(i, 1);
 
                 ++assigned;
