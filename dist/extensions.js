@@ -7,44 +7,6 @@ Creep.prototype.unlive = function()
     return this.suicide();
 };
 
-Creep.prototype.caveIndex = function()
-{
-    if (this._cidxT_ === undefined ||
-        this._cidxT_ != Game.time)
-    {
-        let cidx = 0;
-
-        const caveMap = this.room.memory.caveMap;
-        if (caveMap)
-        {
-            for (let x = 0; x < caveMap[0].length - 1; ++x)
-            {
-                if (this.pos.x >= caveMap[0][x] &&
-                    this.pos.x <  caveMap[0][x + 1])
-                {
-                    cidx = x;
-                    break;
-                }
-            }
-
-            for (let y = 0; y < caveMap[1].length - 1; ++y)
-            {
-                if (this.pos.y >= caveMap[1][y] &&
-                    this.pos.y <  caveMap[1][y + 1])
-                {
-                    cidx = cidx + (caveMap[0].length - 1) * y;
-                    break;
-                }
-            }
-        }
-
-        this._cidx_ = cidx;
-        this._cidxT_ = Game.time;
-    }
-
-    return this._cidx_;
-};
-
 /**
 @return Game object creep is targeted to.
 **/
@@ -230,6 +192,7 @@ Room.prototype._clearCreepCacheIfOld = function()
 
 /**
 Get a list of creeps assigned to a room, cached
+TODO what happens with turn assignments
 **/
 Room.prototype.getRoomControlledCreeps = function()
 {
@@ -349,7 +312,7 @@ RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
     {
         color = COLOR_PURPLE;
     }
-    else if (flagValue == 3)
+    else if (flagValue >= 3)
     {
         color = COLOR_RED;
     }

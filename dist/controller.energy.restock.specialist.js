@@ -17,6 +17,8 @@ energyRestockControllerSpecialist.act = function(target, creep)
     return false;
 };
 
+// TODO priorities
+
 energyRestockControllerSpecialist.targets = function(room)
 {
     return room.find(
@@ -43,19 +45,6 @@ energyRestockControllerSpecialist.targets = function(room)
 energyRestockControllerSpecialist.filterCreep = function(creep)
 {
     return creep.memory.rstk == true && creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
-};
-
-energyRestockControllerSpecialist.tiebreaker = function(struct1, struct2)
-{
-    if (struct1.structureType != struct2.structureType)
-    {
-        return struct1.structureType == STRUCTURE_LINK ? -1 : 1;
-    }
-
-    // only same-type structures below
-
-    // STRATEGY balance containers
-    return struct1.store.getUsedCapacity(RESOURCE_ENERGY) - struct2.store.getUsedCapacity(RESOURCE_ENERGY);
 };
 
 energyRestockControllerSpecialist.register();
