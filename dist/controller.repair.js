@@ -63,7 +63,7 @@ repairController.act = function(target, creep)
     return creep.repair(target) == OK;
 };
 
-repairController.dynamicTargets = function(room, creep)
+repairController.staticTargets = function(room)
 {
     // STRATEGY don't run with every booboo
     let   barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
@@ -92,56 +92,56 @@ repairController.dynamicTargets = function(room, creep)
     // STRATEGY some histeresis
     const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500);
 
-    return this._lookAroundCreep(
-        room,
-        LOOK_STRUCTURES,
-        function(structure)
+    return room.find(
+        FIND_STRUCTURES,
         {
-            if (!structure.hits || structure.hits >= structure.hitsMax)
+            filter: function(structure)
             {
+                if (!structure.hits || structure.hits >= structure.hitsMax)
+                {
+                    return false;
+                }
+
+                if (structure.structureType == STRUCTURE_WALL)
+                {
+                    if (structure.hits < barrHp)
+                    {
+                        structure._targetHp_ = barrHp;
+                        return true;
+                    }
+                }
+                else if (structure.structureType == STRUCTURE_RAMPART &&
+                         structure.my)
+                {
+                    if (structure.hits < barrHp)
+                    {
+                        structure._targetHp_ = rampHp;
+                        return true;
+                    }
+                }
+                else if (structure.structureType == STRUCTURE_ROAD)
+                {
+                    const hp = Math.ceil(structure.hitsMax * roadMult);
+                    if (structure.hits < hp)
+                    {
+                        structure._targetHp_ = hp;
+                        return true;
+                    }
+                }
+                else if (structure.my || structure.structureType == STRUCTURE_CONTAINER)
+                {
+                    const hp = Math.ceil(structure.hitsMax * otherMult);
+                    if (structure.hits < hp)
+                    {
+                        // STRATEGY some histeresis, repair to top
+                        structure._targetHp_ = structure.hitsMax;
+                        return true;
+                    }
+                }
+
                 return false;
             }
-
-            if (structure.structureType == STRUCTURE_WALL)
-            {
-                if (structure.hits < barrHp)
-                {
-                    structure._targetHp_ = barrHp;
-                    return true;
-                }
-            }
-            else if (structure.structureType == STRUCTURE_RAMPART &&
-                     structure.my)
-            {
-                if (structure.hits < barrHp)
-                {
-                    structure._targetHp_ = rampHp;
-                    return true;
-                }
-            }
-            else if (structure.structureType == STRUCTURE_ROAD)
-            {
-                const hp = Math.ceil(structure.hitsMax * roadMult);
-                if (structure.hits < hp)
-                {
-                    structure._targetHp_ = hp;
-                    return true;
-                }
-            }
-            else if (structure.my || structure.structureType == STRUCTURE_CONTAINER)
-            {
-                const hp = Math.ceil(structure.hitsMax * otherMult);
-                if (structure.hits < hp)
-                {
-                    // STRATEGY some histeresis, repair to top
-                    structure._targetHp_ = structure.hitsMax;
-                    return true;
-                }
-            }
-
-            return false;
-        },
-        creep
+        }
     );
 };
 

@@ -17,11 +17,10 @@ energyRestockControllerSpecialist.act = function(target, creep)
     return false;
 };
 
-energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
+energyRestockControllerSpecialist.staticTargets = function(room)
 {
-    return this._lookAroundCreep(
-        room,
-        LOOK_STRUCTURES,
+    return room.find(
+        FIND_STRUCTURES,
         function(structure)
         {
             if (structure.structureType == STRUCTURE_CONTAINER)
@@ -37,8 +36,7 @@ energyRestockControllerSpecialist.dynamicTargets = function(room, creep)
             }
 
             return false;
-        },
-        creep
+        }
     );
 };
 
