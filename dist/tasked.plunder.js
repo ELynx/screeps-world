@@ -152,9 +152,21 @@ plunder.creepAtOtherRooms = function(creep)
     if (targets.length == 0 || creep.store.getFreeCapacity() == 0)
     {
         creep.memory.crum = this.getSomeOwnRoomName(creep);
+        return;
     }
 
-    const target = creep.pos.findClosestByRange(targets);
+    let target = undefined;
+    if (creep.memory.dest)
+    {
+        target = _.find(targets, { id: creep.memory.dest });
+    }
+
+    if (target === undefined)
+    {
+        target = creep.pos.findClosestByRange(targets);
+        creep.memory.dest = target.id;
+    }
+
     this.moveAndLoad(creep, target);
 };
 
