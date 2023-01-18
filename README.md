@@ -19,9 +19,7 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-Source containers analogous to source links.
-
-Reuse miners.
+Static targets are tested target to creep, not creep to target.
 
 # Ideas
 PathFinder option `flee`.
