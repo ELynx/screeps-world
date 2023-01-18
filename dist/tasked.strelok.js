@@ -4,20 +4,20 @@ var Tasked = require('tasked.template');
 
 var strelok = new Tasked('strelok');
 
-strelok.patrolRoom = function(room)
+strelok.markRoomForPatrol = function(room)
 {
     const flagName = this.id + '_' + room.name;
 
     const flag = Game.flags[flagName];
     if (flag)
     {
-        const patrolUnits = Math.min(3, room.memory.elvl + 1);
+        const patrolUnits = room.memory.elvl + 1;
         flag.setValue(patrolUnits);
     }
     else
     {
-        // new room info, start with single guard
-        const flagPos = room.getControlPos();
+        // TODO think of room position
+        const flagPos = new RoomPosition(25, 25, room.name);
         flagPos.createFlagWithValue(flagName, 1);
     }
 };
@@ -33,7 +33,7 @@ strelok.prepare = function()
         const room = Game.rooms[roomName];
         if (room && room.controller && room.controller.my)
         {
-            this.patrolRoom(room);
+            this.markRoomForPatrol(room);
         }
     }
 };
