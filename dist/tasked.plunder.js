@@ -125,6 +125,10 @@ plunder.creepAtOtherRooms = function(creep)
                 if (structure.store === undefined) return false;
                 if (structure.store.getUsedCapacity() == 0) return false;
 
+                if (structure.store.getUsedCapacity() == null)
+                    if (structure.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
+                        return false;
+
                 const hasRamp = _.some(
                     ramparts,
                     function(ramp)
