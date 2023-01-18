@@ -16,7 +16,7 @@ spam.creepAtDestination = function(creep)
 
 spam.flagPrepare = function(flag)
 {
-    return this._flagCountBasic(flag, 10, 20);
+    return this._flagCountBasic(flag, 10);
 };
 
 spam.makeBody = function(spawn)

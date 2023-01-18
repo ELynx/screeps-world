@@ -202,7 +202,7 @@ plunder.flagPrepare = function(flag)
 {
     if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE;
 
-    return this._flagCountBasic(flag, 10, 20);
+    return this._flagCountBasic(flag, 10);
 };
 
 plunder.makeBody = function(spawn)
