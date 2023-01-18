@@ -1,6 +1,6 @@
 'use strict';
 
-var globals = require('globals');
+var globals        = require('globals');
 var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
@@ -27,7 +27,6 @@ function Controller(id)
     **/
     this.id = id;
 
-    // attach methods that allow fast debug writing
     makeDebuggable(this, 'Controller');
 
     /**
@@ -36,7 +35,7 @@ function Controller(id)
     this.actRange = 1;
 
     /**
-    Extra value set at start and used by `act'.
+    Extra value stored to creep memory.
     **/
     this.extra = undefined;
 
@@ -75,7 +74,6 @@ function Controller(id)
 
     /**
     Filter targets by exclusion.
-    When target is filtered out excluded target list is reduced.
     @param {array<Object>} targets to filter.
     @return Targets that can be used.
     **/
@@ -87,16 +85,7 @@ function Controller(id)
         }
 
         let targetIds = _.map(targets, 'id');
-        let exclude = _.intersection(targetIds, this._excludedTargets);
-
-        if (exclude.length == this._excludedTargets.length)
-        {
-            this._excludedTargets = [];
-        }
-        else
-        {
-            this._excludedTargets = _.difference(this._excludedTargets, exclude);
-        }
+        let exclude   = _.intersection(targetIds, this._excludedTargets);
 
         if (targets.length == exclude.length)
         {
@@ -139,8 +128,8 @@ function Controller(id)
     this.act = undefined;
 
     /**
+    TODO rename
     Targets within room.
-    Static means same targets returned every time.
     @param {Room} room.
     @return Found  static targets.
     **/
@@ -173,21 +162,6 @@ function Controller(id)
         this._staticTargetCache = targets;
 
         return targets;
-    };
-
-    /**
-    Default target search.
-    @param {Room} room.
-    @return Possible targets.
-    **/
-    this._findTargetsForCreep = function(room)
-    {
-        if (this.staticTargets)
-        {
-            return this._findStaticTargets(room);
-        }
-
-        return [];
     };
 
     /**
@@ -261,7 +235,7 @@ function Controller(id)
 
             // all suitable targets
             // TODO rotation point
-            const targets = this._findTargetsForCreep(room);
+            const targets = this._findStaticTargets(room);
 
             // starting with closest, Manhattan distance is "good enough"
             targets.sort(
@@ -361,7 +335,11 @@ function Controller(id)
     {
         this.debugHeader(room);
 
-        this._staticTargetCache  = undefined;
+        if (!this.staticTargets)
+        {
+            this.debugLine('Controller missing targets!');
+            return roomCreeps;
+        }
 
         if (this._usesDefaultFilter)
         {
@@ -372,11 +350,7 @@ function Controller(id)
             }
         }
 
-        if (!this.staticTargets)
-        {
-            this.debugLine('Controller missing targets!');
-        }
-
+        this._staticTargetCache  = undefined;
         const statics = this._findStaticTargets(room);
         if (statics.length == 0)
         {
