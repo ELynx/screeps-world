@@ -192,7 +192,6 @@ Room.prototype._clearCreepCacheIfOld = function()
 
 /**
 Get a list of creeps assigned to a room, cached
-TODO what happens with turn assignments
 **/
 Room.prototype.getRoomControlledCreeps = function()
 {

@@ -217,8 +217,20 @@ function Controller(id)
         return this._defaultFilter(creep);
     };
 
+    this._creepPerTargetSortManhattanClosest = function(target, c1, c2)
+    {
+        const d1 = Math.abs(target.pos.x - c1.pos.x) + Math.abs(target.pos.y - c1.pos.y);
+        const d2 = Math.abs(target.pos.x - c2.pos.x) + Math.abs(target.pos.y - c2.pos.y);
+
+        return d1 - d2;
+    };
+
+    this.creepPerTargetSort = function(target, c1, c2)
+    {
+        return this._creepPerTargetSortManhattanClosest(target, c1, c2);
+    };
+
     /**
-    Default implementation.
     @param {Room} room
     @param {array<Creep>} roomCreeps.
     @return Not assigned creeps.
@@ -226,23 +238,29 @@ function Controller(id)
     this.assignCreeps = function(room, roomCreeps)
     {
         const targets = this._findTargets(room);
+
         this.debugLine(room, 'Targets checked ' + targets.length);
+        this.debugLine(room, 'Creeps checked  ' + roomCreeps.length);
 
         let assigned = 0;
         for (let i = 0; i < targets.length)
         {
+            if (roomCreeps.length == 0)
+            {
+                break; // from target cycle
+            }
+
             const target = targets[i];
 
-            // starting with closest, Manhattan distance is "good enough"
             let creeps = roomCreeps.slice(0);
             creeps.sort(
-                function(c1, c2)
-                {
-                    const d1 = Math.abs(target.pos.x - c1.pos.x) + Math.abs(target.pos.y - c1.pos.y);
-                    const d2 = Math.abs(target.pos.x - c2.pos.x) + Math.abs(target.pos.y - c2.pos.y);
-
-                    return d1 - d2;
-                }
+                _.bind(
+                    function(c1, c2)
+                    {
+                        return this.creepPerTargetSort(target, c1, c2);
+                    },
+                    this
+                )
             );
 
             let takenIds = [];
@@ -258,87 +276,71 @@ function Controller(id)
                         continue; // to next creep
                     }
                 }
-            }
-        }
 
-        for (let i = 0; i < creeps.length;)
-        {
-            const creep = creeps[i];
+                let assign = false;
+                let path   = undefined;
 
-            // TODO rotation point
-            // all suitable targets
-            const targets = this._findTargets(room);
-
-
-
-            // of them one that can be reached
-            let target = undefined;
-            let targetMove = undefined;
-
-            // check, see if reacheable in any way
-            for (let j = 0; j < targets.length; ++j)
-            {
-                if (this.validateTarget)
+                if (creep.pos.inRangeTo(target.pos, this.actRange))
                 {
-                    if (this.validateTarget(targets[j], creep) == false)
+                    assign = true;
+                }
+                else
+                {
+                    const solution = room.findPath(
+                        creep.pos,
+                        target.pos,
+                        globals.moveOptionsWrapper(
+                            {
+                                ignoreCreeps: this.ignoreCreepsForTargeting,
+                                range: this.actRange,
+                                maxRooms: 1
+                            }
+                        )
+                    );
+
+                    if (solution.length > 0)
                     {
-                        continue; // to another target
+                        const last = solution[solution.length - 1];
+                        const found = target.pos.inRangeTo(last.x, last.y, this.actRange);
+                        if (found)
+                        {
+                            assign = true;
+                            path   = solution;
+                        }
                     }
                 }
 
-                const inspected = targets[j].pos;
-
-                if (inspected.inRangeTo(creep.pos, this.actRange))
+                if (assign)
                 {
-                    target = targets[j];
-                    break; // from targets loop
+                    const extra = this.extra ? this.extra(target) : undefined;
+
+                    globals.assignCreep(this, target, path, creep, extra);
+                    takenIds.push(creep.id);
                 }
 
-                const solution = room.findPath(
-                    creep.pos,
-                    inspected,
-                    globals.moveOptionsWrapper(
-                        {
-                            ignoreCreeps: this.ignoreCreepsForTargeting,
-                            range: this.actRange,
-                            maxRooms: 1
-                        }
-                    )
+                if (takenIds.length >= this.maxCreepsPerTarget)
+                {
+                    break; // from creep cycle
+                }
+            } // end of creeps loop
+
+            if (takenIds.length > 0)
+            {
+                _.remove(
+                    roomCreeps,
+                    function(creep)
+                    {
+                        return !_.some(takenIds, creep.id);
+                    }
                 );
 
-                if (solution.length > 0)
-                {
-                    const last = solution[solution.length - 1];
-                    const found = inspected.inRangeTo(last.x, last.y, this.actRange);
-
-                    if (found)
-                    {
-                        target = targets[j];
-                        targetMove = solution;
-                        break; // from targets loop
-                    }
-                }
-            } // end of targets loop
-
-            if (target)
-            {
-                const extra = this.extra ? this.extra(target) : undefined;
-
-                globals.assignCreep(this, target, targetMove, creep, extra);
-                creeps.splice(i, 1);
-
-                ++assigned;
-
-                continue;
+                assigned += takenIds.length;
             }
-
-            ++i;
         }
 
-        this.debugLine(room, 'Creeps checked  ' + checked);
         this.debugLine(room, 'Creeps assigned ' + assigned);
 
-        return creeps;
+        return roomCreeps;
     };
 
     /**

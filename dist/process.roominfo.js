@@ -1,6 +1,5 @@
 'use strict';
 
-var makeCaveMap = require('routine.map');
 var Process = require('process.template');
 
 var roomInfoProcess = new Process('roomInfo');
@@ -365,10 +364,6 @@ roomInfoProcess._walls = function(room)
 roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
-
-    // cached
-    // call every time to paint cave map
-    makeCaveMap(room);
 
     // once in a creep life update room info
     if (room.memory.intl === undefined ||
