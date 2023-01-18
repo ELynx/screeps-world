@@ -14,6 +14,7 @@ energyTakeController.act = function(structure, creep)
     return false;
 };
 
+// TODO don't aim several creeps at structure above what it can give
 energyTakeController.dynamicTargets = function(room, creep)
 {
     return room.find(
@@ -41,6 +42,17 @@ energyTakeController.dynamicTargets = function(room, creep)
 
                     // STRATEGY do not visit link across the map
                     return structure.pos.inRangeTo(creep.pos, 5);
+                }
+                // STRATEGY allow to take from terminal, maybe airdrop energy
+                else if (structure.structureType == STRUCTURE_TERMINAL)
+                {
+                    // TODO global constant
+                    if (structure.store[RESOURCE_ENERGY] <= 300)
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
 
                 return false;
