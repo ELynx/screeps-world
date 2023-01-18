@@ -211,12 +211,19 @@ plunder.makeBody = function(spawn)
 
     if (elvl <= 1)
     {
-        // 100  50     50
-        return [CARRY, MOVE];
+        // 100   50     50
+        return [ CARRY, MOVE ];
     }
 
-    // 300  50     50     50     50    50    50
-    return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+    if (elvl <= 3)
+    {
+        // 300   50     50     50     50    50    50
+        return [ CARRY, CARRY, CARRY, MOVE, MOVE, MOVE ];
+    }
+
+    // capacity 200, steal complete full built extension
+    // 600   50     50     50     50     50    50    50    50
+    return [ CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE ];
 };
 
 plunder.register();
