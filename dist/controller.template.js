@@ -386,6 +386,7 @@ function Controller(id)
             return roomCreeps;
         }
 
+        // remainder returned
         creepMatch = this.assignCreeps(room, creepMatch);
 
         if (creepMatch.length > 0)
