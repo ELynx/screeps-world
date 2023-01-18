@@ -144,12 +144,12 @@ function Tasked(id)
         return flag.memory.fcnt || 0;
     };
 
-    this._flagCountBasic = function(flag, spawnLimit, totalLimit)
+    this._flagCountBasic = function(flag, limit)
     {
         const had = this._flagCount(flag);
-        if (had < spawnLimit) return this.FLAG_SPAWN;
-        if (had < totalLimit) return this.FLAG_IGNORE;
-        return this.FLAG_REMOVE;
+        if (had < limit) return this.FLAG_SPAWN;
+
+        return this.FLAG_IGNORE;
     };
 
     this.act = function()

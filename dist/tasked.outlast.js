@@ -113,7 +113,7 @@ outlast.creepRoomTravel = function(creep)
 
 outlast.flagPrepare = function(flag)
 {
-    return this._flagCountBasic(flag, 10, 20);
+    return this._flagCountBasic(flag, 10);
 };
 
 outlast.makeBody = function(spawn)
