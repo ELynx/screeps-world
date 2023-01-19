@@ -11,31 +11,34 @@ buildController.act = function(site, creep)
     return creep.build(site) == OK;
 };
 
-// TODO build priorities
 buildController.targets = function(room)
 {
-    let hasSpawn = false;
-
-    const structures = room.find(FIND_STRUCTURES);
-    for (let i = 0; i < structures.length; ++i)
-    {
-        const structure = structures[i];
-        if (structure.my && structure.structureType == STRUCTURE_SPAWN)
-        {
-            hasSpawn = true;
-            break;
-        }
-    }
-
-    return room.find(
+    const allSites = room.find(
         FIND_CONSTRUCTION_SITES,
         {
-            filter: function(site)
-            {
-                return site.my && (hasSpawn || site.structureType == STRUCTURE_SPAWN);
-            }
+            filter: { my: true }
         }
     );
+
+    // STRATEGY build priorities
+
+    const spawns = _.filter(
+        allSites,
+        {
+            structureType: STRUCTURE_SPAWN
+        }
+    );
+    if (spawns.length > 0) return spawns;
+
+    const extensions = _.filter(
+        allSites,
+        {
+            structureType: STRUCTURE_EXTENSION
+        }
+    );
+    if (extensions.length > 0) return extensions;
+
+    return allSites;
 };
 
 buildController.register();
