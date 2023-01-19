@@ -59,6 +59,7 @@ function Controller(id)
     **/
     this._prepareExcludedTargets = function(room)
     {
+        this._creepPerTarget = true;
         this._excludedTargets = [];
     };
 
@@ -69,7 +70,6 @@ function Controller(id)
     **/
     this._excludeTarget = function(creep)
     {
-        this._creepPerTarget = true;
         this._excludedTargets.push(creep.memory.dest);
     };
 
