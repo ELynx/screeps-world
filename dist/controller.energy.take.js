@@ -54,17 +54,18 @@ energyTakeController.targets = function(room)
             filter: _.bind(
                 function(structure)
                 {
-                    const toKeep = this.wantToKeep(structure);
-
+                    // toKeep is duplicate, but prevent excess calls to a function
                     if (structure.structureType == STRUCTURE_CONTAINER ||
                         structure.structureType == STRUCTURE_STORAGE ||
                         // STRATEGY allow to take from terminal, maybe airdrop energy
                         structure.structureType == STRUCTURE_TERMINAL)
                     {
+                        const toKeep = this.wantToKeep(structure);
                         return structure.store[RESOURCE_ENERGY] > toKeep;
                     }
                     else if (structure.structureType == STRUCTURE_LINK)
                     {
+                        const toKeep = this.wantToKeep(structure);
                         if (structure.store[RESOURCE_ENERGY] > toKeep)
                         {
                             // STRATEGY do not steal from source
