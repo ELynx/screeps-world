@@ -67,8 +67,11 @@ beetle.creepAtDestination = function(creep)
     if (creep.pos.inRangeTo(controlPos, BreachCompleteRange))
     {
         // biased to center, as we need
-        controlPos.x = Math.floor(Math.random() * 49);
-        controlPos.y = Math.floor(Math.random() * 49);
+        controlPos = new RoomPosition(
+            Math.floor(Math.random() * 49),
+            Math.floor(Math.random() * 49),
+            controlPos.roomName
+        );
     }
 
     // no path known
