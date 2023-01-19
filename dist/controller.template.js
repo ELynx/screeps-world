@@ -114,13 +114,6 @@ function Controller(id)
     this.observeMyCreep = undefined;
 
     /**
-    Observer every creep controlled by the room.
-    Duration - room.
-    @param {array<Creep>} creeps.
-    **/
-    this.observeAllCreeps = undefined;
-
-    /**
     Do something with target and creep then they met.
     @param {Object} target.
     @param {Creep} creep.

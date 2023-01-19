@@ -32,11 +32,6 @@ var globals =
     roomControllersObserveOwn: { },
 
     /**
-    Object holding references to room controllers that care for all creeps.
-    **/
-    roomControllersObserveAll: { },
-
-    /**
     Object holding references to all registeded task controllers.
     **/
     taskControllers: { },
@@ -57,11 +52,6 @@ var globals =
         if (controller.observeMyCreep)
         {
             this.roomControllersObserveOwn[controller.id] = controller;
-        }
-
-        if (controller.observeAllCreeps)
-        {
-            this.roomControllersObserveAll[controller.id] = controller;
         }
     },
 
