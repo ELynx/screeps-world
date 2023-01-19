@@ -14,7 +14,7 @@ Calculate room energy level.
 roomInfoProcess.energyLevel = function(room)
 {
     let level = 0;
-    if (room && room.controller)
+    if (room && room.controller && room.controller.my)
     {
         level = room.controller.level;
     }
