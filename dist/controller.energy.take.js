@@ -8,8 +8,10 @@ energyTakeController.actRange = 1;
 
 energyTakeController.wantToKeep = function(structure)
 {
-    // TODO global constant
-    if (structure.structureType == STRUCTURE_TERMINAL) return 300;
+    const room = structure.room;
+
+    if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || 0;
+    if (structure.structureType == STRUCTURE_STORAGE)  return room.memory.stre || 0;
 
     return 0;
 };
