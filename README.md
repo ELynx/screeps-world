@@ -23,6 +23,8 @@ Stash some energy.
 
 Predictive controller drop.
 
+Autobuild energy containers.
+
 # Ideas
 PathFinder option `flee`.
 
@@ -35,3 +37,5 @@ https://github.com/The-International-Screeps-Bot/The-International-Open-Source/b
 https://github.com/kasami/kasamibot
 
 Intent collision detection with prototypes.
+
+Profiler accounts for `[A]ctions` with 0.2 CPU increase.
