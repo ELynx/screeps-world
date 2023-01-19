@@ -250,7 +250,8 @@ Calculate room mining level.
 roomInfoProcess.miningLevel = function(room)
 {
     // quick test
-    if (room.terminal === undefined) return 0;
+    if (room.terminal === undefined && room.storage === undefined)
+        return 0;
 
     const extractors = room.find(
         FIND_STRUCTURES,

@@ -19,38 +19,36 @@ energyRestockControllerSpecialist.act = function(target, creep)
 
 energyRestockControllerSpecialist.targets = function(room)
 {
-    const sourceLinks = room.find(
-        FIND_STRUCTURES,
-        {
-            filter: function(structure)
-            {
-                if (structure.structureType == STRUCTURE_LINK)
-                {
-                    return structure.my &&
-                           structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
-                           structure.isActiveSimple() &&
-                           structure.isSource();
-                }
+    const allStructures = room.find(FIND_STRUCTURES);
 
-                return false;
+    const sourceLinks = _.filter(
+        allStructures,
+        function(structure)
+        {
+            if (structure.structureType == STRUCTURE_LINK)
+            {
+                return structure.my &&
+                       structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
+                       structure.isActiveSimple() &&
+                       structure.isSource();
             }
+
+            return false;
         }
     );
 
     if (sourceLinks.length > 0) return sourceLinks;
 
-    return room.find(
-        FIND_STRUCTURES,
+    return _.filter(
+        allStructures,
+        function(structure)
         {
-            filter: function(structure)
+            if (structure.structureType == STRUCTURE_CONTAINER)
             {
-                if (structure.structureType == STRUCTURE_CONTAINER)
-                {
-                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
-                }
-
-                return false;
+                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
             }
+
+            return false;
         }
     );
 };

@@ -44,24 +44,24 @@ mineralHarvestController.act = function(terminal, creep)
     return false;
 };
 
+mineralHarvestController._checkStorage = function(structure)
+{
+    if (structure &&
+        structure.my &&
+        structure.isActiveSimple())
+    {
+        return structure.store.getFreeCapacity() > 0;
+    }
+
+    return false;
+};
+
 mineralHarvestController.targets = function(room)
 {
-    if (room.memory.mlvl == 0) return [];
+    const terminals = this._checkStorage(room.terminal) ? [ room.terminal ] : [];
+    const storages  = this._checkStorage(room.storage)  ? [ room.storage ]  : [];
 
-    return room.find(
-        FIND_STRUCTURES,
-        {
-            filter: function(structure)
-            {
-                if (structure.my && structure.structureType == STRUCTURE_TERMINAL && structure.isActiveSimple())
-                {
-                    return structure.store.getFreeCapacity() > 0;
-                }
-
-                return false;
-            }
-        }
-    );
+    return terminals.concat(storages);
 };
 
 mineralHarvestController.filterCreep = function(creep)

@@ -30,50 +30,48 @@ energyRestockControllerRegular.act = function(target, creep)
 
 energyRestockControllerRegular.targets = function(room)
 {
-    const critical = room.find(
-        FIND_STRUCTURES,
-        {
-            filter: function(structure)
-            {
-                if (structure.my && structure.isActiveSimple())
-                {
-                    if (structure.structureType == STRUCTURE_TOWER)
-                    {
-                        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockCritical * structure.store.getCapacity(RESOURCE_ENERGY);
-                    }
-                }
+    const allStructures = room.find(FIND_STRUCTURES);
 
-                return false;
+    const critical = _.filter(
+        allStructures,
+        function(structure)
+        {
+            if (structure.my && structure.isActiveSimple())
+            {
+                if (structure.structureType == STRUCTURE_TOWER)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockCritical * structure.store.getCapacity(RESOURCE_ENERGY);
+                }
             }
+
+            return false;
         }
     );
 
     if (critical.length > 0) return critical;
 
-    return room.find(
-        FIND_STRUCTURES,
+    return _.filter(
+        allStructures,
+        function(structure)
         {
-            filter: function(structure)
+            if (structure.my && structure.isActiveSimple())
             {
-                if (structure.my && structure.isActiveSimple())
+                if (structure.structureType == STRUCTURE_SPAWN ||
+                    structure.structureType == STRUCTURE_EXTENSION)
                 {
-                    if (structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_EXTENSION)
-                    {
-                        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                    }
-                    else if (structure.structureType == STRUCTURE_TOWER)
-                    {
-                        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockNormal * structure.store.getCapacity(RESOURCE_ENERGY);
-                    }
-                    else if (structure.structureType == STRUCTURE_TERMINAL)
-                    {
-                        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TerminalRestock;
-                    }
+                    return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
-
-                return false;
+                else if (structure.structureType == STRUCTURE_TOWER)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockNormal * structure.store.getCapacity(RESOURCE_ENERGY);
+                }
+                else if (structure.structureType == STRUCTURE_TERMINAL)
+                {
+                    return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TerminalRestock;
+                }
             }
+
+            return false;
         }
     );
 };
