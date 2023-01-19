@@ -1,6 +1,7 @@
 'use strict';
 
-var Tasked = require('tasked.template');
+var Tasked  = require('tasked.template');
+var globals = require('globals');
 
 var outlast = new Tasked('outlast');
 
@@ -78,7 +79,7 @@ outlast.creepRoomTravel = function(creep)
         else if (creep.pos.y ==  1) erasePath = true;
         else if (creep.pos.y == 48) erasePath = true;
 
-        if (erasePath) creep.memory._move = undefined;
+        if (erasePath) globals.imitateMoveErase(creep);
     }
     else
     {
