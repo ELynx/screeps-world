@@ -6,12 +6,12 @@ var globals = require('globals');
 Order of load is priority for task execution.
 **/
 // generate spawn(s)
-var taskedSpam    = require('tasked.spam');
-var taskedOutlast = require('tasked.outlast');
-var taskedStrelok = require('tasked.strelok');
-var taskedBeetle  = require('tasked.beetle');
-var taskedPlunder = require('tasked.plunder');
-var taskedClaim   = require('tasked.claim');
+var taskedOutlast = require('tasked.outlast'); // very tick-sensitive logic, run first
+var taskedBeetle  = require('tasked.beetle');  // generates aggro
+var taskedStrelok = require('tasked.strelok'); // consumes aggro
+var taskedPlunder = require('tasked.plunder'); // paramilitary
+var taskedClaim   = require('tasked.claim');   // one-off
+var taskedSpam    = require('tasked.spam');    // lowest prio
 // consume spawn(s)
 var taskedSpawn   = require('tasked.spawn');
 // other
