@@ -70,7 +70,6 @@ function Controller(id)
     **/
     this._excludeTarget = function(creep)
     {
-        console.log('exclude ' + creep.memory.dest);
         this._excludedTargets.push(creep.memory.dest);
     };
 
