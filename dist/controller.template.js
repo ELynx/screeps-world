@@ -70,6 +70,7 @@ function Controller(id)
     **/
     this._excludeTarget = function(creep)
     {
+        console.log('exclude ' + creep.memory.dest);
         this._excludedTargets.push(creep.memory.dest);
     };
 
@@ -96,7 +97,7 @@ function Controller(id)
         return _.filter(targets,
             function(target)
             {
-                return !_.some(exclude, target.id);
+                return !_.some(exclude, _.matches(target.id));
             }
         );
     };
