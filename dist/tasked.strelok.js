@@ -86,7 +86,6 @@ strelok.creepAtDestination = function(creep)
                         return false;
                     }
 
-                    // TODO wall breach coordination
                     if (structure.structureType == STRUCTURE_WALL)
                     {
                         return false;
@@ -109,6 +108,11 @@ strelok.creepAtDestination = function(creep)
             targets = targets.concat(structs);
         }
 
+        if (creep.room._aggro_ && creep.room._aggro_.length > 0)
+        {
+            targets = targets.concat(creep.room._aggro_);
+        }
+
         const wounded = _.filter
         (
             creeps,
@@ -129,6 +133,11 @@ strelok.creepAtDestination = function(creep)
         this.roomTargets[dest],
         function(hostile)
         {
+            if (hostile._aggroTarget_)
+            {
+                return true;
+            }
+
             if (hostile.structureType == STRUCTURE_RAMPART)
             {
                 // only forward

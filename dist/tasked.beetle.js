@@ -7,6 +7,15 @@ var beetle = new Tasked('beetle');
 const BreachCompleteRange = 1;
 const BreachEasyRange = 3;
 
+beetle.prepare = function()
+{
+    for (let roomName in Game.rooms)
+    {
+        const room = Game.rooms[roomName];
+        room._aggro_ = [];
+    }
+};
+
 beetle.breachLength = function(breach)
 {
     // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
@@ -209,11 +218,7 @@ beetle.creepAtDestination = function(creep)
             // coordinate effort - ask nearbys to attack
             if (rc == OK)
             {
-                if (creep.room._aggro_ === undefined)
-                {
-                    creep.room._aggro_ = [];
-                }
-
+                target._aggroTarget_ = true;
                 creep.room._aggro_.push(target);
             }
         }
