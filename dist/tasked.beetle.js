@@ -175,6 +175,11 @@ beetle.creepAtDestination = function(creep)
                 if (item.x != next.x || item.y != next.y)
                     continue;
 
+                if (struct.hits === undefined)
+                {
+                    continue;
+                }
+
                 // walkable
                 if (struct.structureType == STRUCTURE_CONTAINER ||
                     struct.structureType == STRUCTURE_ROAD)
@@ -201,6 +206,16 @@ beetle.creepAtDestination = function(creep)
         if (target)
         {
             rc = creep.dismantle(target);
+            // coordinate effort - ask nearbys to attack
+            if (rc == OK)
+            {
+                if (creep.room._aggro_ === undefined)
+                {
+                    creep.room._aggro_ = [];
+                }
+
+                creep.room._aggro_.push(target);
+            }
         }
         else
         {
