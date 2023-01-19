@@ -64,18 +64,6 @@ var roomActor =
     },
 
     /**
-    Let controller see all creeps.
-    @param {array<Creep>} creeps.
-    **/
-    roomControllersObserveAll: function(creeps)
-    {
-        for (const id in globals.roomControllersObserveAll)
-        {
-            globals.roomControllersObserveAll[id].observeAllCreeps(creeps);
-        }
-    },
-
-    /**
     Find a controller, execute it's act.
     @param {Object} target object.
     @param {Creep} creep.
@@ -147,7 +135,7 @@ var roomActor =
         // creeps that has no controller assigned will go here
         let unassignedCreeps = [];
 
-        let roomCreeps = room.getRoomControlledCreeps();
+        const roomCreeps = room.getRoomControlledCreeps();
         if (roomCreeps.length > 0)
         {
             // do some statistics
@@ -305,7 +293,7 @@ var roomActor =
                         unassignedCreeps.push(creep);
                     }
                 } // end of creep assigned
-                else
+                else // not creep assigned
                 {
                     unassignedCreeps.push(creep);
                 }
@@ -321,8 +309,6 @@ var roomActor =
 
         if (unassignedCreeps.length > 0)
         {
-            this.roomControllersObserveAll(roomCreeps);
-
             this.roomControllersControl(room, unassignedCreeps);
         }
 
