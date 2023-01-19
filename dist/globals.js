@@ -64,6 +64,25 @@ var globals =
         this.taskControllers[tasked.id] = tasked;
     },
 
+    // imitate _move cahce
+    // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
+    imitateMoveCreate: function(target, creep, path)
+    {
+        const pos = target.pos;
+        creep.memory._move =
+        {
+            dest: { x: pos.x, y: pos.y, room: pos.roomName },
+            time: Game.time,
+            path: Room.serializePath(path),
+            room: pos.roomName
+        };
+    },
+
+    imitateMoveErase: function(creep)
+    {
+        creep.memory._move = undefined;
+    },
+
     // empty string used to allow use as key
     NO_CONTROL:     '',
     NO_DESTINATION: '',
@@ -96,21 +115,11 @@ var globals =
 
         if (targetSolution)
         {
-            const pos = target.pos;
-
-            // imitate _move cahce
-            // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
-            creep.memory._move =
-            {
-                dest: { x: pos.x, y: pos.y, room: pos.roomName },
-                time: Game.time,
-                path: Room.serializePath(targetSolution),
-                room: pos.roomName
-            };
+            this.imitateMoveCreate(target, creep, targetSolution);
         }
         else
         {
-            creep.memory._move = undefined;
+            this.imitateMoveErase(creep);
         }
     },
 
@@ -124,7 +133,8 @@ var globals =
         creep.memory.dest  = this.NO_DESTINATION;
         creep.memory.dact  = this.NO_ACT_RANGE;
         creep.memory.xtra  = this.NO_EXTRA;
-        creep.memory._move = undefined;
+
+        this.imitateMoveErase(creep);
     },
 
     moveOptionsWrapper: function(options)
