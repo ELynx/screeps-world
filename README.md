@@ -19,8 +19,6 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-Stash some energy.
-
 Predictive controller drop.
 
 Autobuild energy containers.
