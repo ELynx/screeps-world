@@ -23,6 +23,8 @@ Predictive controller drop.
 
 Autobuild energy containers.
 
+Strelok try to attack locked sections.
+
 # Ideas
 PathFinder option `flee`.
 
