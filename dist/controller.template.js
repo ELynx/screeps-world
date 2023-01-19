@@ -245,7 +245,7 @@ function Controller(id)
     {
         let remainingTargets = this._findTargets(room);
 
-        this.debugLine(room, 'Targets checked ' + allTargets.length);
+        this.debugLine(room, 'Targets checked ' + remainingTargets.length);
         this.debugLine(room, 'Creeps checked  ' + roomCreeps.length);
 
         let unassignedCreeps = [];
