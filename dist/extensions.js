@@ -67,14 +67,18 @@ Creep.prototype.unlive = function()
 {
     let result = false;
 
-    // if not given, set the room, starting with one creep is in
-    if (creep.getControlRoom() === undefined)
+    if (creep.room.memory.elvl > 0)
     {
-        if (creep.room.memory.elvl > 0)
-        {
-            creep.setControlRoom(creep.room.name);
-        }
-
+        creep.setControlRoom(creep.room.name);
+        result = true;
+    }
+    else if (creep.memory._xxx)
+    {
+        creep.setControlRoom(creep.memory._xxx)
+        result = true;
+    }
+    else
+    {
         for (const roomName in Game.rooms)
         {
             const room = Game.rooms[roomName];
@@ -87,10 +91,14 @@ Creep.prototype.unlive = function()
         }
     }
 
-    // forget who they serve
-    creep.memory.flag = undefined;
+    if (result)
+    {
+        // forget who they serve
+        creep.memory.flag = undefined;
+        return OK;
+    }
 
-    if (!result) return this.suicide();
+    return this.suicide();
 };
 
 /**
