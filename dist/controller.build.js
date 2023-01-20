@@ -11,11 +11,10 @@ buildController.act = function(site, creep)
     return creep.build(site) == OK;
 };
 
-buildController.targets = function(room)
+// STRATEGY build priorities
+buildController._sites = function(room)
 {
     const allSites = room.find(FIND_CONSTRUCTION_SITES);
-
-    // STRATEGY build priorities
 
     const spawns = _.filter(
         allSites,
@@ -34,6 +33,29 @@ buildController.targets = function(room)
     if (extensions.length > 0) return extensions;
 
     return allSites;
+};
+
+buildController.targets = function(room)
+{
+    const sites = this._sites(room);
+    if (sites.length == 0) return 0;
+
+    // cannot build when creep is on site
+    const allCreeps = room.find(FIND_CREEPS);
+    return _.filter(
+        sites,
+        function(site)
+        {
+            return !_.some(
+                allCreeps,
+                function(creep)
+                {
+                    return creep.pos.x == site.pos.x &&
+                           creep.pos.y == site.pos.y;
+                }
+            );
+        }
+    );
 };
 
 buildController.register();
