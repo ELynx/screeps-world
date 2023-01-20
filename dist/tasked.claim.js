@@ -6,24 +6,43 @@ var claim = new Tasked('claim');
 
 claim.creepAtDestination = function(creep)
 {
-    if (!creep.room.controller)
+    const controller = creep.room.controller;
+
+    if (!controller)
     {
         creep.unlive();
+        return;
     }
 
-    let rc = OK;
+    let rc   = ERR_TIRED;
+    let wait = CREEP_CLAIM_LIFE_TIME;
 
-    const controller = creep.room.controller;
     if (controller.hostileOrUnowned())
     {
         if (creep.pos.isNearTo(controller))
         {
+            if (creep.memory.clmt === undefined)
+            {
+                creep.memory.clmt = Game.time;
+            }
+
             let sign = '';
 
             if (controller.owner && controller.owner.username != creep.owner.username)
             {
                 sign = 'Your base is under attack';
                 rc = creep.attackController(controller);
+
+                if (controller.level == 1 && controller.ticksToDowngrade < creep.ticksToLive)
+                {
+                    // controller will drop before creep expires
+                    rc = OK;
+                }
+                else
+                {
+                    // in case of early arrival, see if creep can wait it out
+                    wait = controller.upgradeBlocked;
+                }
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
             {
@@ -69,14 +88,15 @@ claim.creepAtDestination = function(creep)
         else
         {
             creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 });
+            rc = OK; // keep walking
         }
     } // end of harmable controller
 
     // filter out early arrivals
-    if (rc == ERR_TIRED && creep.ticksToLive < controller.upgradeBlocked)
+    if (rc == ERR_TIRED && creep.ticksToLive < wait)
     {
-        const ticksToArrive = CREEP_CLAIM_LIFE_TIME - creep.ticksToLive;
-        const ticksBlocked  = controller.upgradeBlocked;
+        const ticksToArrive = CREEP_CLAIM_LIFE_TIME - (creep.memory.clmt || 0);
+        const ticksBlocked  = wait;
         const spawnAfter = Game.time + ticksBlocked - ticksToArrive;
 
         let flag = Game.flags[creep.memory.flag];
