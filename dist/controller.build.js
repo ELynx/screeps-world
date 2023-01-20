@@ -38,7 +38,7 @@ buildController._sites = function(room)
 buildController.targets = function(room)
 {
     const sites = this._sites(room);
-    if (sites.length == 0) return 0;
+    if (sites.length == 0) return [];
 
     // cannot build when creep is on site
     const allCreeps = room.find(FIND_CREEPS);
