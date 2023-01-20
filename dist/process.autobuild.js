@@ -136,7 +136,7 @@ autobuildProcess.tryPlan = function(room, posOrRoomObject, structureType)
 
 autobuildProcess.extractor = function(room)
 {
-    if (room.controller && CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0)
+    if (room.controller && room.controller.my && CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0)
     {
         const minerals = room.find(FIND_MINERALS);
         for (let i = 0; i < minerals.length; ++i)
@@ -216,7 +216,7 @@ const TargetLinkReserve = 1;
 
 autobuildProcess.sourceLink = function(room)
 {
-    let canHave = room.controller ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
+    let canHave = room.controller && room.controller.my ? CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] : 0;
 
     // out of two, reserve one, otherwise links will wait for whole level to complete
     const reserve = canHave <= 2 ? 1 : TargetLinkReserve;
@@ -225,7 +225,7 @@ autobuildProcess.sourceLink = function(room)
     {
         const filterForLinks = function(structure)
         {
-            return structure.my && structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
+            return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
         };
 
         const links = room.find(
