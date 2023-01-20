@@ -74,22 +74,16 @@ ttlController.targets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    if (creep.ticksToLive > Ttl)
-    {
-        return false;
-    }
+    // if recycle was forced
+    if (creep.memory.recycle) return true;
+
+    if (creep.ticksToLive > Ttl) return false;
 
     // just fast check to skip repeated state check
-    if (creep.memory.xttl)
-    {
-        return false;
-    }
+    if (creep.memory.xttl) return false;
 
     // STRATEGY don't drag resources around
-    if (creep.store.getUsedCapacity() > 0)
-    {
-        return false;
-    }
+    if (creep.store.getUsedCapacity() > 0) return false;
 
     // only check creeps with known body type
     const btyp = creep.memory.btyp;

@@ -108,7 +108,7 @@ function Tasked(id)
         }
 
         const pos = creep.getControlPos();
-        if (creep.pos.roomName != pos.roomName)
+        if (creep.room.name != pos.roomName)
         {
             return;
         }
@@ -152,7 +152,16 @@ function Tasked(id)
 
     this.act = function()
     {
-        let creeps = _.filter(Game.creeps, function(creep) { return creep.name.startsWith(this.id); }, this);
+        const creeps = _.filter(
+            Game.creeps,
+            function(creep)
+            {
+                // creep with no memory of flag are given up
+                return creep.name.startsWith(this.id) &&
+                       creep.memory.flag;
+            },
+            this
+        );
 
         if (this.prepare)
         {
@@ -183,7 +192,7 @@ function Tasked(id)
                 continue;
             }
 
-            if (creep.pos.roomName == creep.getControlRoom())
+            if (creep.room.name == creep.getControlRoom())
             {
                 this.creepAtDestination(creep);
             }

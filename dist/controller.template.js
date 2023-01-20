@@ -164,10 +164,7 @@ function Controller(id)
 
     this._allAssignedTo = function(target)
     {
-        const room = Game.rooms[target.pos.roomName];
-        if (room === undefined) return [];
-
-        const roomCreeps = room.getRoomControlledCreeps();
+        const roomCreeps = target.room.getRoomControlledCreeps();
         return _.filter(
             roomCreeps,
             function(creep)
