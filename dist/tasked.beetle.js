@@ -9,7 +9,7 @@ const BreachEasyRange = 3;
 
 beetle.prepare = function()
 {
-    for (let roomName in Game.rooms)
+    for (const roomName in Game.rooms)
     {
         const room = Game.rooms[roomName];
         room._aggro_ = [];
@@ -37,7 +37,7 @@ beetle.creepAtDestination = function(creep)
 
     if (Game.rooms.sim === undefined)
     {
-        if (creep.room.controller && creep.room.controller.my)
+        if (creep.room.controller && creep.room.controller.notHostile())
         {
             beHostile = false;
         }
@@ -250,20 +250,20 @@ beetle.creepAtDestination = function(creep)
 
 beetle.flagPrepare = function(flag)
 {
-    if (flag.room)
+    if (Game.rooms[flag.pos.roomName])
     {
         // any creep of same alignment work, breach was complete
-        const hasMyCreeps = flag.pos.hasInSquareArea
+        const breached = flag.pos.hasInSquareArea
         (
             LOOK_CREEPS,
             BreachCompleteRange,
             function(creep)
             {
-                return creep.my;
+                return creep.myOrAlly();
             }
         );
 
-        if (hasMyCreeps)
+        if (breached)
         {
             return this.FLAG_REMOVE;
         }

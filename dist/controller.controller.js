@@ -13,7 +13,7 @@ controllerController.act = function(controller, creep)
 
 controllerController.targets = function(room)
 {
-    if (room.controller && room.controller.my)
+    if (room.controller && room.controller.owner)
     {
         return [room.controller];
     }

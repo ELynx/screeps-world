@@ -11,7 +11,7 @@ spam.creepPrepare = function(creep)
 
 spam.creepAtDestination = function(creep)
 {
-    // die at the border, draw enemy scavengers
+    this._coastToHalt(creep);
 };
 
 spam.flagPrepare = function(flag)

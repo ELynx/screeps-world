@@ -25,7 +25,7 @@ redAlert.act = function(controller, creep)
 redAlert.targets = function(room)
 {
     if (room.controller &&
-        room.controller.my &&
+        room.controller.owner &&
         room.controller.level > 0 &&
        !room.controller.upgradeBlocked)
     {

@@ -27,8 +27,7 @@ energyRestockControllerSpecialist.targets = function(room)
         {
             if (structure.structureType == STRUCTURE_LINK)
             {
-                return structure.my &&
-                       structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
+                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
                        structure.isActiveSimple() &&
                        structure.isSource();
             }
@@ -45,7 +44,8 @@ energyRestockControllerSpecialist.targets = function(room)
         {
             if (structure.structureType == STRUCTURE_CONTAINER)
             {
-                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
+                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
+                       structure.isActiveSimple();
             }
 
             return false;

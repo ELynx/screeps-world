@@ -34,7 +34,7 @@ energyRestockControllerRegular.targets = function(room)
         {
             filter: function(structure)
             {
-                return structure.my && structure.isActiveSimple();
+                return structure.isActiveSimple();
             }
         }
     );

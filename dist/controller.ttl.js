@@ -61,7 +61,7 @@ ttlController.targets = function(room)
         {
             filter: function(structure)
             {
-                if (structure.my && structure.structureType == STRUCTURE_SPAWN)
+                if (structure.structureType == STRUCTURE_SPAWN)
                 {
                     return !structure.spawning && structure.isActiveSimple();
                 }

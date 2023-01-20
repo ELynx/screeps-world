@@ -13,12 +13,7 @@ buildController.act = function(site, creep)
 
 buildController.targets = function(room)
 {
-    const allSites = room.find(
-        FIND_CONSTRUCTION_SITES,
-        {
-            filter: { my: true }
-        }
-    );
+    const allSites = room.find(FIND_CONSTRUCTION_SITES);
 
     // STRATEGY build priorities
 

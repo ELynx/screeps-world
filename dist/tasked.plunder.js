@@ -17,32 +17,36 @@ plunder.creepPrepare = function(creep)
 
 plunder.moveAndUnload = function(creep, target)
 {
-    let range = undefined;
     let pos   = undefined;
+    let range = undefined;
 
     if (target.pos)
     {
-        range = 1;
         pos   = target.pos;
+        range = 1;
     }
     else
     {
-        range = 5; // good enough
         pos   = target;
+        range = 5; // good enough
     }
 
     if (creep.pos.inRangeTo(pos, range))
     {
         for (const resourceType in creep.store)
         {
+            let rc = undefined;
             if (target.store && target.store.getFreeCapacity(resourceType) > 0)
             {
-                creep.transfer(target, resourceType);
+                rc = creep.transfer(target, resourceType);
             }
-            else
+
+            if (rc != OK)
             {
-                creep.drop(resourceType);
+                rc = creep.drop(resourceType);
             }
+
+            if (rc == OK) break; // from resource loop
         }
     }
     else
@@ -98,10 +102,10 @@ plunder.moveAndLoad = function(creep, target)
 {
     if (creep.pos.isNearTo(target))
     {
-        for (let resourceType in target.store)
+        for (const resourceType in target.store)
         {
             const rc = creep.withdraw(target, resourceType);
-            if (rc != OK) break;
+            if (rc == OK) break;
         }
     }
     else
@@ -172,7 +176,7 @@ plunder.creepAtOtherRooms = function(creep)
 
 plunder.creepAtDestination = function(creep)
 {
-    if (creep.room.controller && creep.room.controller.my)
+    if (creep.room.canControlStructures())
     {
         this.creepAtOwnRoom(creep);
     }
@@ -186,14 +190,17 @@ plunder.creepRoomTravel = function(creep)
 {
     // keep track of closest owned stuff
 
-    if (creep.room.storage && creep.room.storage.my)
-        creep.memory.storage = creep.room.storage.id;
+    if (creep.room.canControlStructures())
+    {
+        if (creep.room.storage)
+            creep.memory.storage = creep.room.storage.id;
 
-    if (creep.room.terminal && creep.room.terminal.my)
-        creep.memory.terminal = creep.room.terminal.id;
+        if (creep.room.terminal)
+            creep.memory.terminal = creep.room.terminal.id;
 
-    if (creep.room.controller && creep.room.controller.my)
-        creep.memory.controller = creep.room.controller.id;
+        if (creep.room.controller)
+            creep.memory.controller = creep.room.controller.id;
+    }
 
     this._creepRoomTravel(creep);
 };
