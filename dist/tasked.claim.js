@@ -73,18 +73,24 @@ claim.creepAtDestination = function(creep)
 
 claim.flagPrepare = function(flag)
 {
-    // done about it
     if (flag.room)
     {
         const flagController = flag.room.controller;
         if (flagController)
         {
+            // done about it
             if (!flagController.hostileOrUnowned()) return this.FLAG_REMOVE;
         }
         else
         {
             return this.FLAG_REMOVE;
         }
+    }
+
+    // save resources on not spamming
+    if (flag.memory.after && flag.memory.after > Game.time)
+    {
+        return this.FLAG_IGNORE;
     }
 
     return this.FLAG_SPAWN;

@@ -50,14 +50,14 @@ strelok.creepPrepare = function(creep)
     // if hit start a war immediately
     if (creep.hits < creep.hitsMax &&  !creep.memory.war)
     {
-        creep.setControlRoom(creep.pos.roomName);
+        creep.setControlRoom(creep.room.name);
         creep.memory.war = true;
     }
 };
 
 strelok.creepAtDestination = function(creep)
 {
-    const dest = creep.pos.roomName;
+    const dest = creep.room.name;
 
     if (!this.roomTargets[dest])
     {
@@ -319,10 +319,10 @@ strelok.creepRoomTravel = function(creep)
         {
             creep.heal(creep);
         }
-        else if (this.roomWounded[creep.pos.roomName] &&
-                 this.roomWounded[creep.pos.roomName].length > 0)
+        else if (this.roomWounded[creep.room.name] &&
+                 this.roomWounded[creep.room.name].length > 0)
         {
-            creep.healClosest(this.roomWounded[creep.pos.roomName]);
+            creep.healClosest(this.roomWounded[creep.room.name]);
         }
     }
 };

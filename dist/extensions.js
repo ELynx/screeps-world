@@ -65,7 +65,32 @@ Creep.prototype.allyOrNeutral = function()
 
 Creep.prototype.unlive = function()
 {
-    return this.suicide();
+    let result = false;
+
+    // if not given, set the room, starting with one creep is in
+    if (creep.getControlRoom() === undefined)
+    {
+        if (creep.room.memory.elvl > 0)
+        {
+            creep.setControlRoom(creep.room.name);
+        }
+
+        for (const roomName in Game.rooms)
+        {
+            const room = Game.rooms[roomName];
+            if (room.memory.elvl > 0)
+            {
+                creep.setControlRoom(room.name);
+                result = true;
+                break;
+            }
+        }
+    }
+
+    // forget who they serve
+    creep.memory.flag = undefined;
+
+    if (!result) return this.suicide();
 };
 
 /**
@@ -493,7 +518,7 @@ StructureTerminal.prototype.autoSell = function(order, keep = 0)
 
         const amount = Math.min(has - keep, maxAmount, order.amount);
 
-        return Game.market.deal(order.id, amount, this.pos.roomName);
+        return Game.market.deal(order.id, amount, this.room.name);
     }
 
     return ERR_INVALID_ARGS;

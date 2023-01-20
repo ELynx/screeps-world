@@ -87,13 +87,13 @@ plunder.creepAtOwnRoom = function(creep)
 plunder.getSomeOwnRoomName = function(creep)
 {
     const storage = creep.memory.storage ? Game.getObjectById(creep.memory.storage) : undefined;
-    if (storage) return storage.pos.roomName;
+    if (storage) return storage.room.name;
 
     const terminal = creep.memory.terminal ? Game.getObjectById(creep.memory.terminal) : undefined;
-    if (terminal) return terminal.pos.roomName;
+    if (terminal) return terminal.room.name;
 
     const controller = creep.memory.controller ? Game.getObjectById(creep.memory.controller) : undefined;
-    if (controller) return controller.pos.roomName;
+    if (controller) return controller.room.name;
 
     return undefined;
 };
@@ -116,7 +116,7 @@ plunder.moveAndLoad = function(creep, target)
 
 plunder.creepAtOtherRooms = function(creep)
 {
-    let targets = this.roomTargets[creep.pos.roomName];
+    let targets = this.roomTargets[creep.room.name];
     if (targets === undefined)
     {
         const allStructures = creep.room.find(FIND_STRUCTURES);
@@ -145,12 +145,12 @@ plunder.creepAtOtherRooms = function(creep)
             }
         );
 
-        this.roomTargets[creep.pos.roomName] = targets;
+        this.roomTargets[creep.room.name] = targets;
     }
 
     if (targets.length == 0)
     {
-        this.roomBoring[creep.pos.roomName] = true;
+        this.roomBoring[creep.room.name] = true;
     }
 
     if (targets.length == 0 || creep.store.getFreeCapacity() == 0)
