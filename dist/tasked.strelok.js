@@ -26,12 +26,14 @@ strelok.prepare = function()
 {
     this.roomTargets = { };
     this.roomWounded = { };
+    this.roomNoHurt  = { };
+
     this.roomBoring  = { };
 
     for (const roomName in Game.rooms)
     {
         const room = Game.rooms[roomName];
-        if (room && room.controller && room.controller.my)
+        if (room.canControlStructures())
         {
             this.markRoomForPatrol(room);
         }
@@ -44,8 +46,9 @@ strelok.creepPrepare = function(creep)
     creep._canHeal_       = creep.getActiveBodyparts(HEAL) > 0;
     creep._canHealRanged_ = creep._canHeal_;
 
+    // TODO why this flag?
     // if hit start a war immediately
-    if (creep.hits < creep.hitsMax && !creep.memory.war)
+    if (creep.hits < creep.hitsMax &&  !creep.memory.war)
     {
         creep.setControlRoom(creep.pos.roomName);
         creep.memory.war = true;
@@ -60,20 +63,22 @@ strelok.creepAtDestination = function(creep)
     {
         const creeps = creep.room.find(FIND_CREEPS);
 
-        let targets = _.filter
-        (
+        const targetCreeps = _.filter(
             creeps,
             function(creep)
             {
-                return !creep.my;
+                return creep.hostile();
             }
         );
 
-        const structs = creep.room.find(
+        const targetStructures = creep.room.find(
             FIND_STRUCTURES,
             {
                 filter: function(structure)
                 {
+                    // ignore everything without hit points
+                    if (!structure.hits) return false;
+
                     // STRATEGY ingore resource management, even though it can be military
                     if (structure.structureType == STRUCTURE_CONTAINER ||
                         structure.structureType == STRUCTURE_EXTRACTOR ||
@@ -86,44 +91,50 @@ strelok.creepAtDestination = function(creep)
                         return false;
                     }
 
+                    // STRATEGY only aggro can make this target walls
                     if (structure.structureType == STRUCTURE_WALL)
                     {
                         return false;
                     }
 
-                    // please don't hunt roads
-                    if (structure.structureType == STRUCTURE_ROAD)
+                    // please don't hunt these...
+                    if (structure.structureType == STRUCTURE_ROAD ||
+                        structure.structureType == STRUCTURE_PORTAL)
                     {
                         return false;
                     }
 
-                    // ignore everything without hit points
-                    return !structure.my && structure.hits;
+                    return structure.hostileOrUnowned();
                 }
             }
         );
 
-        if (structs.length > 0)
-        {
-            targets = targets.concat(structs);
-        }
+        let targets = targetCreeps.concat(targetStructures);
 
         if (creep.room._aggro_ && creep.room._aggro_.length > 0)
         {
             targets = targets.concat(creep.room._aggro_);
         }
 
-        const wounded = _.filter
-        (
+        const wounded = _.filter(
             creeps,
             function(creep)
             {
-                return creep.my && creep.hits < creep.hitsMax;
+                return creep.myOrAlly() && (creep.hits < creep.hitsMax);
+            }
+        );
+
+        const noHurt = _.filter(
+            creeps,
+            function(creep)
+            {
+                return creep.allyOrNeutral();
             }
         );
 
         this.roomTargets[dest] = targets;
         this.roomWounded[dest] = wounded;
+        this.roomNoHurt[dest]  = noHurt;
     }
 
     const rushPos = creep.getControlPos();
@@ -176,22 +187,30 @@ strelok.creepAtDestination = function(creep)
         {
             if (rangeToFireTarget <= 3)
             {
-                // carpet bombing
-                let mass = false;
+                let mass = undefined;
 
-                // find out if mass will hit someone else
-                for (let i = 0; i < targets.length && !mass; ++i)
+                // find out if mass will hurt a non-target creep
+                // in room attack, there is less non-targets than targets
+                // check this list first to save some ticks
+                for (let i = 0; i < this.roomNoHurt.length; ++i)
+                {
+                    const noHurt = this.roomNoHurt[i];
+                    if (creep.pos.inRangeTo(noHurt, 3))
+                    {
+                        mass = false;
+                        break;
+                    }
+                }
+
+                // find out if mass will hit a hostile
+                for (let i = 0; i < targets.length && mass === undefined; ++i)
                 {
                     const secondary = targets[i];
-
-                    if (secondary.id == fireTarget.id)
-                    {
-                        continue;
-                    }
-
+                    if (secondary.id == fireTarget.id) continue;
                     if (creep.pos.inRangeTo(secondary, 3))
                     {
                         mass = true;
+                        break;
                     }
                 }
 
@@ -213,11 +232,14 @@ strelok.creepAtDestination = function(creep)
         if (creep._canMove_)
         {
             // ballet when close
-            if (rangeToFireTarget <= 3 && fireTarget.id == moveTarget.id)
+            if (rangeToFireTarget <= 4 && fireTarget.id == moveTarget.id)
             {
                 let toFrom = 0;
 
-                if (fireTarget.structureType)
+                const targetIsStructure = fireTarget.structureType !== undefined;
+                const targetIsNotMelee  = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK));
+
+                if (targetIsStructure || targetIsNotMelee)
                 {
                     if (rangeToFireTarget > 1)
                     {
@@ -226,11 +248,11 @@ strelok.creepAtDestination = function(creep)
                 }
                 else
                 {
-                    if (rangeToFireTarget > 2)
+                    if (rangeToFireTarget > 3)
                     {
                         toFrom = 1;
                     }
-                    else if (rangeToFireTarget < 2)
+                    else
                     {
                         toFrom = -1;
                     }
@@ -307,11 +329,9 @@ strelok.creepRoomTravel = function(creep)
 
 strelok.flagPrepare = function(flag)
 {
-    if (flag.room &&
-        flag.room.controller &&
-        flag.room.controller.my)
+    if (flag.room.canControlStructures())
     {
-        // if in currently owned room aggro only when threat level is above "minimal"
+        // if in currently owned room spawn only when threat level is above "minimal"
         if (!(flag.room.memory.threat > 1))
         {
             // keep flag but don't spawn
