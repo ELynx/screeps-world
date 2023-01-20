@@ -6,9 +6,15 @@ var claim = new Tasked('claim');
 
 claim.creepAtDestination = function(creep)
 {
-    const controller = creep.room.controller;
+    if (!creep.room.controller)
+    {
+        creep.unlive();
+    }
 
-    if (controller && controller.hostileOrUnowned())
+    let rc = OK;
+
+    const controller = creep.room.controller;
+    if (controller.hostileOrUnowned())
     {
         if (creep.pos.isNearTo(controller))
         {
@@ -16,13 +22,13 @@ claim.creepAtDestination = function(creep)
 
             if (controller.owner && controller.owner.username != creep.owner.username)
             {
-                sign = 'Base is under attack';
-                const rc = creep.attackController(controller);
+                sign = 'Your base is under attack';
+                rc = creep.attackController(controller);
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
             {
-                sing = 'Taking over...';
-                const rc = creep.attackController(controller);
+                sing = 'Taking over';
+                rc = creep.attackController(controller);
             }
             else
             {
@@ -39,12 +45,12 @@ claim.creepAtDestination = function(creep)
                 if (Game.gcl.level > myRooms)
                 {
                     sign = '';
-                    const rc = creep.claimController(controller);
+                    rc = creep.claimController(controller);
                 }
                 else
                 {
                     sign = 'I was here';
-                    const rc = creep.reserveController(controller);
+                    rc = creep.reserveController(controller);
                 }
             }
 
@@ -52,22 +58,34 @@ claim.creepAtDestination = function(creep)
             {
                 if (controller.sign.text != sign || controller.sign.username != creep.owner.username)
                 {
-                    const rc = creep.signController(controller, sign);
+                    creep.signController(controller, sign);
                 }
             }
             else if (sign.length > 0)
             {
-                const rc = creep.signController(controller, sign);
+                creep.signController(controller, sign);
             }
-        }
+        } // end of creep is near pos
         else
         {
             creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 });
         }
-    }
-    else
+    } // end of harmable controller
+
+    // filter out early arrivals
+    if (rc == ERR_TIRED && creep.ticksToLive < controller.upgradeBlocked)
     {
-        this._coastToHalt(creep);
+        const ticksToArrive = CREEP_CLAIM_LIFE_TIME - creep.ticksToLive;
+        const ticksBlocked  = controller.upgradeBlocked;
+        const spawnAfter = Game.time + ticksBlocked - ticksToArrive;
+
+        let flag = Game.flags[creep.memory.flag];
+        if (flag)
+        {
+            flag.memory.after = spawnAfter;
+        }
+
+        creep.unlive();
     }
 };
 
