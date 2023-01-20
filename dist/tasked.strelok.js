@@ -248,7 +248,7 @@ strelok.creepAtDestination = function(creep)
                 }
                 else
                 {
-                    if (rangeToFireTarget > 3)
+                    if (rangeToFireTarget >= 3)
                     {
                         toFrom = 1;
                     }
