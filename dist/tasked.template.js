@@ -88,6 +88,12 @@ function Tasked(id)
 
     this._creepRoomTravel = function(creep)
     {
+        if (creep.room.memory.elvl > 0)
+        {
+            // remember unliving room
+            creep.memory._xxx = creep.room.name;
+        }
+
         if (creep._canMove_)
         {
             const controlPos = creep.getControlPos();
