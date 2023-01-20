@@ -92,28 +92,24 @@ Creep.prototype.moveToWrapper = function(destination, options = { })
 
 Flag.prototype.getValue = function()
 {
-    if (this.color == COLOR_PURPLE)
+    switch (this.color)
     {
+    case COLOR_PURPLE:
         return 6;
-    }
-    else if (this.color == COLOR_RED)
-    {
+    case COLOR_RED:
+        return 5;
+    case COLOR_ORANGE:
         return 3;
-    }
-    else if (this.color == COLOR_YELLOW)
-    {
+    case COLOR_YELLOW:
         return 2;
-    }
-    else if (this.color == COLOR_GREEN)
-    {
+    case COLOR_GREEN:
         return 1;
-    }
-    else if (this.color == COLOR_BLUE)
-    {
+    case COLOR_BLUE:
+    case COLOR_CYAN:
         return 0;
+    default:
+        return -1;
     }
-
-    return -1;
 };
 
 Flag.prototype.setValue = function(newValue)
@@ -124,9 +120,13 @@ Flag.prototype.setValue = function(newValue)
     {
         newColor = COLOR_PURPLE;
     }
-    else if (newValue >= 3)
+    else if (newValue == 5)
     {
         newColor = COLOR_RED;
+    }
+    else if (newValue >= 3)
+    {
+        newColor = COLOR_ORANGE;
     }
     else if (newValue == 2)
     {
@@ -311,9 +311,13 @@ RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
     {
         color = COLOR_PURPLE;
     }
-    else if (flagValue >= 3)
+    else if (flagValue == 5)
     {
         color = COLOR_RED;
+    }
+    else if (flagValue >= 3)
+    {
+        color = COLOR_ORANGE;
     }
     else if (flagValue == 2)
     {
@@ -334,6 +338,11 @@ RoomPosition.prototype.createFlagWithValue = function(flagName, flagValue)
 RoomPosition.prototype.manhattanDistance = function(otherRoomPosition)
 {
     return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y);
+};
+
+RoomPosition.prototype.isBorder = function()
+{
+    return this.x == 0 || this.x == 49 || this.y == 0 || this.y == 49;
 };
 
 Structure.prototype.isActiveSimple = function()
