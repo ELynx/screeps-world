@@ -6,7 +6,7 @@ var mineralHarvestController = new Controller('mineral.restock');
 
 mineralHarvestController.actRange = 1;
 
-mineralHarvestController.act = function(terminal, creep)
+mineralHarvestController.act = function(withStore, creep)
 {
     let transferred = false;
 
@@ -23,14 +23,14 @@ mineralHarvestController.act = function(terminal, creep)
             continue;
         }
 
-        let canReceive = terminal.store.getFreeCapacity(resourceType);
+        let canReceive = withStore.store.getFreeCapacity(resourceType);
         if (canReceive == 0)
         {
-            terminal.room.memory.mlvl = 0;
+            continue;
         }
         else
         {
-            const rc = creep.transfer(terminal, resourceType);
+            const rc = creep.transfer(withStore, resourceType);
 
             if (rc != OK)
             {
@@ -46,9 +46,7 @@ mineralHarvestController.act = function(terminal, creep)
 
 mineralHarvestController._checkStorage = function(structure)
 {
-    if (structure &&
-        structure.my &&
-        structure.isActiveSimple())
+    if (structure && structure.isActiveSimple())
     {
         return structure.store.getFreeCapacity() > 0;
     }

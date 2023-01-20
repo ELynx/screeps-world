@@ -13,24 +13,15 @@ Calculate room energy level.
 **/
 roomInfoProcess.energyLevel = function(room)
 {
-    let level = 0;
-    if (room && room.controller && room.controller.my)
-    {
-        level = room.controller.level;
-    }
-    else
-    {
-        return 0;
-    }
+    const level = room.controller.level;
 
     const structs = room.find(
         FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                return (structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_EXTENSION) &&
-                        structure.my;
+                return structure.structureType == STRUCTURE_SPAWN ||
+                       structure.structureType == STRUCTURE_EXTENSION;
             }
         }
     );
@@ -66,7 +57,6 @@ roomInfoProcess.energyLevel = function(room)
         roomCreeps,
         function(creep)
         {
-            if (creep.memory.rstk) return false;
             if (creep.memory.minr) return false;
 
             return true;
@@ -112,7 +102,7 @@ roomInfoProcess._walkable = function(terrain, position)
     }
 
     const atPosition = position.lookFor(LOOK_STRUCTURES);
-    for (let k in atPosition)
+    for (const k in atPosition)
     {
         const struct = atPosition[k];
         if (struct.structureType == STRUCTURE_ROAD)
@@ -179,7 +169,10 @@ roomInfoProcess.sourceLevel = function(room)
     const links = room.find(
         FIND_STRUCTURES,
         {
-            filter: { structureType: STRUCTURE_LINK }
+            filter: function(structure)
+            {
+                return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
+            }
         }
     );
 
@@ -191,7 +184,7 @@ roomInfoProcess.sourceLevel = function(room)
     {
         const link = links[i];
 
-        if (link.my && link.isActiveSimple() && !link.isSource())
+        if (!link.isSource())
         {
             hasDestination = true;
             break;
@@ -210,30 +203,27 @@ roomInfoProcess.sourceLevel = function(room)
     {
         const link = links[i];
 
-        if (link.my && link.isActiveSimple())
+        if (link.isSource())
         {
-            if (link.isSource())
+            let positions = { };
+            for (let j = 0; j < sources.length; ++j)
             {
-                let positions = { };
-                for (let j = 0; j < sources.length; ++j)
-                {
-                    const source = sources[j];
-                    const betweenTwo = link.pos.findSharedAdjacentPositions(source.pos);
+                const source = sources[j];
+                const betweenTwo = link.pos.findSharedAdjacentPositions(source.pos);
 
-                    for (let k = 0; k < betweenTwo.length; ++k)
-                    {
-                        const p = betweenTwo[k];
-                        positions[(p.x + 1) + 100 * (p.y + 1)] = p;
-                    }
+                for (let k = 0; k < betweenTwo.length; ++k)
+                {
+                    const p = betweenTwo[k];
+                    positions[(p.x + 1) + 100 * (p.y + 1)] = p;
                 }
+            }
 
-                for (let outerIndex in positions)
+            for (const index in positions)
+            {
+                const position = positions[index];
+                if (this._walkable(terrain, position))
                 {
-                    const position = positions[outerIndex];
-                    if (this._walkable(terrain, position))
-                    {
-                        ++soucePositions;
-                    }
+                    ++soucePositions;
                 }
             }
         }
@@ -258,7 +248,7 @@ roomInfoProcess.miningLevel = function(room)
         {
             filter: function(structure)
             {
-                return structure.my && structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple();
+                return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple();
             }
         }
     );
@@ -376,6 +366,7 @@ roomInfoProcess.work = function(room)
         room.memory.mlvl = this.miningLevel(room);
         room.memory.wlvl = this._walls(room);
 
+        // STRATEGY how much energy to keep in bigger structures
         room.memory.trme = 300;
         room.memory.stre = 10000;
 

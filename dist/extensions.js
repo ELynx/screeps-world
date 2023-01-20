@@ -2,6 +2,65 @@
 
 var globals = require('globals');
 
+OwnedStructure.prototype.ally = function()
+{
+    return false;
+};
+
+OwnedStructure.prototype.neutral = function()
+{
+    return false;
+};
+
+OwnedStructure.prototype.hostile = function()
+{
+    return !this.my;
+};
+
+OwnedStructure.prototype.unowned = function()
+{
+    return this.owner === undefined;
+};
+
+// reason - ones that do not get harmful effects
+OwnedStructure.prototype.notHostile = function()
+{
+    return this.my || this.ally() || this.neutral();
+};
+
+// reason ones that do get harmful effects
+OwnedStructure.prototype.hostileOrUnowned = function()
+{
+    return this.hostile() || this.unowned();
+};
+
+Creep.prototype.ally = function()
+{
+    return false;
+};
+
+Creep.prototype.neutral = function()
+{
+    return false;
+};
+
+Creep.prototype.hostile = function()
+{
+    return !this.my;
+};
+
+// anycreep who get benefits, mostly healing
+Creep.prototype.myOrAlly = function()
+{
+    return this.my || this.ally();
+};
+
+// anycreep who is not `my` but do not get harmful effects
+Creep.prototype.notMyNotHostile = function()
+{
+    return (!this.my) && (this.ally() || this.neutral());
+};
+
 Creep.prototype.unlive = function()
 {
     return this.suicide();
@@ -67,7 +126,7 @@ Creep.prototype.withdrawFromAdjacentStructures = function(targets)
 {
     if (this.getActiveBodyparts(CARRY) == 0) return ERR_FULL;
 
-    for (let targetKey in targets)
+    for (const targetKey in targets)
     {
         const target = targets[targetKey];
         if (target.structureType &&
@@ -215,6 +274,11 @@ Room.prototype.getRoomControlledCreeps = function()
     return this._roomCreeps_;
 };
 
+Room.prototype.canControlStructures = function()
+{
+    return this.controller && this.controller.my;
+};
+
 RoomPosition.prototype.squareArea = function(squareStep)
 {
     const t = Math.max(this.y - squareStep, 0);
@@ -230,7 +294,7 @@ RoomPosition.prototype.findInSquareArea = function(lookForType, squareStep, filt
     const [t, l, b, r] = this.squareArea(squareStep);
     const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true);
 
-    for (let itemKey in items)
+    for (const itemKey in items)
     {
         const item = items[itemKey][lookForType];
 
@@ -294,7 +358,7 @@ RoomPosition.prototype.findSharedAdjacentPositions = function(otherRoomPosition)
     const intersections = _.intersection(Object.keys(fromThis), Object.keys(fromOther));
 
     let result = [];
-    for (let outerIndex in intersections)
+    for (const outerIndex in intersections)
     {
         const innerIndex = intersections[outerIndex];
         result.push(fromThis[innerIndex]);

@@ -108,17 +108,15 @@ function Tasked(id)
         }
 
         const pos = creep.getControlPos();
-
         if (creep.pos.roomName != pos.roomName)
         {
             return;
         }
 
         const haltRange = Math.min(15, pos.controlDistance());
-
         if (!creep.pos.inRangeTo(pos, haltRange))
         {
-            creep.moveToWrapper(pos, { maxRooms: 1, range: haltRange });
+            creep.moveToWrapper(pos, { maxRooms: 1, reusePath: 50, range: haltRange });
         }
     };
 

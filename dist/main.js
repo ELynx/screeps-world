@@ -39,8 +39,8 @@ module.exports.loop = function()
         const creep = Game.creeps[creepName];
         const room  = creep.room;
 
-        // STRATEGY limit weight for controlled vs other rooms, per creep
-        const delta = (room.controller && room.controller.my) ? 3 : 2;
+        // STRATEGY limit weight for controlled vs travel rooms, per creep
+        const delta = room.canControlStructures() ? 3 : 1;
 
         let now = limits[room.name] || 0;
         now = now + delta;
@@ -63,7 +63,7 @@ module.exports.loop = function()
         room.visual.rect(0, 0, 5 * r / t, 0.25, { fill: '#03f' });
 
         // save CPU on all rooms where control is not needed
-        if (room.controller && room.controller.my)
+        if (room.canControlStructures())
         {
             room.memory.cpul = limit;
             roomActor.act(room);

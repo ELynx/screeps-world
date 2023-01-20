@@ -13,22 +13,18 @@ towerProcess.work = function(room)
         {
             filter: function(structure)
             {
-                return structure.my && structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
+                return structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple();
             }
         }
     );
-
-    if (towers.length == 0)
-    {
-        return;
-    }
+    if (towers.length == 0) return;
 
     const creeps = room.find(FIND_CREEPS);
     const hostileCreeps = _.filter(
         creeps,
         function(creep)
         {
-            return !creep.my;
+            return creep.hostile();
         }
     );
 
@@ -53,7 +49,7 @@ towerProcess.work = function(room)
             // callous
             if (creep.memory.selfCanHeal) return false;
 
-            return creep.my && creep.hits < creep.hitsMax;
+            return creep.myOrAlly() && (creep.hits < creep.hitsMax);
         }
     );
 

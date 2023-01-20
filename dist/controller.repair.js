@@ -97,10 +97,9 @@ repairController.targets = function(room)
         {
             filter: function(structure)
             {
-                if (!structure.hits || structure.hits >= structure.hitsMax)
-                {
-                    return false;
-                }
+                if (!structure.hits || structure.hits >= structure.hitsMax) return false;
+
+                if (!structure.isActiveSimple()) return false;
 
                 if (structure.structureType == STRUCTURE_WALL)
                 {
@@ -110,8 +109,7 @@ repairController.targets = function(room)
                         return true;
                     }
                 }
-                else if (structure.structureType == STRUCTURE_RAMPART &&
-                         structure.my)
+                else if (structure.structureType == STRUCTURE_RAMPART)
                 {
                     if (structure.hits < barrHp)
                     {
@@ -128,7 +126,7 @@ repairController.targets = function(room)
                         return true;
                     }
                 }
-                else if (structure.my || structure.structureType == STRUCTURE_CONTAINER)
+                else
                 {
                     const hp = Math.ceil(structure.hitsMax * otherMult);
                     if (structure.hits < hp)

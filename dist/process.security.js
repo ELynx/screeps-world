@@ -19,7 +19,7 @@ secutiryProcess.work = function(room)
         {
             filter: function(creep)
             {
-                return !creep.my;
+                return creep.hostile();
             }
         }
     );
@@ -70,7 +70,7 @@ secutiryProcess.work = function(room)
                     range,
                     function(creep)
                     {
-                        if (!creep.my && creep.owner != 'Invader')
+                        if (creep.hostile() && creep.owner != 'Invader')
                         {
                             return true;
                         }

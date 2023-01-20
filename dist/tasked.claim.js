@@ -8,7 +8,7 @@ claim.creepAtDestination = function(creep)
 {
     const controller = creep.room.controller;
 
-    if (controller && !controller.my)
+    if (controller && controller.hostileOrUnowned())
     {
         if (creep.pos.isNearTo(controller))
         {
@@ -16,7 +16,7 @@ claim.creepAtDestination = function(creep)
 
             if (controller.owner && controller.owner.username != creep.owner.username)
             {
-                sign = 'BAHAHAHA';
+                sign = 'Base is under attack';
                 const rc = creep.attackController(controller);
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
@@ -27,10 +27,10 @@ claim.creepAtDestination = function(creep)
             else
             {
                 let myRooms = 0;
-                for (let roomName in Game.rooms)
+                for (const roomName in Game.rooms)
                 {
                     const someRoom = Game.rooms[roomName];
-                    if (someRoom.controller && someRoom.controller.my)
+                    if (someRoom.canControlStructures())
                     {
                         ++myRooms;
                     }
@@ -57,7 +57,7 @@ claim.creepAtDestination = function(creep)
             }
             else if (sign.length > 0)
             {
-                    const rc = creep.signController(controller, sign);
+                const rc = creep.signController(controller, sign);
             }
         }
         else
@@ -74,9 +74,18 @@ claim.creepAtDestination = function(creep)
 claim.flagPrepare = function(flag)
 {
     // done about it
-    if (flag.room && flag.room.controller && flag.room.controller.my)
+    const flagRoom = Game.rooms[flag.pos.roomName];
+    if (flagRoom)
     {
-        return this.FLAG_REMOVE;
+        const flagController = flagRoom.controller;
+        if (flagController)
+        {
+            if (!flagController.hostileOrUnowned()) return this.FLAG_REMOVE;
+        }
+        else
+        {
+            return this.FLAG_REMOVE;
+        }
     }
 
     return this.FLAG_SPAWN;

@@ -90,7 +90,7 @@ spawn._spawnRoomFilter = function(room)
 {
     if (this._spawnRoomMarkCheck(room)) return false;
 
-    if (room && room.controller && room.controller.my)
+    if (room.canControlStructures())
     {
         return room.memory.elvl > 0;
     }
@@ -139,7 +139,7 @@ spawn.findSpawnRoomsFor = function(model)
     {
         // find room in general
         const room = Game.rooms[model.from];
-        if (room && room.controller && room.controller.my)
+        if (room && room.canControlStructures())
         {
             // test spawn-ability
             if (room.memory.elvl > 0)
@@ -175,7 +175,7 @@ spawn._spawnFilter = function(structure)
 {
     if (structure.structureType == STRUCTURE_SPAWN)
     {
-        return structure.my && structure.isActiveSimple() && !structure.spawning;
+        return !structure.spawning && structure.isActiveSimple();
     }
 
     return false;

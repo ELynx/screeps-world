@@ -11,35 +11,20 @@ terminalProcess.work = function(room)
 {
     this.debugHeader(room);
 
-    if (!room.terminal)
-    {
-        return;
-    }
+    if (!room.terminal) return;
 
-    if (room.terminal.cooldown > 0)
-    {
-        return;
-    }
+    if (room.terminal.cooldown > 0) return;
 
-    if (room.terminal.store[RESOURCE_ENERGY] < 2)
-    {
-        return;
-    }
+    if (room.terminal.store[RESOURCE_ENERGY] < 2) return;
 
     const minerals = room.find(FIND_MINERALS);
-    if (minerals.length == 0)
-    {
-        return;
-    }
+    if (minerals.length == 0) return;
 
     // there is only one mineral type in a room
     const roomMineralType = minerals[0].mineralType;
 
     const has = room.terminal.store[roomMineralType];
-    if (has === undefined || has <= MineralsToKeep)
-    {
-        return;
-    }
+    if (has === undefined || has <= MineralsToKeep) return;
 
     if (!Memory.prices)
     {
@@ -59,7 +44,13 @@ terminalProcess.work = function(room)
             const roomFrom = Game.rooms[order.roomName];
 
             // don't trade with own orders
-            if (roomFrom && roomFrom.controller && roomFrom.controller.my)
+            // if room is not visible then definitely not own order
+            // if room has no controller than definitely not own order
+            // compare by username, avoid use of "my"
+            if (roomFrom &&
+                roomFrom.controller &&
+                roomFrom.controller.owner &&
+                roomFrom.controller.owner.username == room.terminal.owner.username)
                 return false;
 
             // STRATEGY allowed price drop per sell of room resources
@@ -96,7 +87,11 @@ terminalProcess.work = function(room)
         const roomFrom = Game.rooms[order.roomName];
 
         // don't trade with own orders
-        if (roomFrom && roomFrom.controller && roomFrom.controller.my)
+        // see above for breakdown
+        if (roomFrom &&
+            roomFrom.controller &&
+            roomFrom.controller.owner &&
+            roomFrom.controller.owner.username == room.terminal.owner.username)
             continue;
 
         if (order.price < smallestPrice)
