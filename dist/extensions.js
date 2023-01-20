@@ -340,11 +340,6 @@ RoomPosition.prototype.manhattanDistance = function(otherRoomPosition)
     return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y);
 };
 
-RoomPosition.prototype.isBorder = function()
-{
-    return this.x == 0 || this.x == 49 || this.y == 0 || this.y == 49;
-};
-
 Structure.prototype.isActiveSimple = function()
 {
     // if special flag is set on the room
