@@ -58,10 +58,10 @@ mineralHarvestController._checkStorage = function(structure)
 
 mineralHarvestController.targets = function(room)
 {
-    const terminals = this._checkStorage(room.terminal) ? [ room.terminal ] : [];
-    const storages  = this._checkStorage(room.storage)  ? [ room.storage ]  : [];
+    if (this._checkStorage(room.terminal)) return [ room.terminal ];
+    if (this._checkStorage(room.storage))  return [ room.storage ];
 
-    return terminals.concat(storages);
+    return [];
 };
 
 mineralHarvestController.filterCreep = function(creep)
