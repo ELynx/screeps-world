@@ -74,10 +74,9 @@ claim.creepAtDestination = function(creep)
 claim.flagPrepare = function(flag)
 {
     // done about it
-    const flagRoom = Game.rooms[flag.pos.roomName];
-    if (flagRoom)
+    if (flag.room)
     {
-        const flagController = flagRoom.controller;
+        const flagController = flag.room.controller;
         if (flagController)
         {
             if (!flagController.hostileOrUnowned()) return this.FLAG_REMOVE;

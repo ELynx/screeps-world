@@ -37,7 +37,7 @@ beetle.creepAtDestination = function(creep)
 
     if (Game.rooms.sim === undefined)
     {
-        if (creep.room.controller && creep.room.controller.notHostile())
+        if (creep.room.controller && !creep.room.controller.hostileOrUnowned())
         {
             beHostile = false;
         }
@@ -250,7 +250,7 @@ beetle.creepAtDestination = function(creep)
 
 beetle.flagPrepare = function(flag)
 {
-    if (Game.rooms[flag.pos.roomName])
+    if (flag.room)
     {
         // any creep of same alignment work, breach was complete
         const breached = flag.pos.hasInSquareArea

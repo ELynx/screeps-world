@@ -14,7 +14,11 @@ OwnedStructure.prototype.neutral = function()
 
 OwnedStructure.prototype.hostile = function()
 {
-    return !this.my;
+    if (this.my) return false;
+    if (this.ally()) return false;
+    if (this.neutral()) return false;
+
+    return true;
 };
 
 OwnedStructure.prototype.unowned = function()
@@ -22,13 +26,7 @@ OwnedStructure.prototype.unowned = function()
     return this.owner === undefined;
 };
 
-// reason - ones that do not get harmful effects
-OwnedStructure.prototype.notHostile = function()
-{
-    return this.my || this.ally() || this.neutral();
-};
-
-// reason ones that do get harmful effects
+// ones that do get harmful effects
 OwnedStructure.prototype.hostileOrUnowned = function()
 {
     return this.hostile() || this.unowned();
@@ -46,7 +44,11 @@ Creep.prototype.neutral = function()
 
 Creep.prototype.hostile = function()
 {
-    return !this.my;
+    if (this.my) return false;
+    if (this.ally()) return false;
+    if (this.neutral()) return false;
+
+    return true;
 };
 
 // anycreep who get benefits, mostly healing
@@ -56,9 +58,9 @@ Creep.prototype.myOrAlly = function()
 };
 
 // anycreep who is not `my` but do not get harmful effects
-Creep.prototype.notMyNotHostile = function()
+Creep.prototype.allyOrNeutral = function()
 {
-    return (!this.my) && (this.ally() || this.neutral());
+    return this.ally() || this.neutral();
 };
 
 Creep.prototype.unlive = function()
