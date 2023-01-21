@@ -33,7 +33,7 @@ energyTakeController.act = function(structure, creep)
 energyTakeController.validateTarget = function(target, creep)
 {
     // don't run across the map
-    if (creep.pos.getRangeTo(structure) > 10) return false;
+    if (creep.pos.getRangeTo(target) > 10) return false;
 
     const has    = target.store[RESOURCE_ENERGY];
     const toKeep = this.wantToKeep(target);
