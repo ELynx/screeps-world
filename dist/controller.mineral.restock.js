@@ -2,11 +2,11 @@
 
 var Controller = require('controller.template');
 
-var mineralHarvestController = new Controller('mineral.restock');
+var mineralRestockController = new Controller('mineral.restock');
 
-mineralHarvestController.actRange = 1;
+mineralRestockController.actRange = 1;
 
-mineralHarvestController.act = function(withStore, creep)
+mineralRestockController.act = function(withStore, creep)
 {
     let transferred = false;
 
@@ -44,7 +44,7 @@ mineralHarvestController.act = function(withStore, creep)
     return false;
 };
 
-mineralHarvestController._checkStorage = function(structure)
+mineralRestockController._checkStorage = function(structure)
 {
     if (structure && structure.isActiveSimple())
     {
@@ -54,7 +54,7 @@ mineralHarvestController._checkStorage = function(structure)
     return false;
 };
 
-mineralHarvestController.targets = function(room)
+mineralRestockController.targets = function(room)
 {
     if (this._checkStorage(room.terminal)) return [ room.terminal ];
     if (this._checkStorage(room.storage))  return [ room.storage ];
@@ -62,16 +62,21 @@ mineralHarvestController.targets = function(room)
     return [];
 };
 
-mineralHarvestController.filterCreep = function(creep)
+mineralRestockController.filterCreep = function(creep)
 {
-    if (creep.memory.minr == true)
+    // STRATEGY has non-energy resouces, bring them in
+    if (this._hasWCM(creep))
     {
-        return creep.store.getUsedCapacity() > 0;
+        const usedTotal  = creep.store.getUsedCapacity();
+        const usedEnergy = creep.store.getUsedCapacity(RESOURCE_ENERGY);
+
+        // don't bring energy
+        return usedTotal > 0 && usedEnergy == 0;
     }
 
     return false;
 };
 
-mineralHarvestController.register();
+mineralRestockController.register();
 
-module.exports = mineralHarvestController;
+module.exports = mineralRestockController;

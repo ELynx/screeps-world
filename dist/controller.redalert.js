@@ -42,12 +42,6 @@ redAlert.targets = function(room)
     return [];
 };
 
-redAlert.filterCreep = function(creep)
-{
-    // for red alert any creep can help
-    return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && creep.getActiveBodyparts(WORK) > 0;
-};
-
 redAlert.register();
 
 module.exports = redAlert;

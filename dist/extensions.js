@@ -146,6 +146,47 @@ Creep.prototype.moveToWrapper = function(destination, options = { })
     return this.moveTo(destination, globals.moveOptionsWrapper(options));
 };
 
+Creep.prototype.unlive = function()
+{
+    let result = false;
+
+    if (this.room.memory.elvl > 0)
+    {
+        this.setControlRoom(this.room.name);
+        result = true;
+    }
+    else if (this.memory._xxx)
+    {
+        this.setControlRoom(this.memory._xxx)
+        result = true;
+    }
+    else
+    {
+        for (const roomName in Game.rooms)
+        {
+            const room = Game.rooms[roomName];
+            if (room.memory.elvl > 0)
+            {
+                this.setControlRoom(room.name);
+                result = true;
+                break;
+            }
+        }
+    }
+
+    if (result)
+    {
+        // forget who they serve
+        this.memory.flag = undefined;
+        // mark to be cycled out of existence
+        this.memory.recycle = true;
+
+        return OK;
+    }
+
+    return this.suicide();
+};
+
 Flag.prototype.getValue = function()
 {
     switch (this.color)

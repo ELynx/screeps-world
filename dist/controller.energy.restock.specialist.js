@@ -55,7 +55,7 @@ energyRestockControllerSpecialist.targets = function(room)
 
 energyRestockControllerSpecialist.filterCreep = function(creep)
 {
-    return creep.memory.rstk == true && creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+    return creep.memory.rstk == true && this._hasEnergy(creep) && this._hasWCM(creep);
 };
 
 energyRestockControllerSpecialist.register();
