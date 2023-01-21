@@ -4,18 +4,35 @@ var Tasked = require('tasked.template');
 
 var claim = new Tasked('claim');
 
+claim._onProblemDetected = function(creep)
+{
+    let flag = Game.flags[creep.memory.flag];
+    if (flag)
+    {
+        flag.setValue(0);
+    }
+
+    creep.unlive();
+}
+
 claim.creepAtDestination = function(creep)
 {
-    const controller = creep.room.controller;
+    // resistance detector
+    if (creep.hits < creep.hitsMax)
+    {
+        this._onProblemDetected(creep);
+        return;
+    }
 
+    const controller = creep.room.controller;
     if (!controller)
     {
-        creep.unlive();
+        this._onProblemDetected(creep);
         return;
     }
 
     let rc   = ERR_TIRED;
-    let wait = CREEP_CLAIM_LIFE_TIME;
+    let wait = CREEP_CLAIM_LIFE_TIME; // by default wait is longer than life
 
     if (controller.hostileOrUnowned())
     {
@@ -33,18 +50,12 @@ claim.creepAtDestination = function(creep)
                 sign = 'Your base is under attack';
                 rc = creep.attackController(controller);
 
-                if (controller.level == 1 && controller.ticksToDowngrade < creep.ticksToLive)
-                {
-                    // controller will drop before creep expires
-                    rc = OK;
-                }
-                else
-                {
-                    // in case of early arrival, see if creep can wait it out
-                    const ticksToUnblock = controller.upgradeBlocked || 0;
-                    const ticksToUnsafe  = controller.safeMode || 0;
-                    wait = Math.max(ticksToUnblock, ticksToUnsafe);
-                }
+                // see if creep can wait it out
+                const ticksToUnblock   = controller.upgradeBlocked || 0;
+                const ticksToUnsafe    = controller.safeMode || 0;
+                const ticksToDowngrade = controller.level == 1 ? controller.ticksToDowngrade : 0;
+
+                wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade);
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
             {
@@ -94,7 +105,13 @@ claim.creepAtDestination = function(creep)
         }
     } // end of harmable controller
 
-    // filter out early arrivals
+    if (rc == ERR_INVALID_TARGET)
+    {
+        this._onProblemDetected(creep);
+        return;
+    }
+
+    // be sure that creep will not survive the wait
     if (rc == ERR_TIRED && creep.ticksToLive < wait)
     {
         const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0;
@@ -142,9 +159,9 @@ claim.makeBody = function(spawn)
     const elvl = spawn.room.memory.elvl;
 
     // cannot spawn 650+
-    if (elvl < 3) return [];
+    if (elvl <= 2) return [];
 
-    if (elvl < 4)
+    if (elvl <= 3)
     {
         // on swamp move 1 unit per 2 ticks
         // move up front to allow crawl even damaged
@@ -152,10 +169,20 @@ claim.makeBody = function(spawn)
         return [ MOVE, MOVE, CLAIM, MOVE ];
     }
 
+    if (elvl <= 4)
+    {
+        // on swamp move 1 unit per 1 tick
+        // move up front to allow crawl even damaged
+        // 850   50    50    50    50    600    50
+        return [ MOVE, MOVE, MOVE, MOVE, CLAIM, MOVE ];
+    }
+
+    // 5+ or 1800+
+
     // on swamp move 1 unit per 1 tick
     // move up front to allow crawl even damaged
-    // 850   50    50    50    50    600    50
-    return [ MOVE, MOVE, MOVE, MOVE, CLAIM, MOVE ];
+    // 1700  50    50    50    50    50    50    50    50    50    600    600    50
+    return [ MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM, MOVE ];
 };
 
 claim.register();
