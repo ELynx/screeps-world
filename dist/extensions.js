@@ -2,65 +2,22 @@
 
 var globals = require('globals');
 
-OwnedStructure.prototype.ally = function()
-{
-    return false;
-};
-
-OwnedStructure.prototype.neutral = function()
-{
-    return this.owner && this.owner.username == 'Source Keeper';
-};
-
-OwnedStructure.prototype.hostile = function()
-{
-    if (this.my) return false;
-    if (this.ally()) return false;
-    if (this.neutral()) return false;
-
-    return true;
-};
-
-OwnedStructure.prototype.unowned = function()
-{
-    return this.owner === undefined;
-};
-
 // ones that do get harmful effects
 OwnedStructure.prototype.hostileOrUnowned = function()
 {
-    return this.hostile() || this.unowned();
-};
-
-Creep.prototype.ally = function()
-{
-    return false;
-};
-
-Creep.prototype.neutral = function()
-{
-    return this.owner && this.owner.username == 'Source Keeper';
-};
-
-Creep.prototype.hostile = function()
-{
-    if (this.my) return false;
-    if (this.ally()) return false;
-    if (this.neutral()) return false;
-
-    return true;
+    return this.unowned || this.hostile;
 };
 
 // anycreep who get benefits, mostly healing
 Creep.prototype.myOrAlly = function()
 {
-    return this.my || this.ally();
+    return this.my || this.ally;
 };
 
 // anycreep who is not `my` but do not get harmful effects
 Creep.prototype.allyOrNeutral = function()
 {
-    return this.ally() || this.neutral();
+    return this.ally || this.neutral;
 };
 
 /**

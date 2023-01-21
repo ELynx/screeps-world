@@ -1,5 +1,6 @@
 'use strict';
 
+var iff           = require('iff');
 var extensions    = require('extensions');
 
 var cleanupMemory = require('routine.memory');
