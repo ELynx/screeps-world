@@ -4,7 +4,7 @@ var Process = require('process.template');
 
 var secutiryProcess = new Process('security');
 
-const ThreatStep = 20;
+const ThreatStep = 60;
 const ThreatMax  = 5;
 
 secutiryProcess.work = function(room)
