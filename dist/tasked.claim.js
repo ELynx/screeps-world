@@ -41,7 +41,9 @@ claim.creepAtDestination = function(creep)
                 else
                 {
                     // in case of early arrival, see if creep can wait it out
-                    wait = controller.upgradeBlocked;
+                    const ticksToUnblock = controller.upgradeBlocked || 0;
+                    const ticksToUnsafe  = controller.safeMode || 0;
+                    wait = Math.max(ticksToUnblock, ticksToUnsafe);
                 }
             }
             else if (controller.reservation && controller.reservation.username != creep.owner.username)
