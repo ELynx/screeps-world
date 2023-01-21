@@ -34,6 +34,12 @@ ttlController.act = function(spawn, creep)
         }
     }
 
+    if (creep.memory.recycle == true)
+    {
+        renew   = false;
+        recycle = true;
+    }
+
     if (renew)
     {
         const rc = spawn.renewCreep(creep);
@@ -75,7 +81,7 @@ ttlController.targets = function(room)
 ttlController.filterCreep = function(creep)
 {
     // if recycle was forced
-    if (creep.memory.recycle) return true;
+    if (creep.memory.recycle == true) return true;
 
     if (creep.ticksToLive > TTL) return false;
 
