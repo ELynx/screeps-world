@@ -118,7 +118,7 @@ claim.creepAtDestination = function(creep)
     {
         const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0;
         const ticksBlocked  = wait;
-        const ticksOverhead = 100; // be this early to minimize safe mode window, etc
+        const ticksOverhead = 42; // be this early to minimize safe mode window, etc
         const spawnAfter = Game.time + ticksBlocked - ticksToArrive - ticksOverhead;
 
         let flag = Game.flags[creep.memory.flag];
