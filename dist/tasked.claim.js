@@ -23,7 +23,7 @@ claim.creepAtDestination = function(creep)
         {
             if (creep.memory.clmt === undefined)
             {
-                creep.memory.clmt = Game.time;
+                creep.memory.clmt = creep.ticksToLive;
             }
 
             let sign = '';
@@ -97,9 +97,10 @@ claim.creepAtDestination = function(creep)
     // filter out early arrivals
     if (rc == ERR_TIRED && creep.ticksToLive < wait)
     {
-        const ticksToArrive = Game.time - (creep.memory.clmt || 0);
+        const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0;
         const ticksBlocked  = wait;
-        const spawnAfter = Game.time + ticksBlocked - ticksToArrive;
+        const ticksOverhead = 100; // be this early to minimize safe mode window, etc
+        const spawnAfter = Game.time + ticksBlocked - ticksToArrive - ticksOverhead;
 
         let flag = Game.flags[creep.memory.flag];
         if (flag)
