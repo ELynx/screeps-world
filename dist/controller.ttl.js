@@ -6,7 +6,7 @@ var Controller = require('controller.template');
 var ttlController = new Controller('ttl');
 
 // STRATEGY time when stronger creep is called for renew
-const Ttl = 200;
+const TTL = 200;
 
 ttlController.actRange = 1;
 
@@ -77,13 +77,13 @@ ttlController.filterCreep = function(creep)
     // if recycle was forced
     if (creep.memory.recycle) return true;
 
-    if (creep.ticksToLive > Ttl) return false;
+    if (creep.ticksToLive > TTL) return false;
 
     // just fast check to skip repeated state check
     if (creep.memory.xttl) return false;
 
     // STRATEGY don't drag resources around
-    if (creep.store.getUsedCapacity() > 0) return false;
+    if (!this._isEmpty(creep)) return false;
 
     // check creeps with default body type
     const btyp = creep.memory.btyp;
