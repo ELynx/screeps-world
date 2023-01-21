@@ -45,3 +45,5 @@ TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to det
 TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 
 TIP OF THE DAY: You can apply transfer and heal to another player’s creep, and transfer, build and repair to others’ structures.
+
+https://github.com/screepers/screeps-snippets/blob/master/src/misc/JavaScript/OwnedStructure%20Memory.js
