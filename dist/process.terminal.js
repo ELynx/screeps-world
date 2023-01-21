@@ -5,7 +5,7 @@ var Process = require('process.template');
 var terminalProcess = new Process('terminal');
 
 const MaxBuyRoomDistance = 30;
-const MineralsToKeep = 3000;
+const MineralsToKeep = 30000;
 
 terminalProcess.work = function(room)
 {
@@ -17,33 +17,46 @@ terminalProcess.work = function(room)
 
     if (room.terminal.store[RESOURCE_ENERGY] < 2) return;
 
-    const minerals = room.find(FIND_MINERALS);
-    if (minerals.length == 0) return;
+    // SELL SELL SELL
+    // TODO global constant
+    const noPanic = room.memory.threat < 5;
 
-    // there is only one mineral type in a room
-    const roomMineralType = minerals[0].mineralType;
+    let sellMineralType = undefined;
+    if (noPanic)
+    {
+        const minerals = room.find(FIND_MINERALS);
+        if (minerals.length > 0) return sellMineralType = minerals[0].mineralType;
+    }
+    else
+    {
+        for (const key in room.terminal.store)
+        {
+            if (room.terminal.store.getUsedCapacity(key) > 0)
+            {
+                sellMineralType = key;
+                break;
+            }
+        }
+    }
 
-    const has = room.terminal.store[roomMineralType];
-    if (has === undefined || has <= MineralsToKeep) return;
+    if (sellMineralType === undefined) return;
+
+    const toKeep = noPanic ? MineralsToKeep : 0;
+
+    const has = room.terminal.store[sellMineralType];
+    if (has === undefined || has <= toKeep) return;
 
     if (!Memory.prices)
     {
         Memory.prices = { };
     }
 
-    const lastPrice = Memory.prices[roomMineralType] || 0;
-    let noPanic = true;
-
-    // TODO global constant
-    if (room.memory.threat >= 5)
-    {
-        noPanic = false;
-    }
+    const lastPrice = Memory.prices[sellMineralType] || 0;
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
-    const allBuyOrders  = Game.market.getAllOrders({ type: ORDER_BUY,  resourceType: roomMineralType });
-    const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: roomMineralType });
+    const allBuyOrders  = Game.market.getAllOrders({ type: ORDER_BUY,  resourceType: sellMineralType });
+    const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType });
 
     let goodBuyOrders = _.filter(allBuyOrders,
         function(order)
@@ -61,11 +74,11 @@ terminalProcess.work = function(room)
                 return false;
 
             // STRATEGY allowed price drop per sell of room resources
-            if (noPanic && order.price < 0.95 * lastPrice)
+            if (noPanic && (order.price < 0.95 * lastPrice))
                 return false;
 
             const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
-            if (noPanic && dist > MaxBuyRoomDistance)
+            if (noPanic && (dist > MaxBuyRoomDistance))
                 return false;
 
             return true;
@@ -108,7 +121,7 @@ terminalProcess.work = function(room)
     }
 
     // some bad orders
-    if (noPanic && biggestPrice <= smallestPrice)
+    if (noPanic && (biggestPrice <= smallestPrice))
     {
         return;
     }
@@ -127,7 +140,7 @@ terminalProcess.work = function(room)
 
     for (let i = 0; i < goodBuyOrders.length; ++i)
     {
-        const rc = room.terminal.autoSell(goodBuyOrders[i], MineralsToKeep);
+        const rc = room.terminal.autoSell(goodBuyOrders[i], toKeep);
 
         if (rc == OK)
         {
@@ -135,6 +148,7 @@ terminalProcess.work = function(room)
             {
                 Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price;
             }
+
             break;
         }
     }
