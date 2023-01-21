@@ -104,6 +104,17 @@ secutiryProcess.work = function(room)
         }
     }
 
+    if (threatLevel >= 5)
+    {
+        // allow to grab energy
+        room.memory.stre = 0;
+    }
+    else
+    {
+        // restock again
+        room.memory.stre = room.memory._stre || 0;
+    }
+
     if (threatLevel > 0)
     {
         room.memory.threat  = threatLevel;

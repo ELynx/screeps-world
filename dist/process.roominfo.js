@@ -367,8 +367,9 @@ roomInfoProcess.work = function(room)
         room.memory.wlvl = this._walls(room);
 
         // STRATEGY how much energy to keep in bigger structures
-        room.memory.trme = 300;
-        room.memory.stre = 10000;
+        // use shadow values, other processes will define the actual level
+        room.memory._trme = 300;
+        room.memory._stre = 10000;
 
         // offset regeneration time randomly so multiple rooms don't do it at same tick
         room.memory.intl = Game.time + Math.ceil(Math.random() * 42);

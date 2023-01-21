@@ -10,8 +10,9 @@ energyTakeController.wantToKeep = function(structure)
 {
     const room = structure.room;
 
-    if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || 0;
-    if (structure.structureType == STRUCTURE_STORAGE)  return room.memory.stre || 0;
+    // actual, if not defined then shadow, otherwise grab
+    if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || (room.memory._trme || 0);
+    if (structure.structureType == STRUCTURE_STORAGE)  return room.memory.stre || (room.memory._stre || 0);
 
     return 0;
 };
