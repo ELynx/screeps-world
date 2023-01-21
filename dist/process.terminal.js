@@ -19,7 +19,7 @@ terminalProcess.work = function(room)
 
     // SELL SELL SELL
     // TODO global constant
-    const noPanic = room.memory.threat < 5;
+    const noPanic = room.memory.threat ? room.memory.threat < 5 : true;
 
     let sellMineralType = undefined;
     if (noPanic)
