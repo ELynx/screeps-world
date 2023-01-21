@@ -32,6 +32,12 @@ terminalProcess.work = function(room)
     }
 
     const lastPrice = Memory.prices[roomMineralType] || 0;
+    let noPanic = true;
+
+    if (room.memory.threat >= 5)
+    {
+        noPanic = false;
+    }
 
     // TODO cache, two rooms may sell same stuff
     // get average order statistics
@@ -54,11 +60,11 @@ terminalProcess.work = function(room)
                 return false;
 
             // STRATEGY allowed price drop per sell of room resources
-            if (order.price < 0.95 * lastPrice)
+            if (noPanic && order.price < 0.95 * lastPrice)
                 return false;
 
             const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
-            if (dist > MaxBuyRoomDistance)
+            if (noPanic && dist > MaxBuyRoomDistance)
                 return false;
 
             return true;
@@ -101,7 +107,7 @@ terminalProcess.work = function(room)
     }
 
     // some bad orders
-    if (biggestPrice <= smallestPrice)
+    if (noPanic && biggestPrice <= smallestPrice)
     {
         return;
     }
@@ -124,7 +130,10 @@ terminalProcess.work = function(room)
 
         if (rc == OK)
         {
-            Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price;
+            if (noPanic)
+            {
+                Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price;
+            }
             break;
         }
     }
