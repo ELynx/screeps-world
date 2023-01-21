@@ -19,6 +19,9 @@ energyTakeController.wantToKeep = function(structure)
 
 energyTakeController.act = function(structure, creep)
 {
+    // don't run across the map
+    if (creep.pos.getRangeTo(structure) > 10) return false;
+
     const has    = structure.store[RESOURCE_ENERGY];
     const toKeep = this.wantToKeep(structure);
     const want   = creep.store.getFreeCapacity(RESOURCE_ENERGY);
