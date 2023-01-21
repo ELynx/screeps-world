@@ -105,7 +105,9 @@ claim.creepAtDestination = function(creep)
         }
     } // end of harmable controller
 
-    if (rc == ERR_INVALID_TARGET)
+    if (rc == ERR_INVALID_TARGET ||
+        rc == ERR_FULL ||
+        rc == ERR_GCL_NOT_ENOUGH)
     {
         this._onProblemDetected(creep);
         return;
