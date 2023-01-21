@@ -63,44 +63,6 @@ Creep.prototype.allyOrNeutral = function()
     return this.ally() || this.neutral();
 };
 
-Creep.prototype.unlive = function()
-{
-    let result = false;
-
-    if (creep.room.memory.elvl > 0)
-    {
-        creep.setControlRoom(creep.room.name);
-        result = true;
-    }
-    else if (creep.memory._xxx)
-    {
-        creep.setControlRoom(creep.memory._xxx)
-        result = true;
-    }
-    else
-    {
-        for (const roomName in Game.rooms)
-        {
-            const room = Game.rooms[roomName];
-            if (room.memory.elvl > 0)
-            {
-                creep.setControlRoom(room.name);
-                result = true;
-                break;
-            }
-        }
-    }
-
-    if (result)
-    {
-        // forget who they serve
-        creep.memory.flag = undefined;
-        return OK;
-    }
-
-    return this.suicide();
-};
-
 /**
 @return Game object creep is targeted to.
 **/
