@@ -34,6 +34,7 @@ terminalProcess.work = function(room)
     const lastPrice = Memory.prices[roomMineralType] || 0;
     let noPanic = true;
 
+    // TODO global constant
     if (room.memory.threat >= 5)
     {
         noPanic = false;

@@ -104,14 +104,14 @@ secutiryProcess.work = function(room)
         }
     }
 
-    if (threatLevel >= 5)
+    if (threatLevel == ThreatMax)
     {
         // allow to grab energy
         room.memory.stre = 0;
     }
     else
     {
-        // restock again
+        // restore level from shadow copy
         room.memory.stre = room.memory._stre || 0;
     }
 
