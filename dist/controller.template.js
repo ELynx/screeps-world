@@ -177,8 +177,25 @@ function Controller(id)
 
     this._usesDefaultFilter = undefined;
 
+    this._hasWCM = function(creep)
+    {
+        return creep.getActiveBodyparts(WORK)  > 0 &&
+               creep.getActiveBodyparts(CARRY) > 0 &&
+               creep.getActiveBodyparts(MOVE)  > 0;
+    };
+
+    this._hasEnergy = function(creep)
+    {
+        return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+    };
+
+    this._isEmpty = function(creep)
+    {
+        return creep.getUsedCapacity() == 0;
+    };
+
     /**
-    Creep that has some energy and not a specialist.
+    Creep that has some energy and can perform general work
     @param {Creep} creep to look at.
     @return If creep matches filter.
     **/
@@ -186,12 +203,7 @@ function Controller(id)
     {
         this._usesDefaultFilter = true;
 
-        if (creep.memory.minr)
-        {
-            return false;
-        }
-
-        return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+        return this._hasEnergy(creep) && this._hasWCM(creep);
     };
 
     this._doesDefaultFilter = undefined;

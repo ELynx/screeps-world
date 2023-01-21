@@ -85,14 +85,10 @@ energyTakeController.targets = function(room)
 
 energyTakeController.filterCreep = function(creep)
 {
-    // not specialists
-    if (creep.memory.rstk || creep.memory.minr)
-    {
-        return false;
-    }
+    // not restocker
+    if (creep.memory.rstk) return false;
 
-    // is empty
-    return creep.store.getUsedCapacity() == 0;
+    return this._isEmpty(creep) && this._hasWCM(creep);
 };
 
 energyTakeController.register();

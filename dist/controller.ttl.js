@@ -85,7 +85,7 @@ ttlController.filterCreep = function(creep)
     // STRATEGY don't drag resources around
     if (creep.store.getUsedCapacity() > 0) return false;
 
-    // only check creeps with known body type
+    // check creeps with default body type
     const btyp = creep.memory.btyp;
     if (btyp && bodywork[btyp])
     {
