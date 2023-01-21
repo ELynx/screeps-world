@@ -42,7 +42,6 @@ terminalProcess.work = function(room)
     if (sellMineralType === undefined) return;
 
     const toKeep = noPanic ? MineralsToKeep : 0;
-
     const has = room.terminal.store[sellMineralType];
     if (has === undefined || has <= toKeep) return;
 
