@@ -9,7 +9,7 @@ OwnedStructure.prototype.ally = function()
 
 OwnedStructure.prototype.neutral = function()
 {
-    return false;
+    return this.owner && this.owner.username == 'Source Keeper';
 };
 
 OwnedStructure.prototype.hostile = function()
@@ -39,7 +39,7 @@ Creep.prototype.ally = function()
 
 Creep.prototype.neutral = function()
 {
-    return false;
+    return this.owner && this.owner.username == 'Source Keeper';
 };
 
 Creep.prototype.hostile = function()
