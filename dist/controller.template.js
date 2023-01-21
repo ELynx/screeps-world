@@ -191,7 +191,7 @@ function Controller(id)
 
     this._isEmpty = function(creep)
     {
-        return creep.getUsedCapacity() == 0;
+        return creep.store.getUsedCapacity() == 0;
     };
 
     /**
