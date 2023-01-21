@@ -24,7 +24,7 @@ towerProcess.work = function(room)
         creeps,
         function(creep)
         {
-            return creep.hostile();
+            return creep.hostile;
         }
     );
 
