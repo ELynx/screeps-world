@@ -95,7 +95,7 @@ claim.creepAtDestination = function(creep)
     // filter out early arrivals
     if (rc == ERR_TIRED && creep.ticksToLive < wait)
     {
-        const ticksToArrive = CREEP_CLAIM_LIFE_TIME - (creep.memory.clmt || 0);
+        const ticksToArrive = Game.time - (creep.memory.clmt || 0);
         const ticksBlocked  = wait;
         const spawnAfter = Game.time + ticksBlocked - ticksToArrive;
 
