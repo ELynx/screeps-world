@@ -25,7 +25,7 @@ terminalProcess.work = function(room)
     if (noPanic)
     {
         const minerals = room.find(FIND_MINERALS);
-        if (minerals.length > 0) return sellMineralType = minerals[0].mineralType;
+        if (minerals.length > 0) sellMineralType = minerals[0].mineralType;
     }
     else
     {
