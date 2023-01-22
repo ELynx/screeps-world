@@ -212,9 +212,9 @@ var roomActor =
 
                             for (const typeToGrab in typesToGrab)
                             {
-                                if (from.store[typesToGrab] > 0)
+                                if (from.store[typeToGrab] > 0)
                                 {
-                                    const rc = creep.withdraw(from, RESOURCE_ENERGY);
+                                    const rc = creep.withdraw(from, typeToGrab);
                                     wasGrabbed = wasGrabbed || (rc == OK);
                                 }
                             }
@@ -229,13 +229,10 @@ var roomActor =
                         }
                     }
 
+                    // contidions changed a lot, rethink
                     if (wasGrabbed)
                     {
-                        // TODO unify among "want empty" controllers
-                        if (creep.memory.ctrl == energyHarvestController.id)
-                        {
-                            globals.unassignCreep(creep);
-                        }
+                        globals.unassignCreep(creep);
                     }
                 } // end of grab logic
 
