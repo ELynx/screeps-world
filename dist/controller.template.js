@@ -479,6 +479,13 @@ function Controller(id)
 
     this.wrapIntent = function(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined)
     {
+        // hotfix
+        if (intentName == 'harvest')
+        {
+            if (creep.store.getFreeCapacity() == 0) return ERR_FULL;
+            if (creep.store.getFreeCapacity() <= creep.getActiveBodyparts(WORK) * HARVEST_POWER) return globals.WARN_LAST_INTENT;
+        }
+
         const intent = creep[intentName];
         if (intent === undefined)
         {
