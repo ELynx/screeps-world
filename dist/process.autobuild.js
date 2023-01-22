@@ -341,14 +341,14 @@ autobuildProcess.sourceContainer = function(room)
 
                 const terrain = room.getTerrain();
 
-                for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
+                for (let i = 0; i < sources.length && i < canHave - ContainerReserve; ++i)
                 {
                     const source = sources[i];
 
                     let positions = [];
                     for (let dx = -1; dx <= 1; ++dx)
                     {
-                        for (dy = -1; dy <= 1; ++dy)
+                        for (let dy = -1; dy <= 1; ++dy)
                         {
                             if (dx == 0 && dy == 0) continue;
 
@@ -434,7 +434,7 @@ autobuildProcess.coverRamparts = function(room)
             {
                 const structure = atXY[i];
 
-                îf (!structure.my)
+                if (!structure.my)
                 {
                     noCover = true;
                     break;
