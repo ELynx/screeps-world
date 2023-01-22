@@ -243,7 +243,12 @@ var roomActor =
                         }
                         else
                         {
-                            if (creep.fatigue > 0)
+                            if (creep.getActiveBodyparts(MOVE) == 0)
+                            {
+                                keepAssignment = false;
+                                ++resting; // politely call it so
+                            }
+                            else if (creep.fatigue > 0)
                             {
                                 keepAssignment = true;
                                 ++resting;
@@ -276,7 +281,7 @@ var roomActor =
 
                                 keepAssignment = rc == OK;
                                 moving = moving + keepAssignment;
-                            } // end of fatigue equals 0
+                            } // end of "has MOVE" and "fatigue equals 0"
                         } // end of "not in range"
                     } // end of if target found
 
