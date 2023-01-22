@@ -103,7 +103,7 @@ Object.defineProperty(
 );
 
 Object.defineProperty(
-    OwnedStructure.prototype,
+    Creep.prototype,
     'neutral',
     {
         get: function()
@@ -116,7 +116,7 @@ Object.defineProperty(
 );
 
 Object.defineProperty(
-    OwnedStructure.prototype,
+    Creep.prototype,
     'hostile',
     {
         get: function()
