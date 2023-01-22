@@ -476,6 +476,16 @@ function Controller(id)
         }
     };
 
+    this.wrapIntent = function(creep, intent, target, arg1 = undefined, arg2 = undefined)
+    {
+        const f = _.bind(creep[intent], creep);
+
+        if (arg2 !== undefined) return f(target, arg1, arg2);
+        if (arg1 !== undefined) return f(target, arg1);
+
+        return f(target);
+    };
+
     /**
     Register into globals.
     **/
