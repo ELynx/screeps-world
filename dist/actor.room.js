@@ -208,10 +208,11 @@ var roomActor =
                         if (grabb.type == LOOK_TOMBSTONES ||
                             grabb.type == LOOK_RUINS)
                         {
-                            const typesToGrab = hasUniversalStore ? Object.keys(from) : [ RESOURCE_ENERGY ];
+                            const typesToGrab = hasUniversalStore ? Object.keys(from.store) : [ RESOURCE_ENERGY ];
 
-                            for (const typeToGrab in typesToGrab)
+                            for (const key in typesToGrab)
                             {
+                                const typeToGrab = typesToGrab[key];
                                 if (from.store.getUsedCapacity(typeToGrab) > 0)
                                 {
                                     const rc = creep.withdraw(from, typeToGrab);
@@ -230,7 +231,8 @@ var roomActor =
                         }
                     }
 
-                    if (wasGrabbed)
+                    // after this tick, from zero to non-zero
+                    if (wasGrabbed && creep.store.getUsedCapacity() == 0)
                     {
                         // contidions changed a lot, rethink
                         globals.unassignCreep(creep);
