@@ -62,7 +62,9 @@ repairController.act = function(target, creep)
         return false;
     }
 
-    return creep.repair(target) == OK;
+    const rc = creep.repair(target);
+    if (rc == OK) creep._energyUsed_ = true;
+    return rc == OK;
 };
 
 repairController.targets = function(room)

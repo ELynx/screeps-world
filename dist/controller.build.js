@@ -10,7 +10,9 @@ buildController.oddOrEven = 0;
 
 buildController.act = function(site, creep)
 {
-    return creep.build(site) == OK;
+    const rc = creep.build(site);
+    if (rc == OK) creep._energyUsed_ = true;
+    return rc == OK;
 };
 
 // STRATEGY build priorities

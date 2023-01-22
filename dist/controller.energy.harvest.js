@@ -8,15 +8,16 @@ energyHarvestController.actRange = 1;
 
 energyHarvestController.ignoreCreepsForTargeting = false;
 
+// TODO systemize
 energyHarvestController.act = function(source, creep)
 {
     let result = false;
 
     // will drop on ground if not enough free space
     if (creep.store.getFreeCapacity() > 0)
-    {
         result = creep.harvest(source) == OK;
-    }
+
+    if (result) creep._storeUpped_ = true;
 
     return result;
 };

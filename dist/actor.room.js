@@ -212,7 +212,7 @@ var roomActor =
 
                             for (const typeToGrab in typesToGrab)
                             {
-                                if (from.store[typeToGrab] > 0)
+                                if (from.store.getUsedCapacity(typeToGrab) > 0)
                                 {
                                     const rc = creep.withdraw(from, typeToGrab);
                                     wasGrabbed = wasGrabbed || (rc == OK);
@@ -224,15 +224,18 @@ var roomActor =
                         {
                             if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY)
                             {
-                                wasGrabbed = creep.pickup(from) == OK;
+                                const rc = creep.pickup(from);
+                                wasGrabbed = wasGrabbed || (rc == OK);
                             }
                         }
                     }
 
-                    // contidions changed a lot, rethink
                     if (wasGrabbed)
                     {
+                        // contidions changed a lot, rethink
                         globals.unassignCreep(creep);
+                        // let other know that store increase happened
+                        creep._storeUpped_ = true;
                     }
                 } // end of grab logic
 

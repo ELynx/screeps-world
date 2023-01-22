@@ -23,6 +23,7 @@ energyRestockControllerRegular.observeMyCreep = function(creep)
 energyRestockControllerRegular.act = function(target, creep)
 {
     creep.transfer(target, RESOURCE_ENERGY);
+    creep._energyUsed_ = true;
 
     return false;
 };
