@@ -1,5 +1,6 @@
 'use strict';
 
+var globals    = require('globals');
 var Controller = require('controller.template');
 
 var mineralRestockController = new Controller('mineral.restock');
@@ -8,41 +9,14 @@ mineralRestockController.actRange = 1;
 
 mineralRestockController.act = function(withStore, creep)
 {
-    let transferred = false;
-
-    for(const resourceType in creep.store)
+    for (const resourceType in creep.store)
     {
-        // speedup, if there are more resource types
-        if (transferred)
-        {
-            return true;
-        }
-
-        // TODO why such logic?
-        if (resourceType == RESOURCE_ENERGY && creep.store[resourceType] == 0)
-        {
-            continue;
-        }
-
-        let canReceive = withStore.store.getFreeCapacity(resourceType);
-        if (canReceive == 0)
-        {
-            continue;
-        }
-        else
-        {
-            const rc = creep.transfer(withStore, resourceType);
-
-            if (rc != OK)
-            {
-                return false;
-            }
-
-            transferred = true;
-        }
+        const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType);
+        if (rc != OK) return rc;
     }
 
-    return false;
+    // if here then all transfers were OK
+    return globals.WARN_LAST_INTENT;
 };
 
 mineralRestockController._checkStorage = function(structure)

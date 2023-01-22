@@ -8,8 +8,7 @@ controllerController.actRange = 3;
 
 controllerController.act = function(controller, creep)
 {
-    const rc = this.wrapIntent(creep, 'upgradeController', controller);
-    return rc == OK;
+    return this.wrapIntent(creep, 'upgradeController', controller);
 };
 
 controllerController.targets = function(room)

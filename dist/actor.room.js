@@ -75,7 +75,7 @@ var roomActor =
 
         if (controller)
         {
-            return controller.act(target, creep);
+            return controller.act(target, creep) == OK;
         }
 
         return false;

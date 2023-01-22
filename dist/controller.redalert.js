@@ -1,5 +1,6 @@
 'use strict';
 
+var globals    = require('globals');
 var Controller = require('controller.template');
 
 var redAlert = new Controller('redalert');
@@ -16,12 +17,10 @@ redAlert.act = function(controller, creep)
     if (controller.ticksToDowngrade >= CONTROLLER_DOWNGRADE[controller.level] ||
         controller.ticksToDowngrade >= creep.memory.xtra)
     {
-        return false;
+        return globals.WARN_LAST_INTENT;
     }
 
-    const rc = creep.upgradeController(controller);
-    if (rc == OK) creep._energyUsed_ = true;
-    return rc == OK;
+    return this.wrapIntent(creep, 'upgradeController', controller);
 };
 
 redAlert.targets = function(room)
