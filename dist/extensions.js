@@ -230,7 +230,7 @@ Room.prototype.roomDebug = function(what)
         this._verboseT_ = Game.time;
     }
 
-    this.visual.text(what, 0, this._debugY_++, { align: 'left' });
+    this.visual.text(what, 0, this._debugY_++, { align: 'left', font: 'courier' });
 };
 
 Room.prototype._clearCreepCacheIfOld = function()
