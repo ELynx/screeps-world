@@ -25,7 +25,7 @@ energyTakeController.act = function(structure, creep)
 
     const howMuch = has - toKeep >= want ? undefined : has - toKeep;
 
-    return this.wrapIntent(creep, 'withdraw', structure, howMuch);
+    return this.wrapIntent(creep, 'withdraw', structure, RESOURCE_ENERGY, howMuch);
 };
 
 energyTakeController.validateTarget = function(target, creep)
