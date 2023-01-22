@@ -12,15 +12,21 @@ energyRestockControllerSpecialist.actRange = 1;
 
 energyRestockControllerSpecialist.act = function(target, creep)
 {
-    creep.transfer(target, RESOURCE_ENERGY);
-    creep._energyUsed_ = true;
-
-    return false;
+    return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY);
 };
 
 energyRestockControllerSpecialist.targets = function(room)
 {
-    const allStructures = room.find(FIND_STRUCTURES);
+    const allStructures = room.find(
+        FIND_STRUCTURES,
+        {
+            filter: function(structure)
+            {
+                return structure.store && structure.isActiveSimple();
+            }
+        }
+    );
+    if (allStructures.length == 0) return [];
 
     const sourceLinks = _.filter(
         allStructures,
@@ -29,14 +35,12 @@ energyRestockControllerSpecialist.targets = function(room)
             if (structure.structureType == STRUCTURE_LINK)
             {
                 return structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
-                       structure.isActiveSimple() &&
                        structure.isSource();
             }
 
             return false;
         }
     );
-
     if (sourceLinks.length > 0) return sourceLinks;
 
     return _.filter(
@@ -45,8 +49,7 @@ energyRestockControllerSpecialist.targets = function(room)
         {
             if (structure.structureType == STRUCTURE_CONTAINER)
             {
-                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
-                       structure.isActiveSimple();
+                return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY);
             }
 
             return false;

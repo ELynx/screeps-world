@@ -2,6 +2,15 @@
 
 var globals =
 {
+    // intent is valid, but next such action will be invalid
+    WARN_LAST_INTENT        = 1,
+    // intent name not found
+    ERR_INVALID_INTENT_NAME = -16,
+    // intent args not given
+    ERR_INVALID_INTENT_ARG  = -17,
+    // intent pipeline conflict
+    ERR_DUPLICATE_INTENT    = -18,
+
     /**
     CPU used from hard shard limit.
     @return integer percent of used shard limit.

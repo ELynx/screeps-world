@@ -1,5 +1,6 @@
 'use strict';
 
+var globals    = require('globals');
 var Controller = require('controller.template');
 
 var repairController = new Controller('repair');
@@ -59,12 +60,10 @@ repairController.act = function(target, creep)
     if (target.hits >= target.hitsMax ||
         target.hits >= creep.memory.xtra)
     {
-        return false;
+        return globals.WARN_LAST_INTENT;
     }
 
-    const rc = creep.repair(target);
-    if (rc == OK) creep._energyUsed_ = true;
-    return rc == OK;
+    return this.wrapIntent(creep, 'repair', target);
 };
 
 repairController.targets = function(room)

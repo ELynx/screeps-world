@@ -22,10 +22,7 @@ energyRestockControllerRegular.observeMyCreep = function(creep)
 
 energyRestockControllerRegular.act = function(target, creep)
 {
-    creep.transfer(target, RESOURCE_ENERGY);
-    creep._energyUsed_ = true;
-
-    return false;
+    return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY);
 };
 
 energyRestockControllerRegular.targets = function(room)
@@ -35,10 +32,11 @@ energyRestockControllerRegular.targets = function(room)
         {
             filter: function(structure)
             {
-                return structure.isActiveSimple();
+                return structure.store && structure.isActiveSimple();
             }
         }
     );
+    if (allStructures.length == 0) return [];
 
     const critical = _.filter(
         allStructures,

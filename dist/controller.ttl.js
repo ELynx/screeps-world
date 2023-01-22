@@ -43,10 +43,7 @@ ttlController.act = function(spawn, creep)
     if (renew)
     {
         const rc = spawn.renewCreep(creep);
-        if (rc == OK)
-        {
-            return true;
-        }
+        if (rc == OK) return rc;
 
         // forgetaboutit
         recycle = true;
@@ -54,10 +51,10 @@ ttlController.act = function(spawn, creep)
 
     if (recycle)
     {
-        return spawn.recycleCreep(creep) == OK;
+        return spawn.recycleCreep(creep);
     }
 
-    return true;
+    return OK;
 };
 
 ttlController.targets = function(room)
@@ -69,7 +66,8 @@ ttlController.targets = function(room)
             {
                 if (structure.structureType == STRUCTURE_SPAWN)
                 {
-                    return !structure.spawning && structure.isActiveSimple();
+                    // STRATEGY direct creep to nearest spawn, figure out on arrival
+                    return structure.isActiveSimple();
                 }
 
                 return false;
@@ -80,13 +78,13 @@ ttlController.targets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    // if cannot walk, do not waste CPU on pathfinding
+    // cannot walk, do not waste CPU on pathfinding
     if (creep.getActiveBodyparts(MOVE) == 0) return false;
 
-    // if recycle was forced, recycle
+    // recycle was forced
     if (creep.memory.recycle == true) return true;
 
-    // if too young, wait
+    // too young
     if (creep.ticksToLive > TTL) return false;
 
     // fast check if was rejected once

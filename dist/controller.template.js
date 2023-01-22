@@ -476,14 +476,25 @@ function Controller(id)
         }
     };
 
-    this.wrapIntent = function(creep, intent, target, arg1 = undefined, arg2 = undefined)
+    this.wrapIntent = function(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined)
     {
-        const f = _.bind(creep[intent], creep);
+        const intent = creep[intent];
+        if (intent === undefined)
+        {
+            console.log('Invalid intent [' + intentName + '] called for creep [' + creep.name + ']');
+            return globals.ERR_INVALID_INTENT_NAME;
+        }
 
-        if (arg2 !== undefined) return f(target, arg1, arg2);
-        if (arg1 !== undefined) return f(target, arg1);
+        const boundIntent = _.bind(intent, creep);
 
-        return f(target);
+        let rc = globals.ERR_INVALID_INTENT_ARG;
+
+        if      (arg2 !== undefined) rc = boundIntent(arg0, arg1, arg2);
+        else if (arg1 !== undefined) rc = boundIntent(arg0, arg1);
+        else if (arg0 !== undefined) rc = boundIntent(arg0);
+        else                         rc = boundIntent();
+
+        return rc;
     };
 
     /**

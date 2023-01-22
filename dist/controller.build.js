@@ -10,15 +10,14 @@ buildController.oddOrEven = 0;
 
 buildController.act = function(site, creep)
 {
-    const rc = creep.build(site);
-    if (rc == OK) creep._energyUsed_ = true;
-    return rc == OK;
+    return this.wrapIntent(creep, 'build', site);
 };
 
 // STRATEGY build priorities
 buildController._sites = function(room)
 {
     const allSites = room.find(FIND_CONSTRUCTION_SITES);
+    if (allSites.length == 0) return [];
 
     const spawns = _.filter(
         allSites,
