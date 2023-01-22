@@ -23,8 +23,6 @@ Autobuild walls around controller.
 
 Autobuild energy containers.
 
-Autobuild ramps on own structures only.
-
 Strelok tries to attack unreachable sections.
 
 # Intents
@@ -70,3 +68,5 @@ TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 TIP OF THE DAY: You can apply transfer and heal to another player’s creep, and transfer, build and repair to others’ structures.
 
 Fatigue based emergent road building.
+
+Reassing creeps when one frees up.

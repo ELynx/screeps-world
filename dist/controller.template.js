@@ -122,7 +122,7 @@ function Controller(id)
     Do something with target and creep then they met.
     @param {Object} target.
     @param {Creep} creep.
-    @return If creep should remain on target.
+    @return Creep intent return code.
     **/
     this.act = undefined;
 
@@ -191,15 +191,11 @@ function Controller(id)
 
     this._hasEnergy = function(creep)
     {
-        // had energy used
-        if (creep._energyUsed_ == true) return false;
         return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
     };
 
     this._isEmpty = function(creep)
     {
-        // had store increment
-        if (creep._storeUpped_ == true) return false;
         return creep.store.getUsedCapacity() == 0;
     };
 
@@ -245,6 +241,10 @@ function Controller(id)
         return target.pos.manhattanDistance(creep.pos);
     };
 
+    /**
+    COST of creep working on target.
+    Lower is better, higher is worse.
+    **/
     this.creepToTargetCost = function(target, creep)
     {
         return this._manhattanDistanceCost(target, creep);
@@ -404,7 +404,7 @@ function Controller(id)
 
         if (this.oddOrEven)
         {
-            if (Game.time % 2 != this.oddOrEven)
+            if ((room.memory.intl + Game.time) % 2 != this.oddOrEven)
             {
                 this.debugLine(room, 'Fast exit, oddOrEven check');
                 return roomCreeps;
@@ -415,11 +415,12 @@ function Controller(id)
         {
             if (room._isDefaultFiltered())
             {
-                this.debugLine(room, 'Fast exit, no creeps with energy');
+                this.debugLine(room, 'Fast exit, no creeps with default parameters');
                 return roomCreeps;
             }
         }
 
+        // wipe the cache from previous room now
         this._targetCache  = undefined;
         if (this._findTargets(room).length == 0)
         {
@@ -447,7 +448,7 @@ function Controller(id)
             if (this._doesDefaultFilter)
             {
                 room._markDefaultFiltered();
-                this.debugLine(room, 'No creeps with energy found');
+                this.debugLine(room, 'No creeps with default parameters found');
             }
             else
             {
@@ -469,7 +470,7 @@ function Controller(id)
             if (this._doesDefaultFilter)
             {
                 room._markDefaultFiltered();
-                this.debugLine(room, 'All creeps with energy are used');
+                this.debugLine(room, 'All creeps with default parameters used');
             }
 
             return creepSkip;

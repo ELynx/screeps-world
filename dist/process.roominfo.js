@@ -1,5 +1,6 @@
 'use strict';
 
+var globals = require('globals');
 var Process = require('process.template');
 
 var roomInfoProcess = new Process('roomInfo');
@@ -366,13 +367,30 @@ roomInfoProcess.work = function(room)
         room.memory.mlvl = this.miningLevel(room);
         room.memory.wlvl = this._walls(room);
 
-        // STRATEGY how much energy to keep in bigger structures
-        // use shadow values, other processes will define the actual level
-        room.memory._trme = 300;
-        room.memory._stre = 10000;
-
         // offset regeneration time randomly so multiple rooms don't do it at same tick
         room.memory.intl = Game.time + Math.ceil(Math.random() * 42);
+    }
+
+    // STRATEGY how much energy to keep in bigger structures by default
+    room.memory.trme = 300;
+    room.memory.stre = 10000;
+
+    // STRATEGY stored energy in store per threat level
+    const threat = room.memory.threat;
+    if (threat)
+    {
+        if (threat == globals.ThreatLevelMax)
+        {
+            room.memory.stre = 0;
+        }
+        else if (threat >= globals.ThreatLevelMedium)
+        {
+            room.memory.stre = 5000;
+        }
+        else
+        {
+            room.memory.stre = 9000;
+        }
     }
 };
 

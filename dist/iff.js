@@ -13,9 +13,11 @@ const isNeutral = function(something)
 {
     if (something.owner)
     {
+        const username = something.owner.username;
+
         // TODO not always
-        if (something.owner.username == UsernameSourceKeeper) return true;
-        if (something.owner.username == UsernamePowerBank) return true;
+        if (username == UsernameSourceKeeper) return true;
+        if (username == UsernamePowerBank)    return true;
     }
 
     return false;
@@ -44,6 +46,23 @@ const isUnowned = function(something)
 {
     return something.owner === undefined;
 }
+
+const isPC = function(something)
+{
+    // quick check
+    if (something.my) return true;
+
+    if (something.owner)
+    {
+        const username = something.owner.username;
+
+        if (username == UsernameSourceKeeper) return false;
+        if (username == UsernamePowerBank)    return false;
+        if (username == UsernameInvader)      return false;
+    }
+
+    return true;
+};
 
 Object.defineProperty(
     OwnedStructure.prototype,
@@ -98,6 +117,19 @@ Object.defineProperty(
 );
 
 Object.defineProperty(
+    OwnedStructure.prototype,
+    'pc',
+    {
+        get: function()
+        {
+            return isPC(this);
+        },
+        configurable: true,
+        enumerable:   true
+    }
+);
+
+Object.defineProperty(
     Creep.prototype,
     'ally',
     {
@@ -130,6 +162,19 @@ Object.defineProperty(
         get: function()
         {
             return isHostile(this);
+        },
+        configurable: true,
+        enumerable:   true
+    }
+);
+
+Object.defineProperty(
+    Creep.prototype,
+    'pc',
+    {
+        get: function()
+        {
+            return isPC(this);
         },
         configurable: true,
         enumerable:   true
