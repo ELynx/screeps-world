@@ -19,10 +19,6 @@ Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
-Autobuild walls around controller.
-
-Autobuild energy containers.
-
 Strelok tries to attack unreachable sections.
 
 # Intents

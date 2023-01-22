@@ -474,8 +474,34 @@ autobuildProcess.coverRamparts = function(room)
     }
 };
 
+autobuildProcess.wallsAroundController = function(room)
+{
+    const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][room.controller.level] || 0;
+    if (canHave == 0) return;
+
+    const terrain = room.getTerrain();
+
+    for (let dx = -1; dx <= 1; ++dx)
+    {
+        for (let dy = -1; dy <= 1; ++dy)
+        {
+            if (dx == 0 && dy == 0) continue;
+
+            const x = room.controller.pos.x + dx;
+            const y = room.controller.pos.y + dy;
+
+            const terrainMask = terrain.get(x, y);
+
+            if (terrainMask == TERRAIN_MASK_WALL) continue;
+
+            this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL);
+        }
+    }
+};
+
 autobuildProcess.actualWork = function(room)
 {
+    this.wallsAroundController(room);
     this.extractor(room);
     this.sourceLink(room);
     this.sourceContainer(room);
