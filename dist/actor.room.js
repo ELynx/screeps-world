@@ -139,6 +139,7 @@ var roomActor =
         if (roomCreeps.length > 0)
         {
             // do some statistics
+            let spawning = 0;
             let assigned = 0;
             let working  = 0;
             let resting  = 0;
@@ -151,6 +152,7 @@ var roomActor =
                 // spawning creep can do nothing
                 if (creep.spawning)
                 {
+                    ++spawning;
                     continue;
                 }
 
@@ -178,6 +180,7 @@ var roomActor =
                         else
                         {
                             creep.moveToWrapper(destRoom, { reusePath: 50, range: offBorderDistance });
+                            ++moving;
                             continue; // to next creep
                         }
                     }
@@ -220,6 +223,7 @@ var roomActor =
 
                     if (wasGrabbed)
                     {
+                        // TODO unify among "want empty" controllers
                         if (creep.memory.ctrl == energyHarvestController.id)
                         {
                             globals.unassignCreep(creep);
@@ -246,7 +250,6 @@ var roomActor =
                             if (creep.getActiveBodyparts(MOVE) == 0)
                             {
                                 keepAssignment = false;
-                                ++resting; // politely call it so
                             }
                             else if (creep.fatigue > 0)
                             {
@@ -305,11 +308,12 @@ var roomActor =
             } // end of creeps loop
 
             // log statistics
-            this.debugLine(room, 'Assigned creeps ' + assigned);
-            this.debugLine(room, '-> working      ' + working);
-            this.debugLine(room, '-> resting      ' + resting);
-            this.debugLine(room, '-> moving       ' + moving);
-            this.debugLine(room, 'Free creeps     ' + unassignedCreeps.length);
+            this.debugLine(room, 'Busy creeps ' + assigned);
+            this.debugLine(room, '-> spawning ' + spawning);
+            this.debugLine(room, '-> working  ' + working);
+            this.debugLine(room, '-> resting  ' + resting);
+            this.debugLine(room, '-> moving   ' + moving);
+            this.debugLine(room, 'Free creeps ' + unassignedCreeps.length);
         } // end of roomCreeps
 
         if (unassignedCreeps.length > 0)
