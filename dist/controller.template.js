@@ -191,11 +191,15 @@ function Controller(id)
 
     this._hasEnergy = function(creep)
     {
+        // had energy used
+        if (creep._energyUsed_ == true) return false;
         return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
     };
 
     this._isEmpty = function(creep)
     {
+        // had store increment
+        if (creep._storeUpped_ == true) return false;
         return creep.store.getUsedCapacity() == 0;
     };
 

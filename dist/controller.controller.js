@@ -8,7 +8,9 @@ controllerController.actRange = 3;
 
 controllerController.act = function(controller, creep)
 {
-    return creep.upgradeController(controller) == OK;
+    const rc = creep.upgradeController(controller);
+    if (rc == OK) creep._energyUsed_ = true;
+    return rc == OK;
 };
 
 controllerController.targets = function(room)

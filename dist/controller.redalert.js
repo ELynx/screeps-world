@@ -19,7 +19,9 @@ redAlert.act = function(controller, creep)
         return false;
     }
 
-    return creep.upgradeController(controller) == OK;
+    const rc = creep.upgradeController(controller);
+    if (rc == OK) creep._energyUsed_ = true;
+    return rc == OK;
 };
 
 redAlert.targets = function(room)

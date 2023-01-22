@@ -41,6 +41,8 @@ mineralHarvestController.act = function(extractor, creep)
         }
     }
 
+    if (result) creep._storeUpped_ = true;
+
     return result;
 };
 
