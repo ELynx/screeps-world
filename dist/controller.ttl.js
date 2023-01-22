@@ -80,13 +80,17 @@ ttlController.targets = function(room)
 
 ttlController.filterCreep = function(creep)
 {
-    // if recycle was forced
+    // if cannot walk, do not waste CPU on pathfinding
+    if (creep.getActiveBodyparts(MOVE) == 0) return false;
+
+    // if recycle was forced, recycle
     if (creep.memory.recycle == true) return true;
 
+    // if too young, wait
     if (creep.ticksToLive > TTL) return false;
 
-    // just fast check to skip repeated state check
-    if (creep.memory.xttl) return false;
+    // fast check if was rejected once
+    if (creep.memory._ttl) return false;
 
     // STRATEGY don't drag resources around
     if (!this._isEmpty(creep)) return false;
@@ -109,7 +113,7 @@ ttlController.filterCreep = function(creep)
     }
 
     // flag to avoid repeated checks
-    creep.memory.xttl = true;
+    creep.memory._ttl = true;
 
     return false;
 };

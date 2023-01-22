@@ -28,8 +28,7 @@ energyHarvestController.targets = function(room)
 
 energyHarvestController.filterCreep = function(creep)
 {
-    // STRATEGY harvest with empty only, reduce runs to sources
-    return this._isEmpty(creep) && this._hasWCM(creep);
+    return this._isHarvestAble(creep);
 };
 
 energyHarvestController.register();
