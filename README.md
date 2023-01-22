@@ -63,10 +63,10 @@ Some material on autobases:
 
 * https://github.com/kasami/kasamibot
 
-Intent collision detection with prototypes.
-
 TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to determine how much energy all the spawns and extensions in the room contain.
 
 TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 
 TIP OF THE DAY: You can apply transfer and heal to another player’s creep, and transfer, build and repair to others’ structures.
+
+Fatigue based emergent road building.
