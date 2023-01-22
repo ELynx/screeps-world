@@ -6,21 +6,67 @@ const UsernameInvader      = 'Invader';
 
 const isAlly = function(something)
 {
+    // you are not your ally
+    if (something.my) return false;
+
+    if (something.__isally) return something.__isally;
+
+    if (something.owner)
+    {
+        if (!Memory.allies)
+        {
+            Memory.allies =
+            {
+                __timeOfCreation__: Game.time
+            };
+        }
+
+        const status = Memory.allies[something.owner.username];
+
+        let response = status && status == true;
+        something.__isally = response;
+        return response;
+    }
+
+    something.__isally = false;
     return false;
 };
 
 const isNeutral = function(something)
 {
+    // you are not your neutral
+    if (something.my) return false;
+
+    if (something.__isneutral) return something.__isneutral;
+
+    let response = false;
+
     if (something.owner)
     {
+        if (!Memory.neutrals)
+        {
+            Memory.neutrals =
+            {
+                __timeOfCreation__: Game.time
+            };
+        }
+
         const username = something.owner.username;
 
         // TODO not always
-        if (username == UsernameSourceKeeper) return true;
-        if (username == UsernamePowerBank)    return true;
+        if (username == UsernameSourceKeeper) response = true;
+        if (username == UsernamePowerBank)    response = true;
+
+        if (!response)
+        {
+            // check the actual memory
+            const status = Memory.neutrals[username];
+            response = status && status == true;
+        }
     }
 
-    return false;
+    something.__isneutral = response;
+    return response;
 };
 
 const isHostile = function(something)
