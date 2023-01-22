@@ -478,7 +478,7 @@ function Controller(id)
 
     this.wrapIntent = function(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined)
     {
-        const intent = creep[intent];
+        const intent = creep[intentName];
         if (intent === undefined)
         {
             console.log('Invalid intent [' + intentName + '] called for creep [' + creep.name + ']');
