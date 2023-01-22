@@ -20,6 +20,7 @@ towerProcess.work = function(room)
     if (towers.length == 0) return;
 
     const creeps = room.find(FIND_CREEPS);
+
     const hostileCreeps = _.filter(
         creeps,
         function(creep)
@@ -47,7 +48,7 @@ towerProcess.work = function(room)
         function(creep)
         {
             // callous
-            if (creep.memory.selfCanHeal) return false;
+            if (creep.memory && creep.memory.selfCanHeal) return false;
 
             return creep.myOrAlly() && (creep.hits < creep.hitsMax);
         }
