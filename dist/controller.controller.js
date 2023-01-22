@@ -8,8 +8,7 @@ controllerController.actRange = 3;
 
 controllerController.act = function(controller, creep)
 {
-    const rc = creep.upgradeController(controller);
-    if (rc == OK) creep._energyUsed_ = true;
+    const rc = this.wrapIntent(creep, 'upgradeController', controller);
     return rc == OK;
 };
 
