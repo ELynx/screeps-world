@@ -11,8 +11,8 @@ energyTakeController.wantToKeep = function(structure)
     const room = structure.room;
 
     // actual, if not defined then shadow, otherwise grab
-    if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || (room.memory._trme || 0);
-    if (structure.structureType == STRUCTURE_STORAGE)  return room.memory.stre || (room.memory._stre || 0);
+    if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || 0;
+    if (structure.structureType == STRUCTURE_STORAGE)  return room.memory.stre || 0;
 
     return 0;
 };
@@ -30,7 +30,7 @@ energyTakeController.act = function(structure, creep)
 
 energyTakeController.validateTarget = function(target, creep)
 {
-    // don't run across the map
+    // STRATEGY max distance to energy container
     if (creep.pos.getRangeTo(target) > 10) return false;
 
     const has    = target.store[RESOURCE_ENERGY];

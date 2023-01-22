@@ -1,5 +1,6 @@
 'use strict';
 
+var globals = require('globals');
 var Process = require('process.template');
 
 var terminalProcess = new Process('terminal');
@@ -18,8 +19,7 @@ terminalProcess.work = function(room)
     if (room.terminal.store[RESOURCE_ENERGY] < 2) return;
 
     // SELL SELL SELL
-    // TODO global constant
-    const noPanic = room.memory.threat ? room.memory.threat < 5 : true;
+    const noPanic = room.memory.threat ? room.memory.threat < globals.ThreatLevelMax : true;
 
     let sellMineralType = undefined;
     if (noPanic)

@@ -2,6 +2,10 @@
 
 var globals =
 {
+    ThreatLevelLow:    1,
+    ThreatLevelMedium: 3,
+    ThreatLevelMax:    5,
+
     // intent is valid, but next such action will be invalid
     WARN_LAST_INTENT:          1,
     // intent name not found

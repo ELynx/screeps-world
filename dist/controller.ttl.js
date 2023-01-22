@@ -54,6 +54,7 @@ ttlController.act = function(spawn, creep)
         return spawn.recycleCreep(creep);
     }
 
+    // keep on target if can be dealt with later
     return OK;
 };
 

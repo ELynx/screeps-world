@@ -16,10 +16,11 @@ mineralRestockController.act = function(withStore, creep)
     }
 
     // if here then all transfers were OK
+    // thus do not keep at target
     return globals.WARN_LAST_INTENT;
 };
 
-mineralRestockController._checkStorage = function(structure)
+mineralRestockController._checkStore = function(structure)
 {
     if (structure && structure.isActiveSimple())
     {
@@ -31,8 +32,9 @@ mineralRestockController._checkStorage = function(structure)
 
 mineralRestockController.targets = function(room)
 {
-    if (this._checkStorage(room.terminal)) return [ room.terminal ];
-    if (this._checkStorage(room.storage))  return [ room.storage ];
+    // STRATEGY what to fill first
+    if (this._checkStore(room.terminal)) return [ room.terminal ];
+    if (this._checkStore(room.storage))  return [ room.storage ];
 
     return [];
 };

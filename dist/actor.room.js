@@ -99,6 +99,7 @@ var roomActor =
             if (creeps.length == 0)
             {
                 this.debugLine(room, 'All creeps assigned after controller [' + id + ']');
+
                 return;
             }
             else
@@ -119,11 +120,12 @@ var roomActor =
         // clean up controllers
         this.roomControllersPrepare(room);
 
-        secutiryProcess.work(room);
-        roomInfoProcess.work(room);
+        secutiryProcess.work(room); // manages threat and safety mode
+        roomInfoProcess.work(room); // manages room parameters used by other processes
+
         towerProcess.work(room);
 
-        // STRATEGY don't execute certain processes too ofthen and on the same tick
+        // STRATEGY don't execute certain processes too often and on the same tick / all rooms
         const processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)

@@ -1,11 +1,11 @@
 'use strict';
 
+var globals = require('globals');
 var Process = require('process.template');
 
 var secutiryProcess = new Process('security');
 
 const ThreatStep = 60;
-const ThreatMax  = 5;
 
 secutiryProcess.work = function(room)
 {
@@ -28,7 +28,7 @@ secutiryProcess.work = function(room)
     {
         if (threatTimer + ThreatStep <= Game.time)
         {
-            if (threatLevel < ThreatMax)
+            if (threatLevel < globals.ThreatLevelMax)
             {
                 ++threatLevel;
                 console.log(room.name + ' threat escalated to ' + threatLevel);
@@ -52,14 +52,12 @@ secutiryProcess.work = function(room)
                 }
 
                 const flag = Game.flags[flagName];
-
                 if (flag.pos.roomName != room.name)
                 {
                     continue;
                 }
 
                 const range = flag.getValue();
-
                 if (range < 0)
                 {
                     continue;
@@ -70,16 +68,11 @@ secutiryProcess.work = function(room)
                     range,
                     function(creep)
                     {
-                        if (creep.hostile && creep.owner != 'Invader')
-                        {
-                            return true;
-                        }
-
-                        return false;
+                        return creep.pc && creep.hostile;
                     }
                 );
 
-                if (trigger.length > 0)
+                if (trigger)
                 {
                     const rc = ctrl.activateSafeMode();
 
@@ -102,17 +95,6 @@ secutiryProcess.work = function(room)
 
             console.log(room.name + ' threat deescalated to ' + threatLevel);
         }
-    }
-
-    if (threatLevel == ThreatMax)
-    {
-        // allow to grab energy
-        room.memory.stre = 0;
-    }
-    else
-    {
-        // restore level from shadow copy
-        room.memory.stre = room.memory._stre || 0;
     }
 
     if (threatLevel > 0)
