@@ -1,7 +1,8 @@
 'use strict';
 
-const UsernameInvader      = 'Invader';
 const UsernameSourceKeeper = 'Source Keeper';
+const UsernamePowerBank    = 'Power Bank';
+const UsernameInvader      = 'Invader';
 
 const isAlly = function(something)
 {
@@ -10,17 +11,24 @@ const isAlly = function(something)
 
 const isNeutral = function(something)
 {
-    // TODO not always
-    return something.owner && something.owner.username == UsernameSourceKeeper;
+    if (something.owner)
+    {
+        // TODO not always
+        if (something.owner.username == UsernameSourceKeeper) return true;
+        if (something.owner.username == UsernamePowerBank) return true;
+    }
+
+    return false;
 };
 
 const isHostile = function(something)
 {
     // this will be joy when wrapped by profiler...
 
+    // quickest check
     if (something.my) return false;
 
-    // quick checks for predefined names
+    // quick check
     if (something.owner)
     {
         if (something.owner.username == UsernameInvader) return true;
