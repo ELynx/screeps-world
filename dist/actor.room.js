@@ -25,6 +25,9 @@ var repairController         = require('controller.repair');
 var buildController          = require('controller.build');
 var controllerController     = require('controller.controller');
 
+// this one does not register
+var grabController           = require('controller.grab');
+
 var roomActor =
 {
     verbose: false,
@@ -190,56 +193,17 @@ var roomActor =
                     }
                 } // end of subroutine of room change
 
-                // TODO integrate
-                // Grab resources nearby
-                if (creep.store.getFreeCapacity() > 0)
+                // grab logic, manual call
+                if (grabController.filterCreep(creep))
                 {
-                    const hasUniversalStore = creep.room.storage || creep.room.terminal;
+                    const currentController = globals.roomControllers[creep.memory.ctrl];
 
-                    let wasGrabbed = false;
-
-                    const [t, l, b, r] = creep.pos.squareArea(1);
-                    const grabbs = room.lookAtArea(t, l, b, r, true);
-                    for (let k = 0; k < grabbs.length && !wasGrabbed; ++k)
+                    const rc = grabController.act(currentController, creep);
+                    if (rc == globals.WARN_LAST_INTENT)
                     {
-                        const grabb = grabbs[k];
-                        const from = grabb[grabb.type];
-
-                        if (grabb.type == LOOK_TOMBSTONES ||
-                            grabb.type == LOOK_RUINS)
-                        {
-                            const typesToGrab = hasUniversalStore ? Object.keys(from.store) : [ RESOURCE_ENERGY ];
-
-                            for (const key in typesToGrab)
-                            {
-                                const typeToGrab = typesToGrab[key];
-                                if (from.store.getUsedCapacity(typeToGrab) > 0)
-                                {
-                                    const rc = creep.withdraw(from, typeToGrab);
-                                    wasGrabbed = wasGrabbed || (rc == OK);
-                                }
-                            }
-                        }
-
-                        if (grabb.type == LOOK_RESOURCES)
-                        {
-                            if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY)
-                            {
-                                const rc = creep.pickup(from);
-                                wasGrabbed = wasGrabbed || (rc == OK);
-                            }
-                        }
-                    }
-
-                    // after this tick, from zero to non-zero
-                    if (wasGrabbed && creep.store.getUsedCapacity() == 0)
-                    {
-                        // contidions changed a lot, rethink
                         globals.unassignCreep(creep);
-                        // let other know that store increase happened
-                        creep._storeUpped_ = true;
                     }
-                } // end of grab logic
+                }
 
                 if (globals.creepAssigned(creep))
                 {
