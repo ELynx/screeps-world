@@ -264,10 +264,7 @@ autobuildProcess.sourceLink = function(room)
                     )
                 );
 
-                const weightFunction = function(x, y, dx, dy, itemsAtXY)
-                {
-                    return _.bind(weightAroundTheSource(x, y, dx, dy, itemsAtXY), this);
-                };
+                const weightFunction = _.bind(this.weightAroundTheSource, this);
 
                 for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
                 {
