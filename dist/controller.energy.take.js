@@ -19,7 +19,7 @@ energyTakeController.wantToKeep = function(structure)
 
 energyTakeController.act = function(structure, creep)
 {
-    const has    = structure.store[RESOURCE_ENERGY];
+    const has    = structure.store.getUsedCapacity(RESOURCE_ENERGY);
     const toKeep = this.wantToKeep(structure);
     const want   = creep.store.getFreeCapacity(RESOURCE_ENERGY);
 
