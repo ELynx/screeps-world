@@ -24,6 +24,13 @@ claim.creepAtDestination = function(creep)
         return;
     }
 
+    // blocked path detector
+    if (creep.ticksToLive <= 2)
+    {
+        this._onProblemDetected(creep);
+        return;
+    }
+
     const controller = creep.room.controller;
     if (!controller)
     {
