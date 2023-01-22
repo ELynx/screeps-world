@@ -61,7 +61,7 @@ mineralHarvestController.targets = function(room)
 
 mineralHarvestController.filterCreep = function(creep)
 {
-    return creep.memory.minr == true && this._isEmpty(creep) && this._hasWCM(creep);
+    return creep.memory.minr == true && this._isHarvestAble(creep);
 };
 
 mineralHarvestController.register();

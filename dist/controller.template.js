@@ -194,8 +194,19 @@ function Controller(id)
         return creep.store.getUsedCapacity() == 0;
     };
 
+    this._isWorkAble = function(creep)
+    {
+        return this._hasEnergy(creep) && this._hasWCM(creep);
+    };
+
+    this._isHarvestAble = function(creep)
+    {
+        // STRATEGY harvest with empty only, reduce runs to sources
+        return this._isEmpty(creep) && this._hasWCM(creep);
+    };
+
     /**
-    Creep that has some energy and can perform general work
+    Creep that has energy and can perform general work
     @param {Creep} creep to look at.
     @return If creep matches filter.
     **/
@@ -203,7 +214,7 @@ function Controller(id)
     {
         this._usesDefaultFilter = true;
 
-        return this._hasEnergy(creep) && this._hasWCM(creep);
+        return this._isWorkAble(creep);
     };
 
     this._doesDefaultFilter = undefined;

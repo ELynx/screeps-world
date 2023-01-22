@@ -18,6 +18,7 @@ mineralRestockController.act = function(withStore, creep)
             return true;
         }
 
+        // TODO why such logic?
         if (resourceType == RESOURCE_ENERGY && creep.store[resourceType] == 0)
         {
             continue;
@@ -64,8 +65,9 @@ mineralRestockController.targets = function(room)
 
 mineralRestockController.filterCreep = function(creep)
 {
-    // STRATEGY has non-energy resouces, bring them in
-    if (this._hasWCM(creep))
+    // STRATEGY has non-energy resouces, can walk
+    if (creep.getActiveBodyparts(CARRY) > 0 &&
+        creep.getActiveBodyparts(MOVE)  > 0)
     {
         const usedTotal  = creep.store.getUsedCapacity();
         const usedEnergy = creep.store.getUsedCapacity(RESOURCE_ENERGY);

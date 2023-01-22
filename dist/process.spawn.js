@@ -71,9 +71,7 @@ spawnProcess.workers = function(room, live)
             this.addToQueue(
                 room,
                 'worker',
-                {
-                    hvst: true
-                },
+                { },
                 n,
                 priority
             );
@@ -113,7 +111,6 @@ spawnProcess.restockers = function(room, live)
             room,
             'restocker',
             {
-                hvst: true,
                 rstk: true
             },
             want - now,
