@@ -194,6 +194,8 @@ var roomActor =
                 // Grab resources nearby
                 if (creep.store.getFreeCapacity() > 0)
                 {
+                    const hasUniversalStore = creep.room.storage || creep.room.terminal;
+
                     let wasGrabbed = false;
 
                     const [t, l, b, r] = creep.pos.squareArea(1);
@@ -206,15 +208,21 @@ var roomActor =
                         if (grabb.type == LOOK_TOMBSTONES ||
                             grabb.type == LOOK_RUINS)
                         {
-                            if (from.store[RESOURCE_ENERGY] > 0)
+                            const typesToGrab = hasUniversalStore ? Object.keys(from) : [ RESOURCE_ENERGY ];
+
+                            for (const typeToGrab in typesToGrab)
                             {
-                                wasGrabbed = creep.withdraw(from, RESOURCE_ENERGY) == OK;
+                                if (from.store[typesToGrab] > 0)
+                                {
+                                    const rc = creep.withdraw(from, RESOURCE_ENERGY);
+                                    wasGrabbed = wasGrabbed || (rc == OK);
+                                }
                             }
                         }
 
                         if (grabb.type == LOOK_RESOURCES)
                         {
-                            if (from.resourceType == RESOURCE_ENERGY)
+                            if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY)
                             {
                                 wasGrabbed = creep.pickup(from) == OK;
                             }
