@@ -16,7 +16,7 @@ Order of load is priority order for creep assignment.
 var redAlert                 = require('controller.redalert'); // always on top
 var ttlController            = require('controller.ttl'); // catch recyclees
 var controllerMineralHarvest = require('controller.mineral.harvest'); // catch miners to mineral
-var controllerMineralRestock = require('controller.mineral.restock'); // catch miners from mineral
+var controllerMineralRestock = require('controller.mineral.restock'); // catch anyone with mineral only
 var energyTakeController     = require('controller.energy.take'); // above harvest, decrease harvest work
 var energyHarvestController  = require('controller.energy.harvest');
 var energyRestockControllerS = require('controller.energy.restock.specialist'); // catch restockers
