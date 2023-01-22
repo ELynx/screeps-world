@@ -14,10 +14,10 @@ grabController.act = function(currentController, creep)
     const [t, l, b, r] = creep.pos.squareArea(1);
     const grabs = creep.room.lookAtArea(t, l, b, r, true);
 
-    for (let i = 0; i < grabbs.length; ++i)
+    for (let i = 0; i < grabs.length; ++i)
     {
         const grab = grabs[i];
-        const from = grab[grabb.type];
+        const from = grab[grab.type];
 
         if (grab.type == LOOK_TOMBSTONES ||
             grab.type == LOOK_RUINS)
