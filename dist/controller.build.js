@@ -6,6 +6,8 @@ var buildController = new Controller('build');
 
 buildController.actRange = 3;
 
+buildController.oddOrEven = 0;
+
 buildController.act = function(site, creep)
 {
     return creep.build(site) == OK;
