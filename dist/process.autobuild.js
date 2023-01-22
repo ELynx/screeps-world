@@ -289,6 +289,106 @@ autobuildProcess.sourceLink = function(room)
     } // end of have links in general
 };
 
+// STRATEGY how many containers to have (reserved) at any given time
+const ContainerReserve = 0;
+
+autobuildProcess.sourceContainer = function(room)
+{
+    const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][room.controller.level] || 0;
+    if (canHave == 0) return;
+
+    if (canHave > ContainerReserve)
+    {
+        const filterForContainers = function(structure)
+        {
+            return structure.structureType == STRUCTURE_CONTAINER && structure.isActiveSimple();
+        };
+
+        const containers = room.find(
+            FIND_STRUCTURES,
+            {
+                filter: filterForContainers
+            }
+        );
+
+        const containersCS = room.find(
+            FIND_CONSTRUCTION_SITES,
+            {
+                filter: { structureType: STRUCTURE_CONTAINER }
+            }
+        );
+
+        // if still have links to plan
+        if (canHave > containers.length + containersCS.length)
+        {
+            let sources = room.find(FIND_SOURCES);
+
+            if (sources.length > 0)
+            {
+                // pick source with most access first
+                sources.sort(
+                    _.bind(
+                        function(s1, s2)
+                        {
+                            const w1 = this.weightSource(room, s1);
+                            const w2 = this.weightSource(room, s2);
+
+                            return w2 - w1;
+                        },
+                        this
+                    )
+                );
+
+                const terrain = room.getTerrain();
+
+                for (let i = 0; i < sources.length && i < canHave - reserve; ++i)
+                {
+                    const source = sources[i];
+
+                    let positions = [];
+                    for (let dx = -1; dx <= 1; ++dx)
+                    {
+                        for (dy = -1; dy <= 1; ++dy)
+                        {
+                            if (dx == 0 && dy == 0) continue;
+
+                            const x = source.pos.x + dx;
+                            const y = source.pos.y + dy;
+
+                            const terrainMask = terrain.get(x, y);
+
+                            const weight = this.weightAroundTheSource(x, y, dx, dy, terrainMask);
+                            if (weight > 0)
+                            {
+                                positions.push(
+                                    {
+                                        pos:    new RoomPosition(x, y, room.name),
+                                        weight: weight
+                                    }
+                                );
+                            }
+                        }
+                    }
+
+                    positions.sort(
+                        function(item1, item2)
+                        {
+                            return item2.weight - item1.weight;
+                        }
+                    );
+
+                    if (positions.length > 0)
+                    {
+                        // to avoid re-positioning, always pick best
+                        const at = positions[0];
+                        this.tryPlan(room, at, STRUCTURE_CONTAINER);
+                    }
+                } // end of sources
+            } // end of have sources
+        } // end of have containers to build now
+    } // end of have containers in general
+};
+
 autobuildProcess.coverRamparts = function(room)
 {
     const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][room.controller.level] || 0;
@@ -378,6 +478,7 @@ autobuildProcess.actualWork = function(room)
 {
     this.extractor(room);
     this.sourceLink(room);
+    this.sourceContainer(room);
     this.coverRamparts(room);
 };
 
