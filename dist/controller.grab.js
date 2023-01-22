@@ -35,7 +35,7 @@ grabController.act = function(currentController, creep)
             }
         }
 
-        if (grabb.type == LOOK_RESOURCES)
+        if (grab.type == LOOK_RESOURCES)
         {
             if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY)
             {
