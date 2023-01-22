@@ -38,6 +38,15 @@ https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/
 https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/power-creeps/intents.js
 
 # Ideas
+Two `attackController`s per tick. See evidence:
+
+1. Only set value is checked https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/attackController.js#L26
+
+2. Only "shadow" value is set https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/attackController.js#L48
+
+3. "Shadow" value is transferred to regular on tick, _once_ https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/controllers/tick.js#L20
+
+
 PathFinder option `flee`.
 
 Lodash `Chain`.
