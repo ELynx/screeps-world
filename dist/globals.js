@@ -129,10 +129,10 @@ var globals =
     **/
     unassignCreep: function(creep)
     {
-        creep.memory.ctrl  = this.NO_CONTROL;
-        creep.memory.dest  = this.NO_DESTINATION;
-        creep.memory.dact  = this.NO_ACT_RANGE;
-        creep.memory.xtra  = this.NO_EXTRA;
+        creep.memory.ctrl = this.NO_CONTROL;
+        creep.memory.dest = this.NO_DESTINATION;
+        creep.memory.dact = this.NO_ACT_RANGE;
+        creep.memory.xtra = this.NO_EXTRA;
 
         this.imitateMoveErase(creep);
     },
