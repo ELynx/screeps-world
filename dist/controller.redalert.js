@@ -1,9 +1,34 @@
 'use strict';
 
-var globals    = require('globals');
 var Controller = require('controller.template');
 
 var redAlert = new Controller('redalert');
+
+// STRATEGY safe mode could not be activated below 50% - 5000, don't allow that drop
+const Tresholds =
+{
+    1: (CONTROLLER_DOWNGRADE[1] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    2: (CONTROLLER_DOWNGRADE[2] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    3: (CONTROLLER_DOWNGRADE[3] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    4: (CONTROLLER_DOWNGRADE[4] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    5: (CONTROLLER_DOWNGRADE[5] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    6: (CONTROLLER_DOWNGRADE[6] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    7: (CONTROLLER_DOWNGRADE[7] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2,
+    8: (CONTROLLER_DOWNGRADE[8] - CONTROLLER_DOWNGRADE_SAFEMODE_THRESHOLD) / 2
+};
+
+// STRATEGY give it 5000 histeresis
+const Targets =
+{
+    1: CONTROLLER_DOWNGRADE[1] / 2,
+    2: CONTROLLER_DOWNGRADE[2] / 2,
+    3: CONTROLLER_DOWNGRADE[3] / 2,
+    4: CONTROLLER_DOWNGRADE[4] / 2,
+    5: CONTROLLER_DOWNGRADE[5] / 2,
+    6: CONTROLLER_DOWNGRADE[6] / 2,
+    7: CONTROLLER_DOWNGRADE[7] / 2,
+    8: CONTROLLER_DOWNGRADE[8] / 2
+};
 
 redAlert.actRange = 3;
 
@@ -14,28 +39,17 @@ redAlert.extra = function(controller)
 
 redAlert.act = function(controller, creep)
 {
-    if (controller.ticksToDowngrade >= CONTROLLER_DOWNGRADE[controller.level] ||
-        controller.ticksToDowngrade >= creep.memory.xtra)
-    {
-        return globals.WARN_LAST_INTENT;
-    }
-
-    return this.wrapIntent(creep, 'upgradeController', controller);
+    return this.wrapIntent(creep, 'upgradeController', controller, creep.memory.xtra);
 };
 
 redAlert.targets = function(room)
 {
-    if (room.controller &&
-        room.controller.owner &&
-        room.controller.level > 0 &&
-       !room.controller.upgradeBlocked)
+    if (!room.controller.upgradeBlocked)
     {
-        // STRATEGY safe mode could not be activated below 50% - 5000, use 5000 maneuver space
-        const targetTicks = (CONTROLLER_DOWNGRADE[room.controller.level] / 2) - 2500;
-
-        if (room.controller.ticksToDowngrade < targetTicks)
+        const level = room.controller.level;
+        if (room.controller.ticksToDowngrade < Tresholds[level])
         {
-            room.controller._targetTicks_ = targetTicks + 2500;
+            room.controller._targetTicks_ = Targets[level];
             return [room.controller];
         }
     }
