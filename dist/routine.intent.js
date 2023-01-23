@@ -2,6 +2,14 @@
 
 var globals = require('globals');
 
+if (UPGRADE_CONTROLLER_POWER != 1)
+{
+    console.log('UPGRADE_CONTROLLER_POWER is no longer equal to 1, update intent code');
+}
+
+// made up value that is used as boundary for "limitless" operations
+const MadeUpLargeNumber = 1000000;
+
 var intent =
 {
     creep_intent_build: function(creep, target, arg1, arg2)
@@ -70,7 +78,7 @@ var intent =
         else if (target.depositType)
         {
             power1 = HARVEST_DEPOSIT_POWER;
-            amount = 1000000; // made up value greater than single pick
+            amount = MadeUpLargeNumber;
         }
         else
         {
@@ -153,6 +161,50 @@ var intent =
 
         creep.__stored_energy = shadowStoredEnergy - repairCost;
         target.__hits         = shadowHits         + repairEffect;
+
+        return rc;
+    },
+
+    creep_intent_upgradeController: function(creep, target, targetTicksToDowngrade, arg2)
+    {
+        // check given arguments
+        if (target === undefined)
+        {
+            console.log('creep_intent_upgradeController received undefined target');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
+        if (shadowStoredEnergy <= 0)
+        {
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        const shadowUpgrades = target.__upgrades || 0;
+        if (target.level == 8 && shadowUpgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+
+        const shadowTicks = target.__ticks || target.ticksToDowngrade;
+        if (ticksToDowngrade && shadowTicks >= ticksToDowngrade)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+
+        const upgradeRemains = target.level == 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - shadowUpgrades) : MadeUpLargeNumber;
+        const maxUpgrade = creep.getActiveBodyparts(WORK);
+        const toBeUpgraded = Math.min(shadowStoredEnergy, upgradeRemains, maxUpgrade);
+        const tickIncrement = toBeUpgraded * CONTROLLER_DOWNGRADE_RESTORE;
+
+        let rc = OK;
+
+        if (toBeUpgraded >= upgradeRemains)     rc = globals.WARN_LAST_INTENT;
+        if (toBeUpgraded >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
+
+        creep.__stored_energy = shadowStoredEnergy - toBeUpgraded;
+        target.__upgrades     = shadowUpgrades     + toBeUpgraded;
+        target.__ticks        = shadowTicks        + tickIncrement;
 
         return rc;
     },
