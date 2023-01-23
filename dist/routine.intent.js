@@ -4,6 +4,41 @@ var globals = require('globals');
 
 var intent =
 {
+    creep_intent_build: function(creep, target, arg1, arg2)
+    {
+        // check given arguments
+        if (target === undefined)
+        {
+            console.log('creep_intent_build received undefined target');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
+        if (shadowStoredEnergy <= 0)
+        {
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        const shadowRemains = target.__remains || (target.totalProgress - target.progress);
+        if (shadowRemains <= 0)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+
+        const maxProgress = creep.getActiveBodyparts(WORK) * BUILD_POWER;
+        const toBeProgressed = Math.min(shadowStoredEnergy, shadowRemains, maxProgress);
+
+        let rc = OK;
+
+        if (toBeProgressed >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
+        if (toBeProgressed >= shadowRemains)      rc = globals.WARN_LAST_INTENT;
+
+        creep.__stored_energy = shadowStoredEnergy - toBeProgressed;
+        target.__remains      = shadowRemains      - toBeProgressed;
+
+        return rc;
+    },
+
     creep_intent_harvest: function(creep, target, arg1, arg2)
     {
         // check given arguments
@@ -76,41 +111,6 @@ var intent =
         }
 
         target.__amount = shadowAmount - toBeHarvested;
-
-        return rc;
-    },
-
-    creep_intent_build: function(creep, target, arg1, arg2)
-    {
-        // check given arguments
-        if (target === undefined)
-        {
-            console.log('creep_intent_build received undefined target');
-            return globals.ERR_INVALID_INTENT_ARG;
-        }
-
-        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        if (shadowStoredEnergy <= 0)
-        {
-            return globals.ERR_INTENDEE_EXHAUSTED;
-        }
-
-        const shadowRemains = target.__remains || (target.totalProgress - target.progress);
-        if (shadowRemains <= 0)
-        {
-            return globals.ERR_INTENDED_EXHAUSTED;
-        }
-
-        const maxProgress = creep.getActiveBodyparts(WORK) * BUILD_POWER;
-        const toBeProgressed = Math.min(shadowStoredEnergy, shadowRemains, maxProgress);
-
-        let rc = OK;
-
-        if (toBeProgressed >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
-        if (toBeProgressed >= shadowRemains)      rc = globals.WARN_LAST_INTENT;
-
-        creep.__stored_energy = shadowStoredEnergy - toBeProgressed;
-        target.__remains      = shadowRemains      - toBeProgressed;
 
         return rc;
     },
