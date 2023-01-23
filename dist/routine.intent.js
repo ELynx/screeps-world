@@ -115,6 +115,48 @@ var intent =
         return rc;
     },
 
+    creep_intent_repair: function(creep, target, targetHits, arg2)
+    {
+        // check given arguments
+        if (target === undefined)
+        {
+            console.log('creep_intent_repair received undefined target');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
+        if (shadowStoredEnergy <= 0)
+        {
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        let wantHits = targetHits || target.hitsMax;
+        if (wantHits > target.hitsMax) wantHits = target.hitsMax;
+
+        const shadowHits = target.__hits || target.hits;
+        if (shadowHits >= wantHits)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+
+        // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/repair.js#L23
+        var repairPower = creep.getActiveBodyparts(WORK) * REPAIR_POWER;
+        var repairEnergyRemaining = shadowStoredEnergy / REPAIR_COST;
+        var repairHitsMax = target.hitsMax - shadowHits;
+        var repairEffect = Math.min(repairPower, repairEnergyRemaining, repairHitsMax);
+        var repairCost = Math.min(shadowStoredEnergy, Math.ceil(repairEffect * REPAIR_COST));
+
+        let rc = OK;
+
+        if (shadowHits + repairEffect >= wantHits) rc = globals.WARN_LAST_INTENT;
+        if (repairCost >= shadowStoredEnergy)      rc = globals.WARN_LAST_INTENT;
+
+        creep.__stored_energy = shadowStoredEnergy - repairCost;
+        target.__hits         = shadowHits         + repairEffect;
+
+        return rc;
+    },
+
     wrapCreepIntent: function(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined)
     {
         const intent = creep[intentName];

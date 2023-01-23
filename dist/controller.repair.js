@@ -57,13 +57,7 @@ repairController.observeMyCreep = function(creep)
 
 repairController.act = function(target, creep)
 {
-    if (target.hits >= target.hitsMax ||
-        target.hits >= creep.memory.xtra)
-    {
-        return globals.WARN_LAST_INTENT;
-    }
-
-    return this.wrapIntent(creep, 'repair', target);
+    return this.wrapIntent(creep, 'repair', target, creep.memory.xtra);
 };
 
 repairController.targets = function(room)
