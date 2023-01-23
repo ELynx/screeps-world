@@ -89,7 +89,7 @@ var globals =
             dest: { x: pos.x, y: pos.y, room: pos.roomName },
             time: Game.time,
             path: Room.serializePath(path),
-            room: pos.roomName
+            room: creep.room.name
         };
     },
 
