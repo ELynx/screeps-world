@@ -428,17 +428,10 @@ autobuildProcess.coverRamparts = function(room)
             let onlyRoad = true;
             let hasWall  = false;
             let hasRamp  = false;
-            let noCover  = false;
 
             for (let i = 0; i < atXY.length; ++i)
             {
                 const structure = atXY[i];
-
-                if (!structure.my)
-                {
-                    noCover = true;
-                    break;
-                }
 
                 if (structure.structureType != STRUCTURE_ROAD)
                 {
@@ -458,13 +451,12 @@ autobuildProcess.coverRamparts = function(room)
                 }
             }
 
-            if (onlyRoad || hasRamp || hasWall || noCover) continue; // to next y
+            if (onlyRoad || hasRamp || hasWall) continue; // to next y
 
             // terrain is not natural wall
             // there are no construction sites
             // there are structures other than road
             // there is no ramp
-            // there is _my_ structure (for sim mostly)
             // this presumably can be covered
 
             const pos = new RoomPosition(parseInt(kx), parseInt(ky), room.name);
