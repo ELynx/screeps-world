@@ -172,6 +172,40 @@ var intent =
         return rc;
     },
 
+    creep_intent_transfer: function(creep, target, type, amount)
+    {
+        // check given arguments
+        if (target === undefined)
+        {
+            console.log('creep_intent_transfer received undefined target');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        if(!_.contains(RESOURCES_ALL, type))
+        {
+            console.log('creep_intent_transfer received invalid resource type [' + type + ']');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        const propertyKey = '__stored_' + type;
+
+        const shadowCarried = creep[propertyKey] || creep.store.getUsedCapacity(type);
+        if (shadowCarried <= 0)
+        {
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        if (amount && amount > shadowCarried)
+        {
+            // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/transfer.js#L12
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        const wantToTransferAmount = amount ? amount : shadowCarried;
+
+        const shadowTargetSpace = target.__space || target.getFreeCapacity(type);
+    },
+
     creep_intent_upgradeController: function(creep, target, targetTicksToDowngrade, arg2)
     {
         // check given arguments
