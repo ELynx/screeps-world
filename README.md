@@ -15,6 +15,8 @@ dist - deployed to official server
 history - historical data worth saving
 
 # TODO
+(High importance) IFF retaliation.
+
 Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
@@ -66,3 +68,5 @@ TIP OF THE DAY: You can apply transfer and heal to another player’s creep, and
 Fatigue based emergent road building.
 
 Reassing creeps when one frees up.
+
+Limit autobuild run to some N elements.
