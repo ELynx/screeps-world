@@ -74,3 +74,5 @@ Reassing creeps when one frees up.
 Limit autobuild run to some N elements.
 
 `upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
+
+Overshoot repair HP if threat is > 0 to keep repairs on target
