@@ -30,7 +30,7 @@ grabController.act = function(currentController, creep)
                 if (from.store.getUsedCapacity(typeToGrab) > 0)
                 {
                     const rc = this.wrapIntent(creep, 'withdraw', from, typeToGrab);
-                    if (rc == globals.WARN_LAST_INTENT) return rc;
+                    if (rc != OK) return rc;
                 }
             }
         }
@@ -40,7 +40,7 @@ grabController.act = function(currentController, creep)
             if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY)
             {
                 const rc = this.wrapIntent(creep, 'pickup', from);
-                if (rc == globals.WARN_LAST_INTENT) return rc;
+                if (rc != OK) return rc;
             }
         }
     }
