@@ -187,7 +187,7 @@ var intent =
         }
 
         const shadowTicks = target.__ticks || target.ticksToDowngrade;
-        if (ticksToDowngrade && shadowTicks >= ticksToDowngrade)
+        if (targetTicksToDowngrade && shadowTicks >= targetTicksToDowngrade)
         {
             return globals.ERR_INTENDED_EXHAUSTED;
         }
@@ -205,6 +205,8 @@ var intent =
         creep.__stored_energy = shadowStoredEnergy - toBeUpgraded;
         target.__upgrades     = shadowUpgrades     + toBeUpgraded;
         target.__ticks        = shadowTicks        + tickIncrement;
+
+        if (target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_LAST_INTENT;
 
         return rc;
     },
