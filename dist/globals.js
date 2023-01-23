@@ -6,14 +6,16 @@ var globals =
     ThreatLevelMedium: 3,
     ThreatLevelMax:    5,
 
-    // intent is valid, but next such action will be invalid
+    // intent is valid, but next such action will be exhausting
     WARN_LAST_INTENT:          1,
-    // intent name not found
-    ERR_INVALID_INTENT_NAME: -16,
-    // intent args not given
-    ERR_INVALID_INTENT_ARG:  -17,
-    // intent pipeline conflict
-    ERR_DUPLICATE_INTENT:    -18,
+    // intent not found
+    ERR_INVALID_INTENT_NAME: -10000,
+    // intent args not given properly
+    ERR_INVALID_INTENT_ARG:  -10001,
+    // intent exhaused on intendee side, such as trying to harvest with full CARRY
+    ERR_INTENDEE_EXHAUSTED:  -10002,
+    // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
+    ERR_INTENDED_EXHAUSTED;  -10003,
 
     /**
     CPU used from hard shard limit.
