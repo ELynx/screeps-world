@@ -15,7 +15,7 @@ var globals =
     // intent exhaused on intendee side, such as trying to harvest with full CARRY
     ERR_INTENDEE_EXHAUSTED:  -10002,
     // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
-    ERR_INTENDED_EXHAUSTED;  -10003,
+    ERR_INTENDED_EXHAUSTED:  -10003,
 
     /**
     CPU used from hard shard limit.
