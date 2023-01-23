@@ -132,6 +132,10 @@ var intent =
             rc = _.bind(validator, this)(creep, arg0, arg1, arg2);
             if (rc < OK) return rc; // OK is 0, warnings are greater than zero
         }
+        else
+        {
+            console.log('Unvalidated intent [' + intentName + '] called for creep [' + creep.name + ']');
+        }
 
         let intentRc = undefined;
         const boundIntent = _.bind(intent, creep);
