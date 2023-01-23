@@ -41,6 +41,8 @@ var intent =
         if (toBeProgressed >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
         if (toBeProgressed >= shadowRemains)      rc = globals.WARN_LAST_INTENT;
 
+        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
+        creep.__space         = shadowSpace        + toBeProgressed;
         creep.__stored_energy = shadowStoredEnergy - toBeProgressed;
         target.__remains      = shadowRemains      - toBeProgressed;
 
@@ -118,6 +120,9 @@ var intent =
             creep.__space = shadowSpace - toBeHarvested;
         }
 
+        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
+        creep.__stored_energy = shadowStoredEnergy + toBeHarvested;
+
         target.__amount = shadowAmount - toBeHarvested;
 
         return rc;
@@ -159,6 +164,8 @@ var intent =
         if (shadowHits + repairEffect >= wantHits) rc = globals.WARN_LAST_INTENT;
         if (repairCost >= shadowStoredEnergy)      rc = globals.WARN_LAST_INTENT;
 
+        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
+        creep.__space         = shadowSpace        + repairCost;
         creep.__stored_energy = shadowStoredEnergy - repairCost;
         target.__hits         = shadowHits         + repairEffect;
 
@@ -202,6 +209,8 @@ var intent =
         if (toBeUpgraded >= upgradeRemains)     rc = globals.WARN_LAST_INTENT;
         if (toBeUpgraded >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
 
+        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
+        creep.__space         = shadowSpace        + toBeUpgraded;
         creep.__stored_energy = shadowStoredEnergy - toBeUpgraded;
         target.__upgrades     = shadowUpgrades     + toBeUpgraded;
         target.__ticks        = shadowTicks        + tickIncrement;
