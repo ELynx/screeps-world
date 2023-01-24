@@ -406,7 +406,7 @@ roomInfoProcess.work = function(room)
         {
             room.memory.stre = 5000;
         }
-        else
+        else if (threat > globals.ThreatLevelLow)
         {
             room.memory.stre = 9000;
         }
