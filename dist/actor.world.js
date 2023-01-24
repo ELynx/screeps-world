@@ -11,7 +11,7 @@ var taskedBeetle  = require('tasked.beetle');  // generates aggro
 var taskedStrelok = require('tasked.strelok'); // consumes aggro
 var taskedPlunder = require('tasked.plunder'); // paramilitary
 var taskedClaim   = require('tasked.claim');   // one-off
-var taskedSpam    = require('tasked.spam');    // lowest prio
+var taskedObserve = require('tasked.observe'); // lowest prio
 // consume spawn(s)
 var taskedSpawn   = require('tasked.spawn');
 // other
