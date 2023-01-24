@@ -274,6 +274,30 @@ Room.prototype.canControlStructures = function()
     return this.controller && this.controller.my;
 };
 
+Room.prototype.borderPositions = function()
+{
+    if (this.__border_positions) return this.__border_positions;
+
+    const terrain = this.getTerrain();
+
+    let borderPositions = [];
+
+    for (let x = 0; x <= 49; ++x)
+    {
+        if (terrain.get(x,  0) == TERRAIN_MASK_WALL) borderPositions.push(new RoomPosition(x,  0, this.name));
+        if (terrain.get(x, 49) == TERRAIN_MASK_WALL) borderPositions.push(new RoomPosition(x, 49, this.name));
+    }
+
+    for (let y = 1; y <= 48; ++y)
+    {
+        if (terrain.get( 0, y) == TERRAIN_MASK_WALL) borderPositions.push(new RoomPosition( 0, y, this.name));
+        if (terrain.get(49, y) == TERRAIN_MASK_WALL) borderPositions.push(new RoomPosition(49, y, this.name));
+    }
+
+    this.__border_positions = borderPositions;
+    return borderPositions;
+};
+
 RoomPosition.prototype.squareArea = function(squareStep)
 {
     const t = Math.max(this.y - squareStep, 0);
