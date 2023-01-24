@@ -330,7 +330,8 @@ function Controller(id)
                             {
                                 ignoreCreeps: this.ignoreCreepsForTargeting,
                                 range: this.actRange,
-                                maxRooms: 1
+                                maxRooms: 1,
+                                contCallback: globals.unwalkableBordersCostCallback
                             }
                         )
                     );
