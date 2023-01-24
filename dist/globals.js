@@ -187,6 +187,11 @@ var globals =
         Game.__unwalkableBordersCostCallbackCache[roomName] = modified;
 
         return modified;
+    },
+
+    centerRoomPosition: function(roomName)
+    {
+        return new RoomPosition(25, 25, roomName);
     }
 };
 

@@ -173,10 +173,10 @@ var roomActor =
                     if (creep.fatigue == 0)
                     {
                         // get off border area
-                        const offBorderDistance = 23;
-                        const destRoom = new RoomPosition(25, 25, creep.memory.crum);
+                        const posInDestRoom   = globals.centerRoomPosition(creep.memory.crum);
+                        const rangeInDestRoom = posInDestRoom.offBorderDistance();
 
-                        if (creep.pos.inRangeTo(destRoom, offBorderDistance))
+                        if (creep.pos.inRangeTo(posInDestRoom, rangeInDestRoom))
                         {
                             // drop and forget the flag
                             // not continue, can be used
@@ -184,7 +184,7 @@ var roomActor =
                         }
                         else
                         {
-                            creep.moveToWrapper(destRoom, { reusePath: 50, range: offBorderDistance });
+                            creep.moveToWrapper(posInDestRoom, { reusePath: 50, range: rangeInDestRoom });
                             ++moving;
                             continue; // to next creep
                         }

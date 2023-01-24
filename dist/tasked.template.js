@@ -6,11 +6,6 @@ var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
 
-const CenterRoomPosition = function(roomName)
-{
-    return new RoomPosition(25, 25, roomName);
-};
-
 Room.prototype.getControlPos = function()
 {
     // some interesting positions first
@@ -18,7 +13,7 @@ Room.prototype.getControlPos = function()
     if (this.terminal)   return this.terminal.pos;
     if (this.controller) return this.controller.pos;
 
-    return CenterRoomPosition(this.name);
+    return globals.centerRoomPosition(this.name);
 };
 
 Creep.prototype.getFlagName = function()
@@ -33,7 +28,7 @@ Creep.prototype.getFlagPos = function()
     {
         // bottom row is for special indicator flags, etc.
         // they point to "the room in general"
-        if (flag.pos.y == 49) return CenterRoomPosition(flag.pos.roomName);
+        if (flag.pos.y == 49) return globals.centerRoomPosition(flag.pos.roomName);
 
         return flag.pos;
     }
@@ -68,7 +63,7 @@ Creep.prototype.getControlPos = function()
     if (room) return room.getControlPos();
 
     // if room is not visible, point at center
-    return CenterRoomPosition(crum);
+    return globals.centerRoomPosition(crum);
 };
 
 function Tasked(id)
