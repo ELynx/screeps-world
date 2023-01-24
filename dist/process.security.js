@@ -63,6 +63,8 @@ secutiryProcess.work = function(room)
                     continue;
                 }
 
+                flag.setSecondaryColor(COLOR_WHITE); // signal engaged
+
                 const trigger = flag.pos.hasInSquareArea(
                     LOOK_CREEPS,
                     range,
