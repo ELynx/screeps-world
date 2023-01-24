@@ -127,11 +127,17 @@ plunder.creepAtOtherRooms = function(creep)
             function(structure)
             {
                 if (structure.store === undefined) return false;
-                if (structure.store.getUsedCapacity() == 0) return false;
 
-                if (structure.store.getUsedCapacity() == null)
-                    if (structure.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
-                        return false;
+                let hasResources = false;
+                for (const resourceType in structure.store)
+                {
+                    if (structure.store[resourceType] > 0)
+                    {
+                        hasResources = true;
+                        break;
+                    }
+                }
+                if (!hasResources) return false;
 
                 const hasRamp = _.some(
                     ramparts,
@@ -176,6 +182,7 @@ plunder.creepAtOtherRooms = function(creep)
 
 plunder.creepAtDestination = function(creep)
 {
+    // TODO sim support
     if (creep.room.canControlStructures())
     {
         this.creepAtOwnRoom(creep);
