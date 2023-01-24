@@ -163,7 +163,7 @@ function Tasked(id)
             function(creep)
             {
                 // creep with no memory of flag are given up
-                return creep.name.startsWith(this.id) && creep.memory.getFlagName();
+                return creep.name.startsWith(this.id) && creep.getFlagName();
             },
             this
         );
