@@ -27,78 +27,6 @@ var intent =
 
     },
 
-    intentSlurpImpl: function(creep, target)
-    {
-        if (target === undefined)
-        {
-            console.log('intentSlurpImpl received undefined argument [target]');
-            return globals.ERR_INVALID_INTENT_ARG;
-        }
-
-        // harvest power per WORK for target
-        // remaining amount in game state
-        // harvested resource type
-
-        let power1 = undefined;
-        let amount = undefined;
-        let what   = undefined;
-
-        if (target.energyCapacity)
-        {
-            power1 = HARVEST_POWER;
-            amount = target.__amount || target.energy;
-            what   = RESOURCE_ENERGY;
-        }
-        else if (target.mineralType)
-        {
-            power1 = HARVEST_MINERAL_POWER;
-            amount = target.__amount || target.mineralAmount;
-            what   = target.mineralType;
-        }
-        else if (target.depositType)
-        {
-            power1 = HARVEST_DEPOSIT_POWER;
-            amount = target.__amount || MadeUpLargeNumber;
-            what   = target.depositType;
-        }
-        else
-        {
-            console.log('intentSlurpImpl received unidentified target ' + JSON.stringify(target));
-            return ERR_INVALID_TARGET;
-        }
-
-        if (amount <= 0)
-        {
-            return globals.ERR_INTENDED_EXHAUSTED;
-        }
-
-        const power = creep.getActiveBodyparts(WORK) * power1;
-
-        const toBeHarvested = Math.min(shadowAmount, power);
-
-        let rc = OK;
-
-        // if creep was designed to carry anything at all, check remaining store
-        if (_.some(creep.body, _.matchesProperty('type', CARRY)))
-        {
-            const freeCapacity = this.getFreeCapacity(creep, what);
-            if (freeCapacity <= 0)
-            {
-                return globals.ERR_INTENDEE_EXHAUSTED;
-            }
-
-            const toBeStored = Math.min(toBeHarvested, freeCapacity);
-            this.intentCapacityChange(creep, what, toBeStored);
-
-            // if capacity left is less or equal to intent, then this is last harvest before full
-            if (freeCapacity <= toBeHarvested) rc = globals.WARN_LAST_INTENT;
-        }
-
-        target.__amount = amount - toBeHarvested;
-
-        return rc;
-    },
-
     exchangeImpl: function(source, target, type, noLessThan, amount)
     {
         if(!_.contains(RESOURCES_ALL, type))
@@ -183,13 +111,108 @@ var intent =
 
     creep_intent_harvest: function(creep, target)
     {
-        return this.intentSlurpImpl(creep, target);
+        if (target === undefined)
+        {
+            console.log('creep_intent_harvest received undefined argument [target]');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        // harvest power per WORK for target
+        // remaining amount in game state
+        // harvested resource type
+
+        let power1 = undefined;
+        let amount = undefined;
+        let what   = undefined;
+
+        if (target.energyCapacity)
+        {
+            power1 = HARVEST_POWER;
+            amount = target.__amount || target.energy;
+            what   = RESOURCE_ENERGY;
+        }
+        else if (target.mineralType)
+        {
+            power1 = HARVEST_MINERAL_POWER;
+            amount = target.__amount || target.mineralAmount;
+            what   = target.mineralType;
+        }
+        else if (target.depositType)
+        {
+            power1 = HARVEST_DEPOSIT_POWER;
+            amount = target.__amount || MadeUpLargeNumber;
+            what   = target.depositType;
+        }
+        else
+        {
+            console.log('intentSlurpImpl received unidentified target ' + JSON.stringify(target));
+            return ERR_INVALID_TARGET;
+        }
+
+        if (amount <= 0)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+
+        const power = creep.getActiveBodyparts(WORK) * power1;
+
+        const toBeHarvested = Math.min(amount, power);
+
+        let rc = OK;
+
+        // if creep was designed to carry anything at all, check remaining store
+        if (_.some(creep.body, _.matchesProperty('type', CARRY)))
+        {
+            const freeCapacity = this.getFreeCapacity(creep, what);
+            if (freeCapacity <= 0)
+            {
+                return globals.ERR_INTENDEE_EXHAUSTED;
+            }
+
+            const toBeStored = Math.min(toBeHarvested, freeCapacity);
+            this.intentCapacityChange(creep, what, toBeStored);
+
+            // if capacity left is less or equal to intent, then this is last harvest before full
+            if (freeCapacity <= toBeHarvested) rc = globals.WARN_LAST_INTENT;
+        }
+
+        target.__amount = amount - toBeHarvested;
+
+        return rc;
     },
 
     creep_intent_pickup: function(creep, target)
     {
-        // TODO adopt
-        return this.intentSlurpImpl(creep, target);
+        if (target === undefined)
+        {
+            console.log('creep_intent_pickup received undefined argument [target]');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
+        const amount = target.__amount || target.amount;
+        if (amount <= 0)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+        const type = target.resourceType;
+
+        const canPick = this.getFreeCapacity(creep, type);
+        if (canPick <= 0)
+        {
+            return globals.ERR_INTENDEE_EXHAUSTED;
+        }
+
+        const exchange = Math.min(amount, canPick);
+
+        this.intentCapacityChange(creep, type, exchange);
+        target.__amount = amount - exchange;
+
+        let rc = OK
+
+        if (exchange >= canPick) rc = globals.WARN_LAST_INTENT;
+        if (exchange >= amount)  rc = globals.WARN_LAST_INTENT;
+
+        return rc;
     },
 
     creep_intent_repair: function(creep, target, targetHits)
