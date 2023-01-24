@@ -196,7 +196,7 @@ var globals =
 
     cleanUpFlags: function()
     {
-        const processIds = Object.keys(taskControllers);
+        const processIds = Object.keys(this.taskControllers);
 
         for (const flagName in Game.flags)
         {
