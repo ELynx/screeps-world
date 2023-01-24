@@ -6,7 +6,7 @@ var claim = new Tasked('claim');
 
 claim._onProblemDetected = function(creep)
 {
-    let flag = Game.flags[creep.memory.flag];
+    let flag = Game.flags[creep.getFlagName()];
     if (flag)
     {
         flag.setValue(0);
@@ -128,7 +128,7 @@ claim.creepAtDestination = function(creep)
         const ticksOverhead = 42; // be this early to minimize safe mode window, etc
         const spawnAfter = Game.time + ticksBlocked - ticksToArrive - ticksOverhead;
 
-        let flag = Game.flags[creep.memory.flag];
+        let flag = Game.flags[creep.getFlagName()];
         if (flag)
         {
             flag.memory.after = spawnAfter;
