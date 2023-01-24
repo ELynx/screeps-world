@@ -30,8 +30,8 @@ energyTakeController.act = function(structure, creep)
 
 energyTakeController.validateTarget = function(target, creep)
 {
-    // STRATEGY max distance to energy container
-    if (creep.pos.getRangeTo(target) > 10) return false;
+    // STRATEGY max distance to link, those are placed for a reason
+    if (target.structureType == STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) return false;
 
     const has    = target.store[RESOURCE_ENERGY];
     const toKeep = this.wantToKeep(target);
