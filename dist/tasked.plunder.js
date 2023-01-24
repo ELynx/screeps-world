@@ -182,7 +182,6 @@ plunder.creepAtOtherRooms = function(creep)
 
 plunder.creepAtDestination = function(creep)
 {
-    // TODO sim support
     if (creep.room.canControlStructures())
     {
         this.creepAtOwnRoom(creep);
