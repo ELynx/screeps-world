@@ -250,9 +250,10 @@ var roomActor =
                                         rc = creep.moveToWrapper(
                                             target,
                                             {
-                                                range: creep.memory.dact,
-                                                maxRooms: 1,
-                                                costCallback: globals.unwalkableBordersCostCallback
+                                                costCallback: globals.unwalkableBordersCostCallback,
+                                                ignoreCreeps: creep.pos.getRangeTo(target) > 2 * creep.memory.dact,
+                                                maxRooms:     1,
+                                                range:        creep.memory.dact
                                             }
                                         );
                                     }
