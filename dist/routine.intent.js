@@ -12,79 +12,94 @@ const MadeUpLargeNumber = 1000000;
 
 var intent =
 {
-    creep_intent_build: function(creep, target, arg1, arg2)
+    getUsedCapacity: function(something, type)
     {
-        // check given arguments
+
+    },
+
+    getFreeCapacity: function(something, type)
+    {
+
+    },
+
+    intentCapacityChange: function(something, type, amount)
+    {
+
+    },
+
+    creep_intent_build: function(creep, target)
+    {
         if (target === undefined)
         {
-            console.log('creep_intent_build received undefined target');
+            console.log('creep_intent_build received undefined argument [target]');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
-        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        if (shadowStoredEnergy <= 0)
+        const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY);
+        if (energy <= 0)
         {
             return globals.ERR_INTENDEE_EXHAUSTED;
         }
 
-        const shadowRemains = target.__remains || (target.totalProgress - target.progress);
-        if (shadowRemains <= 0)
+        const progress = target.__progress || target.progress;
+        if (progress >= target.progressTotal)
         {
             return globals.ERR_INTENDED_EXHAUSTED;
         }
+        const remainingProgress = target.progressTotal - progress;
 
-        const maxProgress = creep.getActiveBodyparts(WORK) * BUILD_POWER;
-        const toBeProgressed = Math.min(shadowStoredEnergy, shadowRemains, maxProgress);
+        const possibleProgress = creep.getActiveBodyparts(WORK) * BUILD_POWER;
+
+        const actualProgress = Math.min(energy, remainingProgress, possibleProgress);
+
+        this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualProgress);
+        target.__progress = progress + actualProgress;
 
         let rc = OK;
 
-        if (toBeProgressed >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
-        if (toBeProgressed >= shadowRemains)      rc = globals.WARN_LAST_INTENT;
-
-        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
-        creep.__space         = shadowSpace        + toBeProgressed;
-        creep.__stored_energy = shadowStoredEnergy - toBeProgressed;
-        target.__remains      = shadowRemains      - toBeProgressed;
+        if (actualProgress >= energy)            rc = globals.WARN_LAST_INTENT;
+        if (actualProgress >= remainingProgress) rc = globals.WARN_LAST_INTENT;
 
         return rc;
     },
 
-    creep_intent_harvest: function(creep, target, arg1, arg2)
+    creep_intent_harvest: function(creep, target)
     {
-        // check given arguments
         if (target === undefined)
         {
-            console.log('creep_intent_harvest received undefined target');
+            console.log('creep_intent_harvest received undefined argument [target]');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
-        // quick shadow checks
-        if (creep.__space   && creep.__space <= 0)   return globals.ERR_INTENDEE_EXHAUSTED;
-        if (target.__amount && target.__amount <= 0) return globals.ERR_INTENDED_EXHAUSTED;
+        // harvest power per WORK for target
+        // remaining amount in game state
+        // harvested resource type
 
-        // harvest power per WORK for target type
-        // remaining amount in tick space
         let power1 = undefined;
         let amount = undefined;
+        let what   = undefined;
 
         if (target.energyCapacity)
         {
             power1 = HARVEST_POWER;
-            amount = target.energy;
+            amount = target.__amount || target.energy;
+            what   = RESOURCE_ENERGY;
         }
         else if (target.mineralType)
         {
             power1 = HARVEST_MINERAL_POWER;
-            amount = target.mineralAmount;
+            amount = target.__amount || target.mineralAmount;
+            what   = target.mineralType;
         }
         else if (target.depositType)
         {
             power1 = HARVEST_DEPOSIT_POWER;
-            amount = MadeUpLargeNumber;
+            amount = target.__amount || MadeUpLargeNumber;
+            what   = target.depositType;
         }
         else
         {
-            console.log('creep_intent_harvest received invalid target ' + JSON.stringify(target));
+            console.log('creep_intent_harvest received unidentified target ' + JSON.stringify(target));
             return ERR_INVALID_TARGET;
         }
 
@@ -93,52 +108,43 @@ var intent =
             return globals.ERR_INTENDED_EXHAUSTED;
         }
 
-        const shadowAmount = target.__amount || amount;
         const power = creep.getActiveBodyparts(WORK) * power1;
+
         const toBeHarvested = Math.min(shadowAmount, power);
 
         let rc = OK;
 
         // if creep was designed to carry anything at all, check remaining store
-        const hasCarry = _.some(creep.body, _.matchesProperty('type', CARRY));
-        if (hasCarry)
+        if (_.some(creep.body, _.matchesProperty('type', CARRY)))
         {
-            const space = creep.store.getFreeCapacity();
-            if (space <= 0)
+            const freeCapacity = this.getFreeCapacity(creep, what);
+            if (freeCapacity <= 0)
             {
                 return globals.ERR_INTENDEE_EXHAUSTED;
             }
 
-            const shadowSpace = creep.__space || space;
+            const toBeStored = Math.min(toBeHarvested, freeCapacity);
+            this.intentCapacityChange(creep, what, toBeStored);
 
-            // if space left is less or equal to intent, then this is last harvest before full
-            if (shadowSpace <= toBeHarvested)
-            {
-                rc = globals.WARN_LAST_INTENT;
-            }
-
-            creep.__space = shadowSpace - toBeHarvested;
+            // if capacity left is less or equal to intent, then this is last harvest before full
+            if (freeCapacity <= toBeHarvested) rc = globals.WARN_LAST_INTENT;
         }
 
-        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        creep.__stored_energy = shadowStoredEnergy + toBeHarvested;
-
-        target.__amount = shadowAmount - toBeHarvested;
+        target.__amount = amount - toBeHarvested;
 
         return rc;
     },
 
-    creep_intent_repair: function(creep, target, targetHits, arg2)
+    creep_intent_repair: function(creep, target, targetHits)
     {
-        // check given arguments
         if (target === undefined)
         {
-            console.log('creep_intent_repair received undefined target');
+            console.log('creep_intent_repair received undefined argument [target]');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
-        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        if (shadowStoredEnergy <= 0)
+        const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY);
+        if (energy <= 0)
         {
             return globals.ERR_INTENDEE_EXHAUSTED;
         }
@@ -146,116 +152,139 @@ var intent =
         let wantHits = targetHits || target.hitsMax;
         if (wantHits > target.hitsMax) wantHits = target.hitsMax;
 
-        const shadowHits = target.__hits || target.hits;
-        if (shadowHits >= wantHits)
+        const hits = target.__hits || target.hits;
+        if (hits >= wantHits)
         {
             return globals.ERR_INTENDED_EXHAUSTED;
         }
 
         // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/repair.js#L23
         var repairPower = creep.getActiveBodyparts(WORK) * REPAIR_POWER;
-        var repairEnergyRemaining = shadowStoredEnergy / REPAIR_COST;
-        var repairHitsMax = target.hitsMax - shadowHits;
+        var repairEnergyRemaining = energy / REPAIR_COST;
+        var repairHitsMax = target.hitsMax - hits;
         var repairEffect = Math.min(repairPower, repairEnergyRemaining, repairHitsMax);
-        var repairCost = Math.min(shadowStoredEnergy, Math.ceil(repairEffect * REPAIR_COST));
+        var repairCost = Math.min(energy, Math.ceil(repairEffect * REPAIR_COST));
+
+        this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * repairCost);
+        target.__hits = hits + repairEffect;
 
         let rc = OK;
 
-        if (shadowHits + repairEffect >= wantHits) rc = globals.WARN_LAST_INTENT;
-        if (repairCost >= shadowStoredEnergy)      rc = globals.WARN_LAST_INTENT;
-
-        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
-        creep.__space         = shadowSpace        + repairCost;
-        creep.__stored_energy = shadowStoredEnergy - repairCost;
-        target.__hits         = shadowHits         + repairEffect;
+        if (repairCost >= energy)      rc = globals.WARN_LAST_INTENT;
+        if (target.__hits >= wantHits) rc = globals.WARN_LAST_INTENT;
 
         return rc;
     },
 
     creep_intent_transfer: function(creep, target, type, amount)
     {
-        // check given arguments
         if (target === undefined)
         {
-            console.log('creep_intent_transfer received undefined target');
+            console.log('creep_intent_transfer received undefined argument [target]');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
         if(!_.contains(RESOURCES_ALL, type))
         {
-            console.log('creep_intent_transfer received invalid resource type [' + type + ']');
+            console.log('creep_intent_transfer received invalid argument [type] of value [' + type + ']');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
-        const propertyKey = '__stored_' + type;
+        if (amount <= 0)
+        {
+            console.log('creep_intent_transfer received invalid argument [amount] of value [' + amount + ']');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
 
-        const shadowCarried = creep[propertyKey] || creep.store.getUsedCapacity(type);
-        if (shadowCarried <= 0)
+        const canGive = this.getUsedCapacity(creep, type);
+        if (canGive <= 0)
         {
             return globals.ERR_INTENDEE_EXHAUSTED;
         }
 
-        if (amount && amount > shadowCarried)
+        if (amount && amount > canGive)
         {
             // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/transfer.js#L12
             return globals.ERR_INTENDEE_EXHAUSTED;
         }
+        const wantGive = amount ? amount : canGive;
 
-        const wantToTransferAmount = amount ? amount : shadowCarried;
+        const canTake = this.getFreeCapacity(target, type);
+        if (canTake <= 0)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
 
-        const shadowTargetSpace = target.__space || target.getFreeCapacity(type);
+        const exchange = Math.min(wantGive, canTake);
+
+        this.intentCapacityChange(creep,  type, -1 * exchange);
+        this.intentCapacityChange(target, what,      exchange);
+
+        let rc = OK;
+
+        // STRATEGY if has more, allow to transfer more, don't compare to `amount`
+        if (exchange >= canGive) rc = globals.WARN_LAST_INTENT;
+        if (exchange >= canTake) rc = globals.WARN_LAST_INTENT;
+
+        return rc;
     },
 
-    creep_intent_upgradeController: function(creep, target, targetTicksToDowngrade, arg2)
+    creep_intent_upgradeController: function(creep, target, targetTicksToDowngrade)
     {
-        // check given arguments
         if (target === undefined)
         {
-            console.log('creep_intent_upgradeController received undefined target');
+            console.log('creep_intent_upgradeController received undefined argument [target]');
             return globals.ERR_INVALID_INTENT_ARG;
         }
 
-        const shadowStoredEnergy = creep.__stored_energy || creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        if (shadowStoredEnergy <= 0)
+        const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY);
+        if (energy <= 0)
         {
             return globals.ERR_INTENDEE_EXHAUSTED;
         }
 
-        const shadowUpgrades = target.__upgrades || 0;
-        if (target.level == 8 && shadowUpgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK)
+        // no matter what goals creep has, update will not count
+        const upgrades = target.__upgrades || 0;
+        if (target.level == 8 && upgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK)
+        {
+            return globals.ERR_INTENDED_EXHAUSTED;
+        }
+        const remainingUpgrades = target.level == 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - upgrades) : MadeUpLargeNumber;
+
+        // if specific goal was set
+        const ticks = target.__ticks || target.ticksToDowngrade;
+        if (targetTicksToDowngrade && ticks >= targetTicksToDowngrade)
         {
             return globals.ERR_INTENDED_EXHAUSTED;
         }
 
-        const shadowTicks = target.__ticks || target.ticksToDowngrade;
-        if (targetTicksToDowngrade && shadowTicks >= targetTicksToDowngrade)
-        {
-            return globals.ERR_INTENDED_EXHAUSTED;
-        }
+        const possibleUpgrades = creep.getActiveBodyparts(WORK);
 
-        const upgradeRemains = target.level == 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - shadowUpgrades) : MadeUpLargeNumber;
-        const maxUpgrade = creep.getActiveBodyparts(WORK);
-        const toBeUpgraded = Math.min(shadowStoredEnergy, upgradeRemains, maxUpgrade);
-        const tickIncrement = toBeUpgraded * CONTROLLER_DOWNGRADE_RESTORE;
+        const actualUpgrades = Math.min(energy, remainingUpgrades, possibleUpgrades);
+        const ticksRestore = actualUpgrades * CONTROLLER_DOWNGRADE_RESTORE;
+
+        this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualUpgrades);
+        target.__upgrades = upgrades + actualUpgrades;
+        target.__ticks    = ticks    + ticksRestore;
 
         let rc = OK;
 
-        if (toBeUpgraded >= upgradeRemains)     rc = globals.WARN_LAST_INTENT;
-        if (toBeUpgraded >= shadowStoredEnergy) rc = globals.WARN_LAST_INTENT;
+        if (actualUpgrades >= energy)            rc = globals.WARN_LAST_INTENT;
+        if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_LAST_INTENT;
 
-        const shadowSpace = creep.__space || creep.store.getFreeCapacity();
-        creep.__space         = shadowSpace        + toBeUpgraded;
-        creep.__stored_energy = shadowStoredEnergy - toBeUpgraded;
-        target.__upgrades     = shadowUpgrades     + toBeUpgraded;
-        target.__ticks        = shadowTicks        + tickIncrement;
-
-        if (target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_LAST_INTENT;
+        if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_LAST_INTENT;
 
         return rc;
     },
 
     wrapCreepIntent: function(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined)
     {
+        if (creep === undefined)
+        {
+            console.log('wrapCreepIntent received undefined argument [creep]');
+            return globals.ERR_INVALID_INTENT_ARG;
+        }
+
         const intent = creep[intentName];
         if (intent === undefined)
         {
