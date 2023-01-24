@@ -320,11 +320,10 @@ var intent =
         const possibleUpgrades = creep.getActiveBodyparts(WORK);
 
         const actualUpgrades = Math.min(energy, remainingUpgrades, possibleUpgrades);
-        const ticksRestore = actualUpgrades * CONTROLLER_DOWNGRADE_RESTORE;
 
         this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualUpgrades);
         target.__upgrades = upgrades + actualUpgrades;
-        target.__ticks    = ticks    + ticksRestore;
+        target.__ticks    = ticks    + (upgrades == 0 ? CONTROLLER_DOWNGRADE_RESTORE : 0); // fixed amount per tick
 
         let rc = OK;
 
