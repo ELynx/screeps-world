@@ -204,6 +204,9 @@ var globals =
             if (flagName == 'recount')   continue;
             if (flagName == 'autobuild') continue;
 
+            // TODO automate
+            if (flagName.startsWith('security')) continue;
+
             const processFound = _.some(
                 processIds,
                 function(id)
