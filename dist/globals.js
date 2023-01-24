@@ -7,7 +7,7 @@ var globals =
     ThreatLevelMax:    5,
 
     // intent is valid, but next such action will be exhausting
-    WARN_LAST_INTENT:          1,
+    WARN_LAST_INTENT:             1,
     // intent not found
     ERR_INVALID_INTENT_NAME: -10000,
     // intent args not given properly
