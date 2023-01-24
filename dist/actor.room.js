@@ -251,8 +251,8 @@ var roomActor =
                                             target,
                                             {
                                                 range: creep.memory.dact,
-                                                avoid: room.borderPositions(),
-                                                maxRooms: 1
+                                                maxRooms: 1,
+                                                constCallback: globals.unwalkableBordersCostCallback
                                             }
                                         );
                                     }
