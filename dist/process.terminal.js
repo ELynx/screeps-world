@@ -52,7 +52,6 @@ terminalProcess.work = function(room)
 
     const lastPrice = Memory.prices[sellMineralType] || 0;
 
-    // TODO cache, two rooms may sell same stuff
     // get average order statistics
     const allBuyOrders  = Game.market.getAllOrders({ type: ORDER_BUY,  resourceType: sellMineralType });
     const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType });
