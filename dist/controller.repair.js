@@ -43,7 +43,7 @@ repairController.oddOrEven = 1;
 repairController.extra = function(structure)
 {
     return structure._targetHp_;
-}
+};
 
 repairController.roomPrepare = function(room)
 {
@@ -53,7 +53,7 @@ repairController.roomPrepare = function(room)
 repairController.observeMyCreep = function(creep)
 {
     this._excludeTarget(creep);
-}
+};
 
 repairController.act = function(target, creep)
 {
