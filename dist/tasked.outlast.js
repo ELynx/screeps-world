@@ -100,7 +100,7 @@ outlast.creepRoomTravel = function(creep)
         {
             autoMove = false;
             const pos = creep.room.getControlPos();
-            const range = pos.controlDistance();
+            const range = pos.offBorderDistance();
 
             creep.moveToWrapper(pos, { range: range });
         }

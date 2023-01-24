@@ -6,6 +6,11 @@ var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
 
+const CenterRoomPosition = function(roomName)
+{
+    return new RoomPosition(25, 25, roomName);
+};
+
 Room.prototype.getControlPos = function()
 {
     // some interesting positions first
@@ -13,7 +18,7 @@ Room.prototype.getControlPos = function()
     if (this.terminal)   return this.terminal.pos;
     if (this.controller) return this.controller.pos;
 
-    return new RoomPosition(25, 25, this.name);
+    return CenterRoomPosition(this.name);
 };
 
 Creep.prototype.getFlagName = function()
@@ -26,6 +31,10 @@ Creep.prototype.getFlagPos = function()
     const flag = Game.flags[this.getFlagName()];
     if (flag)
     {
+        // bottom row is for special indicator flags, etc.
+        // they point to "the room in general"
+        if (flag.pos.y == 49) return CenterRoomPosition(flag.pos.roomName);
+
         return flag.pos;
     }
 
@@ -47,23 +56,19 @@ Creep.prototype.getControlPos = function()
     const crum    = this.getControlRoom();
     const flagPos = this.getFlagPos();
 
-    if (flagPos)
+    // flag is visible and flag is in expected room
+    // aim at the flag
+    if (flagPos && flagPos.roomName == crum)
     {
-        if (flagPos.roomName == crum)
-        {
-            return flagPos;
-        }
+        return flagPos;
     }
 
+    // if room is visible, search it
     const room = Game.rooms[crum];
     if (room) return room.getControlPos();
 
-    return new RoomPosition(25, 25, crum);
-};
-
-RoomPosition.prototype.controlDistance = function()
-{
-    return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0);
+    // if room is not visible, point at center
+    return CenterRoomPosition(crum);
 };
 
 function Tasked(id)
@@ -97,7 +102,7 @@ function Tasked(id)
         if (creep._canMove_)
         {
             const controlPos = creep.getControlPos();
-            creep.moveToWrapper(controlPos, { reusePath: 50, range: controlPos.controlDistance() });
+            creep.moveToWrapper(controlPos, { reusePath: 50, range: controlPos.offBorderDistance() });
         }
     };
 
@@ -119,7 +124,7 @@ function Tasked(id)
             return;
         }
 
-        const haltRange = Math.min(15, pos.controlDistance());
+        const haltRange = Math.min(15, pos.offBorderDistance());
         if (!creep.pos.inRangeTo(pos, haltRange))
         {
             creep.moveToWrapper(pos, { maxRooms: 1, reusePath: 50, range: haltRange });
@@ -163,8 +168,7 @@ function Tasked(id)
             function(creep)
             {
                 // creep with no memory of flag are given up
-                return creep.name.startsWith(this.id) &&
-                       creep.memory.flag;
+                return creep.name.startsWith(this.id) && creep.memory.getFlagName();
             },
             this
         );
