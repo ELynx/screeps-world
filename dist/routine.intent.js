@@ -14,16 +14,38 @@ var intent =
 {
     getUsedCapacity: function(something, type)
     {
-        return something.store.getUsedCapacity(type);
+        const propertyKey = '__stored_' + type;
+        const delta = something[propertyKey] || 0;
+        return something.store.getUsedCapacity(type) + delta;
     },
 
     getFreeCapacity: function(something, type)
     {
-        return something.store.getFreeCapacity(type);
+        // detect non-universal store
+        const nonUniversal = something.__non_universal_store || something.store.getCapacity() == null;
+        something.__non_universal_store = nonUniversal;
+
+        const propertyKey = nonUniversal ? ('__free_' + type) : '__free_universal';
+        const delta = something[propertyKey] || 0;
+        return something.store.getFreeCapacity(type) + delta;
     },
 
+    // positive amount is increase in stored
+    // negative amount is decrease in stored
     intentCapacityChange: function(something, type, amount)
     {
+        // detect non-universal store
+        const nonUniversal = something.__non_universal_store || something.store.getCapacity() == null;
+        something.__non_universal_store = nonUniversal;
+
+        const propertyKeyUsed = '__stored_' + type;
+        const propertyKeyFree = nonUniversal ? ('__free_' + type) : '__free_universal';
+
+        const used = something[propertyKeyUsed] || 0;
+        const free = something[propertyKeyFree] || 0;
+
+        something[propertyKeyUsed] = used + amount;
+        something[propertyKeyFree] = free - amount;
     },
 
     exchangeImpl: function(source, target, type, noLessThan, amount)
