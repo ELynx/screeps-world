@@ -49,6 +49,8 @@ var worldActor =
         // mark initial time
         const t0 = Game.cpu.getUsed();
 
+        globals.cleanUpFlags();
+
         this.taskControllersControl();
 
         const usedPercent = globals.hardCpuUsed(t0);

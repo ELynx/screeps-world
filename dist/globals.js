@@ -192,6 +192,33 @@ var globals =
     centerRoomPosition: function(roomName)
     {
         return new RoomPosition(25, 25, roomName);
+    },
+
+    cleanUpFlags: function()
+    {
+        const processIds = Object.keys(taskControllers);
+
+        for (const flagName in Game.flags)
+        {
+            if (flagName == 'profiler')  continue;
+            if (flagName == 'recount')   continue;
+            if (flagName == 'autobuild') continue;
+
+            const processFound = _.some(
+                processIds,
+                function(id)
+                {
+                    return flagName.startsWith(id);
+                }
+            );
+
+            if (!processFound)
+            {
+                const flag = Game.flags[flagName];
+                console.log('Removing undefined flag [' + flagName + '] at ' + flag.pos);
+                flag.remove();
+            }
+        }
     }
 };
 
