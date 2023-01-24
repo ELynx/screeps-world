@@ -37,6 +37,17 @@ redAlert.extra = function(controller)
     return controller._targetTicks_;
 };
 
+redAlert.roomPrepare = function(room)
+{
+    this._prepareExcludedTargets(room);
+};
+
+redAlert.observeMyCreep = function(creep)
+{
+    // actually only single creep / WORK ups the timer
+    this._excludeTarget(creep);
+};
+
 redAlert.act = function(controller, creep)
 {
     return this.wrapIntent(creep, 'upgradeController', controller, creep.memory.xtra);
