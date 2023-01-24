@@ -161,6 +161,32 @@ var globals =
         );
 
         return options;
+    },
+
+    unwalkableBordersCostCallbackCache: { },
+
+    unwalkableBordersCostCallback: function(roomName, costMatrix)
+    {
+        const cached = unwalkableBordersCostCallbackCache[roomName];
+        if (cached) return cached;
+
+        let modified = costMatrix.clone();
+
+        for (let x = 0; x <= 49; ++x)
+        {
+            modified.set(x,  0, 255);
+            modified.set(x, 49, 255);
+        }
+
+        for (let y = 1; y <= 48; ++y)
+        {
+            modified.set( 0, y, 255);
+            modified.set(49, y, 255);
+        }
+
+        unwalkableBordersCostCallbackCache[roomName] = modified;
+
+        return modified;
     }
 };
 
