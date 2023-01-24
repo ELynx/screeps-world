@@ -274,6 +274,11 @@ Room.prototype.canControlStructures = function()
     return this.controller && this.controller.my;
 };
 
+RoomPosition.prototype.offBorderDistance = function()
+{
+    return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0);
+};
+
 RoomPosition.prototype.squareArea = function(squareStep)
 {
     const t = Math.max(this.y - squareStep, 0);
