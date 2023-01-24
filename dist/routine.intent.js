@@ -14,17 +14,16 @@ var intent =
 {
     getUsedCapacity: function(something, type)
     {
-
+        return something.store.getUsedCapacity(type);
     },
 
     getFreeCapacity: function(something, type)
     {
-
+        return something.store.getFreeCapacity(type);
     },
 
     intentCapacityChange: function(something, type, amount)
     {
-
     },
 
     exchangeImpl: function(source, target, type, noLessThan, amount)
