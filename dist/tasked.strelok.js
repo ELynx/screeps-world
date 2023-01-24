@@ -16,8 +16,8 @@ strelok.markRoomForPatrol = function(room)
     }
     else
     {
-        // TODO think of room position
-        const flagPos = new RoomPosition(25, 25, room.name);
+        // STRATEGY (49, 49) is reserved for strelok indicator flag
+        const flagPos = new RoomPosition(49, 49, room.name);
         flagPos.createFlagWithValue(flagName, 1);
     }
 };
