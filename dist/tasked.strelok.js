@@ -46,12 +46,11 @@ strelok.creepPrepare = function(creep)
     creep._canHeal_       = creep.getActiveBodyparts(HEAL) > 0;
     creep._canHealRanged_ = creep._canHeal_;
 
-    // TODO why this flag?
-    // if hit start a war immediately
-    if (creep.hits < creep.hitsMax &&  !creep.memory.war)
+    // if hit retaliate immediately
+    // check is early to be caught in following code
+    if (creep.hits < creep.hitsMax)
     {
         creep.setControlRoom(creep.room.name);
-        creep.memory.war = true;
     }
 };
 
