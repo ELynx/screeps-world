@@ -1,6 +1,5 @@
 'use strict';
 
-var globals    = require('globals');
 var Controller = require('controller.template');
 
 var grabController = new Controller('grab');
