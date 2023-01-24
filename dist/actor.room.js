@@ -247,7 +247,14 @@ var roomActor =
                                     if (cpuUsed <= room.memory.cpul)
                                     {
                                         // STRATEGY tweak point for creep movement
-                                        rc = creep.moveToWrapper(target, { maxRooms: 1, range: creep.memory.dact });
+                                        rc = creep.moveToWrapper(
+                                            target,
+                                            {
+                                                range: creep.memory.dact,
+                                                avoid: room.borderPositions(),
+                                                maxRooms: 1
+                                            }
+                                        );
                                     }
                                     else
                                     {

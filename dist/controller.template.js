@@ -330,6 +330,7 @@ function Controller(id)
                             {
                                 ignoreCreeps: this.ignoreCreepsForTargeting,
                                 range: this.actRange,
+                                avoid: room.borderPositions(),
                                 maxRooms: 1
                             }
                         )
