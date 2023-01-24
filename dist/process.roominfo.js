@@ -376,10 +376,15 @@ roomInfoProcess.work = function(room)
 {
     this.debugHeader(room);
 
+    const force = Game.flags.recount && Game.flags.recount.pos.roomName == room.name;
+
     // once in a creep life update room info
-    if (room.memory.intl === undefined ||
+    if (force ||
+        room.memory.intl === undefined ||
         room.memory.intl < Game.time - CREEP_LIFE_TIME)
     {
+        if (force) Game.flags.recount.remove();
+
         room.memory.elvl = this.energyLevel(room);
         room.memory.hlvl = this.harvestLevel(room);
         room.memory.slvl = this.sourceLevel(room);
