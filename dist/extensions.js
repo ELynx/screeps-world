@@ -431,6 +431,19 @@ Structure.prototype.setToMemory = function(key, value)
 
 const _isSourceKey_ = 'isSource';
 
+StructureContainer.prototype.isSource = function()
+{
+    let result = this.getFromMemory(_isSourceKey_);
+
+    if (result === undefined)
+    {
+        result = this.pos.hasInSquareArea(LOOK_SOURCES, 1);
+        this.setToMemory(_isSourceKey_, result);
+    }
+
+    return result;
+};
+
 StructureLink.prototype.isSource = function()
 {
     let result = this.getFromMemory(_isSourceKey_);

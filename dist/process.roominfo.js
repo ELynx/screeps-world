@@ -167,18 +167,37 @@ Calculate room source level.
 **/
 roomInfoProcess.sourceLevel = function(room)
 {
-    const links = room.find(
+    const allStructures = room.find(
         FIND_STRUCTURES,
         {
             filter: function(structure)
             {
-                return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple();
+                return structure.isActiveSimple();
             }
         }
     );
 
-    // don't bother, there is no transfer happening
-    if (links.length < 2) return 0;
+    const links = _.filter(
+        allStructures,
+        function(structure)
+        {
+            return structure.structureType == STRUCTURE_LINK;
+        }
+    );
+
+    // fall back to container count
+    if (links.length < 2)
+    {
+        const containers = _.filter(
+            allStructures,
+            function(structure)
+            {
+                return structure.structureType == STRUCTURE_CONTAINER && structure.isSource();
+            }
+        );
+
+        return containers.length;
+    }
 
     let hasDestination = false;
     for (let i = 0; i < links.length; ++i)
