@@ -328,10 +328,10 @@ function Controller(id)
                         currentTarget.pos,
                         globals.moveOptionsWrapper(
                             {
+                                costCallback: globals.unwalkableBordersCostCallback,
                                 ignoreCreeps: this.ignoreCreepsForTargeting,
-                                range: this.actRange,
-                                maxRooms: 1,
-                                contCallback: globals.unwalkableBordersCostCallback
+                                maxRooms:     1,
+                                range:        this.actRange
                             }
                         )
                     );
