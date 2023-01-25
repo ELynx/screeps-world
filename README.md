@@ -67,8 +67,6 @@ TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to det
 
 TIP OF THE DAY: You can output HTML content to the console, like links to rooms. `<a href="url">link text</a>` -> `https://screeps.com/a/url`
 
-TIP OF THE DAY: You can apply transfer and heal to another player’s creep, and transfer, build and repair to others’ structures.
-
 Fatigue based emergent road building. CostMatrix has ser-de.
 
 Reassing creeps when one frees up.
