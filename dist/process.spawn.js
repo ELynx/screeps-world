@@ -106,7 +106,7 @@ spawnProcess.restockers = function(room, live)
     // restockers do not work in allied rooms
     if (room.ally()) return;
 
-    const want = Math.round(room.memory.slvl / 2);
+    const want = Math.round(room.memory.slvl);
     if (want > 0)
     {
         const now = this._hasAndPlanned(room, live, 'restocker');
