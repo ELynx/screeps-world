@@ -125,7 +125,7 @@ plunder.creepAtOtherRooms = function(creep)
             allStructures,
             function(structure)
             {
-                return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic();
+                return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic;
             }
         );
 
