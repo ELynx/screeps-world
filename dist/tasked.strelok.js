@@ -148,7 +148,7 @@ strelok.creepAtDestination = function(creep)
                 return true;
             }
 
-            if (hostile.structureType == STRUCTURE_RAMPART)
+            if (hostile.structureType == STRUCTURE_RAMPART && !hostile.isPublic())
             {
                 // only forward
                 return hostile.pos.getRangeTo(rushPos) <= distanceToFlag;

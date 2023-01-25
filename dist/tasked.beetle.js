@@ -199,7 +199,7 @@ beetle.creepAtDestination = function(creep)
                     continue;
                 }
 
-                if (struct.structureType == STRUCTURE_RAMPART)
+                if (struct.structureType == STRUCTURE_RAMPART && !struct.isPublic())
                 {
                     target = struct;
                     break;
