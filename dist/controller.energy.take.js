@@ -6,7 +6,6 @@ var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
 
-// TODO ramparts
 energyTakeController.allied = true;
 
 energyTakeController.wantToKeep = function(structure)
@@ -54,39 +53,68 @@ energyTakeController.validateTarget = function(target, creep)
 
 energyTakeController.targets = function(room)
 {
-    return room.find(
-        FIND_STRUCTURES,
+    if (room.ally() && room.controller.safeMode) return [];
+
+    const allStructures = room.find(FIND_STRUCTURES);
+
+    let ramparts = [];
+    if (room.ally())
+    {
+        ramparts = _.filter(
+            allStructures,
+            function(structure)
+            {
+                return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic;
+            }
+        );
+    }
+
+    const isTakeable = _.bind(
+        function(structure)
         {
-            filter: _.bind(
-                function(structure)
-                {
-                    // toKeep is duplicate, but prevent excess calls to a function
-                    if (structure.structureType == STRUCTURE_CONTAINER ||
-                        structure.structureType == STRUCTURE_STORAGE ||
-                        // STRATEGY allow to take from terminal, maybe airdrop energy
-                        structure.structureType == STRUCTURE_TERMINAL)
-                    {
-                        const toKeep = this.wantToKeep(structure);
-                        return structure.store[RESOURCE_ENERGY] > toKeep;
-                    }
-                    else if (structure.structureType == STRUCTURE_LINK)
-                    {
-                        const toKeep = this.wantToKeep(structure);
-                        if (structure.store[RESOURCE_ENERGY] > toKeep)
-                        {
-                            // STRATEGY do not steal from source
-                            return !structure.isSource();
-                        }
+            // type is checked externally
+            const toKeep = this.wantToKeep(structure);
+            if (structure.store[RESOURCE_ENERGY] <= toKeep) return false;
 
-                        return false;
+            if (ramparts.length > 0)
+            {
+                return !_.some(
+                    ramparts,
+                    function(ramp)
+                    {
+                        return ramp.pos.x == structure.pos.x && ramp.pos.y == structure.pos.y;
                     }
+                );
+            }
 
-                    return false;
-                },
-                this
-            )
+            return true;
+        },
+        this
+    );
+
+    const takeable = _.filter(
+        allStructures,
+        function(structure)
+        {
+            // small checks are inside because they are executed on a lot of items
+            if (structure.structureType == STRUCTURE_CONTAINER ||
+                structure.structureType == STRUCTURE_STORAGE ||
+                // STRATEGY allow to take from terminal, maybe airdrop energy
+                structure.structureType == STRUCTURE_TERMINAL)
+            {
+                return isTakeable(structure);
+            }
+            else if (structure.structureType == STRUCTURE_LINK)
+            {
+                // STRATEGY do not steal from source link
+                return structure.isSource() ? false : isTakeable(structure);
+            }
+
+            return false;
         }
     );
+
+    return takeable;
 };
 
 energyTakeController.filterCreep = function(creep)
