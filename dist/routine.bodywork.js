@@ -48,9 +48,15 @@ var bodywork =
     **/
     restocker: function(energyLevel)
     {
-        if (energyLevel < 3)
+        if (energyLevel <= 1)
         {
             return [];
+        }
+
+        if (energyLevel == 2)
+        {
+            // 550  100   100   100   50     50    50    50    50
+            return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
         }
 
         // special case, limp a bit
