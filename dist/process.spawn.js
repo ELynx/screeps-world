@@ -95,8 +95,9 @@ spawnProcess.workers = function(room, live)
     const wantWorkersHarvest = freeHarvestSlots;
     const wantWorkersCpu = 10;
     const wantWorkersEnergyLevel = (room.memory.elvl + 1) * 2; // 2 at 0, 4 at 1, 6 8 10 and so on per elvl
+    const wantWorkersMin = 2;
 
-    const want = Math.min(wantWorkersHarvest, wantWorkersCpu, wantWorkersEnergyLevel);
+    const want = Math.max(wantWorkersMin, Math.min(wantWorkersHarvest, wantWorkersCpu, wantWorkersEnergyLevel));
 
     addWorker(want - nowWorkers, 'lowkey');
 };
