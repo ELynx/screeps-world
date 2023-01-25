@@ -257,7 +257,6 @@ var roomActor =
                                             target,
                                             {
                                                 costCallback: globals.unwalkableBordersCostCallback,
-                                                ignoreCreeps: creep.pos.getRangeTo(target) > 2 * creep.memory.dact,
                                                 maxRooms:     1,
                                                 range:        creep.memory.dact
                                             }
