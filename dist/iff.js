@@ -3,6 +3,7 @@
 const UsernameSourceKeeper = 'Source Keeper';
 const UsernamePowerBank    = 'Power Bank';
 const UsernameInvader      = 'Invader';
+const UsernamePublic       = 'Public';
 
 const isAlly = function(something)
 {
@@ -56,6 +57,7 @@ const isNeutral = function(something)
         // TODO not always
         if (username == UsernameSourceKeeper) response = true;
         if (username == UsernamePowerBank)    response = true;
+        if (username == UsernamePublic)       response = true;
 
         if (!response)
         {
