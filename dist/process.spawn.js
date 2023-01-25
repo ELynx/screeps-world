@@ -158,7 +158,7 @@ spawnProcess.work = function(room)
 
     let live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp');
 
-    if (room.my())        this.my  (room, live);
+    if      (room.my())   this.my  (room, live);
     else if (room.ally()) this.ally(room, live);
 };
 
