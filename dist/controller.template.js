@@ -51,6 +51,11 @@ function Controller(id)
     this.oddOrEven = undefined;
 
     /**
+    Flag tp execute in allied room.
+    **/
+    this.allied = false;
+
+    /**
     Cache of target IDs that already have creep assigned.
     **/
     this._excludedTargets = undefined;

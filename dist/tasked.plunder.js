@@ -182,7 +182,7 @@ plunder.creepAtOtherRooms = function(creep)
 
 plunder.creepAtDestination = function(creep)
 {
-    if (creep.room.canControlStructures())
+    if (creep.room.my())
     {
         this.creepAtOwnRoom(creep);
     }
@@ -196,7 +196,7 @@ plunder.creepRoomTravel = function(creep)
 {
     // keep track of closest owned stuff
 
-    if (creep.room.canControlStructures())
+    if (creep.room.my())
     {
         if (creep.room.storage)
             creep.memory.storage = creep.room.storage.id;

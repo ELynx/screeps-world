@@ -204,6 +204,9 @@ var globals =
             if (flagName == 'recount')   continue;
             if (flagName == 'autobuild') continue;
 
+            // TODO unified flag name checks
+            if (flagName.startsWith('help_')) continue;
+
             // TODO automate
             if (flagName.startsWith('security')) continue;
 
