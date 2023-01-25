@@ -107,7 +107,7 @@ Creep.prototype.unlive = function()
 {
     let result = false;
 
-    if (this.room.memory.elvl > 0)
+    if (this.room.my() && this.room.memory.elvl > 0)
     {
         this.setControlRoom(this.room.name);
         result = true;
@@ -122,7 +122,7 @@ Creep.prototype.unlive = function()
         for (const roomName in Game.rooms)
         {
             const room = Game.rooms[roomName];
-            if (room.memory.elvl > 0)
+            if (room.my() && room.memory.elvl > 0)
             {
                 this.setControlRoom(room.name);
                 result = true;
