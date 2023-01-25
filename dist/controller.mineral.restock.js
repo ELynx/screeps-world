@@ -7,6 +7,8 @@ var mineralRestockController = new Controller('mineral.restock');
 
 mineralRestockController.actRange = 1;
 
+mineralRestockController.allied = true;
+
 mineralRestockController.act = function(withStore, creep)
 {
     for (const resourceType in creep.store)

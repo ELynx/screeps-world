@@ -8,6 +8,8 @@ buildController.actRange = 3;
 
 buildController.oddOrEven = 0;
 
+buildController.allied = true;
+
 buildController.act = function(site, creep)
 {
     return this.wrapIntent(creep, 'build', site);
