@@ -10,6 +10,8 @@ const MineralsToKeep = 30000;
 
 terminalProcess.work = function(room)
 {
+    if (!room.my()) return;
+
     this.debugHeader(room);
 
     if (!room.terminal) return;

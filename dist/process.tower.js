@@ -6,6 +6,8 @@ var towerProcess = new Process('tower');
 
 towerProcess.work = function(room)
 {
+    if (!room.my()) return;
+
     this.debugHeader(room);
 
     const towers = room.find(

@@ -124,9 +124,9 @@ var roomActor =
         // clean up controllers
         this.roomControllersPrepare(room);
 
-        if (room.my()) secutiryProcess.work(room);
-                       roomInfoProcess.work(room);
-        if (room.my()) towerProcess.work(room);
+        secutiryProcess.work(room);
+        roomInfoProcess.work(room);
+        towerProcess.work(room);
 
         // STRATEGY don't execute certain processes too often and on the same tick / all rooms
         const processKey = (room.memory.intl + Game.time) % 10;
@@ -137,7 +137,7 @@ var roomActor =
         }
         else if (processKey == 5)
         {
-            if (room.my()) linkProcess.work(room);
+            linkProcess.work(room);
         }
 
         // creeps that has no controller assigned will go here
@@ -312,12 +312,12 @@ var roomActor =
 
         if (globals.hardCpuUsed(t0) <= room.memory.cpul)
         {
-            if (room.my()) autobuildProcess.work(room);
+            autobuildProcess.work(room);
         }
 
         if (globals.hardCpuUsed(t0) <= room.memory.cpul)
         {
-            if (room.my()) terminalProcess.work(room);
+            terminalProcess.work(room);
         }
 
         const usedPercent = globals.hardCpuUsed(t0);

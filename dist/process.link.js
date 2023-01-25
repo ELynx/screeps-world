@@ -8,6 +8,8 @@ const Treshold = 50;
 
 linkProcess.work = function(room)
 {
+    if (!room.my()) return;
+
     this.debugHeader(room);
 
     const allLinks = room.find(

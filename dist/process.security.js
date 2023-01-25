@@ -9,6 +9,8 @@ const ThreatStep = 60;
 
 secutiryProcess.work = function(room)
 {
+    if (!room.my()) return;
+
     this.debugHeader(room);
 
     let threatLevel = room.memory.threat  || 0;
