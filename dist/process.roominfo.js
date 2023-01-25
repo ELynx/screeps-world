@@ -218,6 +218,7 @@ roomInfoProcess.sourceLevel = function(room)
     const sources = room.find(FIND_SOURCES);
 
     let soucePositions = 0;
+    let sourceLinks    = 0;
 
     for (let i = 0; i < links.length; ++i)
     {
@@ -225,6 +226,8 @@ roomInfoProcess.sourceLevel = function(room)
 
         if (link.isSource())
         {
+            ++sourceLinks;
+
             let positions = { };
             for (let j = 0; j < sources.length; ++j)
             {
@@ -249,7 +252,8 @@ roomInfoProcess.sourceLevel = function(room)
         }
     }
 
-    return soucePositions;
+    // STRATEGY max two diggers per link
+    return Min(soucePositions, 2 * sourceLinks);
 };
 
 /**
