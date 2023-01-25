@@ -103,9 +103,6 @@ spawnProcess.workers = function(room, live)
 
 spawnProcess.restockers = function(room, live)
 {
-    // restockers do not work in allied rooms
-    if (room.ally()) return;
-
     const want = Math.round(room.memory.slvl);
     if (want > 0)
     {
@@ -124,9 +121,6 @@ spawnProcess.restockers = function(room, live)
 
 spawnProcess.miners = function(room, live)
 {
-    // restockers do not work in allied rooms
-    if (room.ally()) return;
-
     const want = room.memory.mlvl;
     if (want > 0)
     {
@@ -144,15 +138,27 @@ spawnProcess.miners = function(room, live)
     }
 };
 
+spawnProcess.my = function(room, live)
+{
+    // STRATEGY workers have number dependent on other fractions
+    this.miners(room, live);
+    this.restockers(room, live);
+    this.workers(room, live);
+};
+
+spawnProcess.ally = function(room, live)
+{
+    this.workers(room, live);
+}
+
 spawnProcess.work = function(room)
 {
     this.debugHeader(room);
 
     let live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp');
 
-    this.workers(room, live);
-    this.restockers(room, live);
-    this.miners(room, live);
+    if (room.my())        this.my  (room, live);
+    else if (room.ally()) this.ally(room, live);
 };
 
 spawnProcess.register();
