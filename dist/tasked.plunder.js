@@ -120,7 +120,14 @@ plunder.creepAtOtherRooms = function(creep)
     if (targets === undefined)
     {
         const allStructures = creep.room.find(FIND_STRUCTURES);
-        const ramparts = _.filter(allStructures, { structureType: STRUCTURE_RAMPART });
+
+        const ramparts = _.filter(
+            allStructures,
+            function(structure)
+            {
+                return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic();
+            }
+        );
 
         targets = _.filter(
             allStructures,
