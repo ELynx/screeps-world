@@ -133,7 +133,7 @@ var roomActor =
 
         if (processKey == 0)
         {
-            if (room.my()) spawnProcess.work(room);
+            spawnProcess.work(room);
         }
         else if (processKey == 5)
         {
