@@ -75,7 +75,7 @@ claim.creepAtDestination = function(creep)
                 for (const roomName in Game.rooms)
                 {
                     const someRoom = Game.rooms[roomName];
-                    if (someRoom.canControlStructures())
+                    if (someRoom.my())
                     {
                         ++myRooms;
                     }

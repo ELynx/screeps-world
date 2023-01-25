@@ -93,7 +93,11 @@ var roomActor =
     {
         for (const id in globals.roomControllers)
         {
-            creeps = globals.roomControllers[id].control(room, creeps);
+            const controller = globals.roomControllers[id];
+
+            if (room.ally() && !controller.allied) continue;
+
+            creeps = controller.control(room, creeps);
 
             // if all creeps had been taken
             if (creeps.length == 0)
@@ -120,21 +124,20 @@ var roomActor =
         // clean up controllers
         this.roomControllersPrepare(room);
 
-        secutiryProcess.work(room); // manages threat and safety mode
-        roomInfoProcess.work(room); // manages room parameters used by other processes
-
-        towerProcess.work(room);
+        if (room.my()) secutiryProcess.work(room);
+                       roomInfoProcess.work(room);
+        if (room.my()) towerProcess.work(room);
 
         // STRATEGY don't execute certain processes too often and on the same tick / all rooms
         const processKey = (room.memory.intl + Game.time) % 10;
 
         if (processKey == 0)
         {
-            spawnProcess.work(room);
+            if (room.my()) spawnProcess.work(room);
         }
         else if (processKey == 5)
         {
-            linkProcess.work(room);
+            if (room.my()) linkProcess.work(room);
         }
 
         // creeps that has no controller assigned will go here
@@ -196,14 +199,17 @@ var roomActor =
                 } // end of subroutine of room change
 
                 // grab logic, manual call
-                if (grabController.filterCreep(creep))
+                if (room.my() || (room.ally() && grabController.allied))
                 {
-                    const currentController = globals.roomControllers[creep.memory.ctrl];
-
-                    const rc = grabController.act(currentController, creep);
-                    if (rc == globals.WARN_LAST_INTENT)
+                    if (grabController.filterCreep(creep))
                     {
-                        globals.unassignCreep(creep);
+                        const currentController = globals.roomControllers[creep.memory.ctrl];
+
+                        const rc = grabController.act(currentController, creep);
+                        if (rc == globals.WARN_LAST_INTENT)
+                        {
+                            globals.unassignCreep(creep);
+                        }
                     }
                 }
 
@@ -307,12 +313,12 @@ var roomActor =
 
         if (globals.hardCpuUsed(t0) <= room.memory.cpul)
         {
-            autobuildProcess.work(room);
+            if (room.my()) autobuildProcess.work(room);
         }
 
         if (globals.hardCpuUsed(t0) <= room.memory.cpul)
         {
-            terminalProcess.work(room);
+            if (room.my()) terminalProcess.work(room);
         }
 
         const usedPercent = globals.hardCpuUsed(t0);

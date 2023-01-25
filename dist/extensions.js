@@ -269,9 +269,14 @@ Room.prototype.getRoomControlledCreeps = function()
     return this._roomCreeps_;
 };
 
-Room.prototype.canControlStructures = function()
+Room.prototype.my = function()
 {
     return this.controller && this.controller.my;
+};
+
+Room.prototype.ally = function()
+{
+    return this.controller && this.controller.ally;
 };
 
 RoomPosition.prototype.offBorderDistance = function()
