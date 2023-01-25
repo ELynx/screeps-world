@@ -150,7 +150,7 @@ spawnProcess.my = function(room, live)
 spawnProcess.ally = function(room, live)
 {
     this.workers(room, live);
-}
+};
 
 spawnProcess.work = function(room)
 {
