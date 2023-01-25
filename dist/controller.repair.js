@@ -39,6 +39,8 @@ repairController.actRange = 3;
 
 repairController.oddOrEven = 1;
 
+repairController.allied = true;
+
 repairController.extra = function(structure)
 {
     return structure._targetHp_;

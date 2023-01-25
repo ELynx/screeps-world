@@ -10,6 +10,7 @@ const TowerRestockCritical = 0.25;
 
 energyRestockControllerRegular.actRange = 1;
 
+// TODO ramparts?
 energyRestockControllerRegular.allied = true;
 
 energyRestockControllerRegular.roomPrepare = function(room)
