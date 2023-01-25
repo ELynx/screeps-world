@@ -103,6 +103,9 @@ spawnProcess.workers = function(room, live)
 
 spawnProcess.restockers = function(room, live)
 {
+    // restockers do not work in allied rooms
+    if (room.ally()) return;
+
     const want = Math.round(room.memory.slvl / 2);
     if (want > 0)
     {
@@ -121,6 +124,9 @@ spawnProcess.restockers = function(room, live)
 
 spawnProcess.miners = function(room, live)
 {
+    // restockers do not work in allied rooms
+    if (room.ally()) return;
+
     const want = room.memory.mlvl;
     if (want > 0)
     {
