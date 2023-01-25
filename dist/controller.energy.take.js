@@ -6,6 +6,9 @@ var energyTakeController = new Controller('energy.take');
 
 energyTakeController.actRange = 1;
 
+// TODO ramparts
+energyTakeController.allied = true;
+
 energyTakeController.wantToKeep = function(structure)
 {
     const room = structure.room;

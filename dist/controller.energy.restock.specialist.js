@@ -10,6 +10,8 @@ const LinkRestock      = 0.99;
 
 energyRestockControllerSpecialist.actRange = 1;
 
+energyRestockControllerSpecialist.allied = true;
+
 energyRestockControllerSpecialist.act = function(target, creep)
 {
     return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY);
