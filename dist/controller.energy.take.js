@@ -22,11 +22,12 @@ energyTakeController.wantToKeep = function(structure)
 
 energyTakeController.act = function(structure, creep)
 {
-    const has    = structure.store.getUsedCapacity(RESOURCE_ENERGY);
-    const toKeep = this.wantToKeep(structure);
-    const want   = creep.store.getFreeCapacity(RESOURCE_ENERGY);
+    const canGive  = structure.store.getUsedCapacity(RESOURCE_ENERGY);
+    const wantKeep = this.wantToKeep(structure);
+    const wantGive = canGive - wantKeep;
+    const canTake  = creep.store.getFreeCapacity(RESOURCE_ENERGY);
 
-    const howMuch = has - toKeep >= want ? undefined : has - toKeep;
+    const howMuch  = Math.min(wantGive, canTake);
 
     return this.wrapIntent(creep, 'withdraw', structure, RESOURCE_ENERGY, howMuch);
 };
