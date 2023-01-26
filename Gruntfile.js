@@ -1,5 +1,5 @@
 module.exports = function (grunt) {
-  const env_vars = process.env
+  const envVars = process.env
 
   grunt.loadNpmTasks('grunt-screeps')
 
@@ -9,9 +9,9 @@ module.exports = function (grunt) {
         {
           options:
             {
-              email: env_vars.PUSH_EMAIL,
-              token: env_vars.PUSH_TOKEN,
-              branch: env_vars.PUSH_BRANCH
+              email: envVars.PUSH_EMAIL,
+              token: envVars.PUSH_TOKEN,
+              branch: envVars.PUSH_BRANCH
             },
           dist:
             {
