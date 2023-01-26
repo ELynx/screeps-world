@@ -1,5 +1,5 @@
 {
-  "name": "Screeps codebase",
+  "name": "ScreepsAI",
   "version": "1.0.0",
   "devDependencies": {
     "grunt": "~1.5.3"
