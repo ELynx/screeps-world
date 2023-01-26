@@ -11,7 +11,9 @@ mineralHarvestController.act = function (extractor, creep) {
   if (extractor.cooldown > 0) return OK
 
   const minerals = extractor.pos.lookFor(LOOK_MINERALS)
-  // eslint-disable-next-line no-unreachable-loop because room has only one mineral
+
+  // because room has only one mineral
+  // eslint-disable-next-line no-unreachable-loop
   for (let i = 0; i < minerals.length; ++i) {
     const mineral = minerals[i]
     const rc = this.wrapIntent(creep, 'harvest', mineral)
