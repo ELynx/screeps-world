@@ -334,7 +334,7 @@ function Controller (id) {
           remainingTargets = _.filter(
             remainingTargets,
             function (someTarget) {
-              return someTarget.id != target.id
+              return someTarget.id !== target.id
             }
           )
         }
@@ -362,7 +362,7 @@ function Controller (id) {
     }
 
     if (this.oddOrEven) {
-      if ((room.memory.intl + Game.time) % 2 != this.oddOrEven) {
+      if ((room.memory.intl + Game.time) % 2 !== this.oddOrEven) {
         this.debugLine(room, 'Fast exit, oddOrEven check')
         return roomCreeps
       }

@@ -163,7 +163,7 @@ beetle.creepAtDestination = function (creep) {
 
         withdraws.push(struct)
 
-        if (item.x != next.x || item.y != next.y) { continue }
+        if (item.x !== next.x || item.y !== next.y) { continue }
 
         if (struct.hits === undefined) {
           continue

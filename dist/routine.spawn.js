@@ -155,7 +155,7 @@ const spawn =
     }
 
     const filter = function (stored) {
-      return stored.id != id
+      return stored.id !== id
     }
 
     Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter)
@@ -170,7 +170,7 @@ const spawn =
   // internals of this function should not be used
   __postpone: function (target) {
     // resetter
-    if (this.__postpone_t != Game.time) {
+    if (this.__postpone_t !== Game.time) {
       this.__postpone_n = undefined
     }
 

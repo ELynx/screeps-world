@@ -43,7 +43,7 @@ claim.creepAtDestination = function (creep) {
 
       let sign = ''
 
-      if (controller.owner && controller.owner.username != creep.owner.username) {
+      if (controller.owner && controller.owner.username !== creep.owner.username) {
         sign = 'Your base is under attack'
         rc = creep.attackController(controller)
 
@@ -53,7 +53,7 @@ claim.creepAtDestination = function (creep) {
         const ticksToDowngrade = controller.level === 1 ? controller.ticksToDowngrade : 0
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)
-      } else if (controller.reservation && controller.reservation.username != creep.owner.username) {
+      } else if (controller.reservation && controller.reservation.username !== creep.owner.username) {
         sing = 'Taking over'
         rc = creep.attackController(controller)
       } else {
@@ -75,7 +75,7 @@ claim.creepAtDestination = function (creep) {
       }
 
       if (controller.sign) {
-        if (controller.sign.text != sign || controller.sign.username != creep.owner.username) {
+        if (controller.sign.text !== sign || controller.sign.username !== creep.owner.username) {
           creep.signController(controller, sign)
         }
       } else if (sign.length > 0) {

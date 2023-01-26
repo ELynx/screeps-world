@@ -26,7 +26,7 @@ grabController.act = function (currentController, creep) {
         const typeToGrab = typesToGrab[j]
         if (from.store.getUsedCapacity(typeToGrab) > 0) {
           const rc = this.wrapIntent(creep, 'withdraw', from, typeToGrab)
-          if (rc != OK) return rc
+          if (rc !== OK) return rc
         }
       }
     }
@@ -34,7 +34,7 @@ grabController.act = function (currentController, creep) {
     if (grab.type === LOOK_RESOURCES) {
       if (hasUniversalStore || from.resourceType === RESOURCE_ENERGY) {
         const rc = this.wrapIntent(creep, 'pickup', from)
-        if (rc != OK) return rc
+        if (rc !== OK) return rc
       }
     }
   }

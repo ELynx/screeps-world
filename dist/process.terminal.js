@@ -111,7 +111,7 @@ terminalProcess.work = function (room) {
 
   goodBuyOrders.sort(
     function (o1, o2) {
-      if (o1.price != o2.price) {
+      if (o1.price !== o2.price) {
         return o2.price - o1.price
       }
 
