@@ -77,8 +77,8 @@ secutiryProcess.work = function (room) {
         }
       } // end of loop for all flags
     } // end of "if safe mode reqiest possible"
-  } // end of "if hostile creeps exist"
-  else {
+    // end of "if hostile creeps exist"
+  } else {
     if (threatTimer + ThreatStep < Game.time) {
       --threatLevel
       threatTimer = Game.time
