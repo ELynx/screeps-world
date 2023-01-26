@@ -28,7 +28,7 @@ const controllerController = require('controller.controller')
 
 // this one does not register
 const grabController = require('controller.grab')
-/* eslint-disable no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 const roomActor =
 {

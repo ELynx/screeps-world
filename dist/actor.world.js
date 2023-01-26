@@ -17,7 +17,7 @@ const taskedObserve = require('tasked.observe') // lowest prio
 const taskedSpawn = require('tasked.spawn')
 // other
 const taskedPixel = require('tasked.pixelgenerator')
-/* eslint-disable no-unused-vars */
+/* eslint-enable no-unused-vars */
 
 const worldActor =
 {
