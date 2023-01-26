@@ -114,7 +114,7 @@ const globals =
     @return If creep is assigned to a controller.
     **/
   creepAssigned: function (creep) {
-    return creep.memory.ctrl != this.NO_CONTROL
+    return creep.memory.ctrl !== this.NO_CONTROL
   },
 
   /**

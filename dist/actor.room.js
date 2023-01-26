@@ -145,7 +145,7 @@ const roomActor =
         }
 
         // code that migrate creeps into room of registration
-        if (creep.memory.crum != creep.room.name || creep.memory.roomChange) {
+        if (creep.memory.crum !== creep.room.name || creep.memory.roomChange) {
           // to take off any work from previous room
           globals.unassignCreep(creep)
 

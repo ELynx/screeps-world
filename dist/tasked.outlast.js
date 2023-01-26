@@ -17,7 +17,7 @@ outlast._defaultAction = function (creep) {
         filter: _.bind(
           function (someCreep) {
             return someCreep.myOrAlly() &&
-                               someCreep.id != this.id &&
+                               someCreep.id !== this.id &&
                                someCreep.hits < someCreep.hitsMax &&
                                someCreep.pos.inRangeTo(this, 3)
           },

@@ -377,7 +377,7 @@ autobuildProcess.coverRamparts = function (room) {
       for (let i = 0; i < atXY.length; ++i) {
         const structure = atXY[i]
 
-        if (structure.structureType != STRUCTURE_ROAD) {
+        if (structure.structureType !== STRUCTURE_ROAD) {
           onlyRoad = false
         }
 

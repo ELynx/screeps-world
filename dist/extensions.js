@@ -153,7 +153,7 @@ Flag.prototype.setValue = function (newValue) {
     newColor = COLOR_BLUE
   }
 
-  if (this.color != newColor) {
+  if (this.color !== newColor) {
     this.setColor(newColor, this.secondaryColor)
   }
 }
@@ -176,7 +176,7 @@ Flag.prototype.resetSecondaryColor = function () {
 
 Room.prototype.roomDebug = function (what) {
   if (this._verboseT_ === undefined ||
-        this._verboseT_ != Game.time) {
+        this._verboseT_ !== Game.time) {
     this._debugY_ = 1.5
     this._verboseT_ = Game.time
   }
@@ -261,7 +261,7 @@ RoomPosition.prototype.hasInSquareArea = function (lookForType, squareStep, filt
 }
 
 RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition) {
-  if (this.roomName != otherRoomPosition.roomName) return []
+  if (this.roomName !== otherRoomPosition.roomName) return []
 
   const adx = this.x - otherRoomPosition.x
   const ady = this.y - otherRoomPosition.y

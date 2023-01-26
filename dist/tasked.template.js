@@ -99,7 +99,7 @@ function Tasked (id) {
     }
 
     const pos = creep.getControlPos()
-    if (creep.room.name != pos.roomName) {
+    if (creep.room.name !== pos.roomName) {
       return
     }
 
@@ -208,7 +208,7 @@ function Tasked (id) {
           continue
         }
 
-        if (decision != this.FLAG_SPAWN) {
+        if (decision !== this.FLAG_SPAWN) {
           spawn.erase(flagName)
           flag.remove()
 

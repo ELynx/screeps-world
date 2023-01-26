@@ -48,7 +48,7 @@ secutiryProcess.work = function (room) {
         }
 
         const flag = Game.flags[flagName]
-        if (flag.pos.roomName != room.name) {
+        if (flag.pos.roomName !== room.name) {
           continue
         }
 

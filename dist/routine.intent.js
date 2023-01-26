@@ -2,7 +2,7 @@
 
 const globals = require('globals')
 
-if (UPGRADE_CONTROLLER_POWER != 1) {
+if (UPGRADE_CONTROLLER_POWER !== 1) {
   console.log('UPGRADE_CONTROLLER_POWER is no longer equal to 1, update intent code')
 }
 
@@ -326,7 +326,7 @@ const intent =
     }
 
     const intentRc = _.bind(intent, creep)(arg0, arg1, arg2)
-    if (intentRc != OK) {
+    if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                         '] on creep [' + creep.name +
                         '] with code ' + intentRc + ' where expected code was ' + rc)

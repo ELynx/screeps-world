@@ -32,7 +32,7 @@ plunder.moveAndUnload = function (creep, target) {
         rc = creep.transfer(target, resourceType)
       }
 
-      if (rc != OK) {
+      if (rc !== OK) {
         rc = creep.drop(resourceType)
       }
 

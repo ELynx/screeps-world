@@ -237,7 +237,7 @@ spawn.spawnNext = function () {
         break // from spawns cycle, room will not have more energy
       }
 
-      if (dryRun != OK) {
+      if (dryRun !== OK) {
         return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun)
       }
 
@@ -250,7 +250,7 @@ spawn.spawnNext = function () {
         }
       )
 
-      if (actualRun != OK) {
+      if (actualRun !== OK) {
         return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun)
       }
 

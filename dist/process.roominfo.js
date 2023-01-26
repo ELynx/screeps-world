@@ -84,7 +84,7 @@ roomInfoProcess.energyLevel = function (room) {
 }
 
 roomInfoProcess._walkable = function (terrain, position) {
-  if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
+  if (terrain.get(position.x, position.y) !== TERRAIN_MASK_WALL) {
     return true
   }
 

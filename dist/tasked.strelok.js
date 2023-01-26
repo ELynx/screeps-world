@@ -188,7 +188,7 @@ strelok.creepAtDestination = function (creep) {
           rc = creep.rangedAttack(fireTarget)
         }
 
-        creep._canHealRanged_ = creep._canHealRanged_ && rc != OK
+        creep._canHealRanged_ = creep._canHealRanged_ && rc !== OK
       } // end of traget in firing range
     } // end of if has ranged bpart
 
@@ -212,7 +212,7 @@ strelok.creepAtDestination = function (creep) {
           }
         }
 
-        if (toFrom != 0) {
+        if (toFrom !== 0) {
           const direction = toFrom > 0 ? creep.pos.getDirectionTo(fireTarget) : fireTarget.pos.getDirectionTo(creep)
           creep.move(direction)
         }
