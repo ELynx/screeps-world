@@ -2,6 +2,7 @@
 
 const globals = require('globals')
 
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "tasked" }]*/
 /**
 Order of load is priority for task execution.
 **/
