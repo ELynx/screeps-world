@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Process = require('process.template')
@@ -68,7 +68,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
 
     const blocked = terrain.get(x, y) === TERRAIN_MASK_WALL
 
-    if (blocked) continue // to next index
+    if (blocked) { continue } // to next index
 
     const toVisits = Magic[index]
     for (let i = 0; i < toVisits.length; ++i) {
@@ -189,7 +189,7 @@ const TargetLinkReserve = 1
 
 autobuildProcess.sourceLink = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] || 0
-  if (canHave === 0) return
+  if (canHave === 0) { return }
 
   // out of two, reserve one, otherwise links will wait for whole level to complete
   const reserve = canHave <= 2 ? 1 : TargetLinkReserve
@@ -258,7 +258,7 @@ const ContainerReserve = 0
 
 autobuildProcess.sourceContainer = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][room.controller.level] || 0
-  if (canHave === 0) return
+  if (canHave === 0) { return }
 
   if (canHave > ContainerReserve) {
     const filterForContainers = function (structure) {
@@ -305,7 +305,7 @@ autobuildProcess.sourceContainer = function (room) {
           const positions = []
           for (let dx = -1; dx <= 1; ++dx) {
             for (let dy = -1; dy <= 1; ++dy) {
-              if (dx === 0 && dy === 0) continue
+              if (dx === 0 && dy === 0) { continue }
 
               const x = source.pos.x + dx
               const y = source.pos.y + dy
@@ -343,7 +343,7 @@ autobuildProcess.sourceContainer = function (room) {
 
 autobuildProcess.coverRamparts = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][room.controller.level] || 0
-  if (canHave === 0) return
+  if (canHave === 0) { return }
 
   // this function has potential to create a lot of sites
   // as such, unfiy look for sites and locations here, not in generic planner
@@ -393,7 +393,7 @@ autobuildProcess.coverRamparts = function (room) {
         }
       }
 
-      if (onlyRoad || hasRamp || hasWall) continue // to next y
+      if (onlyRoad || hasRamp || hasWall) { continue } // to next y
 
       // terrain is not natural wall
       // there are no construction sites
@@ -410,20 +410,20 @@ autobuildProcess.coverRamparts = function (room) {
 
 autobuildProcess.wallsAroundController = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][room.controller.level] || 0
-  if (canHave === 0) return
+  if (canHave === 0) { return }
 
   const terrain = room.getTerrain()
 
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
-      if (dx === 0 && dy === 0) continue
+      if (dx === 0 && dy === 0) { continue }
 
       const x = room.controller.pos.x + dx
       const y = room.controller.pos.y + dy
 
       const terrainMask = terrain.get(x, y)
 
-      if (terrainMask === TERRAIN_MASK_WALL) continue
+      if (terrainMask === TERRAIN_MASK_WALL) { continue }
 
       this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
     }
@@ -457,7 +457,7 @@ autobuildProcess.work = function (room) {
   }
 
   // let the flag clear
-  if (!room.my()) return
+  if (!room.my()) { return }
 
   if (executeAutoBuild) {
     // offset regeneration time randomly so multiple rooms don't do it at same tick

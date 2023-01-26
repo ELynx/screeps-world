@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -13,7 +13,7 @@ mineralRestockController.allied = true
 mineralRestockController.act = function (withStore, creep) {
   for (const resourceType in creep.store) {
     const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
-    if (rc !== OK) return rc
+    if (rc !== OK) { return rc }
   }
 
   // if here then all transfers were OK
@@ -31,8 +31,8 @@ mineralRestockController._checkStore = function (structure) {
 
 mineralRestockController.targets = function (room) {
   // STRATEGY what to fill first
-  if (this._checkStore(room.terminal)) return [room.terminal]
-  if (this._checkStore(room.storage)) return [room.storage]
+  if (this._checkStore(room.terminal)) { return [room.terminal] }
+  if (this._checkStore(room.storage)) { return [room.storage] }
 
   return []
 }

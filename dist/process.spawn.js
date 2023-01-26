@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Process = require('process.template')
@@ -37,7 +37,7 @@ spawnProcess._addToQueue = function (room, type, memoryAddon, n, adderFunction) 
 }
 
 spawnProcess.addToQueue = function (room, type, memory, n, priority) {
-  if (n <= 0) return
+  if (n <= 0) { return }
 
   if (priority === 'urgent') {
     this._addToQueue(room, type, memory, n, _.bind(queue.addUrgent, queue))
@@ -142,8 +142,7 @@ spawnProcess.work = function (room) {
 
   const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
 
-  if (room.my()) this.my(room, live)
-  else if (room.ally()) this.ally(room, live)
+  if (room.my()) { this.my(room, live) } else if (room.ally()) { this.ally(room, live) }
 }
 
 spawnProcess.register()

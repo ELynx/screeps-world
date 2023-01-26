@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -9,9 +9,9 @@ const profiler = require('screeps-profiler')
 
 Room.prototype.getControlPos = function () {
   // some interesting positions first
-  if (this.storage) return this.storage.pos
-  if (this.terminal) return this.terminal.pos
-  if (this.controller) return this.controller.pos
+  if (this.storage) { return this.storage.pos }
+  if (this.terminal) { return this.terminal.pos }
+  if (this.controller) { return this.controller.pos }
 
   return globals.centerRoomPosition(this.name)
 }
@@ -25,7 +25,7 @@ Creep.prototype.getFlagPos = function () {
   if (flag) {
     // bottom row is for special indicator flags, etc.
     // they point to "the room in general"
-    if (flag.pos.y === 49) return globals.centerRoomPosition(flag.pos.roomName)
+    if (flag.pos.y === 49) { return globals.centerRoomPosition(flag.pos.roomName) }
 
     return flag.pos
   }
@@ -53,7 +53,7 @@ Creep.prototype.getControlPos = function () {
 
   // if room is visible, search it
   const room = Game.rooms[crum]
-  if (room) return room.getControlPos()
+  if (room) { return room.getControlPos() }
 
   // if room is not visible, point at center
   return globals.centerRoomPosition(crum)
@@ -115,7 +115,7 @@ function Tasked (id) {
   this.makeBody = undefined
 
   this._flagCountCreep = function (creep) {
-    if (creep.memory.fcnt) return
+    if (creep.memory.fcnt) { return }
 
     const flag = Game.flags[creep.getFlagName()]
     if (flag) {
@@ -131,7 +131,7 @@ function Tasked (id) {
 
   this._flagCountBasic = function (flag, limit) {
     const had = this._flagCount(flag)
-    if (had < limit) return this.FLAG_SPAWN
+    if (had < limit) { return this.FLAG_SPAWN }
 
     return this.FLAG_IGNORE
   }

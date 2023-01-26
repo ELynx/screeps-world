@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -37,7 +37,7 @@ plunder.moveAndUnload = function (creep, target) {
         rc = creep.drop(resourceType)
       }
 
-      if (rc === OK) break // from resource loop
+      if (rc === OK) { break } // from resource loop
     }
   } else {
     creep.moveToWrapper(pos, { reusePath: 50, range })
@@ -65,13 +65,13 @@ plunder.creepAtOwnRoom = function (creep) {
 
 plunder.getSomeOwnRoomName = function (creep) {
   const storage = creep.memory.storage ? Game.getObjectById(creep.memory.storage) : undefined
-  if (storage) return storage.room.name
+  if (storage) { return storage.room.name }
 
   const terminal = creep.memory.terminal ? Game.getObjectById(creep.memory.terminal) : undefined
-  if (terminal) return terminal.room.name
+  if (terminal) { return terminal.room.name }
 
   const controller = creep.memory.controller ? Game.getObjectById(creep.memory.controller) : undefined
-  if (controller) return controller.room.name
+  if (controller) { return controller.room.name }
 
   return undefined
 }
@@ -80,7 +80,7 @@ plunder.moveAndLoad = function (creep, target) {
   if (creep.pos.isNearTo(target)) {
     for (const resourceType in target.store) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc === OK) break
+      if (rc === OK) { break }
     }
   } else {
     creep.moveToWrapper(target, { reusePath: 50, range: 1 })
@@ -102,7 +102,7 @@ plunder.creepAtOtherRooms = function (creep) {
     targets = _.filter(
       allStructures,
       function (structure) {
-        if (structure.store === undefined) return false
+        if (structure.store === undefined) { return false }
 
         let hasResources = false
         for (const resourceType in structure.store) {
@@ -111,7 +111,7 @@ plunder.creepAtOtherRooms = function (creep) {
             break
           }
         }
-        if (!hasResources) return false
+        if (!hasResources) { return false }
 
         const hasRamp = _.some(
           ramparts,
@@ -172,7 +172,7 @@ plunder.creepRoomTravel = function (creep) {
 }
 
 plunder.flagPrepare = function (flag) {
-  if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE
+  if (this.roomBoring[flag.pos.roomName]) { return this.FLAG_REMOVE }
 
   return this._flagCountBasic(flag, 100)
 }

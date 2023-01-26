@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const spawn =
@@ -206,15 +206,15 @@ const spawn =
     // if more than one, postpone within single priority
 
     const lu = Memory.spawn_v1.urgent.length
-    if (lu === 1) return false
-    if (lu > 1) return this.__postpone(Memory.spawn_v1.urgent)
+    if (lu === 1) { return false }
+    if (lu > 1) { return this.__postpone(Memory.spawn_v1.urgent) }
 
     const ln = Memory.spawn_v1.normal.length
-    if (ln === 1) return false
-    if (ln > 1) return this.__postpone(Memory.spawn_v1.normal)
+    if (ln === 1) { return false }
+    if (ln > 1) { return this.__postpone(Memory.spawn_v1.normal) }
 
     const ll = Memory.spawn_v1.lowkey.length
-    if (ll > 1) return this.__postpone(Memory.spawn_v1.lowkey)
+    if (ll > 1) { return this.__postpone(Memory.spawn_v1.lowkey) }
 
     return false
   },

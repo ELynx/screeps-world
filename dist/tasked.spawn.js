@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -73,7 +73,7 @@ spawn._spawnRoomMarkCheck = function (room) {
 }
 
 spawn._spawnRoomFilter = function (room) {
-  if (this._spawnRoomMarkCheck(room)) return false
+  if (this._spawnRoomMarkCheck(room)) { return false }
 
   if (room.my()) {
     return room.memory.elvl > 0
@@ -156,7 +156,7 @@ spawn.makeBody = function (spawn, model) {
 
   if (_.isString(model.body)) {
     const bodyFunction = queue.getBodyFunction(model.body)
-    if (bodyFunction === undefined) return undefined
+    if (bodyFunction === undefined) { return undefined }
 
     return bodyFunction(spawn)
   }
@@ -188,7 +188,7 @@ spawn.spawnNext = function () {
   const nextModel = this.peek()
 
   // queue is empty
-  if (nextModel === undefined) return false
+  if (nextModel === undefined) { return false }
 
   let sourceRooms
   if (nextModel.from === queue.FROM_ANY_ROOM) {
@@ -197,7 +197,7 @@ spawn.spawnNext = function () {
     sourceRooms = this.findSpawnRoomsFor(nextModel)
   }
 
-  if (sourceRooms.length === 0) return false
+  if (sourceRooms.length === 0) { return false }
 
   for (let i = 0; i < sourceRooms.length; ++i) {
     const sourceRoom = sourceRooms[i]

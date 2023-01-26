@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -13,8 +13,8 @@ energyTakeController.wantToKeep = function (structure) {
   const room = structure.room
 
   // actual, if not defined then shadow, otherwise grab
-  if (structure.structureType === STRUCTURE_TERMINAL) return room.memory.trme || 0
-  if (structure.structureType === STRUCTURE_STORAGE) return room.memory.stre || 0
+  if (structure.structureType === STRUCTURE_TERMINAL) { return room.memory.trme || 0 }
+  if (structure.structureType === STRUCTURE_STORAGE) { return room.memory.stre || 0 }
 
   return 0
 }
@@ -32,7 +32,7 @@ energyTakeController.act = function (structure, creep) {
 
 energyTakeController.validateTarget = function (target, creep) {
   // STRATEGY max distance to link, those are placed for a reason
-  if (target.structureType === STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) return false
+  if (target.structureType === STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) { return false }
 
   const has = target.store[RESOURCE_ENERGY]
   const toKeep = this.wantToKeep(target)
@@ -49,7 +49,7 @@ energyTakeController.validateTarget = function (target, creep) {
 }
 
 energyTakeController.targets = function (room) {
-  if (room.ally() && room.controller.safeMode) return []
+  if (room.ally() && room.controller.safeMode) { return [] }
 
   const allStructures = room.find(FIND_STRUCTURES)
 
@@ -67,7 +67,7 @@ energyTakeController.targets = function (room) {
     function (structure) {
       // type is checked externally
       const toKeep = this.wantToKeep(structure)
-      if (structure.store[RESOURCE_ENERGY] <= toKeep) return false
+      if (structure.store[RESOURCE_ENERGY] <= toKeep) { return false }
 
       if (ramparts.length > 0) {
         return !_.some(
@@ -106,7 +106,7 @@ energyTakeController.targets = function (room) {
 
 energyTakeController.filterCreep = function (creep) {
   // not restocker
-  if (creep.memory.rstk === true) return false
+  if (creep.memory.rstk === true) { return false }
 
   return this._isHarvestAble(creep)
 }

@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -9,7 +9,7 @@ mineralHarvestController.actRange = 1
 
 mineralHarvestController.act = function (extractor, creep) {
   // STRATEGY wait for full take, keep on target
-  if (extractor.cooldown > 0) return OK
+  if (extractor.cooldown > 0) { return OK }
 
   const minerals = extractor.pos.lookFor(LOOK_MINERALS)
 
@@ -29,7 +29,7 @@ mineralHarvestController.act = function (extractor, creep) {
 }
 
 mineralHarvestController.targets = function (room) {
-  if (room.memory.mlvl === 0) return []
+  if (room.memory.mlvl === 0) { return [] }
 
   return room.find(
     FIND_STRUCTURES,

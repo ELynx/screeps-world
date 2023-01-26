@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -24,7 +24,7 @@ energyRestockControllerSpecialist.targets = function (room) {
       }
     }
   )
-  if (allStructures.length === 0) return []
+  if (allStructures.length === 0) { return [] }
 
   const sourceLinks = _.filter(
     allStructures,
@@ -37,7 +37,7 @@ energyRestockControllerSpecialist.targets = function (room) {
       return false
     }
   )
-  if (sourceLinks.length > 0) return sourceLinks
+  if (sourceLinks.length > 0) { return sourceLinks }
 
   return _.filter(
     allStructures,

@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -13,7 +13,7 @@ observe.creepAtDestination = function (creep) {
 }
 
 observe.flagPrepare = function (flag) {
-  if (flag.room) return this.FLAG_IGNORE
+  if (flag.room) { return this.FLAG_IGNORE }
   return this.FLAG_SPAWN
 }
 

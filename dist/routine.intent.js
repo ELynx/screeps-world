@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -79,8 +79,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= sourceHas) rc = globals.WARN_LAST_INTENT
-    if (exchange >= targetFree) rc = globals.WARN_LAST_INTENT
+    if (exchange >= sourceHas) { rc = globals.WARN_LAST_INTENT }
+    if (exchange >= targetFree) { rc = globals.WARN_LAST_INTENT }
 
     return rc
   },
@@ -111,8 +111,8 @@ const intent =
 
     let rc = OK
 
-    if (actualProgress >= energy) rc = globals.WARN_LAST_INTENT
-    if (actualProgress >= remainingProgress) rc = globals.WARN_LAST_INTENT
+    if (actualProgress >= energy) { rc = globals.WARN_LAST_INTENT }
+    if (actualProgress >= remainingProgress) { rc = globals.WARN_LAST_INTENT }
 
     return rc
   },
@@ -169,7 +169,7 @@ const intent =
       this.intentCapacityChange(creep, what, toBeStored)
 
       // if capacity left is less or equal to intent, then this is last harvest before full
-      if (freeCapacity <= toBeHarvested) rc = globals.WARN_LAST_INTENT
+      if (freeCapacity <= toBeHarvested) { rc = globals.WARN_LAST_INTENT }
     }
 
     target.__amount = amount - toBeHarvested
@@ -201,8 +201,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= canPick) rc = globals.WARN_LAST_INTENT
-    if (exchange >= amount) rc = globals.WARN_LAST_INTENT
+    if (exchange >= canPick) { rc = globals.WARN_LAST_INTENT }
+    if (exchange >= amount) { rc = globals.WARN_LAST_INTENT }
 
     return rc
   },
@@ -219,7 +219,7 @@ const intent =
     }
 
     let wantHits = targetHits || target.hitsMax
-    if (wantHits > target.hitsMax) wantHits = target.hitsMax
+    if (wantHits > target.hitsMax) { wantHits = target.hitsMax }
 
     const hits = target.__hits || target.hits
     if (hits >= wantHits) {
@@ -238,8 +238,8 @@ const intent =
 
     let rc = OK
 
-    if (repairCost >= energy) rc = globals.WARN_LAST_INTENT
-    if (target.__hits >= wantHits) rc = globals.WARN_LAST_INTENT
+    if (repairCost >= energy) { rc = globals.WARN_LAST_INTENT }
+    if (target.__hits >= wantHits) { rc = globals.WARN_LAST_INTENT }
 
     return rc
   },
@@ -287,10 +287,10 @@ const intent =
 
     let rc = OK
 
-    if (actualUpgrades >= energy) rc = globals.WARN_LAST_INTENT
-    if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_LAST_INTENT
+    if (actualUpgrades >= energy) { rc = globals.WARN_LAST_INTENT }
+    if (actualUpgrades >= remainingUpgrades) { rc = globals.WARN_LAST_INTENT }
 
-    if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_LAST_INTENT
+    if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) { rc = globals.WARN_LAST_INTENT }
 
     return rc
   },
@@ -321,7 +321,7 @@ const intent =
     const validator = this['creep_intent_' + intentName]
     if (validator) {
       rc = _.bind(validator, this)(creep, arg0, arg1, arg2)
-      if (rc < OK) return rc // OK is 0, warnings are greater than zero
+      if (rc < OK) { return rc } // OK is 0, warnings are greater than zero
     } else {
       console.log('Unvalidated intent [' + intentName + '] called for creep [' + creep.name + ']')
     }

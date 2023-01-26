@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -64,7 +64,7 @@ strelok.creepAtDestination = function (creep) {
       {
         filter: function (structure) {
           // ignore everything without hit points
-          if (!structure.hits) return false
+          if (!structure.hits) { return false }
 
           // STRATEGY ingore resource management, even though it can be military
           if (structure.structureType === STRUCTURE_CONTAINER ||
@@ -174,7 +174,7 @@ strelok.creepAtDestination = function (creep) {
         // find out if mass will hit a hostile
         for (let i = 0; i < targets.length && mass === undefined; ++i) {
           const secondary = targets[i]
-          if (secondary.id === fireTarget.id) continue
+          if (secondary.id === fireTarget.id) { continue }
           if (creep.pos.inRangeTo(secondary, 3)) {
             mass = true
             break

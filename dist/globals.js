@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals =
@@ -163,10 +163,10 @@ const globals =
   },
 
   unwalkableBordersCostCallback: function (roomName, costMatrix) {
-    if (!Game.__unwalkableBordersCostCallbackCache) Game.__unwalkableBordersCostCallbackCache = { }
+    if (!Game.__unwalkableBordersCostCallbackCache) { Game.__unwalkableBordersCostCallbackCache = { } }
 
     const cached = Game.__unwalkableBordersCostCallbackCache[roomName]
-    if (cached) return cached
+    if (cached) { return cached }
 
     const modified = costMatrix.clone()
 
@@ -195,11 +195,11 @@ const globals =
     const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
 
     for (const flagName in Game.flags) {
-      if (flagName === 'profiler') continue
-      if (flagName === 'recount') continue
-      if (flagName === 'autobuild') continue
+      if (flagName === 'profiler') { continue }
+      if (flagName === 'recount') { continue }
+      if (flagName === 'autobuild') { continue }
 
-      if (flagName.startsWith('help_')) continue
+      if (flagName.startsWith('help_')) { continue }
 
       const processFound = _.some(
         flagKeys,

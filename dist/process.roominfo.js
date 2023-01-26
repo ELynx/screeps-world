@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -51,7 +51,7 @@ roomInfoProcess.energyLevel = function (room) {
   const energyGivingCreeps = _.filter(
     roomCreeps,
     function (creep) {
-      if (creep.memory.minr) return false
+      if (creep.memory.minr) { return false }
 
       return true
     }
@@ -182,7 +182,7 @@ roomInfoProcess.sourceLevel = function (room) {
   }
 
   // no need to optimize energy transfer when there is no destination
-  if (!hasDestination) return 0
+  if (!hasDestination) { return 0 }
 
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
@@ -237,7 +237,7 @@ roomInfoProcess.miningLevel = function (room) {
       }
     }
   )
-  if (extractors.length === 0) return 0
+  if (extractors.length === 0) { return 0 }
 
   const minerals = room.find(
     FIND_MINERALS,
@@ -247,7 +247,7 @@ roomInfoProcess.miningLevel = function (room) {
       }
     }
   )
-  if (minerals.length === 0) return 0
+  if (minerals.length === 0) { return 0 }
 
   return 1
 }
@@ -293,7 +293,7 @@ roomInfoProcess._walls = function (room) {
   ]
 
   let elvl = room.memory.elvl
-  if (elvl >= TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1
+  if (elvl >= TargetBarrierHp.length) { elvl = TargetBarrierHp.length - 1 }
 
   const targetByEnergyLevel = TargetBarrierHp[elvl]
 
@@ -305,7 +305,7 @@ roomInfoProcess._walls = function (room) {
     const roomHas = this.wallLevel(room)
 
     // if walls are under-level, build up from what is available
-    if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) return roomHas + 1
+    if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) { return roomHas + 1 }
 
     // walls are equal or greater, may be significantly greater
 
@@ -332,7 +332,7 @@ roomInfoProcess.work = function (room) {
   if (force ||
         room.memory.intl === undefined ||
         room.memory.intl < Game.time - CREEP_LIFE_TIME) {
-    if (force) Game.flags.recount.remove()
+    if (force) { Game.flags.recount.remove() }
 
     room.memory.elvl = this.energyLevel(room)
     room.memory.hlvl = this.harvestLevel(room)

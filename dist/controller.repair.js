@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -61,9 +61,9 @@ repairController.targets = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        if (!structure.hits || structure.hits >= structure.hitsMax) return false
+        if (!structure.hits || structure.hits >= structure.hitsMax) { return false }
 
-        if (!structure.isActiveSimple()) return false
+        if (!structure.isActiveSimple()) { return false }
 
         if (structure.structureType === STRUCTURE_WALL) {
           if (structure.hits < barrHp) {

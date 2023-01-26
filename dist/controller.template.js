@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -316,7 +316,7 @@ function Controller (id) {
           }
         }
 
-        if (target) break // out of target loop
+        if (target) { break } // out of target loop
       } // end of target loop
 
       if (target) {

@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -18,7 +18,7 @@ buildController.act = function (site, creep) {
 // STRATEGY build priorities
 buildController._sites = function (room) {
   const allSites = room.find(FIND_CONSTRUCTION_SITES)
-  if (allSites.length === 0) return []
+  if (allSites.length === 0) { return [] }
 
   const spawns = _.filter(
     allSites,
@@ -26,7 +26,7 @@ buildController._sites = function (room) {
       structureType: STRUCTURE_SPAWN
     }
   )
-  if (spawns.length > 0) return spawns
+  if (spawns.length > 0) { return spawns }
 
   const extensions = _.filter(
     allSites,
@@ -34,14 +34,14 @@ buildController._sites = function (room) {
       structureType: STRUCTURE_EXTENSION
     }
   )
-  if (extensions.length > 0) return extensions
+  if (extensions.length > 0) { return extensions }
 
   return allSites
 }
 
 buildController.targets = function (room) {
   const sites = this._sites(room)
-  if (sites.length === 0) return []
+  if (sites.length === 0) { return [] }
 
   // cannot build when creep is on site
   const allCreeps = room.find(FIND_CREEPS)

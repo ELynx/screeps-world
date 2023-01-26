@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -9,7 +9,7 @@ const secutiryProcess = new Process('security')
 const ThreatStep = 60
 
 secutiryProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my()) { return }
 
   this.debugHeader(room)
 

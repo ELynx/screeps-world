@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const globals = require('globals')
@@ -10,15 +10,15 @@ const MaxBuyRoomDistance = 30
 const MineralsToKeep = 30000
 
 terminalProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my()) { return }
 
   this.debugHeader(room)
 
-  if (!room.terminal) return
+  if (!room.terminal) { return }
 
-  if (room.terminal.cooldown > 0) return
+  if (room.terminal.cooldown > 0) { return }
 
-  if (room.terminal.store[RESOURCE_ENERGY] < 2) return
+  if (room.terminal.store[RESOURCE_ENERGY] < 2) { return }
 
   // SELL SELL SELL
   const noPanic = room.memory.threat ? room.memory.threat < globals.ThreatLevelMax : true
@@ -26,7 +26,7 @@ terminalProcess.work = function (room) {
   let sellMineralType
   if (noPanic) {
     const minerals = room.find(FIND_MINERALS)
-    if (minerals.length > 0) sellMineralType = minerals[0].mineralType
+    if (minerals.length > 0) { sellMineralType = minerals[0].mineralType }
   } else {
     for (const key in room.terminal.store) {
       if (room.terminal.store.getUsedCapacity(key) > 0) {
@@ -36,11 +36,11 @@ terminalProcess.work = function (room) {
     }
   }
 
-  if (sellMineralType === undefined) return
+  if (sellMineralType === undefined) { return }
 
   const toKeep = noPanic ? MineralsToKeep : 0
   const has = room.terminal.store[sellMineralType]
-  if (has === undefined || has <= toKeep) return
+  if (has === undefined || has <= toKeep) { return }
 
   if (!Memory.prices) {
     Memory.prices = { }

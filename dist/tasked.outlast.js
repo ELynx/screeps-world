@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -7,7 +7,7 @@ const globals = require('globals')
 const outlast = new Tasked('outlast')
 
 outlast._defaultAction = function (creep) {
-  if (creep.memory.selfCanHeal <= 0) return
+  if (creep.memory.selfCanHeal <= 0) { return }
 
   if (creep.hits < creep.hitsMax) {
     creep.heal(creep)
@@ -49,7 +49,7 @@ outlast.creepRoomTravel = function (creep) {
   }
 
   // don't waste CPU
-  if (!creep._canMove_) return
+  if (!creep._canMove_) { return }
 
   // let room travel do the step
   let autoMove = true
@@ -60,30 +60,18 @@ outlast.creepRoomTravel = function (creep) {
     let erasePath = false
 
     // stay on transit
-    if (creep.pos.x === 0) autoMove = false
-    else if (creep.pos.x === 49) autoMove = false
-    else if (creep.pos.y === 0) autoMove = false
-    else if (creep.pos.y === 49) autoMove = false
+    if (creep.pos.x === 0) { autoMove = false } else if (creep.pos.x === 49) { autoMove = false } else if (creep.pos.y === 0) { autoMove = false } else if (creep.pos.y === 49) { autoMove = false }
     // step towards room, check for collisions
-    else if (creep.pos.x === 1) erasePath = true
-    else if (creep.pos.x === 48) erasePath = true
-    else if (creep.pos.y === 1) erasePath = true
-    else if (creep.pos.y === 48) erasePath = true
+    else if (creep.pos.x === 1) { erasePath = true } else if (creep.pos.x === 48) { erasePath = true } else if (creep.pos.y === 1) { erasePath = true } else if (creep.pos.y === 48) { erasePath = true }
 
-    if (erasePath) globals.imitateMoveErase(creep)
+    if (erasePath) { globals.imitateMoveErase(creep) }
   } else {
     let flee = false
 
     // step away from transit
-    if (creep.pos.x === 0) flee = true
-    else if (creep.pos.x === 49) flee = true
-    else if (creep.pos.y === 0) flee = true
-    else if (creep.pos.y === 49) flee = true
+    if (creep.pos.x === 0) { flee = true } else if (creep.pos.x === 49) { flee = true } else if (creep.pos.y === 0) { flee = true } else if (creep.pos.y === 49) { flee = true }
     // stay one step away from transit
-    else if (creep.pos.x === 1) autoMove = false
-    else if (creep.pos.x === 48) autoMove = false
-    else if (creep.pos.y === 1) autoMove = false
-    else if (creep.pos.y === 48) autoMove = false
+    else if (creep.pos.x === 1) { autoMove = false } else if (creep.pos.x === 48) { autoMove = false } else if (creep.pos.y === 1) { autoMove = false } else if (creep.pos.y === 48) { autoMove = false }
 
     if (flee) {
       autoMove = false

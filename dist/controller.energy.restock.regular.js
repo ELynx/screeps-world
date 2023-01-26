@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Controller = require('controller.template')
@@ -34,7 +34,7 @@ energyRestockControllerRegular.targets = function (room) {
       }
     }
   )
-  if (allStructures.length === 0) return []
+  if (allStructures.length === 0) { return [] }
 
   const critical = _.filter(
     allStructures,
@@ -46,7 +46,7 @@ energyRestockControllerRegular.targets = function (room) {
       return false
     }
   )
-  if (critical.length > 0) return critical
+  if (critical.length > 0) { return critical }
 
   const normal = _.filter(
     allStructures,
@@ -61,7 +61,7 @@ energyRestockControllerRegular.targets = function (room) {
       return false
     }
   )
-  if (normal.length > 0) return normal
+  if (normal.length > 0) { return normal }
 
   // low
   return _.filter(

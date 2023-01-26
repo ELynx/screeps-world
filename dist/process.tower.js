@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Process = require('process.template')
@@ -6,7 +6,7 @@ const Process = require('process.template')
 const towerProcess = new Process('tower')
 
 towerProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my()) { return }
 
   this.debugHeader(room)
 
@@ -18,7 +18,7 @@ towerProcess.work = function (room) {
       }
     }
   )
-  if (towers.length === 0) return
+  if (towers.length === 0) { return }
 
   const creeps = room.find(FIND_CREEPS)
 
@@ -44,7 +44,7 @@ towerProcess.work = function (room) {
     creeps,
     function (creep) {
       // callous
-      if (creep.memory && creep.memory.selfCanHeal) return false
+      if (creep.memory && creep.memory.selfCanHeal) { return false }
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
     }

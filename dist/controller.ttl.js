@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const bodywork = require('routine.bodywork')
@@ -37,7 +37,7 @@ ttlController.act = function (spawn, creep) {
 
   if (renew) {
     const rc = spawn.renewCreep(creep)
-    if (rc === OK) return rc
+    if (rc === OK) { return rc }
 
     // forgetaboutit
     recycle = true
@@ -69,19 +69,19 @@ ttlController.targets = function (room) {
 
 ttlController.filterCreep = function (creep) {
   // cannot walk, do not waste CPU on pathfinding
-  if (creep.getActiveBodyparts(MOVE) === 0) return false
+  if (creep.getActiveBodyparts(MOVE) === 0) { return false }
 
   // recycle was forced
-  if (creep.memory.recycle === true) return true
+  if (creep.memory.recycle === true) { return true }
 
   // too young
-  if (creep.ticksToLive > TTL) return false
+  if (creep.ticksToLive > TTL) { return false }
 
   // fast check if was rejected once
-  if (creep.memory._ttl) return false
+  if (creep.memory._ttl) { return false }
 
   // STRATEGY don't drag resources around
-  if (!this._isEmpty(creep)) return false
+  if (!this._isEmpty(creep)) { return false }
 
   // check creeps with default body type
   const btyp = creep.memory.btyp

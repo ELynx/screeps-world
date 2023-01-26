@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const UsernameSourceKeeper = 'Source Keeper'
@@ -8,9 +8,9 @@ const UsernamePublic = 'Public'
 
 const isAlly = function (something) {
   // you are not your ally
-  if (something.my) return false
+  if (something.my) { return false }
 
-  if (something.__isally) return something.__isally
+  if (something.__isally) { return something.__isally }
 
   if (something.owner) {
     if (!Memory.allies) {
@@ -33,9 +33,9 @@ const isAlly = function (something) {
 
 const isNeutral = function (something) {
   // you are not your neutral
-  if (something.my) return false
+  if (something.my) { return false }
 
-  if (something.__isneutral) return something.__isneutral
+  if (something.__isneutral) { return something.__isneutral }
 
   let response = false
 
@@ -50,9 +50,9 @@ const isNeutral = function (something) {
     const username = something.owner.username
 
     // TODO not always
-    if (username === UsernameSourceKeeper) response = true
-    if (username === UsernamePowerBank) response = true
-    if (username === UsernamePublic) response = true
+    if (username === UsernameSourceKeeper) { response = true }
+    if (username === UsernamePowerBank) { response = true }
+    if (username === UsernamePublic) { response = true }
 
     if (!response) {
       // check the actual memory
@@ -69,15 +69,15 @@ const isHostile = function (something) {
   // this will be joy when wrapped by profiler...
 
   // quickest check
-  if (something.my) return false
+  if (something.my) { return false }
 
   // quick check
   if (something.owner) {
-    if (something.owner.username === UsernameInvader) return true
+    if (something.owner.username === UsernameInvader) { return true }
   }
 
-  if (something.ally) return false
-  if (something.neutral) return false
+  if (something.ally) { return false }
+  if (something.neutral) { return false }
 
   return true
 }
@@ -88,14 +88,14 @@ const isUnowned = function (something) {
 
 const isPC = function (something) {
   // quick check
-  if (something.my) return true
+  if (something.my) { return true }
 
   if (something.owner) {
     const username = something.owner.username
 
-    if (username === UsernameSourceKeeper) return false
-    if (username === UsernamePowerBank) return false
-    if (username === UsernameInvader) return false
+    if (username === UsernameSourceKeeper) { return false }
+    if (username === UsernamePowerBank) { return false }
+    if (username === UsernameInvader) { return false }
   }
 
   return true

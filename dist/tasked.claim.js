@@ -1,4 +1,4 @@
-/*eslint curly: "error"*/
+/* eslint curly: "error" */
 'use strict'
 
 const Tasked = require('tasked.template')
@@ -117,7 +117,7 @@ claim.flagPrepare = function (flag) {
     const flagController = flag.room.controller
     if (flagController) {
       // done about it
-      if (!flagController.hostileOrUnowned()) return this.FLAG_REMOVE
+      if (!flagController.hostileOrUnowned()) { return this.FLAG_REMOVE }
     } else {
       return this.FLAG_REMOVE
     }
@@ -135,7 +135,7 @@ claim.makeBody = function (spawn) {
   const elvl = spawn.room.memory.elvl
 
   // cannot spawn 650+
-  if (elvl <= 2) return []
+  if (elvl <= 2) { return [] }
 
   if (elvl <= 3) {
     // on swamp move 1 unit per 2 ticks
