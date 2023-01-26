@@ -224,8 +224,8 @@ strelok.creepAtDestination = function (creep) {
         creep.moveToWrapper(moveTarget, { maxRooms: 1, reusePath: reuse, range })
       }
     }
-  } // end of if target
-  else {
+    // end of if target
+  } else {
     // no targets
     this._coastToHalt(creep)
 
@@ -238,17 +238,15 @@ strelok.creepAtDestination = function (creep) {
   if (creep._canHeal_ || creep._canHealRanged_) {
     const healTargets = this.roomWounded[dest]
 
-    // priority 1 - heal this
     if (creep._canHeal_ && creep.hits < creep.hitsMax) {
+      // priority 1 - heal this
       creep.heal(creep)
-    }
-    // priority 2 - heal anyone else
-    else if (creep._canHealRanged_) {
+    } else if (creep._canHealRanged_) {
+      // priority 2 - heal anyone else
       // actually check for creep directly nearby is inside
       creep.healClosest(healTargets)
-    }
-    // priority 3 - heal anyone else directly nearby - in case of ranged attack
-    else if (creep._canHeal_) {
+    } else if (creep._canHeal_) {
+      // priority 3 - heal anyone else directly nearby - in case of ranged attack
       creep.healAdjacent(healTargets)
     }
   }
