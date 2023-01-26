@@ -52,6 +52,11 @@ var globals =
     taskControllers: { },
 
     /**
+    Object holding references to all registered process controllers.
+    **/
+    processControllers: { },
+
+    /**
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/
@@ -77,6 +82,15 @@ var globals =
     registerTaskController: function(tasked)
     {
         this.taskControllers[tasked.id] = tasked;
+    },
+
+    /**
+    Add a process to list of process controllers.
+    @param {Process} process
+    **/
+    registerProcessController: function(processControllers)
+    {
+        this.processControllers[processController.id] = processController;
     },
 
     // imitate _move cahce
@@ -196,7 +210,9 @@ var globals =
 
     cleanUpFlags: function()
     {
-        const flagKeys = _.map(Object.keys(this.taskControllers), id => id + '_');
+        const taskIds    = Object.keys(this.taskControllers);
+        const processIds = Object.keys(this.processControllers);
+        const flagKeys   = _.map(taskIds.concat(processIds), id => id + '_');
 
         for (const flagName in Game.flags)
         {
@@ -205,9 +221,6 @@ var globals =
             if (flagName == 'autobuild') continue;
 
             if (flagName.startsWith('help_')) continue;
-
-            // TODO automate
-            if (flagName.startsWith('security_')) continue;
 
             const processFound = _.some(
                 flagKeys,
