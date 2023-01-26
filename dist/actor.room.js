@@ -2,6 +2,7 @@
 
 const globals = require('globals')
 
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "Process" }]*/
 const secutiryProcess = require('process.security')
 const roomInfoProcess = require('process.roominfo')
 const towerProcess = require('process.tower')
@@ -10,6 +11,8 @@ const linkProcess = require('process.link')
 const terminalProcess = require('process.terminal')
 const autobuildProcess = require('process.autobuild')
 
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "redAlert" }]*/
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "Controller" }]*/
 /**
 Order of load is priority order for creep assignment.
 **/
