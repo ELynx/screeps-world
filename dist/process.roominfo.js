@@ -326,9 +326,23 @@ roomInfoProcess.wallLevel = function(room)
     return hits[Math.floor(hits.length / 2)];
 };
 
-// STRATEGY wall build-up
+// STRATEGY wall build-up, basis levels
 roomInfoProcess._walls = function(room)
 {
+    const TargetBarrierHp = [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25
+    ];
+
+    let elvl = room.memory.elvl;
+    if (elvl >= TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1;
+
+    const targetByEnergyLevel = TargetBarrierHp[elvl];
+
     // walls can be inherited and force room into over-repair
     // control the wlvl to not increment in great steps
 
@@ -338,11 +352,11 @@ roomInfoProcess._walls = function(room)
         const roomHas = this.wallLevel(room);
 
         // if walls are under-level, build up from what is available
-        if (roomHas < roomPlanned) return roomHas + 1;
+        if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) return roomHas + 1;
 
-        // walls are equal or greater
-        // may be significantly greater
+        // walls are equal or greater, may be significantly greater
 
+        // grow if there is no danger
         if (room.memory.threat === undefined)
         {
             if (Math.random() < 1/6)
@@ -356,23 +370,7 @@ roomInfoProcess._walls = function(room)
     }
     else
     {
-        // no previous value
-        // start with recommended value
-
-        // TODO integrate with repair controller
-        const TargetBarrierHp = [
-            0,
-            5,
-            10,
-            15,
-            20,
-            25
-        ];
-
-        let elvl = room.memory.elvl;
-        if (elvl >= TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1;
-
-        return TargetBarrierHp[elvl];
+        return targetByEnergyLevel;
     }
 };
 
