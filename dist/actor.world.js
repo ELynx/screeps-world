@@ -2,7 +2,7 @@
 
 const globals = require('globals')
 
-/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "tasked" }]*/
+/* eslint-disable no-unused-vars */
 /**
 Order of load is priority for task execution.
 **/
@@ -17,6 +17,7 @@ const taskedObserve = require('tasked.observe') // lowest prio
 const taskedSpawn = require('tasked.spawn')
 // other
 const taskedPixel = require('tasked.pixelgenerator')
+/* eslint-disable no-unused-vars */
 
 const worldActor =
 {
