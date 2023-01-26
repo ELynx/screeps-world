@@ -12,7 +12,7 @@ mineralRestockController.allied = true
 mineralRestockController.act = function (withStore, creep) {
   for (const resourceType in creep.store) {
     const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
-    if (rc != OK) return rc
+    if (rc !== OK) return rc
   }
 
   // if here then all transfers were OK
@@ -44,7 +44,7 @@ mineralRestockController.filterCreep = function (creep) {
     const usedEnergy = creep.store.getUsedCapacity(RESOURCE_ENERGY)
 
     // don't bring energy
-    return usedTotal > 0 && usedEnergy == 0
+    return usedTotal > 0 && usedEnergy === 0
   }
 
   return false

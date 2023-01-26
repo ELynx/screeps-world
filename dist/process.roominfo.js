@@ -19,8 +19,8 @@ roomInfoProcess.energyLevel = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_SPAWN ||
-                       structure.structureType == STRUCTURE_EXTENSION
+        return structure.structureType === STRUCTURE_SPAWN ||
+                       structure.structureType === STRUCTURE_EXTENSION
       }
     }
   )
@@ -31,9 +31,9 @@ roomInfoProcess.energyLevel = function (room) {
   for (let i = 0; i < structs.length; ++i) {
     const struct = structs[i]
 
-    if (struct.structureType == STRUCTURE_SPAWN) {
+    if (struct.structureType === STRUCTURE_SPAWN) {
       ++spawnCount
-    } else if (struct.structureType == STRUCTURE_EXTENSION) {
+    } else if (struct.structureType === STRUCTURE_EXTENSION) {
       ++extensionCount
     }
   }
@@ -42,7 +42,7 @@ roomInfoProcess.energyLevel = function (room) {
   extensionCount = Math.min(extensionCount, CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level])
 
   // room cold start
-  if (spawnCount == 0) {
+  if (spawnCount === 0) {
     return 0
   }
 
@@ -57,7 +57,7 @@ roomInfoProcess.energyLevel = function (room) {
   )
 
   // has spawn, has no creeps, means creeps wiped or room start
-  if (energyGivingCreeps.length == 0) {
+  if (energyGivingCreeps.length === 0) {
     // there is no one to refill spawns, etc
     // there is only a dribble of energy up to 300
     // still can try to spawn weaklings
@@ -84,14 +84,14 @@ roomInfoProcess.energyLevel = function (room) {
 }
 
 roomInfoProcess._walkable = function (terrain, position) {
-  if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
+  if (terrain.get(position.x, position.y) !== TERRAIN_MASK_WALL) {
     return true
   }
 
   const atPosition = position.lookFor(LOOK_STRUCTURES)
   for (const k in atPosition) {
     const struct = atPosition[k]
-    if (struct.structureType == STRUCTURE_ROAD) {
+    if (struct.structureType === STRUCTURE_ROAD) {
       return true
     }
   }
@@ -105,7 +105,7 @@ roomInfoProcess._walkableAround = function (terrain, posOrRoomObject) {
   let walkable = 0
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
-      if (dx == 0 && dy == 0) { continue }
+      if (dx === 0 && dy === 0) { continue }
 
       const x = center.x + dx
       const y = center.y + dy
@@ -154,7 +154,7 @@ roomInfoProcess.sourceLevel = function (room) {
   const links = _.filter(
     allStructures,
     function (structure) {
-      return structure.structureType == STRUCTURE_LINK
+      return structure.structureType === STRUCTURE_LINK
     }
   )
 
@@ -163,7 +163,7 @@ roomInfoProcess.sourceLevel = function (room) {
     const containers = _.filter(
       allStructures,
       function (structure) {
-        return structure.structureType == STRUCTURE_CONTAINER && structure.isSource()
+        return structure.structureType === STRUCTURE_CONTAINER && structure.isSource()
       }
     )
 
@@ -216,7 +216,7 @@ roomInfoProcess.sourceLevel = function (room) {
   }
 
   // STRATEGY max two diggers per link
-  return Min(soucePositions, 2 * sourceLinks)
+  return Math.min(soucePositions, 2 * sourceLinks)
 }
 
 /**
@@ -232,11 +232,11 @@ roomInfoProcess.miningLevel = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple()
       }
     }
   )
-  if (extractors.length == 0) return 0
+  if (extractors.length === 0) return 0
 
   const minerals = room.find(
     FIND_MINERALS,
@@ -246,7 +246,7 @@ roomInfoProcess.miningLevel = function (room) {
       }
     }
   )
-  if (minerals.length == 0) return 0
+  if (minerals.length === 0) return 0
 
   return 1
 }
@@ -256,12 +256,12 @@ roomInfoProcess.wallLevel = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_WALL && structure.hits
+        return structure.structureType === STRUCTURE_WALL && structure.hits
       }
     }
   )
 
-  if (walls.length == 0) {
+  if (walls.length === 0) {
     return 0
   }
 
@@ -325,7 +325,7 @@ roomInfoProcess._walls = function (room) {
 roomInfoProcess.work = function (room) {
   this.debugHeader(room)
 
-  const force = Game.flags.recount && Game.flags.recount.pos.roomName == room.name
+  const force = Game.flags.recount && Game.flags.recount.pos.roomName === room.name
 
   // once in a creep life update room info
   if (force ||
@@ -350,7 +350,7 @@ roomInfoProcess.work = function (room) {
   // STRATEGY stored energy in store per threat level
   const threat = room.memory.threat
   if (threat) {
-    if (threat == globals.ThreatLevelMax) {
+    if (threat === globals.ThreatLevelMax) {
       room.memory.stre = 0
     } else if (threat >= globals.ThreatLevelMedium) {
       room.memory.stre = 5000

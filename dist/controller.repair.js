@@ -64,18 +64,18 @@ repairController.targets = function (room) {
 
         if (!structure.isActiveSimple()) return false
 
-        if (structure.structureType == STRUCTURE_WALL) {
+        if (structure.structureType === STRUCTURE_WALL) {
           if (structure.hits < barrHp) {
             structure._targetHp_ = barrHp
             return true
           }
-        } else if (structure.structureType == STRUCTURE_RAMPART) {
+        } else if (structure.structureType === STRUCTURE_RAMPART) {
           // notice, barrHp check, rampHp set
           if (structure.hits < barrHp) {
             structure._targetHp_ = rampHp
             return true
           }
-        } else if (structure.structureType == STRUCTURE_ROAD) {
+        } else if (structure.structureType === STRUCTURE_ROAD) {
           const hp = Math.ceil(structure.hitsMax * roadMult)
           if (structure.hits < hp) {
             structure._targetHp_ = hp

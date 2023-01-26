@@ -66,24 +66,24 @@ strelok.creepAtDestination = function (creep) {
           if (!structure.hits) return false
 
           // STRATEGY ingore resource management, even though it can be military
-          if (structure.structureType == STRUCTURE_CONTAINER ||
-                        structure.structureType == STRUCTURE_EXTRACTOR ||
-                        structure.structureType == STRUCTURE_FACTORY ||
-                        structure.structureType == STRUCTURE_LAB ||
-                        structure.structureType == STRUCTURE_LINK ||
-                        structure.structureType == STRUCTURE_STORAGE ||
-                        structure.structureType == STRUCTURE_TERMINAL) {
+          if (structure.structureType === STRUCTURE_CONTAINER ||
+                        structure.structureType === STRUCTURE_EXTRACTOR ||
+                        structure.structureType === STRUCTURE_FACTORY ||
+                        structure.structureType === STRUCTURE_LAB ||
+                        structure.structureType === STRUCTURE_LINK ||
+                        structure.structureType === STRUCTURE_STORAGE ||
+                        structure.structureType === STRUCTURE_TERMINAL) {
             return false
           }
 
           // STRATEGY only aggro can make this target walls
-          if (structure.structureType == STRUCTURE_WALL) {
+          if (structure.structureType === STRUCTURE_WALL) {
             return false
           }
 
           // please don't hunt these...
-          if (structure.structureType == STRUCTURE_ROAD ||
-                        structure.structureType == STRUCTURE_PORTAL) {
+          if (structure.structureType === STRUCTURE_ROAD ||
+                        structure.structureType === STRUCTURE_PORTAL) {
             return false
           }
 
@@ -127,7 +127,7 @@ strelok.creepAtDestination = function (creep) {
         return true
       }
 
-      if (hostile.structureType == STRUCTURE_RAMPART && !hostile.isPublic) {
+      if (hostile.structureType === STRUCTURE_RAMPART && !hostile.isPublic) {
         // only forward
         return hostile.pos.getRangeTo(rushPos) <= distanceToFlag
       }
@@ -142,7 +142,7 @@ strelok.creepAtDestination = function (creep) {
   const prio = _.filter(
     targets,
     function (target) {
-      return target.pos.x == rushPos.x && target.pos.y == rushPos.y
+      return target.pos.x === rushPos.x && target.pos.y === rushPos.y
     }
   )
 
@@ -173,7 +173,7 @@ strelok.creepAtDestination = function (creep) {
         // find out if mass will hit a hostile
         for (let i = 0; i < targets.length && mass === undefined; ++i) {
           const secondary = targets[i]
-          if (secondary.id == fireTarget.id) continue
+          if (secondary.id === fireTarget.id) continue
           if (creep.pos.inRangeTo(secondary, 3)) {
             mass = true
             break
@@ -188,13 +188,13 @@ strelok.creepAtDestination = function (creep) {
           rc = creep.rangedAttack(fireTarget)
         }
 
-        creep._canHealRanged_ = creep._canHealRanged_ && rc != OK
+        creep._canHealRanged_ = creep._canHealRanged_ && rc !== OK
       } // end of traget in firing range
     } // end of if has ranged bpart
 
     if (creep._canMove_) {
       // ballet when close
-      if (rangeToFireTarget <= 4 && fireTarget.id == moveTarget.id) {
+      if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
         let toFrom = 0
 
         const targetIsStructure = fireTarget.structureType !== undefined
@@ -212,7 +212,7 @@ strelok.creepAtDestination = function (creep) {
           }
         }
 
-        if (toFrom != 0) {
+        if (toFrom !== 0) {
           const direction = toFrom > 0 ? creep.pos.getDirectionTo(fireTarget) : fireTarget.pos.getDirectionTo(creep)
           creep.move(direction)
         }
@@ -224,8 +224,8 @@ strelok.creepAtDestination = function (creep) {
         creep.moveToWrapper(moveTarget, { maxRooms: 1, reusePath: reuse, range })
       }
     }
-  } // end of if target
-  else {
+    // end of if target
+  } else {
     // no targets
     this._coastToHalt(creep)
 
@@ -238,17 +238,15 @@ strelok.creepAtDestination = function (creep) {
   if (creep._canHeal_ || creep._canHealRanged_) {
     const healTargets = this.roomWounded[dest]
 
-    // priority 1 - heal this
     if (creep._canHeal_ && creep.hits < creep.hitsMax) {
+      // priority 1 - heal this
       creep.heal(creep)
-    }
-    // priority 2 - heal anyone else
-    else if (creep._canHealRanged_) {
+    } else if (creep._canHealRanged_) {
+      // priority 2 - heal anyone else
       // actually check for creep directly nearby is inside
       creep.healClosest(healTargets)
-    }
-    // priority 3 - heal anyone else directly nearby - in case of ranged attack
-    else if (creep._canHeal_) {
+    } else if (creep._canHeal_) {
+      // priority 3 - heal anyone else directly nearby - in case of ranged attack
       creep.healAdjacent(healTargets)
     }
   }
@@ -278,7 +276,7 @@ strelok.flagPrepare = function (flag) {
     const want = flag.getValue()
 
     // automatically stop trashing low threat rooms
-    if (want == 1 && this.roomBoring[flag.pos.roomName]) {
+    if (want === 1 && this.roomBoring[flag.pos.roomName]) {
       return this.FLAG_REMOVE
     }
   }

@@ -43,18 +43,18 @@ claim.creepAtDestination = function (creep) {
 
       let sign = ''
 
-      if (controller.owner && controller.owner.username != creep.owner.username) {
+      if (controller.owner && controller.owner.username !== creep.owner.username) {
         sign = 'Your base is under attack'
         rc = creep.attackController(controller)
 
         // see if creep can wait it out
         const ticksToUnblock = controller.upgradeBlocked || 0
         const ticksToUnsafe = controller.safeMode || 0
-        const ticksToDowngrade = controller.level == 1 ? controller.ticksToDowngrade : 0
+        const ticksToDowngrade = controller.level === 1 ? controller.ticksToDowngrade : 0
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)
-      } else if (controller.reservation && controller.reservation.username != creep.owner.username) {
-        sing = 'Taking over'
+      } else if (controller.reservation && controller.reservation.username !== creep.owner.username) {
+        sign = 'Taking over'
         rc = creep.attackController(controller)
       } else {
         let myRooms = 0
@@ -75,28 +75,28 @@ claim.creepAtDestination = function (creep) {
       }
 
       if (controller.sign) {
-        if (controller.sign.text != sign || controller.sign.username != creep.owner.username) {
+        if (controller.sign.text !== sign || controller.sign.username !== creep.owner.username) {
           creep.signController(controller, sign)
         }
       } else if (sign.length > 0) {
         creep.signController(controller, sign)
       }
-    } // end of creep is near pos
-    else {
+      // end of creep is near pos
+    } else {
       creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 })
       rc = OK // keep walking
     }
   } // end of harmable controller
 
-  if (rc == ERR_INVALID_TARGET ||
-        rc == ERR_FULL ||
-        rc == ERR_GCL_NOT_ENOUGH) {
+  if (rc === ERR_INVALID_TARGET ||
+        rc === ERR_FULL ||
+        rc === ERR_GCL_NOT_ENOUGH) {
     this._onProblemDetected(creep)
     return
   }
 
   // be sure that creep will not survive the wait
-  if (rc == ERR_TIRED && creep.ticksToLive < wait) {
+  if (rc === ERR_TIRED && creep.ticksToLive < wait) {
     const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0
     const ticksBlocked = wait
     const ticksOverhead = 42 // be this early to minimize safe mode window, etc

@@ -33,12 +33,12 @@ energyRestockControllerRegular.targets = function (room) {
       }
     }
   )
-  if (allStructures.length == 0) return []
+  if (allStructures.length === 0) return []
 
   const critical = _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType == STRUCTURE_TOWER) {
+      if (structure.structureType === STRUCTURE_TOWER) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockCritical * structure.store.getCapacity(RESOURCE_ENERGY)
       }
 
@@ -50,10 +50,10 @@ energyRestockControllerRegular.targets = function (room) {
   const normal = _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType == STRUCTURE_SPAWN ||
-                structure.structureType == STRUCTURE_EXTENSION) {
+      if (structure.structureType === STRUCTURE_SPAWN ||
+                structure.structureType === STRUCTURE_EXTENSION) {
         return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-      } else if (structure.structureType == STRUCTURE_TOWER) {
+      } else if (structure.structureType === STRUCTURE_TOWER) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockNormal * structure.store.getCapacity(RESOURCE_ENERGY)
       }
 
@@ -66,9 +66,9 @@ energyRestockControllerRegular.targets = function (room) {
   return _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType == STRUCTURE_TERMINAL) {
+      if (structure.structureType === STRUCTURE_TERMINAL) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.trme || 0)
-      } else if (structure.structureType == STRUCTURE_STORAGE) {
+      } else if (structure.structureType === STRUCTURE_STORAGE) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.stre || 0)
       }
 

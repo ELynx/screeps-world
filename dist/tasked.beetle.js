@@ -73,8 +73,7 @@ beetle.creepAtDestination = function (creep) {
     // detect obstacles so there is a chance to go through existing breaches
     // try to reach the place if nearby
     const easyDistance = toControlPos <= BreachEasyRange ? BreachCompleteRange : BreachEasyRange
-    const easyPath = creep.room.findPath
-    (
+    const easyPath = creep.room.findPath(
       creep.pos,
       controlPos,
       {
@@ -101,8 +100,7 @@ beetle.creepAtDestination = function (creep) {
     if (path === undefined) {
       // come a bit closer, do not plan a trip up to the point
       const hardDistance = Math.max(toControlPos - BreachEasyRange, BreachCompleteRange)
-      path = creep.room.findPath
-      (
+      path = creep.room.findPath(
         creep.pos,
         controlPos,
         {
@@ -132,7 +130,7 @@ beetle.creepAtDestination = function (creep) {
     const supposeNowX = pathItem.x - pathItem.dx
     const supposeNowY = pathItem.y - pathItem.dy
 
-    if (creep.pos.x == supposeNowX && creep.pos.y == supposeNowY) {
+    if (creep.pos.x === supposeNowX && creep.pos.y === supposeNowY) {
       next = pathItem
       creep.memory._breachI_ = i
       break
@@ -145,8 +143,7 @@ beetle.creepAtDestination = function (creep) {
     if (beHostile) {
       const [t, l, b, r] = creep.pos.squareArea(1)
 
-      const around = creep.room.lookForAtArea
-      (
+      const around = creep.room.lookForAtArea(
         LOOK_STRUCTURES,
         t, // top
         l, // left
@@ -163,19 +160,20 @@ beetle.creepAtDestination = function (creep) {
 
         withdraws.push(struct)
 
-        if (item.x != next.x || item.y != next.y) { continue }
+        if (item.x !== next.x || item.y !== next.y) {
+          continue
+        }
 
         if (struct.hits === undefined) {
           continue
         }
 
         // walkable
-        if (struct.structureType == STRUCTURE_CONTAINER ||
-                    struct.structureType == STRUCTURE_ROAD) {
+        if (struct.structureType === STRUCTURE_CONTAINER || struct.structureType === STRUCTURE_ROAD) {
           continue
         }
 
-        if (struct.structureType == STRUCTURE_RAMPART && !struct.isPublic) {
+        if (struct.structureType === STRUCTURE_RAMPART && !struct.isPublic) {
           target = struct
           break
         }
@@ -192,7 +190,7 @@ beetle.creepAtDestination = function (creep) {
     if (target) {
       rc = creep.dismantle(target)
       // coordinate effort - ask nearbys to attack
-      if (rc == OK) {
+      if (rc === OK) {
         target._aggroTarget_ = true
         creep.room._aggro_.push(target)
       }
@@ -200,17 +198,17 @@ beetle.creepAtDestination = function (creep) {
       rc = creep.move(next.direction)
       // trick - expect that movement actually happened
       // search step from +1 of current
-      if (rc == OK) {
+      if (rc === OK) {
         ++creep.memory._breachI_
       }
     }
 
     // extend
-    if (rc == OK) {
+    if (rc === OK) {
       creep.memory._breachT_ = Game.time
     }
-  } // end of next is present
-  else {
+    // end of next is present
+  } else {
     this.wipeBreach(creep)
   }
 }
@@ -218,8 +216,7 @@ beetle.creepAtDestination = function (creep) {
 beetle.flagPrepare = function (flag) {
   if (flag.room) {
     // any creep of same alignment work, breach was complete
-    const breached = flag.pos.hasInSquareArea
-    (
+    const breached = flag.pos.hasInSquareArea(
       LOOK_CREEPS,
       BreachCompleteRange,
       function (creep) {

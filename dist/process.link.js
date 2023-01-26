@@ -15,12 +15,12 @@ linkProcess.work = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_LINK && structure.isActiveSimple()
       }
     }
   )
 
-  if (allLinks.length == 0) {
+  if (allLinks.length === 0) {
     return
   }
 
@@ -28,7 +28,7 @@ linkProcess.work = function (room) {
   const destLinks = []
 
   const useAsSource = function (someLink) {
-    return someLink.cooldown == 0 && someLink.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+    return someLink.cooldown === 0 && someLink.store.getUsedCapacity(RESOURCE_ENERGY) > 0
   }
 
   const useAsDest = function (someLink) {
@@ -51,8 +51,8 @@ linkProcess.work = function (room) {
     }
   }
 
-  if (sourceLinks.length == 0 ||
-        destLinks.length == 0) {
+  if (sourceLinks.length === 0 ||
+        destLinks.length === 0) {
     return
   }
 

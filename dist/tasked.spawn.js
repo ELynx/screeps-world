@@ -68,7 +68,7 @@ spawn.postpone = function () {
 }
 
 spawn._spawnRoomMarkCheck = function (room) {
-  return room._spawnMark_ == Game.time
+  return room._spawnMark_ === Game.time
 }
 
 spawn._spawnRoomFilter = function (room) {
@@ -111,7 +111,7 @@ spawn.findStrongestSpawnRooms = function () {
 spawn.findSpawnRoomsFor = function (model) {
   // STRATEGY lowkey creeps are spawned in their own room, unless room cannot spawn them
   // n.b. spawn them at all, not "right now" because spawn points are busy, etc
-  if (model.priority == 'lowkey') {
+  if (model.priority === 'lowkey') {
     // find room in general
     const room = Game.rooms[model.from]
     if (room && room.my()) {
@@ -141,7 +141,7 @@ spawn.findSpawnRoomsFor = function (model) {
 }
 
 spawn._spawnFilter = function (structure) {
-  if (structure.structureType == STRUCTURE_SPAWN) {
+  if (structure.structureType === STRUCTURE_SPAWN) {
     return !structure.spawning && structure.isActiveSimple()
   }
 
@@ -190,13 +190,13 @@ spawn.spawnNext = function () {
   if (nextModel === undefined) return false
 
   let sourceRooms
-  if (nextModel.from == queue.FROM_ANY_ROOM) {
+  if (nextModel.from === queue.FROM_ANY_ROOM) {
     sourceRooms = this.findStrongestSpawnRooms()
   } else {
     sourceRooms = this.findSpawnRoomsFor(nextModel)
   }
 
-  if (sourceRooms.length == 0) return false
+  if (sourceRooms.length === 0) return false
 
   for (let i = 0; i < sourceRooms.length; ++i) {
     const sourceRoom = sourceRooms[i]
@@ -208,11 +208,13 @@ spawn.spawnNext = function () {
       }
     )
 
-    if (spawns.length == 0) {
+    if (spawns.length === 0) {
       this._spawnRoomMark(sourceRoom)
       continue
     }
 
+    // because if one spawn cannot spawn, others cannot too
+    // eslint-disable-next-line no-unreachable-loop
     for (let j = 0; j < spawns.length; ++j) {
       const spawn = spawns[j]
 
@@ -221,7 +223,7 @@ spawn.spawnNext = function () {
         return this.spawnNextErrorHandler(spawn, nextModel, 1)
       }
 
-      if (body.length == 0) {
+      if (body.length === 0) {
         break // from spawns cycle, room is not powerful enough
       }
 
@@ -233,11 +235,11 @@ spawn.spawnNext = function () {
         }
       )
 
-      if (dryRun == ERR_NOT_ENOUGH_ENERGY) {
+      if (dryRun === ERR_NOT_ENOUGH_ENERGY) {
         break // from spawns cycle, room will not have more energy
       }
 
-      if (dryRun != OK) {
+      if (dryRun !== OK) {
         return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun)
       }
 
@@ -250,7 +252,7 @@ spawn.spawnNext = function () {
         }
       )
 
-      if (actualRun != OK) {
+      if (actualRun !== OK) {
         return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun)
       }
 
