@@ -207,8 +207,8 @@ beetle.creepAtDestination = function (creep) {
     if (rc === OK) {
       creep.memory._breachT_ = Game.time
     }
-  } // end of next is present
-  else {
+    // end of next is present
+  } else {
     this.wipeBreach(creep)
   }
 }
