@@ -1,3 +1,4 @@
+/*eslint curly: "error"*/
 'use strict'
 
 const globals = require('globals')

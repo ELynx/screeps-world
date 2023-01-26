@@ -1,3 +1,4 @@
+/*eslint curly: "error"*/
 'use strict'
 
 const UsernameSourceKeeper = 'Source Keeper'

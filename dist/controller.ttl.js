@@ -1,3 +1,4 @@
+/*eslint curly: "error"*/
 'use strict'
 
 const bodywork = require('routine.bodywork')

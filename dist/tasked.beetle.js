@@ -1,3 +1,4 @@
+/*eslint curly: "error"*/
 'use strict'
 
 const Tasked = require('tasked.template')

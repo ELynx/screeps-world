@@ -1,3 +1,4 @@
+/*eslint curly: "error"*/
 'use strict'
 
 const Controller = require('controller.template')
