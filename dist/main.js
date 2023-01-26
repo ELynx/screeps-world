@@ -1,7 +1,9 @@
 'use strict'
 
+/* eslint-disable no-unused-vars */
 const iff = require('iff')
 const extensions = require('extensions')
+/* eslint-enable no-unused-vars */
 
 const cleanupMemory = require('routine.memory')
 const roomActor = require('actor.room')
