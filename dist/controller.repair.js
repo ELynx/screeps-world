@@ -4,16 +4,6 @@ var Controller = require('controller.template');
 
 var repairController = new Controller('repair');
 
-const TargetBarrierHp = [
-    0,
-    5000,
-    10000,
-    15000,
-    20000,
-    25000,
-    1000000
-];
-
 const TargetRoadHpMultiplier = [
     0.0,
     0.16,
@@ -63,31 +53,13 @@ repairController.act = function(target, creep)
 
 repairController.targets = function(room)
 {
+    const barrHp = room.memory.wlvl * 1000;
+
     // STRATEGY don't run with every booboo
-    let   barrHp    = fromArray(TargetBarrierHp,             room.memory.elvl);
     const roadMult  = fromArray(TargetRoadHpMultiplier,      room.memory.elvl);
     const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl);
 
-    // STRATEGY from level 6 room builds up walls
-    if (room.memory.elvl > 5)
-    {
-        const LevelHp = (room.memory.wlvl || 0) * 1000;
-        const NotLessThan = fromArray(TargetBarrierHp, room.memory.elvl - 1);
-        const NotMoreThan = barrHp;
-
-        barrHp = LevelHp;
-
-        if (barrHp < NotLessThan)
-        {
-            barrHp = NotLessThan;
-        }
-        else if (barrHp > NotMoreThan)
-        {
-            barrHp = NotMoreThan;
-        }
-    }
-
-    // STRATEGY some histeresis
+    // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)
     const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500);
 
     return room.find(
@@ -109,6 +81,7 @@ repairController.targets = function(room)
                 }
                 else if (structure.structureType == STRUCTURE_RAMPART)
                 {
+                    // notice, barrHp check, rampHp set
                     if (structure.hits < barrHp)
                     {
                         structure._targetHp_ = rampHp;
