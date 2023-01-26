@@ -216,7 +216,7 @@ roomInfoProcess.sourceLevel = function (room) {
   }
 
   // STRATEGY max two diggers per link
-  return Min(soucePositions, 2 * sourceLinks)
+  return Math.min(soucePositions, 2 * sourceLinks)
 }
 
 /**
