@@ -13,7 +13,8 @@ energyHarvestController.act = function (source, creep) {
 }
 
 energyHarvestController.targets = function (room) {
-  return room.find(FIND_SOURCES_ACTIVE)
+  const allSources = room.find(FIND_SOURCES)
+  return _.filter(allSources, source => source.energy > 0)
 }
 
 energyHarvestController.filterCreep = function (creep) {
