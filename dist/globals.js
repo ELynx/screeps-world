@@ -88,7 +88,7 @@ var globals =
     Add a process to list of process controllers.
     @param {Process} process
     **/
-    registerProcessController: function(processControllers)
+    registerProcessController: function(processController)
     {
         this.processControllers[processController.id] = processController;
     },
