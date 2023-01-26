@@ -12,8 +12,8 @@ energyTakeController.wantToKeep = function (structure) {
   const room = structure.room
 
   // actual, if not defined then shadow, otherwise grab
-  if (structure.structureType == STRUCTURE_TERMINAL) return room.memory.trme || 0
-  if (structure.structureType == STRUCTURE_STORAGE) return room.memory.stre || 0
+  if (structure.structureType === STRUCTURE_TERMINAL) return room.memory.trme || 0
+  if (structure.structureType === STRUCTURE_STORAGE) return room.memory.stre || 0
 
   return 0
 }
@@ -31,7 +31,7 @@ energyTakeController.act = function (structure, creep) {
 
 energyTakeController.validateTarget = function (target, creep) {
   // STRATEGY max distance to link, those are placed for a reason
-  if (target.structureType == STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) return false
+  if (target.structureType === STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) return false
 
   const has = target.store[RESOURCE_ENERGY]
   const toKeep = this.wantToKeep(target)
@@ -57,7 +57,7 @@ energyTakeController.targets = function (room) {
     ramparts = _.filter(
       allStructures,
       function (structure) {
-        return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic
+        return structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
       }
     )
   }
@@ -72,7 +72,7 @@ energyTakeController.targets = function (room) {
         return !_.some(
           ramparts,
           function (ramp) {
-            return ramp.pos.x == structure.pos.x && ramp.pos.y == structure.pos.y
+            return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
           }
         )
       }
@@ -86,12 +86,12 @@ energyTakeController.targets = function (room) {
     allStructures,
     function (structure) {
       // small checks are inside because they are executed on a lot of items
-      if (structure.structureType == STRUCTURE_CONTAINER ||
-                structure.structureType == STRUCTURE_STORAGE ||
+      if (structure.structureType === STRUCTURE_CONTAINER ||
+                structure.structureType === STRUCTURE_STORAGE ||
                 // STRATEGY allow to take from terminal, maybe airdrop energy
-                structure.structureType == STRUCTURE_TERMINAL) {
+                structure.structureType === STRUCTURE_TERMINAL) {
         return isTakeable(structure)
-      } else if (structure.structureType == STRUCTURE_LINK) {
+      } else if (structure.structureType === STRUCTURE_LINK) {
         // STRATEGY do not steal from source link
         return structure.isSource() ? false : isTakeable(structure)
       }
@@ -105,7 +105,7 @@ energyTakeController.targets = function (room) {
 
 energyTakeController.filterCreep = function (creep) {
   // not restocker
-  if (creep.memory.rstk == true) return false
+  if (creep.memory.rstk === true) return false
 
   return this._isHarvestAble(creep)
 }

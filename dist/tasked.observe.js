@@ -6,7 +6,7 @@ const observe = new Tasked('observe')
 
 observe.creepAtDestination = function (creep) {
   const pos = creep.getControlPos()
-  if (creep.pos.x != pos.x || creep.pos.y != pos.y) {
+  if (creep.pos.x !== pos.x || creep.pos.y !== pos.y) {
     creep.moveToWrapper(pos, { maxRooms: 1 })
   }
 }

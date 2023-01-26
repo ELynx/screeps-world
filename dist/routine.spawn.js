@@ -124,7 +124,7 @@ const spawn =
     for (let i = 0; i < target.length; ++i) {
       const stored = target[i]
 
-      if (stored.id == id) {
+      if (stored.id === id) {
         ++withId
       }
     }
@@ -155,7 +155,7 @@ const spawn =
     }
 
     const filter = function (stored) {
-      return stored.id != id
+      return stored.id !== id
     }
 
     Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter)
@@ -170,7 +170,7 @@ const spawn =
   // internals of this function should not be used
   __postpone: function (target) {
     // resetter
-    if (this.__postpone_t != Game.time) {
+    if (this.__postpone_t !== Game.time) {
       this.__postpone_n = undefined
     }
 
@@ -182,7 +182,7 @@ const spawn =
     }
 
     // denier
-    if (this.__postpone_n == 0) {
+    if (this.__postpone_n === 0) {
       return false
     }
 
@@ -205,11 +205,11 @@ const spawn =
     // if more than one, postpone within single priority
 
     const lu = Memory.spawn_v1.urgent.length
-    if (lu == 1) return false
+    if (lu === 1) return false
     if (lu > 1) return this.__postpone(Memory.spawn_v1.urgent)
 
     const ln = Memory.spawn_v1.normal.length
-    if (ln == 1) return false
+    if (ln === 1) return false
     if (ln > 1) return this.__postpone(Memory.spawn_v1.normal)
 
     const ll = Memory.spawn_v1.lowkey.length

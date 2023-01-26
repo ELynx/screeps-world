@@ -2,6 +2,7 @@
 
 const globals = require('globals')
 
+/* eslint-disable no-unused-vars */
 const secutiryProcess = require('process.security')
 const roomInfoProcess = require('process.roominfo')
 const towerProcess = require('process.tower')
@@ -27,6 +28,7 @@ const controllerController = require('controller.controller')
 
 // this one does not register
 const grabController = require('controller.grab')
+/* eslint-enable no-unused-vars */
 
 const roomActor =
 {
@@ -54,7 +56,6 @@ const roomActor =
     **/
   roomControllersObserveOwn: function (creep) {
     const controller = globals.roomControllersObserveOwn[creep.memory.ctrl]
-
     if (controller) {
       controller.observeMyCreep(creep)
     }
@@ -68,9 +69,8 @@ const roomActor =
     **/
   roomControllersAct: function (target, creep) {
     const controller = globals.roomControllers[creep.memory.ctrl]
-
     if (controller) {
-      return controller.act(target, creep) == OK
+      return controller.act(target, creep) === OK
     }
 
     return false
@@ -85,14 +85,15 @@ const roomActor =
     for (const id in globals.roomControllers) {
       const controller = globals.roomControllers[id]
 
-      if (room.ally() && !controller.allied) continue
+      if (room.ally() && !controller.allied) {
+        continue
+      }
 
       creeps = controller.control(room, creeps)
 
       // if all creeps had been taken
-      if (creeps.length == 0) {
+      if (creeps.length === 0) {
         this.debugLine(room, 'All creeps assigned after controller [' + id + ']')
-
         return
       } else {
         this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length)
@@ -117,9 +118,9 @@ const roomActor =
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10
 
-    if (processKey == 0) {
+    if (processKey === 0) {
       spawnProcess.work(room)
-    } else if (processKey == 5) {
+    } else if (processKey === 5) {
       linkProcess.work(room)
     }
 
@@ -145,14 +146,14 @@ const roomActor =
         }
 
         // code that migrate creeps into room of registration
-        if (creep.memory.crum != creep.room.name || creep.memory.roomChange) {
+        if (creep.memory.crum !== creep.room.name || creep.memory.roomChange) {
           // to take off any work from previous room
           globals.unassignCreep(creep)
 
           // flag to handle border transition
           creep.memory.roomChange = true
 
-          if (creep.fatigue == 0) {
+          if (creep.fatigue === 0) {
             // get off border area
             const posInDestRoom = globals.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
@@ -177,7 +178,7 @@ const roomActor =
             const currentController = globals.roomControllers[creep.memory.ctrl]
 
             const rc = grabController.act(currentController, creep)
-            if (rc == globals.WARN_LAST_INTENT) {
+            if (rc === globals.WARN_LAST_INTENT) {
               globals.unassignCreep(creep)
             }
           }
@@ -194,7 +195,7 @@ const roomActor =
               keepAssignment = this.roomControllersAct(target, creep)
               working = working + keepAssignment
             } else {
-              if (creep.getActiveBodyparts(MOVE) == 0) {
+              if (creep.getActiveBodyparts(MOVE) === 0) {
                 keepAssignment = false
               } else if (creep.fatigue > 0) {
                 keepAssignment = true
@@ -206,7 +207,7 @@ const roomActor =
                 let rc = creep.moveToWrapper(target, { noPathFinding: true })
 
                 // no movement, see if pathfinding is possible
-                if (rc == ERR_NOT_FOUND) {
+                if (rc === ERR_NOT_FOUND) {
                   // percent
                   const cpuUsed = globals.hardCpuUsed(t0)
                   if (cpuUsed <= room.memory.cpul) {
@@ -227,7 +228,7 @@ const roomActor =
                   }
                 }
 
-                keepAssignment = rc == OK
+                keepAssignment = rc === OK
                 moving = moving + keepAssignment
               } // end of "has MOVE" and "fatigue equals 0"
             } // end of "not in range"
@@ -235,16 +236,14 @@ const roomActor =
 
           if (keepAssignment) {
             this.roomControllersObserveOwn(creep)
-
             ++assigned
           } else {
             globals.unassignCreep(creep)
-
             unassignedCreeps.push(creep)
           }
-        } // end of creep assigned
-        else // not creep assigned
-        {
+          // end of creep assigned
+        } else {
+          // not creep assigned
           unassignedCreeps.push(creep)
         }
       } // end of creeps loop

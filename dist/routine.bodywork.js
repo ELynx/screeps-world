@@ -28,7 +28,7 @@ const bodywork =
       return [WORK, CARRY, MOVE, MOVE]
     }
 
-    if (energyLevel == 2) {
+    if (energyLevel === 2) {
       // 500  100   100   50     50     50    50    50    50
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
@@ -48,13 +48,13 @@ const bodywork =
       return []
     }
 
-    if (energyLevel == 2) {
+    if (energyLevel === 2) {
       // 550  100   100   100   50     50    50    50    50
       return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
     // special case, limp a bit
-    if (energyLevel == 3) {
+    if (energyLevel === 3) {
       // 800  100   100   100   100   100   50     50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }

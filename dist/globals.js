@@ -114,7 +114,7 @@ const globals =
     @return If creep is assigned to a controller.
     **/
   creepAssigned: function (creep) {
-    return creep.memory.ctrl != this.NO_CONTROL
+    return creep.memory.ctrl !== this.NO_CONTROL
   },
 
   /**
@@ -194,9 +194,9 @@ const globals =
     const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
 
     for (const flagName in Game.flags) {
-      if (flagName == 'profiler') continue
-      if (flagName == 'recount') continue
-      if (flagName == 'autobuild') continue
+      if (flagName === 'profiler') continue
+      if (flagName === 'recount') continue
+      if (flagName === 'autobuild') continue
 
       if (flagName.startsWith('help_')) continue
 

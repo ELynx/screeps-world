@@ -23,12 +23,12 @@ energyRestockControllerSpecialist.targets = function (room) {
       }
     }
   )
-  if (allStructures.length == 0) return []
+  if (allStructures.length === 0) return []
 
   const sourceLinks = _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType == STRUCTURE_LINK) {
+      if (structure.structureType === STRUCTURE_LINK) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
                        structure.isSource()
       }
@@ -41,7 +41,7 @@ energyRestockControllerSpecialist.targets = function (room) {
   return _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType == STRUCTURE_CONTAINER) {
+      if (structure.structureType === STRUCTURE_CONTAINER) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY)
       }
 
@@ -51,7 +51,7 @@ energyRestockControllerSpecialist.targets = function (room) {
 }
 
 energyRestockControllerSpecialist.filterCreep = function (creep) {
-  return creep.memory.rstk == true && this._isWorkAble(creep)
+  return creep.memory.rstk === true && this._isWorkAble(creep)
 }
 
 energyRestockControllerSpecialist.register()

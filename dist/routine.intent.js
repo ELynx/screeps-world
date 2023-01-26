@@ -2,7 +2,7 @@
 
 const globals = require('globals')
 
-if (UPGRADE_CONTROLLER_POWER != 1) {
+if (UPGRADE_CONTROLLER_POWER !== 1) {
   console.log('UPGRADE_CONTROLLER_POWER is no longer equal to 1, update intent code')
 }
 
@@ -19,7 +19,7 @@ const intent =
 
   getFreeCapacity: function (something, type) {
     // detect non-universal store
-    const nonUniversal = something.__non_universal_store || something.store.getCapacity() == null
+    const nonUniversal = something.__non_universal_store || something.store.getCapacity() === null
     something.__non_universal_store = nonUniversal
 
     const propertyKey = nonUniversal ? ('__free_' + type) : '__free_universal'
@@ -31,7 +31,7 @@ const intent =
   // negative amount is decrease in stored
   intentCapacityChange: function (something, type, amount) {
     // detect non-universal store
-    const nonUniversal = something.__non_universal_store || something.store.getCapacity() == null
+    const nonUniversal = something.__non_universal_store || something.store.getCapacity() === null
     something.__non_universal_store = nonUniversal
 
     const propertyKeyUsed = '__stored_' + type
@@ -61,7 +61,7 @@ const intent =
     }
 
     // for https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/transfer.js#L12
-    if (noLessThan == true && amount && amount > sourceHas) {
+    if (noLessThan === true && amount && amount > sourceHas) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
     const sourceOut = amount || sourceHas
@@ -265,10 +265,10 @@ const intent =
 
     // no matter what goals creep has, update will not count
     const upgrades = target.__upgrades || 0
-    if (target.level == 8 && upgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK) {
+    if (target.level === 8 && upgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
-    const remainingUpgrades = target.level == 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - upgrades) : MadeUpLargeNumber
+    const remainingUpgrades = target.level === 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - upgrades) : MadeUpLargeNumber
 
     // if specific goal was set
     const ticks = target.__ticks || target.ticksToDowngrade
@@ -282,7 +282,7 @@ const intent =
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualUpgrades)
     target.__upgrades = upgrades + actualUpgrades
-    target.__ticks = ticks + (upgrades == 0 ? CONTROLLER_DOWNGRADE_RESTORE : 0) // fixed amount per tick
+    target.__ticks = ticks + (upgrades === 0 ? CONTROLLER_DOWNGRADE_RESTORE : 0) // fixed amount per tick
 
     let rc = OK
 
@@ -326,7 +326,7 @@ const intent =
     }
 
     const intentRc = _.bind(intent, creep)(arg0, arg1, arg2)
-    if (intentRc != OK) {
+    if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                         '] on creep [' + creep.name +
                         '] with code ' + intentRc + ' where expected code was ' + rc)
