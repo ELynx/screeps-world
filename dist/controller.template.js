@@ -12,7 +12,7 @@ Room.prototype._markDefaultFiltered = function () {
 
 Room.prototype._isDefaultFiltered = function () {
   if (this._markDefaultFiltered_) {
-    return this._markDefaultFiltered_ == Game.time
+    return this._markDefaultFiltered_ === Game.time
   }
 
   return false
@@ -84,14 +84,14 @@ function Controller (id) {
     @return Targets that can be used.
     **/
   this._filterExcludedTargets = function (targets) {
-    if (targets.length == 0 || this._excludedTargets.length == 0) {
+    if (targets.length === 0 || this._excludedTargets.length === 0) {
       return targets
     }
 
     const targetIds = _.map(targets, 'id')
     const exclude = _.intersection(targetIds, this._excludedTargets)
 
-    if (targets.length == exclude.length) {
+    if (targets.length === exclude.length) {
       return []
     }
 
@@ -165,7 +165,7 @@ function Controller (id) {
     return _.filter(
       roomCreeps,
       function (creep) {
-        return creep.memory.ctrl == this.id && creep.memory.dest == target.id
+        return creep.memory.ctrl === this.id && creep.memory.dest === target.id
       },
       this
     )
@@ -184,7 +184,7 @@ function Controller (id) {
   }
 
   this._isEmpty = function (creep) {
-    return creep.store.getUsedCapacity() == 0
+    return creep.store.getUsedCapacity() === 0
   }
 
   this._isWorkAble = function (creep) {
@@ -253,11 +253,11 @@ function Controller (id) {
     let unassignedCreeps = []
 
     for (let i = 0; i < roomCreeps.length; ++i) {
-      if (remainingTargets.length == 0) {
+      if (remainingTargets.length === 0) {
         // don't forget creeps that are not tested at all
         const creepsLeft = roomCreeps.slice(i)
 
-        if (unassignedCreeps.length == 0) { unassignedCreeps = creepsLeft } else { unassignedCreeps = unassignedCreeps.concat(creepsLeft) }
+        if (unassignedCreeps.length === 0) { unassignedCreeps = creepsLeft } else { unassignedCreeps = unassignedCreeps.concat(creepsLeft) }
 
         break // from creeps cycle
       }
@@ -286,7 +286,7 @@ function Controller (id) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
-          if (this.validateTarget(currentTarget, creep) == false) { continue }
+          if (this.validateTarget(currentTarget, creep) === false) { continue }
         } // to next target
 
         if (creep.pos.inRangeTo(currentTarget.pos, this.actRange)) {
@@ -377,7 +377,7 @@ function Controller (id) {
 
     // wipe the cache from previous room now
     this._targetCache = undefined
-    if (this._findTargets(room).length == 0) {
+    if (this._findTargets(room).length === 0) {
       this.debugLine(room, 'Fast exit, no targets')
       return roomCreeps
     }
@@ -393,7 +393,7 @@ function Controller (id) {
       }
     }
 
-    if (creepMatch.length == 0) {
+    if (creepMatch.length === 0) {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
         this.debugLine(room, 'No creeps with default parameters found')

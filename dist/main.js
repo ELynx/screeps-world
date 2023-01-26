@@ -44,7 +44,7 @@ module.exports.loop = function () {
       total = total + delta
     }
 
-    if (total == 0) total = 1
+    if (total === 0) total = 1
 
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
@@ -62,7 +62,7 @@ module.exports.loop = function () {
         roomActor.act(room)
       } else if (room.ally() &&
                  Game.flags['help_' + room.name] &&
-                 Game.flags['help_' + room.name].pos.roomName == room.name) {
+                 Game.flags['help_' + room.name].pos.roomName === room.name) {
         room.memory.cpul = limit
         roomActor.act(room)
       } else {

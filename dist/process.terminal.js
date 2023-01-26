@@ -62,7 +62,7 @@ terminalProcess.work = function (room) {
       if (roomFrom &&
                 roomFrom.controller &&
                 roomFrom.controller.owner &&
-                roomFrom.controller.owner.username == room.terminal.owner.username) { return false }
+                roomFrom.controller.owner.username === room.terminal.owner.username) { return false }
 
       // STRATEGY allowed price drop per sell of room resources
       if (noPanic && (order.price < 0.95 * lastPrice)) { return false }
@@ -97,7 +97,7 @@ terminalProcess.work = function (room) {
     if (roomFrom &&
             roomFrom.controller &&
             roomFrom.controller.owner &&
-            roomFrom.controller.owner.username == room.terminal.owner.username) { continue }
+            roomFrom.controller.owner.username === room.terminal.owner.username) { continue }
 
     if (order.price < smallestPrice) {
       smallestPrice = order.price
@@ -122,7 +122,7 @@ terminalProcess.work = function (room) {
   for (let i = 0; i < goodBuyOrders.length; ++i) {
     const rc = room.terminal.autoSell(goodBuyOrders[i], toKeep)
 
-    if (rc == OK) {
+    if (rc === OK) {
       if (noPanic) {
         Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price
       }

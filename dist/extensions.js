@@ -28,7 +28,7 @@ Creep.prototype.target = function () {
 @param {array<Creep>} creeps to heal.
 **/
 Creep.prototype.healClosest = function (creeps) {
-  if (creeps.length == 0) {
+  if (creeps.length === 0) {
     return ERR_NOT_FOUND
   }
 
@@ -63,7 +63,7 @@ Creep.prototype.purgeEnergy = function () {
 }
 
 Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
-  if (this.getActiveBodyparts(CARRY) == 0) return ERR_FULL
+  if (this.getActiveBodyparts(CARRY) === 0) return ERR_FULL
 
   for (const targetKey in targets) {
     const target = targets[targetKey]
@@ -71,7 +71,7 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
             target.store &&
             target.store[RESOURCE_ENERGY] > 0 &&
             this.pos.isNearTo(target)) {
-      if (this.withdraw(target, RESOURCE_ENERGY) == OK) {
+      if (this.withdraw(target, RESOURCE_ENERGY) === OK) {
         return OK
       }
     }
@@ -141,15 +141,15 @@ Flag.prototype.setValue = function (newValue) {
 
   if (newValue >= 6) {
     newColor = COLOR_PURPLE
-  } else if (newValue == 5) {
+  } else if (newValue === 5) {
     newColor = COLOR_RED
   } else if (newValue >= 3) {
     newColor = COLOR_ORANGE
-  } else if (newValue == 2) {
+  } else if (newValue === 2) {
     newColor = COLOR_YELLOW
-  } else if (newValue == 1) {
+  } else if (newValue === 1) {
     newColor = COLOR_GREEN
-  } else if (newValue == 0) {
+  } else if (newValue === 0) {
     newColor = COLOR_BLUE
   }
 
@@ -159,7 +159,7 @@ Flag.prototype.setValue = function (newValue) {
 }
 
 Flag.prototype.setSecondaryColor = function (newColor) {
-  if (this.secondaryColor == newColor) {
+  if (this.secondaryColor === newColor) {
     return
   }
 
@@ -167,7 +167,7 @@ Flag.prototype.setSecondaryColor = function (newColor) {
 }
 
 Flag.prototype.resetSecondaryColor = function () {
-  if (this.color == this.secondaryColor) {
+  if (this.color === this.secondaryColor) {
     return
   }
 
@@ -185,7 +185,7 @@ Room.prototype.roomDebug = function (what) {
 }
 
 Room.prototype._clearCreepCacheIfOld = function () {
-  if (this._creepCacheT_ && this._creepCacheT_ == Game.time) {
+  if (this._creepCacheT_ && this._creepCacheT_ === Game.time) {
     return
   }
 
@@ -206,7 +206,7 @@ Room.prototype.getRoomControlledCreeps = function () {
         // skip tasked
         if (creep.memory.flag) return false
 
-        return creep.memory.crum == this.name
+        return creep.memory.crum === this.name
       },
       this
     )
@@ -274,7 +274,7 @@ RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition
 
     for (let dx = -1; dx <= 1; ++dx) {
       for (let dy = -1; dy <= 1; ++dy) {
-        if (dx == 0 && dy == 0) continue
+        if (dx === 0 && dy === 0) continue
 
         const x = pos.x + dx
         const y = pos.y + dy
@@ -307,15 +307,15 @@ RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
 
   if (flagValue >= 6) {
     color = COLOR_PURPLE
-  } else if (flagValue == 5) {
+  } else if (flagValue === 5) {
     color = COLOR_RED
   } else if (flagValue >= 3) {
     color = COLOR_ORANGE
-  } else if (flagValue == 2) {
+  } else if (flagValue === 2) {
     color = COLOR_YELLOW
-  } else if (flagValue == 1) {
+  } else if (flagValue === 1) {
     color = COLOR_GREEN
-  } else if (flagValue == 0) {
+  } else if (flagValue === 0) {
     color = COLOR_BLUE
   }
 
@@ -379,7 +379,7 @@ StructureLink.prototype.isSource = function () {
 StructureTerminal.prototype._caclTransactionAmount = function (roomTo) {
   // how much sending 1000 costs
   const c1000 = Game.market.calcTransactionCost(1000, this.room.name, roomTo)
-  if (c1000 == 0) {
+  if (c1000 === 0) {
     return 0
   }
 
@@ -398,7 +398,7 @@ Try to sell as much as possible for order.
 @return result of deal or other error codes.
 **/
 StructureTerminal.prototype.autoSell = function (order, keep = 0) {
-  if (order.type == ORDER_BUY) {
+  if (order.type === ORDER_BUY) {
     const has = this.store[order.resourceType]
     if (has === undefined || has <= keep) {
       return ERR_NOT_ENOUGH_RESOURCES

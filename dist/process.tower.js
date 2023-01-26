@@ -13,11 +13,11 @@ towerProcess.work = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_TOWER && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_TOWER && structure.isActiveSimple()
       }
     }
   )
-  if (towers.length == 0) return
+  if (towers.length === 0) return
 
   const creeps = room.find(FIND_CREEPS)
 

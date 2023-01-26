@@ -38,11 +38,11 @@ spawnProcess._addToQueue = function (room, type, memoryAddon, n, adderFunction) 
 spawnProcess.addToQueue = function (room, type, memory, n, priority) {
   if (n <= 0) return
 
-  if (priority == 'urgent') {
+  if (priority === 'urgent') {
     this._addToQueue(room, type, memory, n, _.bind(queue.addUrgent, queue))
-  } else if (priority == 'normal') {
+  } else if (priority === 'normal') {
     this._addToQueue(room, type, memory, n, _.bind(queue.addNormal, queue))
-  } else if (priority == 'lowkey') {
+  } else if (priority === 'lowkey') {
     this._addToQueue(room, type, memory, n, _.bind(queue.addLowkey, queue))
   }
 }
@@ -69,7 +69,7 @@ spawnProcess.workers = function (room, live) {
   )
 
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-  if (nowWorkers == 0) {
+  if (nowWorkers === 0) {
     addWorker(1, 'urgent')
     addWorker(1, 'normal')
 

@@ -18,8 +18,8 @@ grabController.act = function (currentController, creep) {
     const grab = grabs[i]
     const from = grab[grab.type]
 
-    if (grab.type == LOOK_TOMBSTONES ||
-            grab.type == LOOK_RUINS) {
+    if (grab.type === LOOK_TOMBSTONES ||
+            grab.type === LOOK_RUINS) {
       const typesToGrab = hasUniversalStore ? Object.keys(from.store) : [RESOURCE_ENERGY]
 
       for (let j = 0; j < typesToGrab.length; ++j) {
@@ -31,8 +31,8 @@ grabController.act = function (currentController, creep) {
       }
     }
 
-    if (grab.type == LOOK_RESOURCES) {
-      if (hasUniversalStore || from.resourceType == RESOURCE_ENERGY) {
+    if (grab.type === LOOK_RESOURCES) {
+      if (hasUniversalStore || from.resourceType === RESOURCE_ENERGY) {
         const rc = this.wrapIntent(creep, 'pickup', from)
         if (rc != OK) return rc
       }

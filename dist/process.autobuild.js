@@ -16,7 +16,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= +1; ++dy) {
       // don't check center
-      if (dx == 0 && dy == 0) { continue }
+      if (dx === 0 && dy === 0) { continue }
 
       const x = center.x + dx
       const y = center.y + dy
@@ -65,7 +65,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
     // prevent out of bounds
     if (x < 0 || x > 49 || y < 0 || y > 49) { continue }
 
-    const blocked = terrain.get(x, y) == TERRAIN_MASK_WALL
+    const blocked = terrain.get(x, y) === TERRAIN_MASK_WALL
 
     if (blocked) continue // to next index
 
@@ -109,7 +109,7 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   const structs = room.lookForAt(LOOK_STRUCTURES, posOrRoomObject)
   for (let i = 0; i < structs.length; ++i) {
     const struct = structs[i]
-    if (struct.structureType == structureType) {
+    if (struct.structureType === structureType) {
       return ERR_FULL
     }
   }
@@ -139,7 +139,7 @@ autobuildProcess.weightAroundTheSource = function (x, y, dx, dy, terrainMask) {
   if (x <= 0 || y <= 0 || x >= 49 || y >= 49) { return -10 }
 
   // check for walls, they get no bonuses
-  if (terrainMask == TERRAIN_MASK_WALL) {
+  if (terrainMask === TERRAIN_MASK_WALL) {
     // walls can be develop, but are expensive
     return 1
   }
@@ -148,7 +148,7 @@ autobuildProcess.weightAroundTheSource = function (x, y, dx, dy, terrainMask) {
   let result = 5
 
   // orthogonal positions give more advantage when roads are added
-  if (dx == 0 || dy == 0) { result = result + 2 }
+  if (dx === 0 || dy === 0) { result = result + 2 }
 
   // going more to the center
   if (x < 25 && dx > 0) { result = result + 1 }
@@ -169,7 +169,7 @@ autobuildProcess.weightSource = function (room, source) {
   let result = 0
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
-      if (dx == 0 && dy == 0) { continue }
+      if (dx === 0 && dy === 0) { continue }
 
       const x = center.x + dx
       const y = center.y + dy
@@ -188,14 +188,14 @@ const TargetLinkReserve = 1
 
 autobuildProcess.sourceLink = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] || 0
-  if (canHave == 0) return
+  if (canHave === 0) return
 
   // out of two, reserve one, otherwise links will wait for whole level to complete
   const reserve = canHave <= 2 ? 1 : TargetLinkReserve
 
   if (canHave > reserve) {
     const filterForLinks = function (structure) {
-      return structure.structureType == STRUCTURE_LINK && structure.isActiveSimple()
+      return structure.structureType === STRUCTURE_LINK && structure.isActiveSimple()
     }
 
     const links = room.find(
@@ -257,11 +257,11 @@ const ContainerReserve = 0
 
 autobuildProcess.sourceContainer = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][room.controller.level] || 0
-  if (canHave == 0) return
+  if (canHave === 0) return
 
   if (canHave > ContainerReserve) {
     const filterForContainers = function (structure) {
-      return structure.structureType == STRUCTURE_CONTAINER && structure.isActiveSimple()
+      return structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple()
     }
 
     const containers = room.find(
@@ -304,7 +304,7 @@ autobuildProcess.sourceContainer = function (room) {
           const positions = []
           for (let dx = -1; dx <= 1; ++dx) {
             for (let dy = -1; dy <= 1; ++dy) {
-              if (dx == 0 && dy == 0) continue
+              if (dx === 0 && dy === 0) continue
 
               const x = source.pos.x + dx
               const y = source.pos.y + dy
@@ -342,7 +342,7 @@ autobuildProcess.sourceContainer = function (room) {
 
 autobuildProcess.coverRamparts = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][room.controller.level] || 0
-  if (canHave == 0) return
+  if (canHave === 0) return
 
   // this function has potential to create a lot of sites
   // as such, unfiy look for sites and locations here, not in generic planner
@@ -357,7 +357,7 @@ autobuildProcess.coverRamparts = function (room) {
 
     for (const kx in atY) {
       // no ramparts on walls
-      if (terrain.get(parseInt(kx), parseInt(ky)) == TERRAIN_MASK_WALL) {
+      if (terrain.get(parseInt(kx), parseInt(ky)) === TERRAIN_MASK_WALL) {
         continue // to next y
       }
 
@@ -381,12 +381,12 @@ autobuildProcess.coverRamparts = function (room) {
           onlyRoad = false
         }
 
-        if (structure.structureType == STRUCTURE_WALL) {
+        if (structure.structureType === STRUCTURE_WALL) {
           hasWall = true
           break
         }
 
-        if (structure.structureType == STRUCTURE_RAMPART) {
+        if (structure.structureType === STRUCTURE_RAMPART) {
           hasRamp = true
           break
         }
@@ -409,20 +409,20 @@ autobuildProcess.coverRamparts = function (room) {
 
 autobuildProcess.wallsAroundController = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][room.controller.level] || 0
-  if (canHave == 0) return
+  if (canHave === 0) return
 
   const terrain = room.getTerrain()
 
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
-      if (dx == 0 && dy == 0) continue
+      if (dx === 0 && dy === 0) continue
 
       const x = room.controller.pos.x + dx
       const y = room.controller.pos.y + dy
 
       const terrainMask = terrain.get(x, y)
 
-      if (terrainMask == TERRAIN_MASK_WALL) continue
+      if (terrainMask === TERRAIN_MASK_WALL) continue
 
       this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
     }
@@ -444,7 +444,7 @@ autobuildProcess.work = function (room) {
 
   if (Game.flags.autobuild &&
         Game.flags.autobuild.room &&
-        Game.flags.autobuild.room.name == room.name) {
+        Game.flags.autobuild.room.name === room.name) {
     Game.flags.autobuild.remove()
     executeAutoBuild = true
   } else {

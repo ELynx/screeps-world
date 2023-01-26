@@ -24,7 +24,7 @@ Creep.prototype.getFlagPos = function () {
   if (flag) {
     // bottom row is for special indicator flags, etc.
     // they point to "the room in general"
-    if (flag.pos.y == 49) return globals.centerRoomPosition(flag.pos.roomName)
+    if (flag.pos.y === 49) return globals.centerRoomPosition(flag.pos.roomName)
 
     return flag.pos
   }
@@ -46,7 +46,7 @@ Creep.prototype.getControlPos = function () {
 
   // flag is visible and flag is in expected room
   // aim at the flag
-  if (flagPos && flagPos.roomName == crum) {
+  if (flagPos && flagPos.roomName === crum) {
     return flagPos
   }
 
@@ -154,7 +154,7 @@ function Tasked (id) {
     for (let i = 0; i < creeps.length; ++i) {
       const creep = creeps[i]
 
-      creep._canMove_ = creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue == 0
+      creep._canMove_ = creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0
 
       if (this.creepPrepare) {
         this.creepPrepare(creep)
@@ -170,7 +170,7 @@ function Tasked (id) {
         continue
       }
 
-      if (creep.room.name == creep.getControlRoom()) {
+      if (creep.room.name === creep.getControlRoom()) {
         this.creepAtDestination(creep)
       } else {
         this.creepRoomTravel(creep)
@@ -202,7 +202,7 @@ function Tasked (id) {
 
       if (this.flagPrepare) {
         const decision = this.flagPrepare(flag)
-        if (decision == this.FLAG_IGNORE) {
+        if (decision === this.FLAG_IGNORE) {
           spawn.erase(flagName) // to free up queue
           flag.resetSecondaryColor()
           continue

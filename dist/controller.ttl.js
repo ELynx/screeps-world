@@ -29,14 +29,14 @@ ttlController.act = function (spawn, creep) {
     }
   }
 
-  if (creep.memory.recycle == true) {
+  if (creep.memory.recycle === true) {
     renew = false
     recycle = true
   }
 
   if (renew) {
     const rc = spawn.renewCreep(creep)
-    if (rc == OK) return rc
+    if (rc === OK) return rc
 
     // forgetaboutit
     recycle = true
@@ -55,7 +55,7 @@ ttlController.targets = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        if (structure.structureType == STRUCTURE_SPAWN) {
+        if (structure.structureType === STRUCTURE_SPAWN) {
           // STRATEGY direct creep to nearest spawn, figure out on arrival
           return structure.isActiveSimple()
         }
@@ -68,10 +68,10 @@ ttlController.targets = function (room) {
 
 ttlController.filterCreep = function (creep) {
   // cannot walk, do not waste CPU on pathfinding
-  if (creep.getActiveBodyparts(MOVE) == 0) return false
+  if (creep.getActiveBodyparts(MOVE) === 0) return false
 
   // recycle was forced
-  if (creep.memory.recycle == true) return true
+  if (creep.memory.recycle === true) return true
 
   // too young
   if (creep.ticksToLive > TTL) return false
