@@ -213,6 +213,7 @@ spawn.spawnNext = function () {
       continue
     }
 
+    // eslint-disable-next-line no-unreachable-loop because if one spawn cannot spawn, others cannot too
     for (let j = 0; j < spawns.length; ++j) {
       const spawn = spawns[j]
 
