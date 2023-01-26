@@ -56,7 +56,6 @@ const roomActor =
     **/
   roomControllersObserveOwn: function (creep) {
     const controller = globals.roomControllersObserveOwn[creep.memory.ctrl]
-
     if (controller) {
       controller.observeMyCreep(creep)
     }
@@ -70,7 +69,6 @@ const roomActor =
     **/
   roomControllersAct: function (target, creep) {
     const controller = globals.roomControllers[creep.memory.ctrl]
-
     if (controller) {
       return controller.act(target, creep) === OK
     }
@@ -87,14 +85,15 @@ const roomActor =
     for (const id in globals.roomControllers) {
       const controller = globals.roomControllers[id]
 
-      if (room.ally() && !controller.allied) continue
+      if (room.ally() && !controller.allied) {
+        continue
+      }
 
       creeps = controller.control(room, creeps)
 
       // if all creeps had been taken
       if (creeps.length === 0) {
         this.debugLine(room, 'All creeps assigned after controller [' + id + ']')
-
         return
       } else {
         this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length)
@@ -237,11 +236,9 @@ const roomActor =
 
           if (keepAssignment) {
             this.roomControllersObserveOwn(creep)
-
             ++assigned
           } else {
             globals.unassignCreep(creep)
-
             unassignedCreeps.push(creep)
           }
           // end of creep assigned
