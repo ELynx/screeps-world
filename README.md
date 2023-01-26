@@ -10,11 +10,11 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 ## Folders
-.github - github specific items, such as action definitions
+`.github` - GitHub specific items, such as action definitions
 
-dist - deployed to official server
+`dist` - deployed to official server
 
-history - historical data worth saving
+`history` - historical data worth saving
 
 ## TODO
 (High importance) IFF retaliation.
