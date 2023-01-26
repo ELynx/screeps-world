@@ -50,8 +50,7 @@ buildController.targets = function (room) {
       return !_.some(
         allCreeps,
         function (creep) {
-          return creep.pos.x === site.pos.x &&
-                           creep.pos.y === site.pos.y
+          return creep.pos.x === site.pos.x && creep.pos.y === site.pos.y
         }
       )
     }
