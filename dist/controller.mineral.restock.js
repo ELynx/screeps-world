@@ -44,7 +44,7 @@ mineralRestockController.filterCreep = function (creep) {
     const usedEnergy = creep.store.getUsedCapacity(RESOURCE_ENERGY)
 
     // don't bring energy
-    return usedTotal > 0 && usedEnergy == 0
+    return usedTotal > 0 && usedEnergy === 0
   }
 
   return false

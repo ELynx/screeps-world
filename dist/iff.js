@@ -21,7 +21,7 @@ const isAlly = function (something) {
 
     const status = Memory.allies[something.owner.username]
 
-    const response = status && status == true
+    const response = status && status === true
     something.__isally = response
     return response
   }
@@ -49,14 +49,14 @@ const isNeutral = function (something) {
     const username = something.owner.username
 
     // TODO not always
-    if (username == UsernameSourceKeeper) response = true
-    if (username == UsernamePowerBank) response = true
-    if (username == UsernamePublic) response = true
+    if (username === UsernameSourceKeeper) response = true
+    if (username === UsernamePowerBank) response = true
+    if (username === UsernamePublic) response = true
 
     if (!response) {
       // check the actual memory
       const status = Memory.neutrals[username]
-      response = status && status == true
+      response = status && status === true
     }
   }
 
@@ -72,7 +72,7 @@ const isHostile = function (something) {
 
   // quick check
   if (something.owner) {
-    if (something.owner.username == UsernameInvader) return true
+    if (something.owner.username === UsernameInvader) return true
   }
 
   if (something.ally) return false
@@ -92,9 +92,9 @@ const isPC = function (something) {
   if (something.owner) {
     const username = something.owner.username
 
-    if (username == UsernameSourceKeeper) return false
-    if (username == UsernamePowerBank) return false
-    if (username == UsernameInvader) return false
+    if (username === UsernameSourceKeeper) return false
+    if (username === UsernamePowerBank) return false
+    if (username === UsernameInvader) return false
   }
 
   return true

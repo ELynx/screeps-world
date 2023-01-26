@@ -36,13 +36,13 @@ plunder.moveAndUnload = function (creep, target) {
         rc = creep.drop(resourceType)
       }
 
-      if (rc == OK) break // from resource loop
+      if (rc === OK) break // from resource loop
     }
   } else {
     creep.moveToWrapper(pos, { reusePath: 50, range })
   }
 
-  if (creep.store.getUsedCapacity() == 0) {
+  if (creep.store.getUsedCapacity() === 0) {
     const whereFlag = creep.getFlagPos()
     if (whereFlag) {
       creep.setControlRoom(whereFlag.roomName)
@@ -79,7 +79,7 @@ plunder.moveAndLoad = function (creep, target) {
   if (creep.pos.isNearTo(target)) {
     for (const resourceType in target.store) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc == OK) break
+      if (rc === OK) break
     }
   } else {
     creep.moveToWrapper(target, { reusePath: 50, range: 1 })
@@ -94,7 +94,7 @@ plunder.creepAtOtherRooms = function (creep) {
     const ramparts = _.filter(
       allStructures,
       function (structure) {
-        return structure.structureType == STRUCTURE_RAMPART && !structure.isPublic
+        return structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
       }
     )
 
@@ -115,7 +115,7 @@ plunder.creepAtOtherRooms = function (creep) {
         const hasRamp = _.some(
           ramparts,
           function (ramp) {
-            return ramp.pos.x == structure.pos.x && ramp.pos.y == structure.pos.y
+            return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
           }
         )
 
@@ -126,11 +126,11 @@ plunder.creepAtOtherRooms = function (creep) {
     this.roomTargets[creep.room.name] = targets
   }
 
-  if (targets.length == 0) {
+  if (targets.length === 0) {
     this.roomBoring[creep.room.name] = true
   }
 
-  if (targets.length == 0 || creep.store.getFreeCapacity() == 0) {
+  if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
     creep.setControlRoom(this.getSomeOwnRoomName(creep))
     return
   }

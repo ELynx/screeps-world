@@ -70,7 +70,7 @@ const roomActor =
     const controller = globals.roomControllers[creep.memory.ctrl]
 
     if (controller) {
-      return controller.act(target, creep) == OK
+      return controller.act(target, creep) === OK
     }
 
     return false
@@ -90,7 +90,7 @@ const roomActor =
       creeps = controller.control(room, creeps)
 
       // if all creeps had been taken
-      if (creeps.length == 0) {
+      if (creeps.length === 0) {
         this.debugLine(room, 'All creeps assigned after controller [' + id + ']')
 
         return
@@ -117,9 +117,9 @@ const roomActor =
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10
 
-    if (processKey == 0) {
+    if (processKey === 0) {
       spawnProcess.work(room)
-    } else if (processKey == 5) {
+    } else if (processKey === 5) {
       linkProcess.work(room)
     }
 
@@ -152,7 +152,7 @@ const roomActor =
           // flag to handle border transition
           creep.memory.roomChange = true
 
-          if (creep.fatigue == 0) {
+          if (creep.fatigue === 0) {
             // get off border area
             const posInDestRoom = globals.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
@@ -177,7 +177,7 @@ const roomActor =
             const currentController = globals.roomControllers[creep.memory.ctrl]
 
             const rc = grabController.act(currentController, creep)
-            if (rc == globals.WARN_LAST_INTENT) {
+            if (rc === globals.WARN_LAST_INTENT) {
               globals.unassignCreep(creep)
             }
           }
@@ -194,7 +194,7 @@ const roomActor =
               keepAssignment = this.roomControllersAct(target, creep)
               working = working + keepAssignment
             } else {
-              if (creep.getActiveBodyparts(MOVE) == 0) {
+              if (creep.getActiveBodyparts(MOVE) === 0) {
                 keepAssignment = false
               } else if (creep.fatigue > 0) {
                 keepAssignment = true
@@ -206,7 +206,7 @@ const roomActor =
                 let rc = creep.moveToWrapper(target, { noPathFinding: true })
 
                 // no movement, see if pathfinding is possible
-                if (rc == ERR_NOT_FOUND) {
+                if (rc === ERR_NOT_FOUND) {
                   // percent
                   const cpuUsed = globals.hardCpuUsed(t0)
                   if (cpuUsed <= room.memory.cpul) {
@@ -227,7 +227,7 @@ const roomActor =
                   }
                 }
 
-                keepAssignment = rc == OK
+                keepAssignment = rc === OK
                 moving = moving + keepAssignment
               } // end of "has MOVE" and "fatigue equals 0"
             } // end of "not in range"

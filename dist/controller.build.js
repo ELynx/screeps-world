@@ -17,7 +17,7 @@ buildController.act = function (site, creep) {
 // STRATEGY build priorities
 buildController._sites = function (room) {
   const allSites = room.find(FIND_CONSTRUCTION_SITES)
-  if (allSites.length == 0) return []
+  if (allSites.length === 0) return []
 
   const spawns = _.filter(
     allSites,
@@ -40,7 +40,7 @@ buildController._sites = function (room) {
 
 buildController.targets = function (room) {
   const sites = this._sites(room)
-  if (sites.length == 0) return []
+  if (sites.length === 0) return []
 
   // cannot build when creep is on site
   const allCreeps = room.find(FIND_CREEPS)
@@ -50,8 +50,8 @@ buildController.targets = function (room) {
       return !_.some(
         allCreeps,
         function (creep) {
-          return creep.pos.x == site.pos.x &&
-                           creep.pos.y == site.pos.y
+          return creep.pos.x === site.pos.x &&
+                           creep.pos.y === site.pos.y
         }
       )
     }

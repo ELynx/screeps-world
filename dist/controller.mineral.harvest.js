@@ -14,7 +14,7 @@ mineralHarvestController.act = function (extractor, creep) {
   for (let i = 0; i < minerals.length; ++i) {
     const mineral = minerals[i]
     const rc = this.wrapIntent(creep, 'harvest', mineral)
-    if (rc == ERR_NOT_ENOUGH_RESOURCES) {
+    if (rc === ERR_NOT_ENOUGH_RESOURCES) {
       extractor.room.memory.mlvl = 0
     }
 
@@ -25,20 +25,20 @@ mineralHarvestController.act = function (extractor, creep) {
 }
 
 mineralHarvestController.targets = function (room) {
-  if (room.memory.mlvl == 0) return []
+  if (room.memory.mlvl === 0) return []
 
   return room.find(
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType == STRUCTURE_EXTRACTOR && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple()
       }
     }
   )
 }
 
 mineralHarvestController.filterCreep = function (creep) {
-  return creep.memory.minr == true && this._isHarvestAble(creep)
+  return creep.memory.minr === true && this._isHarvestAble(creep)
 }
 
 mineralHarvestController.register()

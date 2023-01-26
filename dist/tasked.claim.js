@@ -50,7 +50,7 @@ claim.creepAtDestination = function (creep) {
         // see if creep can wait it out
         const ticksToUnblock = controller.upgradeBlocked || 0
         const ticksToUnsafe = controller.safeMode || 0
-        const ticksToDowngrade = controller.level == 1 ? controller.ticksToDowngrade : 0
+        const ticksToDowngrade = controller.level === 1 ? controller.ticksToDowngrade : 0
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)
       } else if (controller.reservation && controller.reservation.username != creep.owner.username) {
@@ -88,15 +88,15 @@ claim.creepAtDestination = function (creep) {
     }
   } // end of harmable controller
 
-  if (rc == ERR_INVALID_TARGET ||
-        rc == ERR_FULL ||
-        rc == ERR_GCL_NOT_ENOUGH) {
+  if (rc === ERR_INVALID_TARGET ||
+        rc === ERR_FULL ||
+        rc === ERR_GCL_NOT_ENOUGH) {
     this._onProblemDetected(creep)
     return
   }
 
   // be sure that creep will not survive the wait
-  if (rc == ERR_TIRED && creep.ticksToLive < wait) {
+  if (rc === ERR_TIRED && creep.ticksToLive < wait) {
     const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0
     const ticksBlocked = wait
     const ticksOverhead = 42 // be this early to minimize safe mode window, etc

@@ -132,7 +132,7 @@ beetle.creepAtDestination = function (creep) {
     const supposeNowX = pathItem.x - pathItem.dx
     const supposeNowY = pathItem.y - pathItem.dy
 
-    if (creep.pos.x == supposeNowX && creep.pos.y == supposeNowY) {
+    if (creep.pos.x === supposeNowX && creep.pos.y === supposeNowY) {
       next = pathItem
       creep.memory._breachI_ = i
       break
@@ -170,12 +170,12 @@ beetle.creepAtDestination = function (creep) {
         }
 
         // walkable
-        if (struct.structureType == STRUCTURE_CONTAINER ||
-                    struct.structureType == STRUCTURE_ROAD) {
+        if (struct.structureType === STRUCTURE_CONTAINER ||
+                    struct.structureType === STRUCTURE_ROAD) {
           continue
         }
 
-        if (struct.structureType == STRUCTURE_RAMPART && !struct.isPublic) {
+        if (struct.structureType === STRUCTURE_RAMPART && !struct.isPublic) {
           target = struct
           break
         }
@@ -192,7 +192,7 @@ beetle.creepAtDestination = function (creep) {
     if (target) {
       rc = creep.dismantle(target)
       // coordinate effort - ask nearbys to attack
-      if (rc == OK) {
+      if (rc === OK) {
         target._aggroTarget_ = true
         creep.room._aggro_.push(target)
       }
@@ -200,13 +200,13 @@ beetle.creepAtDestination = function (creep) {
       rc = creep.move(next.direction)
       // trick - expect that movement actually happened
       // search step from +1 of current
-      if (rc == OK) {
+      if (rc === OK) {
         ++creep.memory._breachI_
       }
     }
 
     // extend
-    if (rc == OK) {
+    if (rc === OK) {
       creep.memory._breachT_ = Game.time
     }
   } // end of next is present
