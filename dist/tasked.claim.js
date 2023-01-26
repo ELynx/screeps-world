@@ -81,8 +81,8 @@ claim.creepAtDestination = function (creep) {
       } else if (sign.length > 0) {
         creep.signController(controller, sign)
       }
-    } // end of creep is near pos
-    else {
+      // end of creep is near pos
+    } else {
       creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 })
       rc = OK // keep walking
     }
