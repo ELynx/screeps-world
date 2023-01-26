@@ -1,5 +1,6 @@
 'use strict';
 
+var globals        = require('globals');
 var makeDebuggable = require('routine.debuggable');
 
 const profiler = require('screeps-profiler');
@@ -22,6 +23,8 @@ function Process(id)
 
     this._register = function()
     {
+        globals.registerProcessController(this);
+
         profiler.registerObject(this, this.id);
     };
 
