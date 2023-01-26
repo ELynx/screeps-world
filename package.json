@@ -3,5 +3,9 @@
   "version": "1.0.0",
   "devDependencies": {
     "grunt": "~1.5.3"
+  },
+
+  "standard": {
+    "globals": [ "Game", "_", "OK" ]
   }
 }
