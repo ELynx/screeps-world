@@ -39,6 +39,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE: COPYPASTE
+          DISABLE_LINTERS: cspell
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
