@@ -196,7 +196,7 @@ var globals =
 
     cleanUpFlags: function()
     {
-        const processIds = Object.keys(this.taskControllers);
+        const flagKeys = _.map(Object.keys(this.taskControllers), id => id + '_');
 
         for (const flagName in Game.flags)
         {
@@ -204,14 +204,13 @@ var globals =
             if (flagName == 'recount')   continue;
             if (flagName == 'autobuild') continue;
 
-            // TODO unified flag name checks
             if (flagName.startsWith('help_')) continue;
 
             // TODO automate
-            if (flagName.startsWith('security')) continue;
+            if (flagName.startsWith('security_')) continue;
 
             const processFound = _.some(
-                processIds,
+                flagKeys,
                 function(id)
                 {
                     return flagName.startsWith(id);

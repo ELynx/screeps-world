@@ -212,9 +212,11 @@ function Tasked(id)
             return;
         }
 
+        const flagKey = this.id + '_';
+
         for (const flagName in Game.flags)
         {
-            if (!flagName.startsWith(this.id))
+            if (!flagName.startsWith(flagKey))
             {
                 continue;
             }

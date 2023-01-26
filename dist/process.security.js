@@ -46,9 +46,11 @@ secutiryProcess.work = function(room)
             !ctrl.upgradeBlocked &&
              ctrl.safeModeAvailable > 0)
         {
+            const flagKey = this.id + '_';
+
             for (const flagName in Game.flags)
             {
-                if (!flagName.startsWith(this.id))
+                if (!flagName.startsWith(flagKey))
                 {
                     continue;
                 }
