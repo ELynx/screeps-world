@@ -244,9 +244,9 @@ const roomActor =
 
             unassignedCreeps.push(creep)
           }
-        } // end of creep assigned
-        else // not creep assigned
-        {
+          // end of creep assigned
+        } else {
+          // not creep assigned
           unassignedCreeps.push(creep)
         }
       } // end of creeps loop
