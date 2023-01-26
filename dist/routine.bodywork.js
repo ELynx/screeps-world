@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-var spawn = require('routine.spawn');
+const spawn = require('routine.spawn')
 
 /**
 MEMO - body part cost
@@ -15,91 +15,80 @@ TOUGH           10
 CLAIM           600
 **/
 
-var bodywork =
+const bodywork =
 {
-    /**
+  /**
     BODY Universal worker.
     @param {integer} energyLevel.
     @return {Array} body.
     **/
-    worker: function(energyLevel)
-    {
-        if (energyLevel <= 1)
-        {
-            // 250  100   50     50    50
-            return [WORK, CARRY, MOVE, MOVE];
-        }
+  worker: function (energyLevel) {
+    if (energyLevel <= 1) {
+      // 250  100   50     50    50
+      return [WORK, CARRY, MOVE, MOVE]
+    }
 
-        if (energyLevel == 2)
-        {
-            // 500  100   100   50     50     50    50    50    50
-            return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
-        }
+    if (energyLevel == 2) {
+      // 500  100   100   50     50     50    50    50    50
+      return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+    }
 
-        // 3 and above
-        // 750  100   100   100   50     50     50     50    50    50    50    50    50
-        return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-    },
+    // 3 and above
+    // 750  100   100   100   50     50     50     50    50    50    50    50    50
+    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  },
 
-    /**
+  /**
     BODY Restocker.
     @param {integer} level.
     @return {Array} body.
     **/
-    restocker: function(energyLevel)
-    {
-        if (energyLevel <= 1)
-        {
-            return [];
-        }
+  restocker: function (energyLevel) {
+    if (energyLevel <= 1) {
+      return []
+    }
 
-        if (energyLevel == 2)
-        {
-            // 550  100   100   100   50     50    50    50    50
-            return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
-        }
+    if (energyLevel == 2) {
+      // 550  100   100   100   50     50    50    50    50
+      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
+    }
 
-        // special case, limp a bit
-        if (energyLevel == 3)
-        {
-            // 800  100   100   100   100   100   50     50    50    50    50    50
-            return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
-        }
+    // special case, limp a bit
+    if (energyLevel == 3) {
+      // 800  100   100   100   100   100   50     50    50    50    50    50
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
 
-        // 4 and above
-        // 850  100   100   100   100   100   50     50    50    50    50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-    },
+    // 4 and above
+    // 850  100   100   100   100   100   50     50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  },
 
-    /**
+  /**
     BODY Miner.
     @param {integer} level.
     @return {Array} body.
     **/
-    miner: function(energyLevel)
-    {
-        return this.restocker(energyLevel);
-    },
+  miner: function (energyLevel) {
+    return this.restocker(energyLevel)
+  },
 
-    _injectIntoSpawnPool: function(id, routine)
-    {
-        const bound   = _.bind(routine, this);
-        const wrapped = function(spawn)
-        {
-            return bound(spawn.room.memory.elvl);
-        };
-
-        spawn.registerBodyFunction(id, wrapped);
-    },
-
-    injectIntoSpawnPool: function()
-    {
-        this._injectIntoSpawnPool('worker',    this.worker);
-        this._injectIntoSpawnPool('restocker', this.restocker);
-        this._injectIntoSpawnPool('miner',     this.miner);
+  _injectIntoSpawnPool: function (id, routine) {
+    const bound = _.bind(routine, this)
+    const wrapped = function (spawn) {
+      return bound(spawn.room.memory.elvl)
     }
-};
 
-bodywork.injectIntoSpawnPool();
+    spawn.registerBodyFunction(id, wrapped)
+  },
 
-module.exports = bodywork;
+  injectIntoSpawnPool: function () {
+    this._injectIntoSpawnPool('worker', this.worker)
+    this._injectIntoSpawnPool('restocker', this.restocker)
+    this._injectIntoSpawnPool('miner', this.miner)
+  }
+}
+
+bodywork.injectIntoSpawnPool()
+
+module.exports = bodywork

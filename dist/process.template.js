@@ -1,37 +1,34 @@
-'use strict';
+'use strict'
 
-var globals        = require('globals');
-var makeDebuggable = require('routine.debuggable');
+const globals = require('globals')
+const makeDebuggable = require('routine.debuggable')
 
-const profiler = require('screeps-profiler');
+const profiler = require('screeps-profiler')
 
-function Process(id)
-{
-    /**
+function Process (id) {
+  /**
     Unique identifier.
     **/
-    this.id = id;
+  this.id = id
 
-    // attach methods that allow fast debug writing
-    makeDebuggable(this, 'Process');
+  // attach methods that allow fast debug writing
+  makeDebuggable(this, 'Process')
 
-    /**
+  /**
     Work on a room.
     @param {Room} room to process.
     **/
-    this.work = undefined;
+  this.work = undefined
 
-    this._register = function()
-    {
-        globals.registerProcessController(this);
+  this._register = function () {
+    globals.registerProcessController(this)
 
-        profiler.registerObject(this, this.id);
-    };
+    profiler.registerObject(this, this.id)
+  }
 
-    this.register = function()
-    {
-        this._register();
-    }
+  this.register = function () {
+    this._register()
+  }
 };
 
-module.exports = Process;
+module.exports = Process

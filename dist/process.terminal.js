@@ -1,159 +1,137 @@
-'use strict';
+'use strict'
 
-var globals = require('globals');
-var Process = require('process.template');
+const globals = require('globals')
+const Process = require('process.template')
 
-var terminalProcess = new Process('terminal');
+const terminalProcess = new Process('terminal')
 
-const MaxBuyRoomDistance = 30;
-const MineralsToKeep = 30000;
+const MaxBuyRoomDistance = 30
+const MineralsToKeep = 30000
 
-terminalProcess.work = function(room)
-{
-    if (!room.my()) return;
+terminalProcess.work = function (room) {
+  if (!room.my()) return
 
-    this.debugHeader(room);
+  this.debugHeader(room)
 
-    if (!room.terminal) return;
+  if (!room.terminal) return
 
-    if (room.terminal.cooldown > 0) return;
+  if (room.terminal.cooldown > 0) return
 
-    if (room.terminal.store[RESOURCE_ENERGY] < 2) return;
+  if (room.terminal.store[RESOURCE_ENERGY] < 2) return
 
-    // SELL SELL SELL
-    const noPanic = room.memory.threat ? room.memory.threat < globals.ThreatLevelMax : true;
+  // SELL SELL SELL
+  const noPanic = room.memory.threat ? room.memory.threat < globals.ThreatLevelMax : true
 
-    let sellMineralType = undefined;
-    if (noPanic)
-    {
-        const minerals = room.find(FIND_MINERALS);
-        if (minerals.length > 0) sellMineralType = minerals[0].mineralType;
+  let sellMineralType
+  if (noPanic) {
+    const minerals = room.find(FIND_MINERALS)
+    if (minerals.length > 0) sellMineralType = minerals[0].mineralType
+  } else {
+    for (const key in room.terminal.store) {
+      if (room.terminal.store.getUsedCapacity(key) > 0) {
+        sellMineralType = key
+        break
+      }
     }
-    else
-    {
-        for (const key in room.terminal.store)
-        {
-            if (room.terminal.store.getUsedCapacity(key) > 0)
-            {
-                sellMineralType = key;
-                break;
-            }
-        }
-    }
+  }
 
-    if (sellMineralType === undefined) return;
+  if (sellMineralType === undefined) return
 
-    const toKeep = noPanic ? MineralsToKeep : 0;
-    const has = room.terminal.store[sellMineralType];
-    if (has === undefined || has <= toKeep) return;
+  const toKeep = noPanic ? MineralsToKeep : 0
+  const has = room.terminal.store[sellMineralType]
+  if (has === undefined || has <= toKeep) return
 
-    if (!Memory.prices)
-    {
-        Memory.prices = { };
-    }
+  if (!Memory.prices) {
+    Memory.prices = { }
+  }
 
-    const lastPrice = Memory.prices[sellMineralType] || 0;
+  const lastPrice = Memory.prices[sellMineralType] || 0
 
-    // get average order statistics
-    const allBuyOrders  = Game.market.getAllOrders({ type: ORDER_BUY,  resourceType: sellMineralType });
-    const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType });
+  // get average order statistics
+  const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: sellMineralType })
+  const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType })
 
-    let goodBuyOrders = _.filter(allBuyOrders,
-        function(order)
-        {
-            const roomFrom = Game.rooms[order.roomName];
+  const goodBuyOrders = _.filter(allBuyOrders,
+    function (order) {
+      const roomFrom = Game.rooms[order.roomName]
 
-            // don't trade with own orders
-            // if room is not visible then definitely not own order
-            // if room has no controller than definitely not own order
-            // compare by username, avoid use of "my"
-            if (roomFrom &&
+      // don't trade with own orders
+      // if room is not visible then definitely not own order
+      // if room has no controller than definitely not own order
+      // compare by username, avoid use of "my"
+      if (roomFrom &&
                 roomFrom.controller &&
                 roomFrom.controller.owner &&
-                roomFrom.controller.owner.username == room.terminal.owner.username)
-                return false;
+                roomFrom.controller.owner.username == room.terminal.owner.username) { return false }
 
-            // STRATEGY allowed price drop per sell of room resources
-            if (noPanic && (order.price < 0.95 * lastPrice))
-                return false;
+      // STRATEGY allowed price drop per sell of room resources
+      if (noPanic && (order.price < 0.95 * lastPrice)) { return false }
 
-            const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true);
-            if (noPanic && (dist > MaxBuyRoomDistance))
-                return false;
+      const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true)
+      if (noPanic && (dist > MaxBuyRoomDistance)) { return false }
 
-            return true;
-        }
-    );
-
-    // derive smallest sell price
-    let smallestPrice = Number.MAX_SAFE_INTEGER;
-    // derive biggest buy price
-    let biggestPrice = 0;
-
-    for (let i = 0; i < goodBuyOrders.length; ++i)
-    {
-        const order = goodBuyOrders[i];
-
-        if (order.price > biggestPrice)
-        {
-            biggestPrice = order.price;
-        }
+      return true
     }
+  )
 
-    for (let i = 0; i < allSellOrders.length; ++i)
-    {
-        const order = allSellOrders[i];
+  // derive smallest sell price
+  let smallestPrice = Number.MAX_SAFE_INTEGER
+  // derive biggest buy price
+  let biggestPrice = 0
 
-        const roomFrom = Game.rooms[order.roomName];
+  for (let i = 0; i < goodBuyOrders.length; ++i) {
+    const order = goodBuyOrders[i]
 
-        // don't trade with own orders
-        // see above for breakdown
-        if (roomFrom &&
+    if (order.price > biggestPrice) {
+      biggestPrice = order.price
+    }
+  }
+
+  for (let i = 0; i < allSellOrders.length; ++i) {
+    const order = allSellOrders[i]
+
+    const roomFrom = Game.rooms[order.roomName]
+
+    // don't trade with own orders
+    // see above for breakdown
+    if (roomFrom &&
             roomFrom.controller &&
             roomFrom.controller.owner &&
-            roomFrom.controller.owner.username == room.terminal.owner.username)
-            continue;
+            roomFrom.controller.owner.username == room.terminal.owner.username) { continue }
 
-        if (order.price < smallestPrice)
-        {
-            smallestPrice = order.price;
-        }
+    if (order.price < smallestPrice) {
+      smallestPrice = order.price
     }
+  }
 
-    // some bad orders
-    if (noPanic && (biggestPrice <= smallestPrice))
-    {
-        return;
+  // some bad orders
+  if (noPanic && (biggestPrice <= smallestPrice)) {
+    return
+  }
+
+  goodBuyOrders.sort(
+    function (o1, o2) {
+      if (o1.price != o2.price) {
+        return o2.price - o1.price
+      }
+
+      return Game.map.getRoomLinearDistance(room.name, o1.roomName, true) - Game.map.getRoomLinearDistance(room.name, o2.roomName, true)
     }
+  )
 
-    goodBuyOrders.sort(
-        function(o1, o2)
-        {
-            if (o1.price != o2.price)
-            {
-                return o2.price - o1.price;
-            }
+  for (let i = 0; i < goodBuyOrders.length; ++i) {
+    const rc = room.terminal.autoSell(goodBuyOrders[i], toKeep)
 
-            return Game.map.getRoomLinearDistance(room.name, o1.roomName, true) - Game.map.getRoomLinearDistance(room.name, o2.roomName, true);
-        }
-    );
+    if (rc == OK) {
+      if (noPanic) {
+        Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price
+      }
 
-    for (let i = 0; i < goodBuyOrders.length; ++i)
-    {
-        const rc = room.terminal.autoSell(goodBuyOrders[i], toKeep);
-
-        if (rc == OK)
-        {
-            if (noPanic)
-            {
-                Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price;
-            }
-
-            break;
-        }
+      break
     }
-};
+  }
+}
 
-terminalProcess.register();
+terminalProcess.register()
 
-module.exports = terminalProcess;
+module.exports = terminalProcess

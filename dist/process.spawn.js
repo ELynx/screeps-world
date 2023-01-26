@@ -1,169 +1,150 @@
-'use strict';
+'use strict'
 
-var Process = require('process.template');
-var globals = require('globals');
-var queue   = require('routine.spawn');
+const Process = require('process.template')
+const globals = require('globals')
+const queue = require('routine.spawn')
 
-var spawnProcess = new Process('spawn');
+const spawnProcess = new Process('spawn')
 
-spawnProcess.makeKey = function(room, type)
-{
-    return type + '_' + room.name;
-};
+spawnProcess.makeKey = function (room, type) {
+  return type + '_' + room.name
+}
 
-spawnProcess._addToQueue = function(room, type, memoryAddon, n, adderFunction)
-{
-    const key = this.makeKey(room, type);
+spawnProcess._addToQueue = function (room, type, memoryAddon, n, adderFunction) {
+  const key = this.makeKey(room, type)
 
-    let memory =
+  const memory =
     {
-        crum: room.name,
-        ctrl: globals.NO_CONTROL,
-        dest: globals.NO_DESTINATION,
-        dact: globals.NO_ACT_RANGE,
-        xtra: globals.NO_EXTRA,
-        btyp: type
-    };
-    _.assign(memory, memoryAddon);
-
-    adderFunction(
-        key,       // id in queue
-        type,      // body function
-        key,       // name prefix
-        memory,    // memory
-        room.name, // from
-        room.name, // to
-        n          // how much to add
-    );
-};
-
-spawnProcess.addToQueue = function(room, type, memory, n, priority)
-{
-    if (n <= 0) return;
-
-    if (priority == 'urgent')
-    {
-        this._addToQueue(room, type, memory, n, _.bind(queue.addUrgent, queue));
+      crum: room.name,
+      ctrl: globals.NO_CONTROL,
+      dest: globals.NO_DESTINATION,
+      dact: globals.NO_ACT_RANGE,
+      xtra: globals.NO_EXTRA,
+      btyp: type
     }
-    else if (priority == 'normal')
-    {
-        this._addToQueue(room, type, memory, n, _.bind(queue.addNormal, queue));
-    }
-    else if (priority == 'lowkey')
-    {
-        this._addToQueue(room, type, memory, n, _.bind(queue.addLowkey, queue));
-    }
-};
+  _.assign(memory, memoryAddon)
 
-spawnProcess._hasAndPlanned = function(room, live, type)
-{
-    const has = live[type] || 0;
-    const planned = queue.count(this.makeKey(room, type));
+  adderFunction(
+    key, // id in queue
+    type, // body function
+    key, // name prefix
+    memory, // memory
+    room.name, // from
+    room.name, // to
+    n // how much to add
+  )
+}
 
-    return has + planned;
-};
+spawnProcess.addToQueue = function (room, type, memory, n, priority) {
+  if (n <= 0) return
 
-spawnProcess.workers = function(room, live)
-{
-    const addWorker = _.bind(
-        function(n, priority)
-        {
-            this.addToQueue(
-                room,
-                'worker',
-                { },
-                n,
-                priority
-            );
-        },
-        this
-    );
+  if (priority == 'urgent') {
+    this._addToQueue(room, type, memory, n, _.bind(queue.addUrgent, queue))
+  } else if (priority == 'normal') {
+    this._addToQueue(room, type, memory, n, _.bind(queue.addNormal, queue))
+  } else if (priority == 'lowkey') {
+    this._addToQueue(room, type, memory, n, _.bind(queue.addLowkey, queue))
+  }
+}
 
-    const nowWorkers = this._hasAndPlanned(room, live, 'worker');
-    if (nowWorkers == 0)
-    {
-        addWorker(1, 'urgent');
-        addWorker(1, 'normal');
+spawnProcess._hasAndPlanned = function (room, live, type) {
+  const has = live[type] || 0
+  const planned = queue.count(this.makeKey(room, type))
 
-        return;
-    }
+  return has + planned
+}
 
-    // STRATEGY how many workers
+spawnProcess.workers = function (room, live) {
+  const addWorker = _.bind(
+    function (n, priority) {
+      this.addToQueue(
+        room,
+        'worker',
+        { },
+        n,
+        priority
+      )
+    },
+    this
+  )
 
-    const nowRestockers = this._hasAndPlanned(room, live, 'restocker');
+  const nowWorkers = this._hasAndPlanned(room, live, 'worker')
+  if (nowWorkers == 0) {
+    addWorker(1, 'urgent')
+    addWorker(1, 'normal')
 
-    const freeHarvestSlots = Math.max(0, room.memory.hlvl - nowRestockers);
-    const supportedWorkers = nowRestockers * 2; // suppose each restocker supports two takers
-    const wantWorkers = freeHarvestSlots + supportedWorkers;
+    return
+  }
 
-    const wantWorkersMin = 2;  // to survive energy balance
-    const wantWorkersMax = 12; // to survive CPU
+  // STRATEGY how many workers
 
-    const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax));
+  const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
 
-    addWorker(want - nowWorkers, 'lowkey');
-};
+  const freeHarvestSlots = Math.max(0, room.memory.hlvl - nowRestockers)
+  const supportedWorkers = nowRestockers * 2 // suppose each restocker supports two takers
+  const wantWorkers = freeHarvestSlots + supportedWorkers
 
-spawnProcess.restockers = function(room, live)
-{
-    const want = Math.round(room.memory.slvl);
-    if (want > 0)
-    {
-        const now = this._hasAndPlanned(room, live, 'restocker');
-        this.addToQueue(
-            room,
-            'restocker',
-            {
-                rstk: true
-            },
-            want - now,
-            'lowkey'
-        );
-    }
-};
+  const wantWorkersMin = 2 // to survive energy balance
+  const wantWorkersMax = 12 // to survive CPU
 
-spawnProcess.miners = function(room, live)
-{
-    const want = room.memory.mlvl;
-    if (want > 0)
-    {
-        const now = this._hasAndPlanned(room, live, 'miner');
-        this.addToQueue(
-            room,
-            'miner',
-            {
-                minr: true,
-                rstk: true
-            },
-            want - now,
-            'lowkey'
-        );
-    }
-};
+  const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
-spawnProcess.my = function(room, live)
-{
-    // STRATEGY workers have number dependent on other fractions
-    this.miners(room, live);
-    this.restockers(room, live);
-    this.workers(room, live);
-};
+  addWorker(want - nowWorkers, 'lowkey')
+}
 
-spawnProcess.ally = function(room, live)
-{
-    this.workers(room, live);
-};
+spawnProcess.restockers = function (room, live) {
+  const want = Math.round(room.memory.slvl)
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'restocker')
+    this.addToQueue(
+      room,
+      'restocker',
+      {
+        rstk: true
+      },
+      want - now,
+      'lowkey'
+    )
+  }
+}
 
-spawnProcess.work = function(room)
-{
-    this.debugHeader(room);
+spawnProcess.miners = function (room, live) {
+  const want = room.memory.mlvl
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'miner')
+    this.addToQueue(
+      room,
+      'miner',
+      {
+        minr: true,
+        rstk: true
+      },
+      want - now,
+      'lowkey'
+    )
+  }
+}
 
-    let live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp');
+spawnProcess.my = function (room, live) {
+  // STRATEGY workers have number dependent on other fractions
+  this.miners(room, live)
+  this.restockers(room, live)
+  this.workers(room, live)
+}
 
-    if      (room.my())   this.my  (room, live);
-    else if (room.ally()) this.ally(room, live);
-};
+spawnProcess.ally = function (room, live) {
+  this.workers(room, live)
+}
 
-spawnProcess.register();
+spawnProcess.work = function (room) {
+  this.debugHeader(room)
 
-module.exports = spawnProcess;
+  const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
+
+  if (room.my()) this.my(room, live)
+  else if (room.ally()) this.ally(room, live)
+}
+
+spawnProcess.register()
+
+module.exports = spawnProcess
