@@ -54,7 +54,7 @@ claim.creepAtDestination = function (creep) {
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)
       } else if (controller.reservation && controller.reservation.username !== creep.owner.username) {
-        sing = 'Taking over'
+        sign = 'Taking over'
         rc = creep.attackController(controller)
       } else {
         let myRooms = 0
