@@ -9,8 +9,6 @@ on:
 
 env:
   APPLY_FIXES: all
-  APPLY_FIXES_EVENT: all
-  APPLY_FIXES_MODE: commit
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -40,6 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE: COPYPASTE
           DISABLE_LINTERS: cspell
+          FILTER_REGEX_EXCLUDE: (dist/screeps-profiler.js)
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
