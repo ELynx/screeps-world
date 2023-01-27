@@ -1,6 +1,5 @@
 'use strict'
 
-const globals = require('globals')
 const Controller = require('controller.template')
 
 const rampupController = new Controller('rampup')
