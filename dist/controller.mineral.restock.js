@@ -12,12 +12,14 @@ mineralRestockController.allied = true
 mineralRestockController.act = function (withStore, creep) {
   for (const resourceType in creep.store) {
     const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
-    if (rc !== OK) return rc
+    if (rc !== OK) {
+      return rc
+    }
   }
 
   // if here then all transfers were OK
   // thus do not keep at target
-  return globals.WARN_LAST_INTENT
+  return globals.WARN_INTENDEE_EXHAUSTED
 }
 
 mineralRestockController._checkStore = function (structure) {
@@ -30,8 +32,13 @@ mineralRestockController._checkStore = function (structure) {
 
 mineralRestockController.targets = function (room) {
   // STRATEGY what to fill first
-  if (this._checkStore(room.terminal)) return [room.terminal]
-  if (this._checkStore(room.storage)) return [room.storage]
+  if (this._checkStore(room.terminal)) {
+    return [room.terminal]
+  }
+
+  if (this._checkStore(room.storage)) {
+    return [room.storage]
+  }
 
   return []
 }
