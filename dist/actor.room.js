@@ -178,7 +178,7 @@ const roomActor =
             const currentController = globals.roomControllers[creep.memory.ctrl]
 
             const rc = grabController.act(currentController, creep)
-            if (rc === globals.WARN_LAST_INTENT) {
+            if (rc === globals.ERR_INTENDEE_EXHAUSTED) {
               globals.unassignCreep(creep)
             }
           }
