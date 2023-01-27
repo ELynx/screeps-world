@@ -14,15 +14,15 @@ rampupController.act = function (currentController, creep) {
   const allStructures = creep.room.lookForAtArea(LOOK_STRUCTURES, t, l, b, r, true)
   const rampsToBoost = _.filter(
     allStructures,
-    function (structure) {
+    function (item) {
       // STRATEGY boost ramps that are just built
-      return structure.structureType === STRUCTURE_RAMPART && structure.hits === 1
+      return item.structure.structureType === STRUCTURE_RAMPART && item.structure.hits < 301
     }
   )
 
   for (let i = 0; i < rampsToBoost.length; ++i) {
-    const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i])
-    if (rc !== globals.WARN_INTENDED_EXHAUSTED && rc !== globals.ERR_INTENDED_EXHAUSTED) {
+    const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i], 301)
+    if (rc !== OK) {
       return rc
     }
   }
