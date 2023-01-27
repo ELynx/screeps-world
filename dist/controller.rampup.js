@@ -10,9 +10,7 @@ rampupController.actRange = 3
 rampupController.allied = true
 
 rampupController.act = function (currentController, creep) {
-  const hasUniversalStore = creep.room.storage || creep.room.terminal
-
-  const [t, l, b, r] = creep.pos.squareArea(actRange)
+  const [t, l, b, r] = creep.pos.squareArea(this.actRange)
   const allStructures = creep.room.lookForAtArea(LOOK_STRUCTURES, t, l, b, r, true)
   const rampsToBoost = _.filter(
     allStructures,
