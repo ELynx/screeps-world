@@ -7,12 +7,12 @@ const makeDebuggable = require('routine.debuggable')
 const profiler = require('screeps-profiler')
 
 Room.prototype._markDefaultFiltered = function () {
-  this._markDefaultFiltered_ = Game.time
+  this.__mark_default_filtered = Game.time
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  if (this._markDefaultFiltered_) {
-    return this._markDefaultFiltered_ === Game.time
+  if (this.__mark_default_filtered) {
+    return this.__mark_default_filtered === Game.time
   }
 
   return false
@@ -257,7 +257,11 @@ function Controller (id) {
         // don't forget creeps that are not tested at all
         const creepsLeft = roomCreeps.slice(i)
 
-        if (unassignedCreeps.length === 0) { unassignedCreeps = creepsLeft } else { unassignedCreeps = unassignedCreeps.concat(creepsLeft) }
+        if (unassignedCreeps.length === 0) {
+          unassignedCreeps = creepsLeft
+        } else {
+          unassignedCreeps = unassignedCreeps.concat(creepsLeft)
+        }
 
         break // from creeps cycle
       }
@@ -286,7 +290,9 @@ function Controller (id) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
-          if (this.validateTarget(currentTarget, creep) === false) { continue }
+          if (this.validateTarget(currentTarget, creep) === false) {
+            continue
+          }
         } // to next target
 
         if (creep.pos.inRangeTo(currentTarget.pos, this.actRange)) {
@@ -315,7 +321,9 @@ function Controller (id) {
           }
         }
 
-        if (target) break // out of target loop
+        if (target) {
+          break // out of target loop
+        }
       } // end of target loop
 
       if (target) {

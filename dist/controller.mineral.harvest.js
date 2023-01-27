@@ -1,5 +1,6 @@
 'use strict'
 
+const globals = require('globals')
 const Controller = require('controller.template')
 
 const mineralHarvestController = new Controller('mineral.harvest')
@@ -8,7 +9,9 @@ mineralHarvestController.actRange = 1
 
 mineralHarvestController.act = function (extractor, creep) {
   // STRATEGY wait for full take, keep on target
-  if (extractor.cooldown > 0) return OK
+  if (extractor.cooldown > 0) {
+    return OK
+  }
 
   const minerals = extractor.pos.lookFor(LOOK_MINERALS)
 
@@ -17,7 +20,7 @@ mineralHarvestController.act = function (extractor, creep) {
   for (let i = 0; i < minerals.length; ++i) {
     const mineral = minerals[i]
     const rc = this.wrapIntent(creep, 'harvest', mineral)
-    if (rc === ERR_NOT_ENOUGH_RESOURCES) {
+    if (rc === ERR_NOT_ENOUGH_RESOURCES || rc === globals.WARN_INTENDED_EXHAUSTED) {
       extractor.room.memory.mlvl = 0
     }
 
@@ -28,7 +31,9 @@ mineralHarvestController.act = function (extractor, creep) {
 }
 
 mineralHarvestController.targets = function (room) {
-  if (room.memory.mlvl === 0) return []
+  if (room.memory.mlvl === 0) {
+    return []
+  }
 
   return room.find(
     FIND_STRUCTURES,
