@@ -8,31 +8,23 @@ rampupController.actRange = 3
 
 rampupController.allied = true
 
-rampupController.act = function (currentController, creep) {
-  const [t, l, b, r] = creep.pos.squareArea(this.actRange)
-  const allStructures = creep.room.lookForAtArea(LOOK_STRUCTURES, t, l, b, r, true)
-  const rampsToBoost = _.filter(
-    allStructures,
-    function (item) {
-      // STRATEGY boost ramps that are just built
-      return item.structure.structureType === STRUCTURE_RAMPART && item.structure.hits < 301
-    }
-  )
+  // STRATEGY ramp up newly built fortifications; for rampts - survive 3 x decay periods (300 ticks)
+const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1;
 
-  for (let i = 0; i < rampsToBoost.length; ++i) {
-    const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i].structure, 301)
-    if (rc !== OK) {
-      return rc
-    }
-  }
-
-  return OK
+rampupController.act = function (target, creep) {
+  return this.wrapIntent(creep, 'repair', target, RampupHits)
 }
 
-rampupController.filterCreep = function (creep) {
-  return this._hasEnergy(creep) && creep.getActiveBodyparts(WORK) > 0
+rampupController.targets = function (room) {
+  return room.find(FIND_STRUCTURES,
+    {
+      filter: function(structure) {
+        return (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART) && structure.hits && structure.hits < RampupHits
+      }
+    }
+  );
 }
 
-// NOT registered, called from room actor explicitly
+rampupController.register();
 
 module.exports = rampupController

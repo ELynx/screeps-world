@@ -67,6 +67,7 @@
       "ORDER_BUY",
       "ORDER_SELL",
       "OwnedStructure",
+      "RAMPART_DECAY_AMOUNT",
       "RANGED_ATTACK",
       "REPAIR_COST",
       "REPAIR_POWER",
