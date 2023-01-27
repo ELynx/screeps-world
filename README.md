@@ -19,8 +19,6 @@ Proprietary and confidential.
 ## TODO
 (High importance) IFF retaliation.
 
-(High importance) kick-start ramparts.
-
 Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
