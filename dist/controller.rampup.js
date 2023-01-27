@@ -20,7 +20,7 @@ rampupController.act = function (currentController, creep) {
   )
 
   for (let i = 0; i < rampsToBoost.length; ++i) {
-    const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i], 301)
+    const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i].structure, 301)
     if (rc !== OK) {
       return rc
     }
