@@ -49,8 +49,6 @@ Two `attackController`s per tick. See evidence:
 3. ["Shadow" value is transferred to regular on tick, _once_](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/controllers/tick.js#L20)
 
 
-PathFinder option `flee`.
-
 Lodash `Chain`.
 
 Towers fight back based on event log.
@@ -74,3 +72,5 @@ Limit autobuild run to some N elements.
 `upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
 
 Overshoot repair HP if threat is > 0 to keep repairs on target.
+
+Incorporate [Cartographer](https://github.com/glitchassassin/screeps-cartographer)
