@@ -291,8 +291,8 @@ function Controller (id) {
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
           if (this.validateTarget(currentTarget, creep) === false) {
-              continue
-            }
+            continue
+          }
         } // to next target
 
         if (creep.pos.inRangeTo(currentTarget.pos, this.actRange)) {
