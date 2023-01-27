@@ -26,8 +26,9 @@ const repairController = require('controller.repair')
 const buildController = require('controller.build')
 const controllerController = require('controller.controller')
 
-// this one does not register
+// these do not register
 const grabController = require('controller.grab')
+const rampupController = require('controller.rampup')
 /* eslint-enable no-unused-vars */
 
 const roomActor =
@@ -178,6 +179,18 @@ const roomActor =
             const currentController = globals.roomControllers[creep.memory.ctrl]
 
             const rc = grabController.act(currentController, creep)
+            if (rc === globals.ERR_INTENDEE_EXHAUSTED) {
+              globals.unassignCreep(creep)
+            }
+          }
+        }
+
+        // ramp resque logic, manual call
+        if (room.my() || (room.ally() && rampupController.allied)) {
+          if (rampupController.filterCreep(creep)) {
+            const currentController = globals.roomControllers[creep.memory.ctrl]
+
+            const rc = rampupController.act(currentController, creep)
             if (rc === globals.ERR_INTENDEE_EXHAUSTED) {
               globals.unassignCreep(creep)
             }

@@ -11,7 +11,7 @@ grabController.allied = true
 grabController.act = function (currentController, creep) {
   const hasUniversalStore = creep.room.storage || creep.room.terminal
 
-  const [t, l, b, r] = creep.pos.squareArea(1)
+  const [t, l, b, r] = creep.pos.squareArea(this.actRange)
   const grabs = creep.room.lookAtArea(t, l, b, r, true)
 
   for (let i = 0; i < grabs.length; ++i) {
