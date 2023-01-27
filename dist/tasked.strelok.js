@@ -195,26 +195,25 @@ strelok.creepAtDestination = function (creep) {
     if (creep._canMove_) {
       // ballet when close
       if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
-        let toFrom = 0
+        let flee
 
         const targetIsStructure = fireTarget.structureType !== undefined
         const targetIsNotMelee = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK))
 
         if (targetIsStructure || targetIsNotMelee) {
           if (rangeToFireTarget > 1) {
-            toFrom = 1
+            flee = false
           }
         } else {
           if (rangeToFireTarget >= 3) {
-            toFrom = 1
+            flee = false
           } else {
-            toFrom = -1
+            flee = true
           }
         }
 
-        if (toFrom !== 0) {
-          const direction = toFrom > 0 ? creep.pos.getDirectionTo(fireTarget) : fireTarget.pos.getDirectionTo(creep)
-          creep.move(direction)
+        if (flee !== undefined) {
+          creep.moveToWrapper(fireTarget, { maxRooms: 1, range: 1, flee })
         }
       } else {
         // STRATEGY follow creep tightly
