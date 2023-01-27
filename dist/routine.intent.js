@@ -304,7 +304,7 @@ const intent =
 
     const rc = this.exchangeImpl(target, creep, type, false, amount)
 
-    // accomodate for argument order switch
+    // accommodate for argument order switch
     if (rc === globals.ERR_INTENDEE_EXHAUSTED) return globals.ERR_INTENDED_EXHAUSTED
     if (rc === globals.ERR_INTENDED_EXHAUSTED) return globals.ERR_INTENDEE_EXHAUSTED
     if (rc === globals.WARN_INTENDED_EXHAUSTED) return globals.WARN_INTENDEE_EXHAUSTED
