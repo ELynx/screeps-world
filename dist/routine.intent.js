@@ -78,8 +78,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= sourceHas) rc = globals.WARN_LAST_INTENT
-    if (exchange >= targetFree) rc = globals.WARN_LAST_INTENT
+    if (exchange >= sourceHas) rc = globals.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= targetFree) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -110,8 +110,8 @@ const intent =
 
     let rc = OK
 
-    if (actualProgress >= energy) rc = globals.WARN_LAST_INTENT
-    if (actualProgress >= remainingProgress) rc = globals.WARN_LAST_INTENT
+    if (actualProgress >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
+    if (actualProgress >= remainingProgress) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -168,10 +168,12 @@ const intent =
       this.intentCapacityChange(creep, what, toBeStored)
 
       // if capacity left is less or equal to intent, then this is last harvest before full
-      if (freeCapacity <= toBeHarvested) rc = globals.WARN_LAST_INTENT
+      if (freeCapacity <= toBeHarvested) rc = globals.WARN_INTENDEE_EXHAUSTED
     }
 
     target.__amount = amount - toBeHarvested
+
+    if (toBeHarvested >= amount) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -200,8 +202,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= canPick) rc = globals.WARN_LAST_INTENT
-    if (exchange >= amount) rc = globals.WARN_LAST_INTENT
+    if (exchange >= canPick) rc = globals.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= amount) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -237,8 +239,8 @@ const intent =
 
     let rc = OK
 
-    if (repairCost >= energy) rc = globals.WARN_LAST_INTENT
-    if (target.__hits >= wantHits) rc = globals.WARN_LAST_INTENT
+    if (repairCost >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
+    if (target.__hits >= wantHits) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -286,10 +288,10 @@ const intent =
 
     let rc = OK
 
-    if (actualUpgrades >= energy) rc = globals.WARN_LAST_INTENT
-    if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_LAST_INTENT
+    if (actualUpgrades >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
+    if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_INTENDED_EXHAUSTED
 
-    if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_LAST_INTENT
+    if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -300,7 +302,15 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    return this.exchangeImpl(target, creep, type, false, amount)
+    const rc = this.exchangeImpl(target, creep, type, false, amount)
+
+    // accomodate for argument order switch
+    if (rc === globals.ERR_INTENDEE_EXHAUSTED) return globals.ERR_INTENDED_EXHAUSTED
+    if (rc === globals.ERR_INTENDED_EXHAUSTED) return globals.ERR_INTENDEE_EXHAUSTED
+    if (rc === globals.WARN_INTENDED_EXHAUSTED) return globals.WARN_INTENDEE_EXHAUSTED
+    if (rc === globals.WARN_INTENDEE_EXHAUSTED) return globals.WARN_INTENDED_EXHAUSTED
+
+    return rc
   },
 
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
