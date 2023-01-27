@@ -16,11 +16,11 @@ rampupController.act = function (currentController, creep) {
   const allStructures = creep.room.lookForAtArea(LOOK_STRUCTURES, t, l, b, r, true)
   const rampsToBoost = _.filter(
     allStructures,
-    function(structure) {
+    function (structure) {
       // STRATEGY boost ramps that are just built
       return structure.structureType === STRUCTURE_RAMPART && structure.hits === 1
     }
-  );
+  )
 
   for (let i = 0; i < rampsToBoost.length; ++i) {
     const rc = this.wrapIntent(creep, 'repair', rampsToBoost[i])
@@ -33,7 +33,7 @@ rampupController.act = function (currentController, creep) {
 }
 
 rampupController.filterCreep = function (creep) {
-  return this._hasEnergy(creep) && creep.getActiveBodyparts(WORK) > 0;
+  return this._hasEnergy(creep) && creep.getActiveBodyparts(WORK) > 0
 }
 
 // NOT registered, called from room actor explicitly
