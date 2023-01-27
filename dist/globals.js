@@ -6,8 +6,10 @@ const globals =
   ThreatLevelMedium: 3,
   ThreatLevelMax: 5,
 
-  // intent is valid, but next such action will be exhausting
-  WARN_LAST_INTENT: 1,
+  // intent is valid, but next such action will exhaust intended
+  WARN_INTENDED_EXHAUSTED: 2,
+  // intent is valid, but next such action will exhaust intendee
+  WARN_INTENDEE_EXHAUSTED: 1,
   // intent not found
   ERR_INVALID_INTENT_NAME: -10000,
   // intent args not given properly
@@ -165,7 +167,9 @@ const globals =
     if (!Game.__unwalkableBordersCostCallbackCache) Game.__unwalkableBordersCostCallbackCache = { }
 
     const cached = Game.__unwalkableBordersCostCallbackCache[roomName]
-    if (cached) return cached
+    if (cached) {
+      return cached
+    }
 
     const modified = costMatrix.clone()
 
