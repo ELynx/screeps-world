@@ -16,6 +16,7 @@ Order of load is priority order for creep assignment.
 **/
 const redAlert = require('controller.redalert') // always on top
 const ttlController = require('controller.ttl') // catch recyclees
+const rampupController = require('controller.rampup') // build up the ramps and walls to decent level right up
 const controllerMineralHarvest = require('controller.mineral.harvest') // catch miners to mineral
 const controllerMineralRestock = require('controller.mineral.restock') // catch anyone with mineral only
 const energyTakeController = require('controller.energy.take') // above harvest, decrease harvest work
@@ -28,7 +29,6 @@ const controllerController = require('controller.controller')
 
 // these do not register
 const grabController = require('controller.grab')
-const rampupController = require('controller.rampup')
 /* eslint-enable no-unused-vars */
 
 const roomActor =
@@ -179,19 +179,7 @@ const roomActor =
             const currentController = globals.roomControllers[creep.memory.ctrl]
 
             const rc = grabController.act(currentController, creep)
-            if (rc === globals.ERR_INTENDEE_EXHAUSTED) {
-              globals.unassignCreep(creep)
-            }
-          }
-        }
-
-        // ramp resque logic, manual call
-        if (room.my() || (room.ally() && rampupController.allied)) {
-          if (rampupController.filterCreep(creep)) {
-            const currentController = globals.roomControllers[creep.memory.ctrl]
-
-            const rc = rampupController.act(currentController, creep)
-            if (rc === globals.ERR_INTENDEE_EXHAUSTED) {
+            if (rc === globals.ERR_INTENDEE_EXHAUSTED || rc === globals.WARN_INTENDEE_EXHAUSTED) {
               globals.unassignCreep(creep)
             }
           }
