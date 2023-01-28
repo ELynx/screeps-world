@@ -80,6 +80,10 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
   return ERR_NOT_FOUND
 }
 
+Creep.prototype.moveWrapper = function (direction) {
+  return this.move(direction)
+}
+
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
   return this.moveTo(destination, globals.moveOptionsWrapper(options))
 }
