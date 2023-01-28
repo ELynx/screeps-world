@@ -11,6 +11,14 @@ rampupController.allied = true
 // STRATEGY ramp up newly built fortifications; for rampts - survive 3 x decay periods (300 ticks)
 const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1
 
+rampupController.roomPrepare = function (room) {
+  this._prepareExcludedTargets(room)
+}
+
+rampupController.observeMyCreep = function (creep) {
+  this._excludeTarget(creep)
+}
+
 rampupController.act = function (target, creep) {
   return this.wrapIntent(creep, 'repair', target, RampupHits)
 }
