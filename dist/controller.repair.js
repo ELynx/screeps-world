@@ -43,7 +43,12 @@ repairController.observeMyCreep = function (creep) {
 }
 
 repairController.act = function (target, creep) {
-  return this.wrapIntent(creep, 'repair', target, creep.memory.xtra)
+  let onSpotMultiplier = 1.0
+  if (creep.room.memory && creep.room.memory.threat) {
+    onSpotMultiplier = 1.5
+  }
+
+  return this.wrapIntent(creep, 'repair', target, creep.memory.xtra * onSpotMultiplier)
 }
 
 repairController.targets = function (room) {
