@@ -48,7 +48,6 @@ Two `attackController`s per tick. See evidence:
 
 3. ["Shadow" value is transferred to regular on tick, _once_](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/controllers/tick.js#L20)
 
-
 Lodash `Chain`.
 
 Towers fight back based on event log.
