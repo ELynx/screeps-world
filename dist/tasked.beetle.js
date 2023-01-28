@@ -195,7 +195,7 @@ beetle.creepAtDestination = function (creep) {
         creep.room._aggro_.push(target)
       }
     } else {
-      rc = creep.move(next.direction)
+      rc = creep.moveWrapper(next.direction)
       // trick - expect that movement actually happened
       // search step from +1 of current
       if (rc === OK) {
