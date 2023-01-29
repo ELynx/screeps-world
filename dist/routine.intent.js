@@ -48,7 +48,7 @@ const intent =
 
   _getUsedCapacity: function (something, type) {
     const key = '__stored_' + type
-    const value = something.store._getUsedCapacity(type)
+    const value = something.store.getUsedCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
@@ -61,7 +61,7 @@ const intent =
     )
 
     const key = nonUniversal ? ('__free_' + type) : '__free_universal'
-    const value = something.store._getFreeCapacity(type)
+    const value = something.store.getFreeCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
@@ -424,6 +424,12 @@ const intent =
     }
 
     return rc
+  },
+
+  getFreeCapacity: function (something, type = undefined) {
+  },
+
+  getUsedCapacity: function(something, type = undefined) {
   }
 }
 
