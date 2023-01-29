@@ -429,7 +429,7 @@ const intent =
   getFreeCapacity: function (something, type = undefined) {
   },
 
-  getUsedCapacity: function(something, type = undefined) {
+  getUsedCapacity: function (something, type = undefined) {
   }
 }
 
