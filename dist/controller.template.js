@@ -187,6 +187,10 @@ function Controller (id) {
     return creep.store.getUsedCapacity() === 0
   }
 
+  this._hasFreeCapacity = function (creep) {
+    return creep.store.getFreeCapacity() > 0
+  }
+
   this._isWorkAble = function (creep) {
     return this._hasEnergy(creep) && this._hasWCM(creep)
   }
