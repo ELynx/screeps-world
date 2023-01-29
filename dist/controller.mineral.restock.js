@@ -45,13 +45,9 @@ mineralRestockController.targets = function (room) {
 
 mineralRestockController.filterCreep = function (creep) {
   // STRATEGY has non-energy resouces, can walk
-  if (creep.getActiveBodyparts(CARRY) > 0 &&
-        creep.getActiveBodyparts(MOVE) > 0) {
-    const usedTotal = creep.store.getUsedCapacity()
-    const usedEnergy = creep.store.getUsedCapacity(RESOURCE_ENERGY)
-
+  if (creep.getActiveBodyparts(CARRY) > 0 && creep.getActiveBodyparts(MOVE) > 0) {
     // don't bring energy
-    return usedTotal > 0 && usedEnergy === 0
+    return (!this._isEmpty(creep)) && (!this._hasEnergy(creep))
   }
 
   return false
