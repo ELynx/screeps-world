@@ -379,7 +379,7 @@ const intent =
   restoreIntents: function (something, backup) {
     if (something && backup) {
       something.__intents = backup
-    },
+    }
   },
 
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
