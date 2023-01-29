@@ -46,13 +46,13 @@ const intent =
     return intentValue
   },
 
-  getUsedCapacity: function (something, type) {
+  _getUsedCapacity: function (something, type) {
     const key = '__stored_' + type
-    const value = something.store.getUsedCapacity(type)
+    const value = something.store._getUsedCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
-  getFreeCapacity: function (something, type) {
+  _getFreeCapacity: function (something, type) {
     // detect non-universal store
     const nonUniversal = this.isIntended(
       something,
@@ -61,7 +61,7 @@ const intent =
     )
 
     const key = nonUniversal ? ('__free_' + type) : '__free_universal'
-    const value = something.store.getFreeCapacity(type)
+    const value = something.store._getFreeCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
@@ -93,7 +93,7 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    const sourceHas = this.getUsedCapacity(source, type)
+    const sourceHas = this._getUsedCapacity(source, type)
     if (sourceHas <= 0) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
@@ -104,7 +104,7 @@ const intent =
     }
     const sourceOut = amount || sourceHas
 
-    const targetFree = this.getFreeCapacity(target, type)
+    const targetFree = this._getFreeCapacity(target, type)
     if (targetFree <= 0) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
@@ -128,7 +128,7 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY)
+    const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
@@ -200,7 +200,7 @@ const intent =
 
     // if creep was designed to carry anything at all, check remaining store
     if (_.some(creep.body, _.matchesProperty('type', CARRY))) {
-      const freeCapacity = this.getFreeCapacity(creep, what)
+      const freeCapacity = this._getFreeCapacity(creep, what)
       if (freeCapacity <= 0) {
         return globals.ERR_INTENDEE_EXHAUSTED
       }
@@ -233,7 +233,7 @@ const intent =
     }
     const type = target.resourceType
 
-    const canPick = this.getFreeCapacity(creep, type)
+    const canPick = this._getFreeCapacity(creep, type)
     if (canPick <= 0) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
@@ -257,7 +257,7 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY)
+    const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
@@ -305,7 +305,7 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    const energy = this.getUsedCapacity(creep, RESOURCE_ENERGY)
+    const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
       return globals.ERR_INTENDEE_EXHAUSTED
     }
