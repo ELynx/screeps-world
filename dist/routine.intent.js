@@ -11,37 +11,75 @@ const MadeUpLargeNumber = 1000000
 
 const intent =
 {
+  getWithIntended: function (something, key, tickValue) {
+    if (something.__intents) {
+      return tickValue + (something.__intents[key] || 0)
+    }
+    return tickValue
+  },
+
+  addIntended: function (something, key, intentValue) {
+    if (something.__intents === undefined) {
+      something.__intents = { }
+    }
+    const now = something.__intents[key] || 0
+    const after = now + intentValue
+    something.__intents[key] = intentValue
+  },
+
+  subIntended: function (something, key, intentValue) {
+    this.addIntended(something, key, -1 * intentValue)
+  },
+
+  isIntended: function (something, key, tickValue) {
+    if (something.__intents && something.__intents[key]) {
+      return something.__intents[key]
+    }
+    return tickValue
+  },
+
+  setIntended: function (something, key, intentValue) {
+    if (something.__intents === undefined) {
+      something.__intents = { }
+    }
+    something.__intents[key] = intentValue
+    return intentValue
+  },
+
   getUsedCapacity: function (something, type) {
-    const propertyKey = '__stored_' + type
-    const delta = something[propertyKey] || 0
-    return something.store.getUsedCapacity(type) + delta
+    const key = '__stored_' + type
+    const value = something.store.getUsedCapacity(type)
+    return this.getWithIntended(something, key, value)
   },
 
   getFreeCapacity: function (something, type) {
     // detect non-universal store
-    const nonUniversal = something.__non_universal_store || something.store.getCapacity() === null
-    something.__non_universal_store = nonUniversal
+    const nonUniversal = this.isIntended(
+      something,
+      '__non_universal_store',
+      something.store.getCapacity() === null
+    )
 
-    const propertyKey = nonUniversal ? ('__free_' + type) : '__free_universal'
-    const delta = something[propertyKey] || 0
-    return something.store.getFreeCapacity(type) + delta
+    const key = nonUniversal ? ('__free_' + type) : '__free_universal'
+    const value = something.store.getFreeCapacity(type)
+    return this.getWithIntended(something, key, value)
   },
 
   // positive amount is increase in stored
   // negative amount is decrease in stored
   intentCapacityChange: function (something, type, amount) {
-    // detect non-universal store
-    const nonUniversal = something.__non_universal_store || something.store.getCapacity() === null
-    something.__non_universal_store = nonUniversal
+    // detect and remember non-universal store
+    const nonUniversal = this.setIntended(
+      something,
+      '__non_universal_store',
+      something.store.getCapacity() === null
+    )
 
-    const propertyKeyUsed = '__stored_' + type
-    const propertyKeyFree = nonUniversal ? ('__free_' + type) : '__free_universal'
+    const keyUsed = '__stored_' + type
+    const keyFree = nonUniversal ? ('__free_' + type) : '__free_universal'
 
-    const used = something[propertyKeyUsed] || 0
-    const free = something[propertyKeyFree] || 0
-
-    something[propertyKeyUsed] = used + amount
-    something[propertyKeyFree] = free - amount
+    this.addIntended(something, keyUsed, amount)
+    this.subIntended(something, keyFree, amount)
   },
 
   exchangeImpl: function (source, target, type, noLessThan, amount) {
@@ -95,7 +133,9 @@ const intent =
       return globals.ERR_INTENDEE_EXHAUSTED
     }
 
-    const progress = target.__progress || target.progress
+    const key = '__progress'
+
+    const progress = this.getWithIntended(target, key, target.progress)
     if (progress >= target.progressTotal) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
@@ -106,7 +146,7 @@ const intent =
     const actualProgress = Math.min(energy, remainingProgress, possibleProgress)
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualProgress)
-    target.__progress = progress + actualProgress
+    this.addIntended(target, key, actualProgress)
 
     let rc = OK
 
@@ -122,25 +162,26 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
+    const key = '__amount'
+
     // harvest power per WORK for target
     // remaining amount in game state
     // harvested resource type
-
     let power1
     let amount
     let what
 
     if (target.energyCapacity) {
       power1 = HARVEST_POWER
-      amount = target.__amount || target.energy
+      amount = this.getWithIntended(target, key, target.energy)
       what = RESOURCE_ENERGY
     } else if (target.mineralType) {
       power1 = HARVEST_MINERAL_POWER
-      amount = target.__amount || target.mineralAmount
+      amount = this.getWithIntended(target, key, target.mineralAmount)
       what = target.mineralType
     } else if (target.depositType) {
       power1 = HARVEST_DEPOSIT_POWER
-      amount = target.__amount || MadeUpLargeNumber
+      amount = this.getWithIntended(target, key, MadeUpLargeNumber)
       what = target.depositType
     } else {
       console.log('intentSlurpImpl received unidentified target ' + JSON.stringify(target))
@@ -171,7 +212,7 @@ const intent =
       if (freeCapacity <= toBeHarvested) rc = globals.WARN_INTENDEE_EXHAUSTED
     }
 
-    target.__amount = amount - toBeHarvested
+    this.subIntended(target, key, toBeHarvested)
 
     if (toBeHarvested >= amount) rc = globals.WARN_INTENDED_EXHAUSTED
 
@@ -184,7 +225,9 @@ const intent =
       return globals.ERR_INVALID_INTENT_ARG
     }
 
-    const amount = target.__amount || target.amount
+    const key = '__amount'
+
+    const amount = this.getWithIntended(target, key, target.amount)
     if (amount <= 0) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
@@ -198,7 +241,7 @@ const intent =
     const exchange = Math.min(amount, canPick)
 
     this.intentCapacityChange(creep, type, exchange)
-    target.__amount = amount - exchange
+    this.subIntended(target, key, exchange)
 
     let rc = OK
 
@@ -222,7 +265,9 @@ const intent =
     let wantHits = targetHits || target.hitsMax
     if (wantHits > target.hitsMax) wantHits = target.hitsMax
 
-    const hits = target.__hits || target.hits
+    const key = '__hits'
+
+    const hits = this.getWithIntended(target, key, target.hits)
     if (hits >= wantHits) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
@@ -235,12 +280,12 @@ const intent =
     const repairCost = Math.min(energy, Math.ceil(repairEffect * REPAIR_COST))
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * repairCost)
-    target.__hits = hits + repairEffect
+    this.addIntended(target, key, repairEffect)
 
     let rc = OK
 
     if (repairCost >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (target.__hits >= wantHits) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (this.getWithIntended(target, key, target.hits) >= wantHits) rc = globals.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -265,15 +310,18 @@ const intent =
       return globals.ERR_INTENDEE_EXHAUSTED
     }
 
+    const keyUpgrades = '__upgrades'
+    const keyTicks = '__ticks'
+
     // no matter what goals creep has, update will not count
-    const upgrades = target.__upgrades || 0
+    const upgrades = this.getWithIntended(target, keyUpgrades, 0)
     if (target.level === 8 && upgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
     const remainingUpgrades = target.level === 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - upgrades) : MadeUpLargeNumber
 
     // if specific goal was set
-    const ticks = target.__ticks || target.ticksToDowngrade
+    const ticks = this.getWithIntended(target, keyTicks, target.ticksToDowngrade)
     if (targetTicksToDowngrade && ticks >= targetTicksToDowngrade) {
       return globals.ERR_INTENDED_EXHAUSTED
     }
@@ -283,15 +331,22 @@ const intent =
     const actualUpgrades = Math.min(energy, remainingUpgrades, possibleUpgrades)
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualUpgrades)
-    target.__upgrades = upgrades + actualUpgrades
-    target.__ticks = ticks + (upgrades === 0 ? CONTROLLER_DOWNGRADE_RESTORE : 0) // fixed amount per tick
+    this.addIntended(target, keyUpgrades, actualUpgrades)
+    // fixed amount per tick
+    if (upgrades === 0) {
+      this.addIntended(target, keyTicks, CONTROLLER_DOWNGRADE_RESTORE)
+    }
 
     let rc = OK
 
     if (actualUpgrades >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
     if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_INTENDED_EXHAUSTED
 
-    if (targetTicksToDowngrade && target.__ticks >= targetTicksToDowngrade) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (targetTicksToDowngrade) {
+      if (this.getWithIntended(target, keyTicks, target.ticksToDowngrade) >= targetTicksToDowngrade) {
+        rc = globals.WARN_INTENDED_EXHAUSTED
+      }
+    }
 
     return rc
   },
@@ -313,6 +368,20 @@ const intent =
     return rc
   },
 
+  backupIntents: function (something) {
+    if (something && something.__intents) {
+      return _.cloneDeep(something.__intents)
+    }
+
+    return undefined
+  },
+
+  restoreIntents: function (something, backup) {
+    if (something && backup) {
+      something.__intents = backup
+    },
+  },
+
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (creep === undefined) {
       console.log('wrapCreepIntent received undefined argument [creep]')
@@ -327,9 +396,14 @@ const intent =
 
     let rc = OK
 
-    const validator = this['creep_intent_' + intentName]
-    if (validator) {
-      rc = _.bind(validator, this)(creep, arg0, arg1, arg2)
+    const backupCreep = this.backupIntents(creep)
+    const backupArg0 = this.backupIntents(arg0)
+    const backupArg1 = this.backupIntents(arg1)
+    const backupArg2 = this.backupIntents(arg2)
+
+    const intentHandler = this['creep_intent_' + intentName]
+    if (intentHandler) {
+      rc = _.bind(intentHandler, this)(creep, arg0, arg1, arg2)
       if (rc < OK) return rc // OK is 0, warnings are greater than zero
     } else {
       console.log('Unvalidated intent [' + intentName + '] called for creep [' + creep.name + ']')
@@ -340,6 +414,12 @@ const intent =
       console.log('Unforceen error occurred during intent call [' + intentName +
                         '] on creep [' + creep.name +
                         '] with code ' + intentRc + ' where expected code was ' + rc)
+
+      this.restoreIntents(creep, backupCreep)
+      this.restoreIntents(arg0, backupArg0)
+      this.restoreIntents(arg1, backupArg1)
+      this.restoreIntents(arg2, backupArg2)
+
       return intentRc
     }
 
