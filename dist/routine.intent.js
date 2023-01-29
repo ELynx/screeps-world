@@ -24,7 +24,7 @@ const intent =
     }
     const now = something.__intents[key] || 0
     const after = now + intentValue
-    something.__intents[key] = intentValue
+    something.__intents[key] = after
   },
 
   subIntended: function (something, key, intentValue) {
