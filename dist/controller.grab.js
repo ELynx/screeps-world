@@ -43,7 +43,7 @@ grabController.act = function (currentController, creep) {
 }
 
 grabController.filterCreep = function (creep) {
-  return creep.store.getFreeCapacity() > 0
+  return this._hasFreeCapacity(creep)
 }
 
 // NOT registered, called from room actor explicitly
