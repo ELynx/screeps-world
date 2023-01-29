@@ -176,11 +176,13 @@ const roomActor =
         // grab logic, manual call
         if (room.my() || (room.ally() && grabController.allied)) {
           if (grabController.filterCreep(creep)) {
-            const currentController = globals.roomControllers[creep.memory.ctrl]
-
-            const rc = grabController.act(currentController, creep)
+            const rc = grabController.act(undefined, creep)
             if (rc === globals.ERR_INTENDEE_EXHAUSTED || rc === globals.WARN_INTENDEE_EXHAUSTED) {
-              globals.unassignCreep(creep)
+              if (controllerMineralHarvest.id === creep.memory.ctrl ||
+                  energyTakeController.id === creep.memory.ctrl ||
+                  energyHarvestController.id === creep.memory.ctrl) {
+                globals.unassignCreep(creep)
+              }
             }
           }
         }
