@@ -10,7 +10,7 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 ## Folders
-`.github` - GitHub specific items, such as action definitions
+`.github` and `github_conf` - GitHub specific items, such as action definitions
 
 `dist` - deployed to official server
 
@@ -26,8 +26,6 @@ Don't send military to enemy safe mode rooms.
 Strelok tries to attack unreachable sections.
 
 Intent queue for withdraw and transfer.
-
-Clean up object assigned fields handling: either use time everywhere, or nowhere.
 
 ## Intents
 [Spawn](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/spawns/intents.js)
