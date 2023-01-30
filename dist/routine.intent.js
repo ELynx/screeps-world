@@ -40,14 +40,18 @@ const intent =
     return this.getWithIntended(something, key, value)
   },
 
+  __getFreeCapacity: function (something, type, nonUniversal) {
+    const key = nonUniversal ? ('__free_' + type) : '__free_total'
+    const value = nonUniversal ? something.store.getFreeCapacity(type) : something.store.getFreeCapacity()
+    return this.getWithIntended(something, key, value)
+  },
+
   /**
    * Internal use, type is always defined
    **/
   _getFreeCapacity: function (something, type) {
     const nonUniversal = something.store.getCapacity() === null
-    const key = nonUniversal ? ('__free_' + type) : '__free_total'
-    const value = something.store.getFreeCapacity(type)
-    return this.getWithIntended(something, key, value)
+    return this.__getFreeCapacity(something, type, nonUniversal)
   },
 
   /**
@@ -407,9 +411,30 @@ const intent =
   },
 
   getFreeCapacity: function (something, type = undefined) {
+    // repeat after original API
+    const nonUniversal = something.store.getCapacity() === null
+    if (nonUniversal && type === undefined) {
+      return null
+    }
+
+    return this.__getFreeCapacity(something, type, nonUniversal)
   },
 
   getUsedCapacity: function (something, type = undefined) {
+    // repeat after original API
+    const nonUniversal = something.store.getCapacity() === null
+    if (nonUniversal && type === undefined) {
+      return null
+    }
+
+    if (type !== undefined) {
+      return this._getUsedCapacity(something, type)
+    }
+
+    const key = '__stored_total'
+    const value = something.store.getUsedCapacity()
+
+    return this.getWithIntended(something, key, value)
   }
 }
 
