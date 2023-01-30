@@ -4,6 +4,7 @@ const UsernameSourceKeeper = 'Source Keeper'
 const UsernamePowerBank = 'Power Bank'
 const UsernameInvader = 'Invader'
 const UsernamePublic = 'Public'
+const UsernameScreeps = 'Screeps'
 
 const isAlly = function (something) {
   // you are not your ally
