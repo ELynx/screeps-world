@@ -175,20 +175,20 @@ function Controller (id) {
 
   this._hasWCM = function (creep) {
     return creep.getActiveBodyparts(WORK) > 0 &&
-               creep.getActiveBodyparts(CARRY) > 0 &&
-               creep.getActiveBodyparts(MOVE) > 0
+           creep.getActiveBodyparts(CARRY) > 0 &&
+           creep.getActiveBodyparts(MOVE) > 0
   }
 
   this._hasEnergy = function (creep) {
-    return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+    return intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) > 0
   }
 
   this._isEmpty = function (creep) {
-    return creep.store.getUsedCapacity() === 0
+    return intentSolver.getUsedCapacity(creep) === 0
   }
 
   this._hasFreeCapacity = function (creep) {
-    return creep.store.getFreeCapacity() > 0
+    return intentSolver.getFreeCapacity(creep) > 0
   }
 
   this._isWorkAble = function (creep) {
