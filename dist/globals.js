@@ -163,10 +163,12 @@ const globals =
     return options
   },
 
-  unwalkableBordersCostCallbackCache: { },
-
   unwalkableBordersCostCallback: function (roomName, costMatrix) {
-    const cached = this.unwalkableBordersCostCallbackCache[roomName]
+    if (Game.__unwalkableBordersCostCallbackCache === undefined) {
+      Game.__unwalkableBordersCostCallbackCache = { }
+    }
+
+    const cached = Game.__unwalkableBordersCostCallbackCache[roomName]
     if (cached) {
       return cached
     }
@@ -183,7 +185,7 @@ const globals =
       modified.set(49, y, 255)
     }
 
-    this.unwalkableBordersCostCallbackCache[roomName] = modified
+    Game.__unwalkableBordersCostCallbackCache[roomName] = modified
 
     return modified
   },
