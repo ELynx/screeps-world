@@ -31,55 +31,35 @@ const intent =
     this.addIntended(something, key, -1 * intentValue)
   },
 
-  isIntended: function (something, key, tickValue) {
-    if (something.__intents && something.__intents[key]) {
-      return something.__intents[key]
-    }
-    return tickValue
-  },
-
-  setIntended: function (something, key, intentValue) {
-    if (something.__intents === undefined) {
-      something.__intents = { }
-    }
-    something.__intents[key] = intentValue
-    return intentValue
-  },
-
+  /**
+   * Internal use, type is always defined
+   **/
   _getUsedCapacity: function (something, type) {
     const key = '__stored_' + type
     const value = something.store.getUsedCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
+  /**
+   * Internal use, type is always defined
+   **/
   _getFreeCapacity: function (something, type) {
-    // detect non-universal store
-    const nonUniversal = this.isIntended(
-      something,
-      '__non_universal_store',
-      something.store.getCapacity() === null
-    )
-
-    const key = nonUniversal ? ('__free_' + type) : '__free_universal'
+    const nonUniversal = something.store.getCapacity() === null
+    const key = nonUniversal ? ('__free_' + type) : '__free_total'
     const value = something.store.getFreeCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
-  // positive amount is increase in stored
-  // negative amount is decrease in stored
+  /**
+   * Something to plant intent on
+   * {type} is always defined here, because this is transfer for concrete result
+   * {amount} positive to increment value on something, negative to decrement
+   **/
   intentCapacityChange: function (something, type, amount) {
-    // detect and remember non-universal store
-    const nonUniversal = this.setIntended(
-      something,
-      '__non_universal_store',
-      something.store.getCapacity() === null
-    )
-
-    const keyUsed = '__stored_' + type
-    const keyFree = nonUniversal ? ('__free_' + type) : '__free_universal'
-
-    this.addIntended(something, keyUsed, amount)
-    this.subIntended(something, keyFree, amount)
+    this.addIntended(something, '__stored_' + type, amount)
+    this.addIntended(something, '__stored_total', amount)
+    this.subIntended(something, '__free_' + type, amount)
+    this.subIntended(something, '__free_total', amount)
   },
 
   exchangeImpl: function (source, target, type, noLessThan, amount) {
