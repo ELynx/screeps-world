@@ -185,7 +185,6 @@ const globals =
         const index0 = row * 50
         modified._bits[index0] = 255
         modified._bits[index0 + 49] = 255
-
       }
     } else {
       console.log('Inner structure of CostMatrix changed, use basic algorithm')
