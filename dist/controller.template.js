@@ -7,15 +7,11 @@ const makeDebuggable = require('routine.debuggable')
 const profiler = require('screeps-profiler')
 
 Room.prototype._markDefaultFiltered = function () {
-  this.__mark_default_filtered = Game.time
+  this.__mark_default_filtered = true
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  if (this.__mark_default_filtered) {
-    return this.__mark_default_filtered === Game.time
-  }
-
-  return false
+  return this.__mark_default_filtered || false
 }
 
 function Controller (id) {

@@ -188,23 +188,12 @@ Room.prototype.roomDebug = function (what) {
   this.visual.text(what, 0, this._debugY_++, { align: 'left', font: 'courier' })
 }
 
-Room.prototype._clearCreepCacheIfOld = function () {
-  if (this._creepCacheT_ && this._creepCacheT_ === Game.time) {
-    return
-  }
-
-  this._roomCreeps_ = undefined
-  this._creepCacheT_ = Game.time
-}
-
 /**
 Get a list of creeps assigned to a room, cached
 **/
 Room.prototype.getRoomControlledCreeps = function () {
-  this._clearCreepCacheIfOld()
-
-  if (this._roomCreeps_ === undefined) {
-    this._roomCreeps_ = _.filter(
+  if (this._roomCreeps === undefined) {
+    this._roomCreeps = _.filter(
       Game.creeps,
       function (creep, name) {
         // skip tasked
@@ -216,7 +205,7 @@ Room.prototype.getRoomControlledCreeps = function () {
     )
   }
 
-  return this._roomCreeps_
+  return this._roomCreeps
 }
 
 Room.prototype.my = function () {
