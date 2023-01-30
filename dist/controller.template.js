@@ -303,7 +303,7 @@ function Controller (id) {
             currentTarget.pos,
             globals.moveOptionsWrapper(
               {
-                costCallback: globals.unwalkableBordersCostCallback,
+                costCallback: _.bind(globals.unwalkableBordersCostCallback, globals),
                 ignoreCreeps: this.ignoreCreepsForTargeting,
                 maxRooms: 1,
                 range: this.actRange
