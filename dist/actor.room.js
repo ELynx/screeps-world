@@ -218,7 +218,7 @@ const roomActor =
                     rc = creep.moveToWrapper(
                       target,
                       {
-                        costCallback: globals.unwalkableBordersCostCallback,
+                        costCallback: _.bind(globals.unwalkableBordersCostCallback, globals),
                         maxRooms: 1,
                         range: creep.memory.dact
                       }
