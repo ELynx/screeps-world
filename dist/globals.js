@@ -175,14 +175,30 @@ const globals =
 
     const modified = costMatrix.clone()
 
-    for (let x = 0; x <= 49; ++x) {
-      modified.set(x, 0, 255)
-      modified.set(x, 49, 255)
-    }
+    if (modified._bits) {
+      for (let index = 0; index <= 49; ++index) {
+        modified._bits[index] = 255
+        modified._bits[index + 2450] = 255
+      }
 
-    for (let y = 1; y <= 48; ++y) {
-      modified.set(0, y, 255)
-      modified.set(49, y, 255)
+      for (let row = 1; row <= 48; ++row) {
+        const index0 = row * 50
+        modified._bits[index0] = 255
+        modified._bits[index0 + 49] = 255
+
+      }
+    } else {
+      console.log('Inner structure of CostMatrix changed, use basic algorithm')
+
+      for (let x = 0; x <= 49; ++x) {
+        modified.set(x, 0, 255)
+        modified.set(x, 49, 255)
+      }
+
+      for (let y = 1; y <= 48; ++y) {
+        modified.set(0, y, 255)
+        modified.set(49, y, 255)
+      }
     }
 
     Game.__unwalkableBordersCostCallbackCache[roomName] = modified
