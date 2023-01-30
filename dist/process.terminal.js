@@ -28,7 +28,8 @@ terminalProcess.work = function (room) {
     if (minerals.length > 0) sellMineralType = minerals[0].mineralType
   } else {
     for (const key in room.terminal.store) {
-      if (room.terminal.store.getUsedCapacity(key) > 0) {
+      // STRATEGY do not sell out energy, it is needed for selling and other activities
+      if (key !== RESOURCE_ENERGY && room.terminal.store.getUsedCapacity(key) > 0) {
         sellMineralType = key
         break
       }

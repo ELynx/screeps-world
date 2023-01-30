@@ -73,3 +73,5 @@ Limit autobuild run to some N elements.
 `upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
 
 Incorporate [Cartographer](https://github.com/glitchassassin/screeps-cartographer)
+
+Send resources away instead of selling out on panic.
