@@ -27,6 +27,8 @@ Strelok tries to attack unreachable sections.
 
 Intent queue for withdraw and transfer.
 
+Fight against squads with healers.
+
 ## Intents
 [Spawn](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/spawns/intents.js)
 [Lab](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/labs/intents.js)
