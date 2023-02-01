@@ -163,54 +163,10 @@ const bootstrap =
     return options
   },
 
-  // TODO move elsewhere
-  unwalkableBordersCostCallback: function (roomName, costMatrix) {
-    if (Game.__unwalkableBordersCostCallbackCache === undefined) {
-      Game.__unwalkableBordersCostCallbackCache = { }
-    }
-
-    const cached = Game.__unwalkableBordersCostCallbackCache[roomName]
-    if (cached) {
-      return cached
-    }
-
-    const modified = costMatrix.clone()
-
-    if (modified._bits) {
-      for (let index = 0; index <= 49; ++index) {
-        modified._bits[index] = 255
-        modified._bits[index + 2450] = 255
-      }
-
-      for (let row = 1; row <= 48; ++row) {
-        const index0 = row * 50
-        modified._bits[index0] = 255
-        modified._bits[index0 + 49] = 255
-      }
-    } else {
-      console.log('Inner structure of CostMatrix changed, use basic algorithm')
-
-      for (let x = 0; x <= 49; ++x) {
-        modified.set(x, 0, 255)
-        modified.set(x, 49, 255)
-      }
-
-      for (let y = 1; y <= 48; ++y) {
-        modified.set(0, y, 255)
-        modified.set(49, y, 255)
-      }
-    }
-
-    Game.__unwalkableBordersCostCallbackCache[roomName] = modified
-
-    return modified
-  },
-
   centerRoomPosition: function (roomName) {
     return new RoomPosition(25, 25, roomName)
   },
 
-  // TODO move elsewhere
   cleanUpFlags: function () {
     const taskIds = Object.keys(this.taskControllers)
     const processIds = Object.keys(this.processControllers)

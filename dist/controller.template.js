@@ -303,7 +303,7 @@ function Controller (id) {
             currentTarget.pos,
             bootstrap.moveOptionsWrapper(
               {
-                costCallback: _.bind(bootstrap.unwalkableBordersCostCallback, bootstrap),
+                costCallback: Room.Terrain.costMatrixWithUnwalkableBorders,
                 ignoreCreeps: this.ignoreCreepsForTargeting,
                 maxRooms: 1,
                 range: this.actRange
