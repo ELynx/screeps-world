@@ -47,5 +47,6 @@ grabController.filterCreep = function (creep) {
 }
 
 // NOT registered, called from room actor explicitly
+grabController.registerInProfiler()
 
 module.exports = grabController

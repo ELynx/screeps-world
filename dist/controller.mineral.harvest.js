@@ -1,6 +1,7 @@
 'use strict'
 
 const bootstrap = require('bootstrap')
+
 const Controller = require('controller.template')
 
 const mineralHarvestController = new Controller('mineral.harvest')

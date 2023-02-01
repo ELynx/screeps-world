@@ -1,7 +1,8 @@
 'use strict'
 
-const Tasked = require('tasked.template')
 const queue = require('routine.spawn')
+
+const Tasked = require('tasked.template')
 
 const spawn = new Tasked('spawn')
 

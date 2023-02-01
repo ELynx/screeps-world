@@ -1,5 +1,6 @@
 'use strict'
 
+// standalone
 const iff = require('iff')
 const profiler = require('screeps-profiler')
 
@@ -7,7 +8,7 @@ const profiler = require('screeps-profiler')
 const extensions = require('extensions')
 /* eslint-enable no-unused-vars */
 
-const cleanupMemory = require('routine.memory')
+const cleanup = require('routine.cleanup')
 const roomActor = require('actor.room')
 const worldActor = require('actor.world')
 
@@ -18,6 +19,8 @@ console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/d
 if (Game.flags.profiler && Game.flags.profiler.pos) {
   console.log('Profiler enabled by flag in room ' + Game.flags.profiler.pos.roomName)
 
+  profiler.registerObject(iff, 'iff')
+  profiler.registerObject(cleanup, 'cleanup')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
 
@@ -30,7 +33,7 @@ module.exports.loop = function () {
   profiler.wrap(function () {
     iff.convenience()
 
-    cleanupMemory()
+    cleanup.cleanup()
 
     const limits = { }
     let total = 0

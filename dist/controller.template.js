@@ -1,10 +1,11 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
-const intentSolver = require('routine.intent')
-const makeDebuggable = require('routine.debuggable')
-
 const profiler = require('screeps-profiler')
+
+const bootstrap = require('bootstrap')
+
+const makeDebuggable = require('routine.debuggable')
+const intentSolver = require('routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
   this.__mark_default_filtered = true
@@ -431,13 +432,16 @@ function Controller (id) {
     return intentSolver.wrapCreepIntent(creep, intentName, arg0, arg1, arg2)
   }
 
+  this.registerInProfiler = function () {
+    profiler.registerObject(this, this.id)
+  }
+
   /**
     Register into bootstrap.
     **/
   this.register = function () {
     bootstrap.registerRoomController(this)
-
-    profiler.registerObject(this, this.id)
+    this.registerInProfiler()
   }
 };
 

@@ -1,10 +1,11 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
-const spawn = require('routine.spawn')
-const makeDebuggable = require('routine.debuggable')
-
 const profiler = require('screeps-profiler')
+
+const bootstrap = require('bootstrap')
+
+const makeDebuggable = require('routine.debuggable')
+const spawn = require('routine.spawn')
 
 Room.prototype.getControlPos = function () {
   // some interesting positions first

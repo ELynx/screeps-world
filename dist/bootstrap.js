@@ -165,33 +165,6 @@ const bootstrap =
 
   centerRoomPosition: function (roomName) {
     return new RoomPosition(25, 25, roomName)
-  },
-
-  cleanUpFlags: function () {
-    const taskIds = Object.keys(this.taskControllers)
-    const processIds = Object.keys(this.processControllers)
-    const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
-
-    for (const flagName in Game.flags) {
-      if (flagName === 'profiler') continue
-      if (flagName === 'recount') continue
-      if (flagName === 'autobuild') continue
-
-      if (flagName.startsWith('help_')) continue
-
-      const processFound = _.some(
-        flagKeys,
-        function (id) {
-          return flagName.startsWith(id)
-        }
-      )
-
-      if (!processFound) {
-        const flag = Game.flags[flagName]
-        console.log('Removing undefined flag [' + flagName + '] at ' + flag.pos)
-        flag.remove()
-      }
-    }
   }
 }
 

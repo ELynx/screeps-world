@@ -1,8 +1,10 @@
 'use strict'
 
-const Process = require('process.template')
 const bootstrap = require('bootstrap')
+
 const queue = require('routine.spawn')
+
+const Process = require('process.template')
 
 const spawnProcess = new Process('spawn')
 

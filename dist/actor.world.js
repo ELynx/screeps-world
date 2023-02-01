@@ -46,8 +46,6 @@ const worldActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
-    bootstrap.cleanUpFlags()
-
     this.taskControllersControl()
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
