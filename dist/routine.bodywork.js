@@ -15,8 +15,7 @@ TOUGH           10
 CLAIM           600
 **/
 
-const bodywork =
-{
+const bodywork = {
   /**
     BODY Universal worker.
     @param {integer} energyLevel.
