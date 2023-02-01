@@ -9,8 +9,7 @@ if (UPGRADE_CONTROLLER_POWER !== 1) {
 // made up value that is used as boundary for "limitless" operations
 const MadeUpLargeNumber = 1000000
 
-const intent =
-{
+const intent = {
   getWithIntended: function (something, key, tickValue) {
     if (something.__intents) {
       return tickValue + (something.__intents[key] || 0)

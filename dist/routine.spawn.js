@@ -1,7 +1,6 @@
 'use strict'
 
-const spawn =
-{
+const spawn = {
   FROM_ANY_ROOM: 'ANY',
 
   bodyFunctions: { },
