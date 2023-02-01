@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 
 if (UPGRADE_CONTROLLER_POWER !== 1) {
   console.log('UPGRADE_CONTROLLER_POWER is no longer equal to 1, update intent code')
@@ -69,28 +69,28 @@ const intent =
   exchangeImpl: function (source, target, type, noLessThan, amount) {
     if (!_.contains(RESOURCES_ALL, type)) {
       console.log('exchangeImpl received invalid argument [type] of value [' + type + ']')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     if (amount && amount <= 0) {
       console.log('exchangeImpl received invalid argument [amount] of value [' + amount + ']')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const sourceHas = this._getUsedCapacity(source, type)
     if (sourceHas <= 0) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
 
     // for https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/transfer.js#L12
     if (noLessThan === true && amount && amount > sourceHas) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
     const sourceOut = amount || sourceHas
 
     const targetFree = this._getFreeCapacity(target, type)
     if (targetFree <= 0) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
     const exchange = Math.min(sourceOut, targetFree)
@@ -100,8 +100,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= sourceHas) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (exchange >= targetFree) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (exchange >= sourceHas) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= targetFree) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -109,19 +109,19 @@ const intent =
   creep_intent_build: function (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_build received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
 
     const key = '__progress'
 
     const progress = this.getWithIntended(target, key, target.progress)
     if (progress >= target.progressTotal) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
     const remainingProgress = target.progressTotal - progress
 
@@ -134,8 +134,8 @@ const intent =
 
     let rc = OK
 
-    if (actualProgress >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (actualProgress >= remainingProgress) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (actualProgress >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (actualProgress >= remainingProgress) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -143,7 +143,7 @@ const intent =
   creep_intent_harvest: function (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_harvest received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const key = '__amount'
@@ -173,7 +173,7 @@ const intent =
     }
 
     if (amount <= 0) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
     const power = creep.getActiveBodyparts(WORK) * power1
@@ -186,19 +186,19 @@ const intent =
     if (_.some(creep.body, _.matchesProperty('type', CARRY))) {
       const freeCapacity = this._getFreeCapacity(creep, what)
       if (freeCapacity <= 0) {
-        return globals.ERR_INTENDEE_EXHAUSTED
+        return bootstrap.ERR_INTENDEE_EXHAUSTED
       }
 
       const toBeStored = Math.min(toBeHarvested, freeCapacity)
       this.intentCapacityChange(creep, what, toBeStored)
 
       // if capacity left is less or equal to intent, then this is last harvest before full
-      if (freeCapacity <= toBeHarvested) rc = globals.WARN_INTENDEE_EXHAUSTED
+      if (freeCapacity <= toBeHarvested) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
     }
 
     this.subIntended(target, key, toBeHarvested)
 
-    if (toBeHarvested >= amount) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (toBeHarvested >= amount) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -206,20 +206,20 @@ const intent =
   creep_intent_pickup: function (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_pickup received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const key = '__amount'
 
     const amount = this.getWithIntended(target, key, target.amount)
     if (amount <= 0) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
     const type = target.resourceType
 
     const canPick = this._getFreeCapacity(creep, type)
     if (canPick <= 0) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
 
     const exchange = Math.min(amount, canPick)
@@ -229,8 +229,8 @@ const intent =
 
     let rc = OK
 
-    if (exchange >= canPick) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (exchange >= amount) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (exchange >= canPick) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= amount) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -238,12 +238,12 @@ const intent =
   creep_intent_repair: function (creep, target, targetHits) {
     if (target === undefined) {
       console.log('creep_intent_repair received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
 
     let wantHits = targetHits || target.hitsMax
@@ -253,7 +253,7 @@ const intent =
 
     const hits = this.getWithIntended(target, key, target.hits)
     if (hits >= wantHits) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
     // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/repair.js#L23
@@ -268,8 +268,8 @@ const intent =
 
     let rc = OK
 
-    if (repairCost >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (this.getWithIntended(target, key, target.hits) >= wantHits) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (repairCost >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (this.getWithIntended(target, key, target.hits) >= wantHits) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -277,7 +277,7 @@ const intent =
   creep_intent_transfer: function (creep, target, type, amount) {
     if (target === undefined) {
       console.log('creep_intent_transfer received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     return this.exchangeImpl(creep, target, type, true, amount)
@@ -286,12 +286,12 @@ const intent =
   creep_intent_upgradeController: function (creep, target, targetTicksToDowngrade) {
     if (target === undefined) {
       console.log('creep_intent_upgradeController received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const energy = this._getUsedCapacity(creep, RESOURCE_ENERGY)
     if (energy <= 0) {
-      return globals.ERR_INTENDEE_EXHAUSTED
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
 
     const keyUpgrades = '__upgrades'
@@ -300,14 +300,14 @@ const intent =
     // no matter what goals creep has, update will not count
     const upgrades = this.getWithIntended(target, keyUpgrades, 0)
     if (target.level === 8 && upgrades >= CONTROLLER_MAX_UPGRADE_PER_TICK) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
     const remainingUpgrades = target.level === 8 ? (CONTROLLER_MAX_UPGRADE_PER_TICK - upgrades) : MadeUpLargeNumber
 
     // if specific goal was set
     const ticks = this.getWithIntended(target, keyTicks, target.ticksToDowngrade)
     if (targetTicksToDowngrade && ticks >= targetTicksToDowngrade) {
-      return globals.ERR_INTENDED_EXHAUSTED
+      return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
     const possibleUpgrades = creep.getActiveBodyparts(WORK)
@@ -323,12 +323,12 @@ const intent =
 
     let rc = OK
 
-    if (actualUpgrades >= energy) rc = globals.WARN_INTENDEE_EXHAUSTED
-    if (actualUpgrades >= remainingUpgrades) rc = globals.WARN_INTENDED_EXHAUSTED
+    if (actualUpgrades >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (actualUpgrades >= remainingUpgrades) rc = bootstrap.WARN_INTENDED_EXHAUSTED
 
     if (targetTicksToDowngrade) {
       if (this.getWithIntended(target, keyTicks, target.ticksToDowngrade) >= targetTicksToDowngrade) {
-        rc = globals.WARN_INTENDED_EXHAUSTED
+        rc = bootstrap.WARN_INTENDED_EXHAUSTED
       }
     }
 
@@ -338,16 +338,16 @@ const intent =
   creep_intent_withdraw: function (creep, target, type, amount) {
     if (target === undefined) {
       console.log('creep_intent_withdraw received undefined argument [target]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const rc = this.exchangeImpl(target, creep, type, false, amount)
 
     // accommodate for argument order switch
-    if (rc === globals.ERR_INTENDEE_EXHAUSTED) return globals.ERR_INTENDED_EXHAUSTED
-    if (rc === globals.ERR_INTENDED_EXHAUSTED) return globals.ERR_INTENDEE_EXHAUSTED
-    if (rc === globals.WARN_INTENDED_EXHAUSTED) return globals.WARN_INTENDEE_EXHAUSTED
-    if (rc === globals.WARN_INTENDEE_EXHAUSTED) return globals.WARN_INTENDED_EXHAUSTED
+    if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED) return bootstrap.ERR_INTENDED_EXHAUSTED
+    if (rc === bootstrap.ERR_INTENDED_EXHAUSTED) return bootstrap.ERR_INTENDEE_EXHAUSTED
+    if (rc === bootstrap.WARN_INTENDED_EXHAUSTED) return bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (rc === bootstrap.WARN_INTENDEE_EXHAUSTED) return bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -369,13 +369,13 @@ const intent =
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (creep === undefined) {
       console.log('wrapCreepIntent received undefined argument [creep]')
-      return globals.ERR_INVALID_INTENT_ARG
+      return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
     const intent = creep[intentName]
     if (intent === undefined) {
       console.log('Invalid intent [' + intentName + '] called for creep [' + creep.name + ']')
-      return globals.ERR_INVALID_INTENT_NAME
+      return bootstrap.ERR_INVALID_INTENT_NAME
     }
 
     let rc = OK

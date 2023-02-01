@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 
 // ones that do get harmful effects
 OwnedStructure.prototype.hostileOrUnowned = function () {
@@ -85,7 +85,7 @@ Creep.prototype.moveWrapper = function (direction) {
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
-  return this.moveTo(destination, globals.moveOptionsWrapper(options))
+  return this.moveTo(destination, bootstrap.moveOptionsWrapper(options))
 }
 
 Creep.prototype.unlive = function () {

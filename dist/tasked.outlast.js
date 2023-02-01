@@ -1,7 +1,7 @@
 'use strict'
 
 const Tasked = require('tasked.template')
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 
 const outlast = new Tasked('outlast')
 
@@ -69,7 +69,7 @@ outlast.creepRoomTravel = function (creep) {
     else if (creep.pos.y === 1) erasePath = true
     else if (creep.pos.y === 48) erasePath = true
 
-    if (erasePath) globals.imitateMoveErase(creep)
+    if (erasePath) bootstrap.imitateMoveErase(creep)
   } else {
     let flee = false
 

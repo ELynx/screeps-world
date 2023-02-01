@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const spawn = require('routine.spawn')
 const makeDebuggable = require('routine.debuggable')
 
@@ -12,7 +12,7 @@ Room.prototype.getControlPos = function () {
   if (this.terminal) return this.terminal.pos
   if (this.controller) return this.controller.pos
 
-  return globals.centerRoomPosition(this.name)
+  return bootstrap.centerRoomPosition(this.name)
 }
 
 Creep.prototype.getFlagName = function () {
@@ -24,7 +24,7 @@ Creep.prototype.getFlagPos = function () {
   if (flag) {
     // bottom row is for special indicator flags, etc.
     // they point to "the room in general"
-    if (flag.pos.y === 49) return globals.centerRoomPosition(flag.pos.roomName)
+    if (flag.pos.y === 49) return bootstrap.centerRoomPosition(flag.pos.roomName)
 
     return flag.pos
   }
@@ -55,7 +55,7 @@ Creep.prototype.getControlPos = function () {
   if (room) return room.getControlPos()
 
   // if room is not visible, point at center
-  return globals.centerRoomPosition(crum)
+  return bootstrap.centerRoomPosition(crum)
 }
 
 function Tasked (id) {
@@ -244,7 +244,7 @@ function Tasked (id) {
   } // end of act
 
   this.register = function () {
-    globals.registerTaskController(this)
+    bootstrap.registerTaskController(this)
 
     if (this.makeBody) {
       spawn.registerBodyFunction(this.id, _.bind(this.makeBody, this))

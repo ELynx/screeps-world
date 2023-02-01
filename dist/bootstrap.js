@@ -1,6 +1,6 @@
 'use strict'
 
-const globals =
+const bootstrap =
 {
   ThreatLevelLow: 1,
   ThreatLevelMedium: 3,
@@ -237,4 +237,4 @@ const globals =
   }
 }
 
-module.exports = globals
+module.exports = bootstrap

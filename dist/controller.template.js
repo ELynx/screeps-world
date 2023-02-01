@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const intentSolver = require('routine.intent')
 const makeDebuggable = require('routine.debuggable')
 
@@ -301,9 +301,9 @@ function Controller (id) {
           const solution = room.findPath(
             creep.pos,
             currentTarget.pos,
-            globals.moveOptionsWrapper(
+            bootstrap.moveOptionsWrapper(
               {
-                costCallback: _.bind(globals.unwalkableBordersCostCallback, globals),
+                costCallback: _.bind(bootstrap.unwalkableBordersCostCallback, bootstrap),
                 ignoreCreeps: this.ignoreCreepsForTargeting,
                 maxRooms: 1,
                 range: this.actRange
@@ -335,7 +335,7 @@ function Controller (id) {
           extra = this.extra
         }
 
-        globals.assignCreep(this, target, path, creep, extra)
+        bootstrap.assignCreep(this, target, path, creep, extra)
 
         // simulate single assignment logic on small scale
         if (this._creepPerTarget) {
@@ -432,10 +432,10 @@ function Controller (id) {
   }
 
   /**
-    Register into globals.
+    Register into bootstrap.
     **/
   this.register = function () {
-    globals.registerRoomController(this)
+    bootstrap.registerRoomController(this)
 
     profiler.registerObject(this, this.id)
   }

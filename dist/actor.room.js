@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 
 /* eslint-disable no-unused-vars */
 const secutiryProcess = require('process.security')
@@ -46,8 +46,8 @@ const roomActor =
     @param {Room} room.
     **/
   roomControllersPrepare: function (room) {
-    for (const id in globals.roomControllersPrepare) {
-      globals.roomControllersPrepare[id].roomPrepare(room)
+    for (const id in bootstrap.roomControllersPrepare) {
+      bootstrap.roomControllersPrepare[id].roomPrepare(room)
     }
   },
 
@@ -56,7 +56,7 @@ const roomActor =
     @param {Creep} creep.
     **/
   roomControllersObserveOwn: function (creep) {
-    const controller = globals.roomControllersObserveOwn[creep.memory.ctrl]
+    const controller = bootstrap.roomControllersObserveOwn[creep.memory.ctrl]
     if (controller) {
       controller.observeMyCreep(creep)
     }
@@ -69,7 +69,7 @@ const roomActor =
     @return True if creep was acted upon.
     **/
   roomControllersAct: function (target, creep) {
-    const controller = globals.roomControllers[creep.memory.ctrl]
+    const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
       return controller.act(target, creep) === OK
     }
@@ -83,8 +83,8 @@ const roomActor =
     @param {array<Creep>} creeps.
     **/
   roomControllersControl: function (room, creeps) {
-    for (const id in globals.roomControllers) {
-      const controller = globals.roomControllers[id]
+    for (const id in bootstrap.roomControllers) {
+      const controller = bootstrap.roomControllers[id]
 
       if (room.ally() && !controller.allied) {
         continue
@@ -149,14 +149,14 @@ const roomActor =
         // code that migrate creeps into room of registration
         if (creep.memory.crum !== creep.room.name || creep.memory.roomChange) {
           // to take off any work from previous room
-          globals.unassignCreep(creep)
+          bootstrap.unassignCreep(creep)
 
           // flag to handle border transition
           creep.memory.roomChange = true
 
           if (creep.fatigue === 0) {
             // get off border area
-            const posInDestRoom = globals.centerRoomPosition(creep.memory.crum)
+            const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
 
             if (creep.pos.inRangeTo(posInDestRoom, rangeInDestRoom)) {
@@ -177,17 +177,17 @@ const roomActor =
         if (room.my() || (room.ally() && grabController.allied)) {
           if (grabController.filterCreep(creep)) {
             const rc = grabController.act(undefined, creep)
-            if (rc === globals.ERR_INTENDEE_EXHAUSTED || rc === globals.WARN_INTENDEE_EXHAUSTED) {
+            if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED || rc === bootstrap.WARN_INTENDEE_EXHAUSTED) {
               if (controllerMineralHarvest.id === creep.memory.ctrl ||
                   energyTakeController.id === creep.memory.ctrl ||
                   energyHarvestController.id === creep.memory.ctrl) {
-                globals.unassignCreep(creep)
+                bootstrap.unassignCreep(creep)
               }
             }
           }
         }
 
-        if (globals.creepAssigned(creep)) {
+        if (bootstrap.creepAssigned(creep)) {
           // flag if target should be carried to next loop
           let keepAssignment = false
 
@@ -212,13 +212,13 @@ const roomActor =
                 // no movement, see if pathfinding is possible
                 if (rc === ERR_NOT_FOUND) {
                   // percent
-                  const cpuUsed = globals.hardCpuUsed(t0)
+                  const cpuUsed = bootstrap.hardCpuUsed(t0)
                   if (cpuUsed <= room.memory.cpul) {
                     // STRATEGY tweak point for creep movement
                     rc = creep.moveToWrapper(
                       target,
                       {
-                        costCallback: _.bind(globals.unwalkableBordersCostCallback, globals),
+                        costCallback: _.bind(bootstrap.unwalkableBordersCostCallback, bootstrap),
                         maxRooms: 1,
                         range: creep.memory.dact
                       }
@@ -241,7 +241,7 @@ const roomActor =
             this.roomControllersObserveOwn(creep)
             ++assigned
           } else {
-            globals.unassignCreep(creep)
+            bootstrap.unassignCreep(creep)
             unassignedCreeps.push(creep)
           }
           // end of creep assigned
@@ -264,15 +264,15 @@ const roomActor =
       this.roomControllersControl(room, unassignedCreeps)
     }
 
-    if (globals.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
       autobuildProcess.work(room)
     }
 
-    if (globals.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
       terminalProcess.work(room)
     }
 
-    const usedPercent = globals.hardCpuUsed(t0)
+    const usedPercent = bootstrap.hardCpuUsed(t0)
     this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '%')
     room.visual.rect(0, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
   } // end of act method

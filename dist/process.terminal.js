@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const Process = require('process.template')
 
 const terminalProcess = new Process('terminal')
@@ -20,7 +20,7 @@ terminalProcess.work = function (room) {
   if (room.terminal.store[RESOURCE_ENERGY] < 2) return
 
   // SELL SELL SELL
-  const noPanic = room.memory.threat ? room.memory.threat < globals.ThreatLevelMax : true
+  const noPanic = room.memory.threat ? room.memory.threat < bootstrap.ThreatLevelMax : true
 
   let sellMineralType
   if (noPanic) {
