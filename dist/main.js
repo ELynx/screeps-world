@@ -1,7 +1,9 @@
 'use strict'
 
-/* eslint-disable no-unused-vars */
 const iff = require('iff')
+const profiler = require('screeps-profiler')
+
+/* eslint-disable no-unused-vars */
 const extensions = require('extensions')
 /* eslint-enable no-unused-vars */
 
@@ -9,17 +11,16 @@ const cleanupMemory = require('routine.memory')
 const roomActor = require('actor.room')
 const worldActor = require('actor.world')
 
-const profiler = require('screeps-profiler')
-
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
-
-profiler.registerObject(roomActor, 'roomActor')
-profiler.registerObject(worldActor, 'worldActor')
 
 // enable profiler with a flag on map during load
 if (Game.flags.profiler && Game.flags.profiler.pos) {
   console.log('Profiler enabled by flag in room ' + Game.flags.profiler.pos.roomName)
+
+  profiler.registerObject(roomActor, 'roomActor')
+  profiler.registerObject(worldActor, 'worldActor')
+
   profiler.enable()
 } else {
   profiler.disable()
