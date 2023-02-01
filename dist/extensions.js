@@ -242,7 +242,7 @@ Room.Terrain.prototype.costMatrixWithUnwalkableBorders = function (roomName, cos
     Game.__unwalkableBordersCostCallbackCache = { }
   }
 
-  const cached = Game.__unwalkableBordersCostCallbackCache[roomName];
+  const cached = Game.__unwalkableBordersCostCallbackCache[roomName]
   if (cached) {
     return cached
   }
