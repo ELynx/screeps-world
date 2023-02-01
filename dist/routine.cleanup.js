@@ -2,7 +2,7 @@
 
 const bootstrap = require('bootstrap')
 
-cleanup = {
+const cleanup = {
   cleanupMemory: function () {
     for (const name in Memory.creeps) {
       if (!Game.creeps[name]) {
