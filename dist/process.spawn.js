@@ -1,7 +1,7 @@
 'use strict'
 
 const Process = require('process.template')
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const queue = require('routine.spawn')
 
 const spawnProcess = new Process('spawn')
@@ -16,10 +16,10 @@ spawnProcess._addToQueue = function (room, type, memoryAddon, n, adderFunction) 
   const memory =
     {
       crum: room.name,
-      ctrl: globals.NO_CONTROL,
-      dest: globals.NO_DESTINATION,
-      dact: globals.NO_ACT_RANGE,
-      xtra: globals.NO_EXTRA,
+      ctrl: bootstrap.NO_CONTROL,
+      dest: bootstrap.NO_DESTINATION,
+      dact: bootstrap.NO_ACT_RANGE,
+      xtra: bootstrap.NO_EXTRA,
       btyp: type
     }
   _.assign(memory, memoryAddon)

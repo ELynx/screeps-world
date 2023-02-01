@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const makeDebuggable = require('routine.debuggable')
 
 const profiler = require('screeps-profiler')
@@ -21,7 +21,7 @@ function Process (id) {
   this.work = undefined
 
   this._register = function () {
-    globals.registerProcessController(this)
+    bootstrap.registerProcessController(this)
 
     profiler.registerObject(this, this.id)
   }

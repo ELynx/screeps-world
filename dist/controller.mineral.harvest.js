@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const Controller = require('controller.template')
 
 const mineralHarvestController = new Controller('mineral.harvest')
@@ -20,7 +20,7 @@ mineralHarvestController.act = function (extractor, creep) {
   for (let i = 0; i < minerals.length; ++i) {
     const mineral = minerals[i]
     const rc = this.wrapIntent(creep, 'harvest', mineral)
-    if (rc === ERR_NOT_ENOUGH_RESOURCES || rc === globals.WARN_INTENDED_EXHAUSTED) {
+    if (rc === ERR_NOT_ENOUGH_RESOURCES || rc === bootstrap.WARN_INTENDED_EXHAUSTED) {
       extractor.room.memory.mlvl = 0
     }
 

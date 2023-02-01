@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const Process = require('process.template')
 
 const secutiryProcess = new Process('security')
@@ -26,7 +26,7 @@ secutiryProcess.work = function (room) {
 
   if (hostileCreeps.length > 0) {
     if (threatTimer + ThreatStep <= Game.time) {
-      if (threatLevel < globals.ThreatLevelMax) {
+      if (threatLevel < bootstrap.ThreatLevelMax) {
         ++threatLevel
         console.log(room.name + ' threat escalated to ' + threatLevel)
       }

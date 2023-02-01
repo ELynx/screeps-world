@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 
 /* eslint-disable no-unused-vars */
 /**
@@ -33,9 +33,9 @@ const worldActor =
     Let task controllers do theit jobs.
     **/
   taskControllersControl: function () {
-    for (const id in globals.taskControllers) {
+    for (const id in bootstrap.taskControllers) {
       this.debugLine('Tasked about to act [' + id + ']')
-      globals.taskControllers[id].act()
+      bootstrap.taskControllers[id].act()
     }
   },
 
@@ -46,11 +46,11 @@ const worldActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
-    globals.cleanUpFlags()
+    bootstrap.cleanUpFlags()
 
     this.taskControllersControl()
 
-    const usedPercent = globals.hardCpuUsed(t0)
+    const usedPercent = bootstrap.hardCpuUsed(t0)
     this.debugLine('HCPU: ' + usedPercent + '%')
 
     for (const roomName in Game.rooms) {

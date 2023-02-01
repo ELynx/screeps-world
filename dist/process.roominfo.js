@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const Process = require('process.template')
 
 const roomInfoProcess = new Process('roomInfo')
@@ -350,11 +350,11 @@ roomInfoProcess.work = function (room) {
   // STRATEGY stored energy in store per threat level
   const threat = room.memory.threat
   if (threat) {
-    if (threat === globals.ThreatLevelMax) {
+    if (threat === bootstrap.ThreatLevelMax) {
       room.memory.stre = 0
-    } else if (threat >= globals.ThreatLevelMedium) {
+    } else if (threat >= bootstrap.ThreatLevelMedium) {
       room.memory.stre = 5000
-    } else if (threat > globals.ThreatLevelLow) {
+    } else if (threat > bootstrap.ThreatLevelLow) {
       room.memory.stre = 9000
     }
   }

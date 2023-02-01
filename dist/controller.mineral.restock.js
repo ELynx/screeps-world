@@ -1,6 +1,6 @@
 'use strict'
 
-const globals = require('globals')
+const bootstrap = require('bootstrap')
 const Controller = require('controller.template')
 
 const mineralRestockController = new Controller('mineral.restock')
@@ -19,7 +19,7 @@ mineralRestockController.act = function (withStore, creep) {
 
   // if here then all transfers were OK
   // thus do not keep at target
-  return globals.WARN_INTENDEE_EXHAUSTED
+  return bootstrap.WARN_INTENDEE_EXHAUSTED
 }
 
 mineralRestockController._checkStore = function (structure) {
