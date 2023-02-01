@@ -210,25 +210,25 @@ Object.defineProperty(
 )
 
 module.exports = {
-  convenience() {
+  convenience () {
     Game.iff = {
-      makeAlly(username) {
+      makeAlly (username) {
         console.log('Called makeAlly ' + username)
       },
 
-      makeNeutral(username) {
+      makeNeutral (username) {
         console.log('Called makeNeutral ' + username)
       },
 
-      makeHostile(username) {
+      makeHostile (username) {
         console.log('Called makeHostile ' + username)
       },
 
-      increaseReputation(username, amount) {
+      increaseReputation (username, amount) {
         console.log('Called increaseReputation ' + username + ' ' + amount)
       },
 
-      decreaseReputation(username, amount) {
+      decreaseReputation (username, amount) {
         console.log('Called decreaseReputation ' + username + ' ' + amount)
       }
     }
