@@ -27,6 +27,8 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
 
 module.exports.loop = function () {
   profiler.wrap(function () {
+    iff.convenience()
+
     cleanupMemory()
 
     const limits = { }
