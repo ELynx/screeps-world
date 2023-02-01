@@ -163,6 +163,7 @@ const bootstrap =
     return options
   },
 
+  // TODO move elsewhere
   unwalkableBordersCostCallback: function (roomName, costMatrix) {
     if (Game.__unwalkableBordersCostCallbackCache === undefined) {
       Game.__unwalkableBordersCostCallbackCache = { }
@@ -209,6 +210,7 @@ const bootstrap =
     return new RoomPosition(25, 25, roomName)
   },
 
+  // TODO move elsewhere
   cleanUpFlags: function () {
     const taskIds = Object.keys(this.taskControllers)
     const processIds = Object.keys(this.processControllers)
