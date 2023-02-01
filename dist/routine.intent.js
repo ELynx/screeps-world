@@ -3,7 +3,7 @@
 const bootstrap = require('bootstrap')
 
 if (UPGRADE_CONTROLLER_POWER !== 1) {
-  console.log('UPGRADE_CONTROLLER_POWER is no longer equal to 1, update intent code')
+  console.log('UPGRADE_CONTROLLER_POWER is not equal to 1')
 }
 
 // made up value that is used as boundary for "limitless" operations

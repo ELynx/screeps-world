@@ -1,9 +1,10 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
-const makeDebuggable = require('routine.debuggable')
-
 const profiler = require('screeps-profiler')
+
+const bootstrap = require('bootstrap')
+
+const makeDebuggable = require('routine.debuggable')
 
 function Process (id) {
   /**
@@ -20,14 +21,9 @@ function Process (id) {
     **/
   this.work = undefined
 
-  this._register = function () {
-    bootstrap.registerProcessController(this)
-
-    profiler.registerObject(this, this.id)
-  }
-
   this.register = function () {
-    this._register()
+    bootstrap.registerProcessController(this)
+    profiler.registerObject(this, this.id)
   }
 };
 
