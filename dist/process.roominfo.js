@@ -6,8 +6,6 @@ const Process = require('process.template')
 
 const roomInfoProcess = new Process('roomInfo')
 
-// STRATEGY this does not account for sources being close enough to share walkables
-
 /**
 Calculate room energy level.
 @param {Room} room.
@@ -21,7 +19,7 @@ roomInfoProcess.energyLevel = function (room) {
     {
       filter: function (structure) {
         return structure.structureType === STRUCTURE_SPAWN ||
-                       structure.structureType === STRUCTURE_EXTENSION
+               structure.structureType === STRUCTURE_EXTENSION
       }
     }
   )
@@ -100,41 +98,41 @@ roomInfoProcess._walkable = function (terrain, position) {
   return false
 }
 
-roomInfoProcess._walkableAround = function (terrain, posOrRoomObject) {
-  const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
-
-  let walkable = 0
-  for (let dx = -1; dx <= 1; ++dx) {
-    for (let dy = -1; dy <= 1; ++dy) {
-      if (dx === 0 && dy === 0) { continue }
-
-      const x = center.x + dx
-      const y = center.y + dy
-
-      if (x < 0 || x > 49 || y < 0 || y > 49) { continue }
-
-      if (this._walkable(terrain, new RoomPosition(x, y, center.roomName))) {
-        ++walkable
-      }
-    }
-  }
-
-  return walkable
-}
-
 roomInfoProcess.harvestLevel = function (room) {
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
 
-  let totalWalkable = 0
+  const positions = { }
   for (let i = 0; i < sources.length; ++i) {
     const source = sources[i]
-    const walkable = this._walkableAround(terrain, source)
 
-    totalWalkable += walkable
+    for (let dx = -1; dx <= 1; ++dx) {
+      for (let dy = -1; dy <= 1; ++dy) {
+        if (dx === 0 && dy === 0) {
+          continue
+        }
+
+        const x = source.pos.x + dx
+        const y = source.pos.y + dy
+
+        if (x < 0 || x > 49 || y < 0 || y > 49) {
+          continue
+        }
+
+        positions[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, source.pos.roomName)
+      }
+    }
   }
 
-  return totalWalkable
+  let walkable = 0
+  for (const key in positions) {
+    const position = positions[key]
+    if (this._walkable(terrain, position)) {
+      ++walkable
+    }
+  }
+
+  return walkable
 }
 
 /**
@@ -224,7 +222,9 @@ Calculate room mining level.
 **/
 roomInfoProcess.miningLevel = function (room) {
   // quick test
-  if (room.terminal === undefined && room.storage === undefined) { return 0 }
+  if (room.terminal === undefined && room.storage === undefined) {
+    return 0
+  }
 
   const extractors = room.find(
     FIND_STRUCTURES,
@@ -234,7 +234,10 @@ roomInfoProcess.miningLevel = function (room) {
       }
     }
   )
-  if (extractors.length === 0) return 0
+
+  if (extractors.length === 0) {
+    return 0
+  }
 
   const minerals = room.find(
     FIND_MINERALS,
@@ -244,7 +247,10 @@ roomInfoProcess.miningLevel = function (room) {
       }
     }
   )
-  if (minerals.length === 0) return 0
+
+  if (minerals.length === 0) {
+    return 0
+  }
 
   return 1
 }
@@ -327,9 +333,11 @@ roomInfoProcess.work = function (room) {
 
   // once in a creep life update room info
   if (force ||
-        room.memory.intl === undefined ||
-        room.memory.intl < Game.time - CREEP_LIFE_TIME) {
-    if (force) Game.flags.recount.remove()
+      room.memory.intl === undefined ||
+      room.memory.intl < Game.time - CREEP_LIFE_TIME) {
+    if (force) {
+      Game.flags.recount.remove()
+    }
 
     room.memory.elvl = this.energyLevel(room)
     room.memory.hlvl = this.harvestLevel(room)
