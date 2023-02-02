@@ -36,7 +36,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           DISABLE: COPYPASTE
           DISABLE_LINTERS: SPELL_CSPELL
-          FILTER_REGEX_EXCLUDE: (dist/screeps-profiler.js)
+          FILTER_REGEX_EXCLUDE: (dist\/screeps-profiler\.js|github_config\/.*)
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
