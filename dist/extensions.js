@@ -120,8 +120,8 @@ Creep.prototype.unlive = function () {
   return this.suicide()
 }
 
-if (!PathFinder.CostMatrix.prototype._bits) {
-  console.log('CostMatrix prototype missing _bits')
+if (!(new PathFinder.CostMatrix())._bits) {
+  console.log('CostMatrix missing _bits')
 }
 
 PathFinder.CostMatrix.prototype.setBordersUnwalkable = function () {
