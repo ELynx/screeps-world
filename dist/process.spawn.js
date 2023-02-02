@@ -57,46 +57,8 @@ spawnProcess._hasAndPlanned = function (room, live, type) {
   return has + planned
 }
 
-spawnProcess.workers = function (room, live) {
-  const addWorker = _.bind(
-    function (n, priority) {
-      this.addToQueue(
-        room,
-        'worker',
-        { },
-        n,
-        priority
-      )
-    },
-    this
-  )
-
-  // STRATEGY how many workers
-
-  const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-  if (nowWorkers === 0) {
-    addWorker(1, 'urgent')
-    addWorker(1, 'normal')
-
-    return
-  }
-
-  const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
-
-  const freeHarvestSlots = Math.max(0, room.memory.hlvl - nowRestockers)
-  const supportedWorkers = nowRestockers * 2 // suppose each restocker supports two takers
-  const wantWorkers = freeHarvestSlots + supportedWorkers
-
-  const wantWorkersMin = 2 // to survive energy balance
-  const wantWorkersMax = 12 // to survive CPU
-
-  const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
-
-  addWorker(want - nowWorkers, 'lowkey')
-}
-
 spawnProcess.restockers = function (room, live) {
-  const want = Math.round(room.memory.slvl)
+  const want = room.memory.slvl
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'restocker')
     this.addToQueue(
@@ -128,10 +90,50 @@ spawnProcess.miners = function (room, live) {
   }
 }
 
+spawnProcess.workers = function (room, live) {
+  const addWorker = _.bind(
+    function (n, priority) {
+      this.addToQueue(
+        room,
+        'worker',
+        { },
+        n,
+        priority
+      )
+    },
+    this
+  )
+
+  // STRATEGY how many workers
+
+  const nowWorkers = this._hasAndPlanned(room, live, 'worker')
+
+  if (nowWorkers === 0) {
+    addWorker(1, 'urgent')
+    addWorker(1, 'normal')
+
+    return
+  }
+
+  const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
+
+  const freeHarvestSpots = Math.max(0, room.memory.hlvl - nowRestockers)
+  const supportedByRestockers = nowRestockers * 2
+
+  const wantWorkers = freeHarvestSpots + supportedByRestockers
+
+  const wantWorkersMin = 2 // to survive energy balance
+  const wantWorkersMax = 12 // to survive CPU
+
+  const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
+
+  addWorker(want - nowWorkers, 'lowkey')
+}
+
 spawnProcess.my = function (room, live) {
   // STRATEGY workers have number dependent on other fractions
-  this.miners(room, live)
   this.restockers(room, live)
+  this.miners(room, live)
   this.workers(room, live)
 }
 
