@@ -37,7 +37,7 @@ const getNPCFactionReputation = function (something) {
   if (username === UsernameSourceKeeper) return DefaultReputation
 
   if (verbose) {
-    console.log('Unknown NPC faction [' + username + '9')
+    console.log('Unknown NPC faction [' + username + ']')
   }
 
   return DefaultReputation
@@ -82,7 +82,7 @@ const adjustPcReputation = function (username, amount) {
       console.log('No change to enemy status for [' + username + ']')
     }
 
-    return
+    return now
   }
 
   let toSet = now + amount
