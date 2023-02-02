@@ -33,6 +33,14 @@ rampupController.targets = function (room) {
   )
 }
 
+rampupController.filterCreep = function (creep) {
+  if (creep.memory.rstk === true) {
+    return false
+  }
+
+  return this._isWorkAble()
+}
+
 rampupController.register()
 
 module.exports = rampupController
