@@ -157,7 +157,7 @@ spawnProcess._registerBodyFunction = function (routineId) {
     return bound(spawn.room.memory.elvl)
   }
 
-  queue.registerBodyFunction(id, wrapped)
+  queue.registerBodyFunction(routineId, wrapped)
 }
 
 spawnProcess.registerBodyFunctions = function () {
