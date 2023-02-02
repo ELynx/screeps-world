@@ -166,7 +166,7 @@ spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('miner')
 }
 
-spawnProcess.register = function() {
+spawnProcess.register = function () {
   this._register()
   this.registerBodyFunctions()
 }
