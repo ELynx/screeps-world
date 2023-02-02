@@ -150,8 +150,8 @@ spawnProcess.work = function (room) {
   else if (room.ally()) this.ally(room, live)
 }
 
-spawnProcess._registerBodyFunction = function (routine) {
-  const routine = bodywork[routine]
+spawnProcess._registerBodyFunction = function (routineId) {
+  const routine = bodywork[routineId]
   const bound = _.bind(routine, bodywork)
   const wrapped = function (spawn) {
     return bound(spawn.room.memory.elvl)
