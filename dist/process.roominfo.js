@@ -125,8 +125,8 @@ roomInfoProcess.harvestLevel = function (room) {
   }
 
   let walkable = 0
-  for (const key in positions) {
-    const position = positions[key]
+  for (const index in positions) {
+    const position = positions[index]
     if (this._walkable(terrain, position)) {
       ++walkable
     }
@@ -150,6 +150,15 @@ roomInfoProcess.sourceLevel = function (room) {
     }
   )
 
+  const containers = _.filter(
+    allStructures,
+    function (structure) {
+      return structure.structureType === STRUCTURE_CONTAINER && structure.isSource()
+    }
+  )
+
+  let total = containers.length
+
   const links = _.filter(
     allStructures,
     function (structure) {
@@ -158,61 +167,55 @@ roomInfoProcess.sourceLevel = function (room) {
   )
 
   let hasExchange = false
-  for (let i = 0; i < links.length && links.length > 1; ++i) {
-    const link = links[i]
-    if (!link.isSource()) {
-      hasExchange = true
-      break
+  if (links.length > 1) {
+    for (let i = 0; i < links.length; ++i) {
+      const link = links[i]
+      if (!link.isSource()) {
+        hasExchange = true
+        break
+      }
     }
   }
 
-  // no need to optimize energy transfer when there is possibility for it
   if (!hasExchange) {
-    // fall back to container count
-    const containers = _.filter(
-      allStructures,
-      function (structure) {
-        return structure.structureType === STRUCTURE_CONTAINER && structure.isSource()
-      }
-    )
+    return total
+  }
 
-    return containers.length
+  const consideredPositions = { }
+
+  for (const index in containers) {
+    const container = containers[index]
+    const p = container.pos
+    consideredPositions[(p.x + 1) + 100 * (p.y + 1)] = p
   }
 
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
 
-  let soucePositions = 0
-  let sourceLinks = 0
-
   for (let i = 0; i < links.length; ++i) {
     const link = links[i]
-
     if (link.isSource()) {
-      ++sourceLinks
-
-      const positions = { }
-      for (let j = 0; j < sources.length; ++j) {
+      let notFound = true
+      for (let j = 0; j < sources.length && notFound; ++j) {
         const source = sources[j]
         const betweenTwo = link.pos.findSharedAdjacentPositions(source.pos)
-
-        for (let k = 0; k < betweenTwo.length; ++k) {
+        for (let k = 0; k < betweenTwo.length && notFound; ++k) {
           const p = betweenTwo[k]
-          positions[(p.x + 1) + 100 * (p.y + 1)] = p
-        }
-      }
+          const index = (p.x + 1) + 100 * (p.y + 1)
 
-      for (const index in positions) {
-        const position = positions[index]
-        if (this._walkable(terrain, position)) {
-          ++soucePositions
+          // to next between position
+          if (consideredPositions[index]) continue
+          if (!this._walkable(terrain, p)) continue
+
+          consideredPositions[index] = p
+          notFound = false
         }
       }
+      if (notFound === false) ++total
     }
   }
 
-  // STRATEGY max two positions per link
-  return Math.min(soucePositions, 2 * sourceLinks)
+  return total
 }
 
 /**
