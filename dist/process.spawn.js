@@ -7,6 +7,7 @@ const queue = require('routine.spawn')
 
 const Process = require('process.template')
 
+// STRATEGY how many room creeps
 const spawnProcess = new Process('spawn')
 
 spawnProcess.makeKey = function (room, type) {
@@ -104,8 +105,6 @@ spawnProcess.workers = function (room, live) {
     this
   )
 
-  // STRATEGY how many workers
-
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
 
   if (nowWorkers === 0) {
@@ -115,23 +114,29 @@ spawnProcess.workers = function (room, live) {
     return
   }
 
-  const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
+  const freeHarvestSpots = Math.max(0, room.memory.hlvl - room.memory.slvl)
 
-  const freeHarvestSpots = Math.max(0, room.memory.hlvl - nowRestockers)
-  const supportedByRestockers = nowRestockers * 2
+  let supportedByRestockers = 0
+  if (room.memory.slvl > 0) {
+    const workInRestocker = _.countBy(bodywork.restocker(room.memory.elvl))[WORK] || 0
+    if (workInRestocker > 0) {
+      const workInWorker = _.countBy(bodywork.worker(room.memory.elvl))[WORK] || 0
+      if (workInWorker > 0) {
+        supportedByRestockers = Math.round(room.memory.slvl * workInRestocker / workInWorker)
+      }
+    }
+  }
 
-  const wantWorkers = freeHarvestSpots + supportedByRestockers
+  const wantWorkers = Math.max(freeHarvestSpots, supportedByRestockers)
 
   const wantWorkersMin = 2 // to survive energy balance
   const wantWorkersMax = 12 // to survive CPU
-
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
   addWorker(want - nowWorkers, 'lowkey')
 }
 
 spawnProcess.my = function (room, live) {
-  // STRATEGY workers have number dependent on other fractions
   this.restockers(room, live)
   this.miners(room, live)
   this.workers(room, live)
