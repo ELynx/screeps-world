@@ -2,6 +2,7 @@
 
 const bootstrap = require('bootstrap')
 
+const bodywork = require('routine.bodywork')
 const queue = require('routine.spawn')
 
 const Process = require('process.template')
@@ -70,6 +71,8 @@ spawnProcess.workers = function (room, live) {
     this
   )
 
+  // STRATEGY how many workers
+
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
   if (nowWorkers === 0) {
     addWorker(1, 'urgent')
@@ -77,8 +80,6 @@ spawnProcess.workers = function (room, live) {
 
     return
   }
-
-  // STRATEGY how many workers
 
   const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
 
@@ -145,6 +146,27 @@ spawnProcess.work = function (room) {
 
   if (room.my()) this.my(room, live)
   else if (room.ally()) this.ally(room, live)
+}
+
+spawnProcess._registerBodyFunction = function (routine) {
+  const routine = bodywork[routine]
+  const bound = _.bind(routine, bodywork)
+  const wrapped = function (spawn) {
+    return bound(spawn.room.memory.elvl)
+  }
+
+  queue.registerBodyFunction(id, wrapped)
+}
+
+spawnProcess.registerBodyFunctions = function () {
+  this._registerBodyFunction('worker')
+  this._registerBodyFunction('restocker')
+  this._registerBodyFunction('miner')
+}
+
+spawnProcess.register = function() {
+  this._register()
+  this.registerBodyFunctions()
 }
 
 spawnProcess.register()
