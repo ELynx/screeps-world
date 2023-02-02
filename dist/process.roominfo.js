@@ -159,8 +159,18 @@ roomInfoProcess.sourceLevel = function (room) {
     }
   )
 
-  // fall back to container count
-  if (links.length < 2) {
+  let hasExchange = false
+  for (let i = 0; i < links.length && links.length > 1; ++i) {
+    const link = links[i]
+    if (!link.isSource()) {
+      hasExchange = true
+      break
+    }
+  }
+
+  // no need to optimize energy transfer when there is possibility for it
+  if (!hasExchange) {
+    // fall back to container count
     const containers = _.filter(
       allStructures,
       function (structure) {
@@ -170,19 +180,6 @@ roomInfoProcess.sourceLevel = function (room) {
 
     return containers.length
   }
-
-  let hasDestination = false
-  for (let i = 0; i < links.length; ++i) {
-    const link = links[i]
-
-    if (!link.isSource()) {
-      hasDestination = true
-      break
-    }
-  }
-
-  // no need to optimize energy transfer when there is no destination
-  if (!hasDestination) return 0
 
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
@@ -216,7 +213,7 @@ roomInfoProcess.sourceLevel = function (room) {
     }
   }
 
-  // STRATEGY max two diggers per link
+  // STRATEGY max two positions per link
   return Math.min(soucePositions, 2 * sourceLinks)
 }
 
