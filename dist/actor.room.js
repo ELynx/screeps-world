@@ -2,6 +2,8 @@
 
 const bootstrap = require('bootstrap')
 
+const mapUtils = require('routine.map')
+
 /* eslint-disable no-unused-vars */
 const secutiryProcess = require('process.security')
 const roomInfoProcess = require('process.roominfo')
@@ -218,7 +220,7 @@ const roomActor =
                     rc = creep.moveToWrapper(
                       target,
                       {
-                        costCallback: Room.Terrain.costMatrixWithUnwalkableBorders,
+                        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
                         maxRooms: 1,
                         range: creep.memory.dact
                       }
