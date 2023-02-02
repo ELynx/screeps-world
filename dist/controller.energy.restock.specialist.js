@@ -13,7 +13,7 @@ energyRestockControllerSpecialist.act = function (target, creep) {
 energyRestockControllerSpecialist.targets = function (room) {
   return room.find(FIND_STRUCTURES,
     {
-      filter: function(structure) {
+      filter: function (structure) {
         if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
           if (structure.isActiveSimple() && structure.isSource()) {
             return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
