@@ -1,7 +1,5 @@
 'use strict'
 
-const spawn = require('routine.spawn')
-
 /**
 MEMO - body part cost
 
@@ -70,24 +68,7 @@ const bodywork = {
     **/
   miner: function (energyLevel) {
     return this.restocker(energyLevel)
-  },
-
-  _injectIntoSpawnPool: function (id, routine) {
-    const bound = _.bind(routine, this)
-    const wrapped = function (spawn) {
-      return bound(spawn.room.memory.elvl)
-    }
-
-    spawn.registerBodyFunction(id, wrapped)
-  },
-
-  injectIntoSpawnPool: function () {
-    this._injectIntoSpawnPool('worker', this.worker)
-    this._injectIntoSpawnPool('restocker', this.restocker)
-    this._injectIntoSpawnPool('miner', this.miner)
   }
 }
-
-bodywork.injectIntoSpawnPool()
 
 module.exports = bodywork
