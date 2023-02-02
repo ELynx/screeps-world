@@ -87,7 +87,7 @@ strelok.creepAtDestination = function (creep) {
             return false
           }
 
-          return structure.hostileOrUnowned()
+          return structure.hostile
         }
       }
     )
