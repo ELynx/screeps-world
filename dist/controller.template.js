@@ -5,6 +5,7 @@ const profiler = require('screeps-profiler')
 const bootstrap = require('bootstrap')
 
 const makeDebuggable = require('routine.debuggable')
+const mapUtils = require('routine.map')
 const intentSolver = require('routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
@@ -304,7 +305,7 @@ function Controller (id) {
             currentTarget.pos,
             bootstrap.moveOptionsWrapper(
               {
-                costCallback: Room.Terrain.costMatrixWithUnwalkableBorders,
+                costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
                 ignoreCreeps: this.ignoreCreepsForTargeting,
                 maxRooms: 1,
                 range: this.actRange
