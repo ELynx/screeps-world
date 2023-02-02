@@ -26,8 +26,6 @@ const isUnowned = function (something) {
 }
 
 const getNPCFactionReputation = function (something) {
-  if (isUnowned(something)) return DefaultReputation
-
   const username = something.owner.username
 
   if (username === UsernameInvader) return MinReputation
@@ -95,19 +93,23 @@ const adjustPcReputation = function (username, amount) {
   return setPcReputation(username, toSet)
 }
 
+const _isPC = function (something) {
+  return !_.some(NPCs, _.matches(something.owner.username))
+}
+
 const isPC = function (something) {
   // you are PC
   if (something.my) return true
 
   if (isUnowned(something)) return false
 
-  return !_.some(NPCs, _.matches(something.owner.username))
+  return _isPC(something)
 }
 
 const _assignReputation = function (something) {
   if (something.__reputation) return
 
-  if (isPC(something)) {
+  if (_isPC(something)) {
     something.__reputation = getPcReputation(something.owner.username)
   } else {
     something.__reputation = getNPCFactionReputation(something)
@@ -118,6 +120,8 @@ const isAlly = function (something) {
   // you are not your ally
   if (something.my) return false
 
+  if (isUnowned(something)) return false
+
   _assignReputation(something)
 
   return something.__reputation >= LowestAllyReputation
@@ -126,6 +130,8 @@ const isAlly = function (something) {
 const isNeutral = function (something) {
   // you are not your neutral
   if (something.my) return false
+
+  if (isUnowned(something)) return false
 
   _assignReputation(something)
 
@@ -136,6 +142,8 @@ const isNeutral = function (something) {
 const isHostile = function (something) {
   // your are not your hostile
   if (something.my) return false
+
+  if (isUnowned(something)) return false
 
   _assignReputation(something)
 
