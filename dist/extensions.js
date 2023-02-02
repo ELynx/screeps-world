@@ -3,6 +3,11 @@
 const bootstrap = require('bootstrap')
 
 // ones that do get harmful effects
+Structure.prototype.hostileOrUnowned = function () {
+  return true
+}
+
+// ones that do get harmful effects
 OwnedStructure.prototype.hostileOrUnowned = function () {
   return this.unowned || this.hostile
 }
