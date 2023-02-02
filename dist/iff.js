@@ -21,8 +21,25 @@ const MinReputation = -1
 
 const verbose = true
 
+const isUnowned = function (something) {
+  return something.owner === undefined
+}
+
 const getNPCFactionReputation = function (something) {
-  // TODO
+  if (isUnowned(something)) return DefaultReputation
+
+  const username = something.owner.username
+
+  if (username === UsernameInvader) return MinReputation
+  if (username === UsernamePowerBank) return DefaultReputation
+  if (username === UsernamePublic) return DefaultReputation
+  if (username === UsernameScreeps) return DefaultReputation
+  if (username === UsernameSourceKeeper) return DefaultReputation
+
+  if (verbose) {
+    console.log('Unknown NPC faction [' + username + '9')
+  }
+
   return DefaultReputation
 }
 
@@ -49,7 +66,9 @@ const setPcReputation = function (username, value) {
   // save memory on strangers
   Memory.reputation[username] = (toSet === DefaultReputation) ? undefined : toSet
 
-  if (verbose) console.log('Reputation for [' + username + '] set to ' + toSet)
+  if (verbose) {
+    console.log('Reputation for [' + username + '] set to ' + toSet)
+  }
 
   return toSet
 }
@@ -58,7 +77,11 @@ const adjustPcReputation = function (username, amount) {
   const now = getPcReputation(username)
 
   // no automatic change to "enemy" status
-  if (now < 0) {
+  if (now < DefaultReputation) {
+    if (verbose) {
+      console.log('No change to enemy status for [' + username + ']')
+    }
+
     return
   }
 
@@ -72,10 +95,6 @@ const adjustPcReputation = function (username, amount) {
   return setPcReputation(username, toSet)
 }
 
-const isUnowned = function (something) {
-  return something.owner === undefined
-}
-
 const isPC = function (something) {
   // you are PC
   if (something.my) return true
@@ -87,11 +106,6 @@ const isPC = function (something) {
 
 const _assignReputation = function (something) {
   if (something.__reputation) return
-
-  if (isUnowned(something)) {
-    something.__reputation = DefaultReputation
-    return
-  }
 
   if (isPC(something)) {
     something.__reputation = getPcReputation(something.owner.username)
