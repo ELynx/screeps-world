@@ -4,10 +4,6 @@ const Controller = require('controller.template')
 
 const energyRestockControllerSpecialist = new Controller('energy.restock.specialist')
 
-// STRATEGY coefficients for restocking
-const ContainerRestock = 0.99
-const LinkRestock = 0.99
-
 energyRestockControllerSpecialist.actRange = 1
 
 energyRestockControllerSpecialist.act = function (target, creep) {
@@ -15,37 +11,17 @@ energyRestockControllerSpecialist.act = function (target, creep) {
 }
 
 energyRestockControllerSpecialist.targets = function (room) {
-  const allStructures = room.find(
-    FIND_STRUCTURES,
+  return room.find(FIND_STRUCTURES,
     {
-      filter: function (structure) {
-        return structure.store && structure.isActiveSimple()
+      filter: function(structure) {
+        if (structure.structureType == STRUCTURE_LINK || structure.structureType == STRUCTURE_CONTAINER) {
+          if (structure.isActiveSimple() && structure.isSource()) {
+            return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+          }
+        }
+
+        return false
       }
-    }
-  )
-  if (allStructures.length === 0) return []
-
-  const sourceLinks = _.filter(
-    allStructures,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_LINK) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < LinkRestock * structure.store.getCapacity(RESOURCE_ENERGY) &&
-                       structure.isSource()
-      }
-
-      return false
-    }
-  )
-  if (sourceLinks.length > 0) return sourceLinks
-
-  return _.filter(
-    allStructures,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_CONTAINER) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < ContainerRestock * structure.store.getCapacity(RESOURCE_ENERGY)
-      }
-
-      return false
     }
   )
 }
