@@ -25,18 +25,12 @@ const isUnowned = function (something) {
   return something.owner === undefined
 }
 
-const getNPCFactionReputation = function (something) {
-  const username = something.owner.username
-
+const getNPCFactionReputation = function (username) {
   if (username === UsernameInvader) return MinReputation
   if (username === UsernamePowerBank) return DefaultReputation
   if (username === UsernamePublic) return DefaultReputation
   if (username === UsernameScreeps) return DefaultReputation
   if (username === UsernameSourceKeeper) return DefaultReputation
-
-  if (verbose) {
-    console.log('Unknown NPC faction [' + username + ']')
-  }
 
   return DefaultReputation
 }
@@ -87,14 +81,18 @@ const adjustPcReputation = function (username, amount) {
 
   // no automatic change to "ally" status
   if (now < LowestAllyReputation && toSet >= LowestAllyReputation) {
+    if (verbose) {
+      console.log('No change to neutral status for [' + username + ']')
+    }
+
     toSet = LowestAllyReputation - 1
   }
 
   return setPcReputation(username, toSet)
 }
 
-const _isPC = function (something) {
-  return !_.some(NPCs, _.matches(something.owner.username))
+const _isPC = function (username) {
+  return !_.some(NPCs, _.matches(username))
 }
 
 const isPC = function (something) {
@@ -103,16 +101,18 @@ const isPC = function (something) {
 
   if (isUnowned(something)) return false
 
-  return _isPC(something)
+  return _isPC(something.owner.username)
 }
 
 const _assignReputation = function (something) {
   if (something.__reputation) return
 
-  if (_isPC(something)) {
-    something.__reputation = getPcReputation(something.owner.username)
+  const username = something.owner.username
+
+  if (_isPC(username)) {
+    something.__reputation = getPcReputation(username)
   } else {
-    something.__reputation = getNPCFactionReputation(something)
+    something.__reputation = getNPCFactionReputation(username)
   }
 }
 
