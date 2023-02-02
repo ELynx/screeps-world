@@ -1,85 +1,75 @@
 'use strict'
 
-const UsernameSourceKeeper = 'Source Keeper'
-const UsernamePowerBank = 'Power Bank'
 const UsernameInvader = 'Invader'
+const UsernamePowerBank = 'Power Bank'
 const UsernamePublic = 'Public'
-const UsernameScreeps = 'Screeps' // eslint-disable-line no-unused-vars
+const UsernameScreeps = 'Screeps'
+const UsernameSourceKeeper = 'Source Keeper'
 
-const isAlly = function (something) {
-  // you are not your ally
-  if (something.my) return false
+const NPCs = [
+  UsernameInvader,
+  UsernamePowerBank,
+  UsernamePublic,
+  UsernameScreeps,
+  UsernameSourceKeeper
+]
 
-  if (something.__isally) return something.__isally
+const MaxReputation = 100
+const LowestAllyReputation = 25
+const DefaultReputation = 0
+const MinReputation = -1
 
-  if (something.owner) {
-    if (!Memory.allies) {
-      Memory.allies =
-            {
-              __timeOfCreation__: Game.time
-            }
-    }
+const verbose = true
 
-    const status = Memory.allies[something.owner.username]
-
-    const response = status && status === true
-    something.__isally = response
-    return response
-  }
-
-  something.__isally = false
-  return false
+const getNPCFactionReputation = function (something) {
+  // TODO
+  return DefaultReputation
 }
 
-const isNeutral = function (something) {
-  // you are not your neutral
-  if (something.my) return false
-
-  if (something.__isneutral) return something.__isneutral
-
-  let response = false
-
-  if (something.owner) {
-    if (!Memory.neutrals) {
-      Memory.neutrals =
-            {
-              __timeOfCreation__: Game.time
-            }
-    }
-
-    const username = something.owner.username
-
-    // TODO not always
-    if (username === UsernameSourceKeeper) response = true
-    if (username === UsernamePowerBank) response = true
-    if (username === UsernamePublic) response = true
-
-    if (!response) {
-      // check the actual memory
-      const status = Memory.neutrals[username]
-      response = status && status === true
-    }
+const getPcReputation = function (username) {
+  if (Memory.reputation === undefined) {
+    return DefaultReputation
   }
 
-  something.__isneutral = response
-  return response
+  return Memory.reputation[username] || DefaultReputation
 }
 
-const isHostile = function (something) {
-  // this will be joy when wrapped by profiler...
-
-  // quickest check
-  if (something.my) return false
-
-  // quick check
-  if (something.owner) {
-    if (something.owner.username === UsernameInvader) return true
+const setPcReputation = function (username, value) {
+  if (Memory.reputation === undefined) {
+    Memory.reputation = { }
   }
 
-  if (something.ally) return false
-  if (something.neutral) return false
+  let toSet = value
+  if (toSet > MaxReputation) {
+    toSet = MaxReputation
+  } else if (toSet < MinReputation) {
+    toSet = MinReputation
+  }
 
-  return true
+  // save memory on strangers
+  Memory.reputation[username] = (toSet === DefaultReputation) ? undefined : toSet
+
+  if (verbose) console.log('Reputation for [' + username + '] set to ' + toSet)
+
+  return toSet
+}
+
+const adjustPcReputation = function (username, amount) {
+  const now = getPcReputation(username)
+
+  // no automatic change to "enemy" status
+  if (now < 0) {
+    return
+  }
+
+  let toSet = now + amount
+
+  // no automatic change to "ally" status
+  if (now < LowestAllyReputation && toSet >= LowestAllyReputation) {
+    toSet = LowestAllyReputation - 1
+  }
+
+  return setPcReputation(username, toSet)
 }
 
 const isUnowned = function (something) {
@@ -87,18 +77,55 @@ const isUnowned = function (something) {
 }
 
 const isPC = function (something) {
-  // quick check
+  // you are PC
   if (something.my) return true
 
-  if (something.owner) {
-    const username = something.owner.username
+  if (isUnowned(something)) return false
 
-    if (username === UsernameSourceKeeper) return false
-    if (username === UsernamePowerBank) return false
-    if (username === UsernameInvader) return false
+  return !_.some(NPCs, _.matches(something.owner.username))
+}
+
+const _assignReputation = function (something) {
+  if (something.__reputation) return
+
+  if (isUnowned(something)) {
+    something.__reputation = DefaultReputation
+    return
   }
 
-  return true
+  if (isPC(something)) {
+    something.__reputation = getPcReputation(something.owner.username)
+  } else {
+    something.__reputation = getNPCFactionReputation(something)
+  }
+}
+
+const isAlly = function (something) {
+  // you are not your ally
+  if (something.my) return false
+
+  _assignReputation(something)
+
+  return something.__reputation >= LowestAllyReputation
+}
+
+const isNeutral = function (something) {
+  // you are not your neutral
+  if (something.my) return false
+
+  _assignReputation(something)
+
+  return something.__reputation >= DefaultReputation &&
+         something.__reputation < LowestAllyReputation
+}
+
+const isHostile = function (something) {
+  // your are not your hostile
+  if (something.my) return false
+
+  _assignReputation(something)
+
+  return something.__reputation < DefaultReputation
 }
 
 Object.defineProperty(
@@ -213,23 +240,23 @@ module.exports = {
   convenience () {
     Game.iff = {
       makeAlly (username) {
-        console.log('Called makeAlly ' + username)
+        return setPcReputation(username, MaxReputation)
       },
 
       makeNeutral (username) {
-        console.log('Called makeNeutral ' + username)
+        return setPcReputation(username, DefaultReputation)
       },
 
       makeHostile (username) {
-        console.log('Called makeHostile ' + username)
+        return setPcReputation(username, MinReputation)
       },
 
       increaseReputation (username, amount) {
-        console.log('Called increaseReputation ' + username + ' ' + amount)
+        return adjustPcReputation(username, amount)
       },
 
       decreaseReputation (username, amount) {
-        console.log('Called decreaseReputation ' + username + ' ' + amount)
+        return adjustPcReputation(username, -1 * amount)
       }
     }
   }
