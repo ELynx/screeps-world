@@ -143,6 +143,56 @@ const isHostile = function (something) {
 }
 
 Object.defineProperty(
+  Structure.prototype,
+  'ally',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Structure.prototype,
+  'neutral',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Structure.prototype,
+  'hostile',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Structure.prototype,
+  'unowned',
+  {
+    value: true,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Structure.prototype,
+  'pc',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
   OwnedStructure.prototype,
   'ally',
   {
