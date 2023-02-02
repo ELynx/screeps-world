@@ -38,7 +38,7 @@ rampupController.filterCreep = function (creep) {
     return false
   }
 
-  return this._isWorkAble()
+  return this._isWorkAble(creep)
 }
 
 rampupController.register()
