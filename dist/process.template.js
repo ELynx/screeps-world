@@ -21,7 +21,7 @@ function Process (id) {
     **/
   this.work = undefined
 
-  this._register = function() {
+  this._register = function () {
     bootstrap.registerProcessController(this)
     profiler.registerObject(this, this.id)
   }
