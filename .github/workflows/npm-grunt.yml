@@ -9,6 +9,11 @@ on:
         required: true
         default: "default"
         type: string
+      bundle:
+        description: "Bundle files all together"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   push:
@@ -22,13 +27,30 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Push
+      - name: Push as-is
+        if: ${{ !inputs.bundle }}
         env:
           PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
+          PUSH_WHAT: 'dist/*.js'
         run: |
           npm install
           npm install grunt
           npm install grunt-screeps
+          grunt screeps
+
+      - name: Push bundled
+        if: ${{ inputs.bundle }}
+        env:
+          PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          PUSH_BRANCH: ${{ inputs.target_branch }}
+          PUSH_WHAT: 'out/main.js'
+        run: |
+          npm install
+          npm install grunt
+          npm install grunt-screeps
+          npm install esbuild
+          esbuild ./dist/main.js --outdir=out --minify --bundle --platform=node --target=node8.9.3
           grunt screeps

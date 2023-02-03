@@ -15,7 +15,7 @@ module.exports = function (grunt) {
             },
           dist:
             {
-              src: ['dist/*.js']
+              src: [envVars.PUSH_WHAT]
             }
         }
     }
