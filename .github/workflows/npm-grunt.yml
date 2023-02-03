@@ -52,5 +52,5 @@ jobs:
           npm install grunt
           npm install grunt-screeps
           npm install esbuild
-          esbuild ./dist/main.js --outdir=out --minify --bundle --platform=node --target=node8.9.3
+          ./node_modules/.bin/esbuild ./dist/main.js --outdir=out --minify --bundle --platform=node --target=node8.9.3
           grunt screeps
