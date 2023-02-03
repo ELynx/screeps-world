@@ -35,9 +35,9 @@ const historyActor =
         const eventRecord = eventLog[index]
 
         switch (eventRecord.event) {
-        case EVENT_ATTACK:
-          this.handle_EVENT_ATTACK(room, eventRecord)
-          break
+          case EVENT_ATTACK:
+            this.handle_EVENT_ATTACK(room, eventRecord)
+            break
         }
       }
 
