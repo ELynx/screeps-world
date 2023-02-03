@@ -226,7 +226,7 @@ Room.prototype.ally = function () {
   return this.controller && this.controller.ally
 }
 
-Room.prototype.myOrAlly = function() {
+Room.prototype.myOrAlly = function () {
   return this.controller && (this.controller.my || this.controller.ally)
 }
 
