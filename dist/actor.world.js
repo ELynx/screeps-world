@@ -23,9 +23,9 @@ const worldActor =
 {
   verbose: false,
 
-  debugLine: function (what) {
+  debugLine: function (room, what) {
     if (this.verbose) {
-      console.log(what)
+      room.roomDebug(what)
     }
   },
 
@@ -34,7 +34,6 @@ const worldActor =
     **/
   taskControllersControl: function () {
     for (const id in bootstrap.taskControllers) {
-      this.debugLine('Tasked about to act [' + id + ']')
       bootstrap.taskControllers[id].act()
     }
   },
@@ -49,12 +48,11 @@ const worldActor =
     this.taskControllersControl()
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
-    this.debugLine('HCPU: ' + usedPercent + '%')
-
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
-      room.visual.rect(5.5, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(5.5, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
+      this.debugLine(room, 'HCPU: ' + usedPercent + '% on world actor')
+      room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
+      room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
     }
   } // end of act method
 }
