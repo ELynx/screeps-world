@@ -33,7 +33,7 @@ jobs:
           PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
-          PUSH_WHAT: 'dist/*.js'
+          PUSH_WHAT: "dist/*.js"
         run: |
           npm install
           npm install grunt
@@ -46,7 +46,7 @@ jobs:
           PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
-          PUSH_WHAT: 'out/main.js'
+          PUSH_WHAT: "out/main.js"
         run: |
           npm install
           npm install grunt
