@@ -1,36 +1,36 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const mapUtils = require('routine.map')
+const mapUtils = require('./routine.map')
 
 /* eslint-disable no-unused-vars */
-const secutiryProcess = require('process.security')
-const roomInfoProcess = require('process.roominfo')
-const towerProcess = require('process.tower')
-const spawnProcess = require('process.spawn')
-const linkProcess = require('process.link')
-const terminalProcess = require('process.terminal')
-const autobuildProcess = require('process.autobuild')
+const secutiryProcess = require('./process.security')
+const roomInfoProcess = require('./process.roominfo')
+const towerProcess = require('./process.tower')
+const spawnProcess = require('./process.spawn')
+const linkProcess = require('./process.link')
+const terminalProcess = require('./process.terminal')
+const autobuildProcess = require('./process.autobuild')
 
 /**
 Order of load is priority order for creep assignment.
 **/
-const redAlert = require('controller.redalert') // always on top
-const ttlController = require('controller.ttl') // catch recyclees
-const rampupController = require('controller.rampup') // build up the ramps and walls to decent level right up
-const controllerMineralHarvest = require('controller.mineral.harvest') // catch miners to mineral
-const controllerMineralRestock = require('controller.mineral.restock') // catch anyone with mineral only
-const energyTakeController = require('controller.energy.take') // above harvest, decrease harvest work
-const energyHarvestController = require('controller.energy.harvest')
-const energyRestockControllerS = require('controller.energy.restock.specialist') // catch restockers
-const energyRestockControllerR = require('controller.energy.restock.regular')
-const repairController = require('controller.repair')
-const buildController = require('controller.build')
-const controllerController = require('controller.controller')
+const redAlert = require('./controller.redalert') // always on top
+const ttlController = require('./controller.ttl') // catch recyclees
+const rampupController = require('./controller.rampup') // build up the ramps and walls to decent level right up
+const controllerMineralHarvest = require('./controller.mineral.harvest') // catch miners to mineral
+const controllerMineralRestock = require('./controller.mineral.restock') // catch anyone with mineral only
+const energyTakeController = require('./controller.energy.take') // above harvest, decrease harvest work
+const energyHarvestController = require('./controller.energy.harvest')
+const energyRestockControllerS = require('./controller.energy.restock.specialist') // catch restockers
+const energyRestockControllerR = require('./controller.energy.restock.regular')
+const repairController = require('./controller.repair')
+const buildController = require('./controller.build')
+const controllerController = require('./controller.controller')
 
 // these do not register
-const grabController = require('controller.grab')
+const grabController = require('./controller.grab')
 /* eslint-enable no-unused-vars */
 
 const roomActor =

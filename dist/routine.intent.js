@@ -1,6 +1,6 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
 if (UPGRADE_CONTROLLER_POWER !== 1) {
   console.log('UPGRADE_CONTROLLER_POWER is not equal to 1')

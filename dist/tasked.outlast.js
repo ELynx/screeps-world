@@ -1,8 +1,8 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const Tasked = require('tasked.template')
+const Tasked = require('./tasked.template')
 
 const outlast = new Tasked('outlast')
 

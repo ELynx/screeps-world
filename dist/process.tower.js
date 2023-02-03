@@ -1,6 +1,6 @@
 'use strict'
 
-const Process = require('process.template')
+const Process = require('./process.template')
 
 const towerProcess = new Process('tower')
 

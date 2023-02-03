@@ -1,6 +1,6 @@
 'use strict'
 
-const Controller = require('controller.template')
+const Controller = require('./controller.template')
 
 const energyRestockControllerRegular = new Controller('energy.restock.regular')
 

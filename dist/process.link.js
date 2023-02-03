@@ -1,6 +1,6 @@
 'use strict'
 
-const Process = require('process.template')
+const Process = require('./process.template')
 
 const linkProcess = new Process('link')
 

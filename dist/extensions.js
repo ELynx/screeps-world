@@ -1,6 +1,6 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
 // ones that do get harmful effects
 Structure.prototype.hostileOrUnowned = function () {
