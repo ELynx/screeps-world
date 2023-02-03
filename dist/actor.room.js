@@ -275,8 +275,8 @@ const roomActor =
     }
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
-    this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '%')
-    room.visual.rect(0, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
+    this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '% on room actor')
+    room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
   } // end of act method
 }
 

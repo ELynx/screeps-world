@@ -66,8 +66,8 @@ module.exports.loop = function () {
       const t = total
       const limit = Math.ceil(100 * r / t)
 
-      room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(0, 0, 5 * r / t, 0.25, { fill: '#03f' })
+      room.visual.rect(5.5, 0, 5, 0.5, { fill: '#0f0' })
+      room.visual.rect(5.5, 0, 5 * r / t, 0.25, { fill: '#03f' })
 
       // save CPU on all rooms where control is not needed
       if (room.my()) {
