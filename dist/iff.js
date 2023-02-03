@@ -329,6 +329,11 @@ module.exports = {
 
       decreaseReputation (username, amount) {
         return adjustPcReputation(username, -1 * amount)
+      },
+
+      markHostile (something) {
+        something.__reputation = MinReputation
+        return something.__reputation
       }
     }
   }

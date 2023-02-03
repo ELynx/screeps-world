@@ -12,7 +12,12 @@ OwnedStructure.prototype.hostileOrUnowned = function () {
   return this.unowned || this.hostile
 }
 
-// anycreep who get benefits, mostly healing
+// anything that get benefits
+OwnedStructure.prototype.myOrAlly = function () {
+  return this.my || this.ally
+}
+
+// anything that get benefits
 Creep.prototype.myOrAlly = function () {
   return this.my || this.ally
 }
@@ -219,6 +224,10 @@ Room.prototype.my = function () {
 
 Room.prototype.ally = function () {
   return this.controller && this.controller.ally
+}
+
+Room.prototype.myOrAlly = function() {
+  return this.controller && (this.controller.my || this.controller.ally)
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
