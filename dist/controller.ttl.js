@@ -1,8 +1,8 @@
 'use strict'
 
-const bodywork = require('routine.bodywork')
+const bodywork = require('./routine.bodywork')
 
-const Controller = require('controller.template')
+const Controller = require('./controller.template')
 
 const ttlController = new Controller('ttl')
 

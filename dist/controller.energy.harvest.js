@@ -1,6 +1,6 @@
 'use strict'
 
-const Controller = require('controller.template')
+const Controller = require('./controller.template')
 
 const energyHarvestController = new Controller('energy.harvest')
 

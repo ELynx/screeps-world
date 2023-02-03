@@ -1,16 +1,16 @@
 'use strict'
 
 // standalone
-const iff = require('iff')
-const profiler = require('screeps-profiler')
+const iff = require('./iff')
+const profiler = require('./screeps-profiler')
 
 /* eslint-disable no-unused-vars */
-const extensions = require('extensions')
+const extensions = require('./extensions')
 /* eslint-enable no-unused-vars */
 
-const cleanup = require('routine.cleanup')
-const roomActor = require('actor.room')
-const worldActor = require('actor.world')
+const cleanup = require('./routine.cleanup')
+const roomActor = require('./actor.room')
+const worldActor = require('./actor.world')
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)

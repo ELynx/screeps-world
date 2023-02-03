@@ -1,8 +1,8 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const Process = require('process.template')
+const Process = require('./process.template')
 
 const terminalProcess = new Process('terminal')
 

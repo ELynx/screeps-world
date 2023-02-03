@@ -1,6 +1,6 @@
 'use strict'
 
-const Tasked = require('tasked.template')
+const Tasked = require('./tasked.template')
 
 const strelok = new Tasked('strelok')
 

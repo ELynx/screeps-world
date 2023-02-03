@@ -1,12 +1,12 @@
 'use strict'
 
-const profiler = require('screeps-profiler')
+const profiler = require('./screeps-profiler')
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const makeDebuggable = require('routine.debuggable')
-const mapUtils = require('routine.map')
-const intentSolver = require('routine.intent')
+const makeDebuggable = require('./routine.debuggable')
+const mapUtils = require('./routine.map')
+const intentSolver = require('./routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
   this.__mark_default_filtered = true

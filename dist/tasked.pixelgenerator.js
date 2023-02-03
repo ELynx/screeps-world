@@ -1,6 +1,6 @@
 'use strict'
 
-const Tasked = require('tasked.template')
+const Tasked = require('./tasked.template')
 
 const pixelGenerator = new Tasked('pixelGenerator')
 

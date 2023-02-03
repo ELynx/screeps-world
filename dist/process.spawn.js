@@ -1,11 +1,11 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const bodywork = require('routine.bodywork')
-const queue = require('routine.spawn')
+const bodywork = require('./routine.bodywork')
+const queue = require('./routine.spawn')
 
-const Process = require('process.template')
+const Process = require('./process.template')
 
 // STRATEGY how many room creeps
 const spawnProcess = new Process('spawn')

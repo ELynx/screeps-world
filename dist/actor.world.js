@@ -1,22 +1,22 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
 /* eslint-disable no-unused-vars */
 /**
 Order of load is priority for task execution.
 **/
 // generate spawn(s)
-const taskedOutlast = require('tasked.outlast') // very tick-sensitive logic, run first
-const taskedBeetle = require('tasked.beetle') // generates aggro
-const taskedStrelok = require('tasked.strelok') // consumes aggro
-const taskedPlunder = require('tasked.plunder') // paramilitary
-const taskedClaim = require('tasked.claim') // one-off
-const taskedObserve = require('tasked.observe') // lowest prio
+const taskedOutlast = require('./tasked.outlast') // very tick-sensitive logic, run first
+const taskedBeetle = require('./tasked.beetle') // generates aggro
+const taskedStrelok = require('./tasked.strelok') // consumes aggro
+const taskedPlunder = require('./tasked.plunder') // paramilitary
+const taskedClaim = require('./tasked.claim') // one-off
+const taskedObserve = require('./tasked.observe') // lowest prio
 // consume spawn(s)
-const taskedSpawn = require('tasked.spawn')
+const taskedSpawn = require('./tasked.spawn')
 // other
-const taskedPixel = require('tasked.pixelgenerator')
+const taskedPixel = require('./tasked.pixelgenerator')
 /* eslint-enable no-unused-vars */
 
 const worldActor =

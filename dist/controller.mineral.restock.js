@@ -1,8 +1,8 @@
 'use strict'
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const Controller = require('controller.template')
+const Controller = require('./controller.template')
 
 const mineralRestockController = new Controller('mineral.restock')
 

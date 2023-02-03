@@ -1,10 +1,10 @@
 'use strict'
 
-const profiler = require('screeps-profiler')
+const profiler = require('./screeps-profiler')
 
-const bootstrap = require('bootstrap')
+const bootstrap = require('./bootstrap')
 
-const makeDebuggable = require('routine.debuggable')
+const makeDebuggable = require('./routine.debuggable')
 
 function Process (id) {
   /**
