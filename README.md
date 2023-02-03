@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-(High importance) IFF retaliation.
-
 Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
@@ -28,6 +26,8 @@ Strelok tries to attack unreachable sections.
 Intent queue for withdraw and transfer.
 
 Fight against squads with healers.
+
+Give Strelok melee attack part for more havoc.
 
 ## Intents
 [Spawn](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/spawns/intents.js)

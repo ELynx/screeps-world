@@ -13,7 +13,53 @@ const historyActor =
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
-    this.debugLine(room, eventRecord.objectId)
+    // skip objects out of interest
+    if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
+    if (Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId]) return
+
+    // SHORTCUT fight back is automatic
+    if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
+    // SHORTCUT nuke is detected elsewhere
+    if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
+
+    const attacker = Game.getObjectById(eventRecord.objectId)
+    if (attacker === undefined ||
+        attacker.owner === undefined ||
+        attacker.my) {
+      // SHORTCUT skip dead, unowned or own
+      Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
+      return
+    }
+
+    const target = Game.getObjectById(eventRecord.data.targetId)
+    if (target === undefined) {
+      // SHORTCUT skip dead
+      Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
+      return
+    }
+
+    let hostileAction = false
+
+    if (target.owner) {
+      hostileAction = target.myOrAlly()
+    } else {
+      hostileAction = room.myOrAlly()
+    }
+
+    if (hostileAction === false) {
+      // SHORTCUT skip uninterested
+      Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
+      return
+    }
+
+    // SHORTCUT check hostile once
+    Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
+
+    Game.iff.markHostile(attacker)
+
+    if (attacker.pc) {
+      Game.iff.decreaseReputation(attacker.owner.username, 1)
+    }
   },
 
   /**
@@ -22,6 +68,9 @@ const historyActor =
   act: function () {
     // mark initial overall time
     const t0 = Game.cpu.getUsed()
+
+    Game.__handle_EVENT_ATTACK_attackers = { }
+    Game.__handle_EVENT_ATTACK_targets = { }
 
     for (const roomName in Game.rooms) {
       const t1 = Game.cpu.getUsed()
