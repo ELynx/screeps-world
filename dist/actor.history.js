@@ -55,10 +55,12 @@ const historyActor =
     // SHORTCUT check hostile once
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
 
-    Game.iff.markHostile(attacker)
+    const status1 = Game.iff.markHostile(attacker)
+    this.roomDebug(room, attacker.id + ' has reputation change to ' + status1)
 
     if (attacker.pc) {
-      Game.iff.decreaseReputation(attacker.owner.username, 1)
+      const status = Game.iff.decreaseReputation(attacker.owner.username, 1)
+      this.roomDebug(room, attacker.owner.username + ' had reputation change to ' + status)
     }
   },
 
