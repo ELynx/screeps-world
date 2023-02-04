@@ -126,7 +126,7 @@ const historyActor =
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
       this.debugLine(room, this.hmiName(attacker) + ' owned by '  attackerUsername + ' had owner reputation changed to ' + reputation)
     } else {
-      const reputation = Game.iff.markHostile(attacker)
+      const reputation = Game.iff.markNPCHostile(attacker)
       this.debugLine(room, this.hmiName(attacker) + ' NPC had reputation changed to ' + reputation)
     }
   },

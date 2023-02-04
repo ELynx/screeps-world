@@ -331,9 +331,9 @@ module.exports = {
         return adjustPcReputation(username, -1 * amount)
       },
 
-      markHostile (something) {
-        something.__reputation = MinReputation
-        return something.__reputation
+      markNPCHostile (something) {
+        something.__markedHostile = true
+        return MinReputation
       }
     }
   }
