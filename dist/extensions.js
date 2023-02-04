@@ -203,7 +203,7 @@ Room.prototype.getRoomControlledCreeps = function () {
   if (this.__roomCreeps === undefined) {
     this.__roomCreeps = _.filter(
       Game.creeps,
-      function (creep, name) {
+      function (creep) {
         // skip tasked
         if (creep.memory.flag) return false
 
