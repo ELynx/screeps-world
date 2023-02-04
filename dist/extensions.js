@@ -68,6 +68,33 @@ Creep.prototype.healAdjacent = function (creeps) {
   return ERR_NOT_FOUND
 }
 
+Creep.prototype.meleeAdjacent = function (targets) {
+  let targetNear
+  let targetNearNoMelee
+
+  for (let i = 0; i < targets.length; ++i) {
+    const target = targets[i]
+    if (this.pos.isNearTo(target)) {
+      targetNear = target
+
+      if (target.body) {
+        if (!_.some(target.body, _.matchesProperty('type', ATTACK))) {
+          targetNearNoMelee = target
+        }
+      } else {
+        targetNearNoMelee = target
+      }
+    }
+
+    if (targetNearNoMelee) break
+  }
+
+  if (targetNearNoMelee) return this.attack(targetNearNoMelee)
+  if (targetNear) return this.attack(targetNear)
+
+  return ERR_NOT_FOUND
+}
+
 Creep.prototype.purgeEnergy = function () {
   if (this.store[RESOURCE_ENERGY] > 0) this.drop(RESOURCE_ENERGY)
 }
