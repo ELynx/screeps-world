@@ -310,6 +310,7 @@ strelok.makeBody = function (spawn) {
   let tough = 0
   let move = 0
   let ranged = 0
+  let melee = 0
   let heal = 0
 
   // 700 for base combo and 200 per big room climb after 3
@@ -317,17 +318,31 @@ strelok.makeBody = function (spawn) {
 
   // add heal + two ranged combo
   // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
-  while (budget >= 700 && (move + ranged + heal <= 50 - 6)) {
+  let once = true
+  while (budget >= 700 && (tough + move + ranged + melee + heal <= 50 - 6)) {
     move = move + 3
     ranged = ranged + 2
     heal = heal + 1
 
     budget = budget - 700
+
+    if (once) {
+      once = false
+      // add melee for extra havoc
+      // 190 is 80 melee x 1 + 10 tough x 1 + 50 move x 2
+      if (budget >= 190 && (tough + move + ranged + melee + heal <= 50 - 4)) {
+        tough = tough + 1
+        move = move + 2
+        melee = melee + 1
+
+        budget = budget - 190
+      }
+    }
   }
 
   // add ranged
   // 200 is 150 ranged x 1 + 50 move x 1
-  while (budget >= 200 && (move + ranged + heal <= 50 - 2)) {
+  while (budget >= 200 && (tough + move + ranged + melee + heal <= 50 - 2)) {
     move = move + 1
     ranged = ranged + 1
 
@@ -335,14 +350,14 @@ strelok.makeBody = function (spawn) {
   }
 
   // add move padding
-  while (budget >= 50 && (move + ranged + heal <= 50 - 1)) {
+  while (budget >= 50 && (tough + move + ranged + melee + heal <= 50 - 1)) {
     move = move + 1
 
     budget = budget - 50
   }
 
   // add tough padding
-  if (budget >= 10 && (tough + move + ranged + heal <= 50 - 1) && (tough + ranged + heal < move)) {
+  if (budget >= 10 && (tough + move + ranged + melee + heal <= 50 - 1) && (tough + ranged + melee + heal < move)) {
     tough = tough + 1
 
     budget = budget - 10
@@ -357,10 +372,13 @@ strelok.makeBody = function (spawn) {
   const c = new Array(ranged)
   c.fill(RANGED_ATTACK)
 
-  const d = new Array(heal)
-  d.fill(HEAL)
+  const d = new Array(melee)
+  d.fill(ATTACK)
 
-  const body = a.concat(b).concat(c).concat(d)
+  const e = new Array(heal)
+  e.fill(HEAL)
+
+  const body = a.concat(b).concat(c).concat(d).concat(e)
 
   this.__bodyCache[elvl] = body
 
