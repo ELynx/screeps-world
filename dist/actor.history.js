@@ -4,12 +4,11 @@ const bootstrap = require('./bootstrap')
 
 const historyActor =
 {
-  verbose: true,
+  verbose: false,
 
   debugLine: function (room, what) {
     if (this.verbose) {
       room.roomDebug(what)
-      console.log(what)
     }
   },
 
