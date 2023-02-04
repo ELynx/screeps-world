@@ -117,12 +117,17 @@ const historyActor =
     // SHORTCUT check hostile once
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
 
-    const status1 = Game.iff.markHostile(attacker)
-    this.debugLine(room, this.hmiName(attacker) + ' had reputation changed to ' + status1)
-
     if (attacker.pc) {
-      const status = Game.iff.decreaseReputation(attackerUsername, 1)
-      this.debugLine(room, attackerUsername + ' had reputation changed to ' + status)
+      // STRATEGY PC reputation decrease per hostile action
+      // Ally (100) to Neutral (22) in 26 actions
+      // Ally (100) to Hostile (-1) in 34 actions
+      // Neutral (24) to Hostile (-1) in 9 actions
+      // Neutral (0) to Hostile (-1) in 1 action
+      const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
+      this.debugLine(room, this.hmiName(attacker) + ' owned by '  attackerUsername + ' had owner reputation changed to ' + reputation)
+    } else {
+      const reputation = Game.iff.markHostile(attacker)
+      this.debugLine(room, this.hmiName(attacker) + ' NPC had reputation changed to ' + reputation)
     }
   },
 
