@@ -21,6 +21,8 @@ const MinReputation = -1
 
 const verbose = false
 
+const usernameSafetyPrefix = 'user_'
+
 const prepareHostileNPCMemory = function () {
   // if defined, pull in full definition, otherwise empty
   Game.__npcReputation = Memory.npcReputation || { }
@@ -43,12 +45,17 @@ const getNPCFactionReputation = function (username) {
   return DefaultReputation
 }
 
+const __safe = function (username) {
+  return usernameSafetyPrefix + username
+}
+
 const getPCReputation = function (username) {
   if (Memory.reputation === undefined) {
     return DefaultReputation
   }
 
-  return Memory.reputation[username] || DefaultReputation
+  const safeUsername = __safe(username)
+  return Memory.reputation[safeUsername] || DefaultReputation
 }
 
 const setPCReputation = function (username, value) {
@@ -64,7 +71,8 @@ const setPCReputation = function (username, value) {
   }
 
   // save memory on strangers
-  Memory.reputation[username] = (toSet === DefaultReputation) ? undefined : toSet
+  const safeUsername = __safe(username)
+  Memory.reputation[safeUsername] = (toSet === DefaultReputation) ? undefined : toSet
 
   if (verbose) {
     console.log('Reputation for [' + username + '] set to ' + toSet)
