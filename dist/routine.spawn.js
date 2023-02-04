@@ -34,7 +34,7 @@ const spawn = {
   },
 
   _add: function (target, id, body, name, memory, from, to, n) {
-    const extra = this.__add_extra || 0
+    const extra = this.__addExtra || 0
 
     for (let i = 0; i < n; ++i) {
       const model =
@@ -52,7 +52,7 @@ const spawn = {
       target.push(model)
     }
 
-    this.__add_extra = extra + n
+    this.__addExtra = extra + n
   },
 
   addUrgent: function (id, body, name, memory, from, to, n = 1) {

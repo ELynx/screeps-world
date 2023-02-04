@@ -10,7 +10,9 @@ const BreachEasyRange = 3
 beetle.prepare = function () {
   for (const roomName in Game.rooms) {
     const room = Game.rooms[roomName]
-    room.__aggro = []
+    if (room.__aggro === undefined) {
+      room.__aggro = []
+    }
   }
 }
 
@@ -20,9 +22,9 @@ beetle.breachLength = function (breach) {
 }
 
 beetle.wipeBreach = function (creep) {
-  creep.memory._breachP_ = undefined
-  creep.memory._breachI_ = undefined
-  creep.memory._breachT_ = undefined
+  creep.memory._brP = undefined
+  creep.memory._brI = undefined
+  creep.memory._brT = undefined
 }
 
 beetle.creepAtDestination = function (creep) {
@@ -37,15 +39,15 @@ beetle.creepAtDestination = function (creep) {
   }
 
   // every N ticks refresh situation
-  if (creep.memory._breachT_) {
-    if (Game.time - creep.memory._breachT_ > 10) {
+  if (creep.memory._brT) {
+    if (Game.time - creep.memory._brT > 10) {
       this.wipeBreach(creep)
     }
   }
 
   // at the end of path refresh situation immediately
-  if (creep.memory._breachP_ && creep.memory._breachI_) {
-    if (this.breachLength(creep.memory._breachP_) <= creep.memory._breachI_) {
+  if (creep.memory._brP && creep.memory._brI) {
+    if (this.breachLength(creep.memory._brP) <= creep.memory._brI) {
       this.wipeBreach(creep)
     }
   }
@@ -63,7 +65,7 @@ beetle.creepAtDestination = function (creep) {
   }
 
   // no path known
-  if (creep.memory._breachP_ === undefined) {
+  if (creep.memory._brP === undefined) {
     let path
 
     // how much long is remaining
@@ -114,17 +116,17 @@ beetle.creepAtDestination = function (creep) {
       )
     }
 
-    creep.memory._breachP_ = path
-    creep.memory._breachI_ = 0
-    creep.memory._breachT_ = Game.time
+    creep.memory._brP = path
+    creep.memory._brI = 0
+    creep.memory._brT = Game.time
   }
 
-  const path = Room.deserializePath(creep.memory._breachP_)
+  const path = Room.deserializePath(creep.memory._brP)
   creep.room.visual.poly(path)
 
   let next
 
-  for (let i = creep.memory._breachI_; i < path.length; ++i) {
+  for (let i = creep.memory._brI; i < path.length; ++i) {
     const pathItem = path[i]
 
     const supposeNowX = pathItem.x - pathItem.dx
@@ -132,7 +134,7 @@ beetle.creepAtDestination = function (creep) {
 
     if (creep.pos.x === supposeNowX && creep.pos.y === supposeNowY) {
       next = pathItem
-      creep.memory._breachI_ = i
+      creep.memory._brI = i
       break
     }
   }
@@ -199,13 +201,13 @@ beetle.creepAtDestination = function (creep) {
       // trick - expect that movement actually happened
       // search step from +1 of current
       if (rc === OK) {
-        ++creep.memory._breachI_
+        ++creep.memory._brI
       }
     }
 
     // extend
     if (rc === OK) {
-      creep.memory._breachT_ = Game.time
+      creep.memory._brT = Game.time
     }
     // end of next is present
   } else {
@@ -243,11 +245,11 @@ beetle.makeBody = function (spawn) {
     return [MOVE, MOVE, CARRY, WORK]
   }
 
-  if (!this._bodyCache_) {
-    this._bodyCache_ = { }
+  if (!this.__bodyCache) {
+    this.__bodyCache = { }
   }
 
-  const cached = this._bodyCache_[elvl]
+  const cached = this.__bodyCache[elvl]
   if (cached) {
     return cached
   }
@@ -265,7 +267,7 @@ beetle.makeBody = function (spawn) {
   // one spot for withdraw
   const body = a.concat([CARRY]).concat(b)
 
-  this._bodyCache_[elvl] = body
+  this.__bodyCache[elvl] = body
 
   return body
 }

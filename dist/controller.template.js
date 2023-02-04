@@ -9,11 +9,11 @@ const mapUtils = require('./routine.map')
 const intentSolver = require('./routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
-  this.__mark_default_filtered = true
+  this.__markDefaultFiltered = true
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  return this.__mark_default_filtered || false
+  return this.__markDefaultFiltered || false
 }
 
 function Controller (id) {
@@ -138,8 +138,8 @@ function Controller (id) {
     @return Possible targets.
     **/
   this._findTargets = function (room) {
-    if (this._targetCache) {
-      return this._targetCache
+    if (this.__targetCache) {
+      return this.__targetCache
     }
 
     let targets = this.targets(room)
@@ -148,7 +148,7 @@ function Controller (id) {
       targets = this._filterExcludedTargets(targets)
     }
 
-    this._targetCache = targets
+    this.__targetCache = targets
 
     return targets
   }
@@ -386,7 +386,7 @@ function Controller (id) {
     }
 
     // wipe the cache from previous room now
-    this._targetCache = undefined
+    this.__targetCache = undefined
     if (this._findTargets(room).length === 0) {
       this.debugLine(room, 'Fast exit, no targets')
       return roomCreeps
