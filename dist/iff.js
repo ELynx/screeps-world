@@ -19,7 +19,7 @@ const LowestAllyReputation = 25
 const DefaultReputation = 0
 const MinReputation = -1
 
-const verbose = true
+const verbose = false
 
 const prepareHostileNPCMemory = function () {
   // if defined, pull in full definition, otherwise empty
