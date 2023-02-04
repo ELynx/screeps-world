@@ -118,7 +118,7 @@ const historyActor =
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
 
     const status1 = Game.iff.markHostile(attacker)
-    this.debugLine(room, this.hmiName(attacker) + ' has reputation changed to ' + status1)
+    this.debugLine(room, this.hmiName(attacker) + ' had reputation changed to ' + status1)
 
     if (attacker.pc) {
       const status = Game.iff.decreaseReputation(attackerUsername, 1)
