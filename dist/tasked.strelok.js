@@ -34,7 +34,7 @@ strelok.prepare = function () {
 }
 
 strelok.creepPrepare = function (creep) {
-  creep.__canAttack = creep.getActiveBodyparts(RANGED_ATTACK) > 0
+  creep.__canRanged = creep.getActiveBodyparts(RANGED_ATTACK) > 0
   creep.__canHeal = creep.getActiveBodyparts(HEAL) > 0
   creep.__canHealRanged = creep.__canHeal
 
@@ -155,7 +155,7 @@ strelok.creepAtDestination = function (creep) {
   if (fireTarget) {
     const rangeToFireTarget = creep.pos.getRangeTo(fireTarget)
 
-    if (creep.__canAttack) {
+    if (creep.__canRanged) {
       if (rangeToFireTarget <= 3) {
         let mass
 
