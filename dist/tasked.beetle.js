@@ -10,7 +10,7 @@ const BreachEasyRange = 3
 beetle.prepare = function () {
   for (const roomName in Game.rooms) {
     const room = Game.rooms[roomName]
-    room._aggro_ = []
+    room.__aggro = []
   }
 }
 
@@ -191,8 +191,8 @@ beetle.creepAtDestination = function (creep) {
       rc = creep.dismantle(target)
       // coordinate effort - ask nearbys to attack
       if (rc === OK) {
-        target._aggroTarget_ = true
-        creep.room._aggro_.push(target)
+        target.__aggro = true
+        creep.room.__aggro.push(target)
       }
     } else {
       rc = creep.moveWrapper(next.direction)

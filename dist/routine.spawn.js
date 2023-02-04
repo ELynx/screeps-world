@@ -168,24 +168,17 @@ const spawn = {
 
   // internals of this function should not be used
   __postpone: function (target) {
-    // resetter
-    if (this.__postpone_t !== Game.time) {
-      this.__postpone_n = undefined
+    if (Game.__spawnPostponeN === undefined) {
+      // STRATEGY how many shuffles in queue are allowed
+      Game.__spawnPostponeN = Math.floor(target.length / 2)
     }
 
-    // define value per tick
-    if (this.__postpone_n === undefined) {
-      // STRATEGY how many shuffles in queue is allowed
-      this.__postpone_n = Math.floor(target.length / 2)
-      this.__postpone_t = Game.time
-    }
-
-    // denier
-    if (this.__postpone_n === 0) {
+    // denied
+    if (Game.__spawnPostponeN === 0) {
       return false
     }
 
-    this.__postpone_n = this.__postpone_n - 1
+    Game.__spawnPostponeN = Game.__spawnPostponeN - 1
 
     const taken = target.shift()
     target.push(taken)

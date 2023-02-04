@@ -189,21 +189,19 @@ Flag.prototype.resetSecondaryColor = function () {
 }
 
 Room.prototype.roomDebug = function (what) {
-  if (this._verboseT_ === undefined ||
-        this._verboseT_ !== Game.time) {
-    this._debugY_ = 1.5
-    this._verboseT_ = Game.time
+  if (this.__debugY === undefined) {
+    this.__debugY = 1.5
   }
 
-  this.visual.text(what, 0, this._debugY_++, { align: 'left', font: 'courier' })
+  this.visual.text(what, 0, this.__debugY++, { align: 'left', font: 'courier' })
 }
 
 /**
 Get a list of creeps assigned to a room, cached
 **/
 Room.prototype.getRoomControlledCreeps = function () {
-  if (this._roomCreeps === undefined) {
-    this._roomCreeps = _.filter(
+  if (this.__roomCreeps === undefined) {
+    this.__roomCreeps = _.filter(
       Game.creeps,
       function (creep, name) {
         // skip tasked
@@ -215,7 +213,7 @@ Room.prototype.getRoomControlledCreeps = function () {
     )
   }
 
-  return this._roomCreeps
+  return this.__roomCreeps
 }
 
 Room.prototype.my = function () {
