@@ -114,9 +114,6 @@ const historyActor =
     // fights between allies
     if (attacker.ally && (!targetMy)) return
 
-    // SHORTCUT check hostile once
-    Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
-
     if (attacker.pc) {
       // STRATEGY PC reputation decrease per hostile action
       // Ally (100) to Neutral (22) in 26 actions
@@ -129,6 +126,9 @@ const historyActor =
       const reputation = Game.iff.markNPCHostile(attacker)
       this.debugLine(room, this.hmiName(attacker) + ' NPC had reputation changed to ' + reputation)
     }
+
+    // SHORTCUT check hostile once
+    Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
   },
 
   /**

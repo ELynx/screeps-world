@@ -22,7 +22,11 @@ const MinReputation = -1
 const verbose = true
 
 const prepareHostileNPCMemory = function () {
+  // if defined, pull in full definition, otherwise empty
+  Game.__npcReputation = Memory.npcReputation || { }
 
+  // release memory, only remember as needed
+  Memory.npcReputation = undefined
 }
 
 const isUnowned = function (something) {
@@ -108,15 +112,31 @@ const isPC = function (something) {
   return _isPC(something.owner.username)
 }
 
+const __assignPCReputation = function (something, username) {
+  something.__reputation = getPCReputation(username)
+}
+
+const __assignNPCReputation = function (something, username) {
+  const factionReputation = getNPCFactionReputation(username)
+  // current, then memorized, then default
+  const somethingReputation = something.__reputation || Game.__npcReputation[something.id] || factionReputation
+
+  // remember difference to next turn
+  if (somethingReputation !== factionReputation) {
+    if (Memory.npcReputation === undefined) Memory.npcReputation = { }
+
+    Memory.npcReputation[something.id] = somethingReputation
+  }
+
+  something.__reputation = somethingReputation
+}
+
 const _assignReputation = function (something) {
-  if (something.__reputation) return
-
   const username = something.owner.username
-
   if (_isPC(username)) {
-    something.__reputation = getPCReputation(username)
+    __assignPCReputation(something, username)
   } else {
-    something.__reputation = getNPCFactionReputation(username)
+    __assignNPCReputation(something, username)
   }
 }
 
@@ -338,8 +358,8 @@ module.exports = {
       },
 
       markNPCHostile (something) {
-        something.__markedHostile = true
-        return MinReputation
+        something.__reputation = MinReputation
+        return something.__reputation
       }
     }
   }
