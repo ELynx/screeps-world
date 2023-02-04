@@ -137,6 +137,17 @@ function Tasked (id) {
   }
 
   this.act = function () {
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+      if (room.__aggro === undefined) {
+        room.__aggro = []
+      }
+    }
+
+    if (this.prepare) {
+      this.prepare()
+    }
+
     const creeps = _.filter(
       Game.creeps,
       function (creep) {
@@ -145,10 +156,6 @@ function Tasked (id) {
       },
       this
     )
-
-    if (this.prepare) {
-      this.prepare()
-    }
 
     const flagCount = { }
 
