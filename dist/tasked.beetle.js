@@ -7,15 +7,6 @@ const beetle = new Tasked('beetle')
 const BreachCompleteRange = 1
 const BreachEasyRange = 3
 
-beetle.prepare = function () {
-  for (const roomName in Game.rooms) {
-    const room = Game.rooms[roomName]
-    if (room.__aggro === undefined) {
-      room.__aggro = []
-    }
-  }
-}
-
 beetle.breachLength = function (breach) {
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
   return breach.length - 4
