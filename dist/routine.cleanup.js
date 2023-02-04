@@ -30,9 +30,9 @@ const cleanup = {
       }
     }
 
-    if (Memory.profiler) {
-      if (!Game.profiler) {
-        delete Memory.profiler
+    if (Memory.reputation) {
+      if (Object.keys(Memory.reputation).length === 0) {
+        delete Memory.reputation
       }
     }
   },
