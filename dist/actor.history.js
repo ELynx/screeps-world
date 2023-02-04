@@ -12,6 +12,11 @@ const historyActor =
     }
   },
 
+  getObjectById: function(room, id) {
+    // TODO by tombstone
+    return Game.getObjectById(id)
+  },
+
   handle_EVENT_ATTACK: function (room, eventRecord) {
     // skip objects out of interest
     if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
@@ -22,8 +27,8 @@ const historyActor =
     // SHORTCUT nuke is detected elsewhere
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
 
-    const attacker = Game.getObjectById(eventRecord.objectId)
-    if (attacker === undefined ||
+    const attacker = this.getObjectById(room, eventRecord.objectId)
+    if (attacker === null ||
         attacker.owner === undefined ||
         attacker.my) {
       // SHORTCUT skip dead, unowned or own
@@ -31,8 +36,8 @@ const historyActor =
       return
     }
 
-    const target = Game.getObjectById(eventRecord.data.targetId)
-    if (target === undefined) {
+    const target = this.getObjectById(room, eventRecord.data.targetId)
+    if (target === null) {
       // SHORTCUT skip dead
       Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
       return
@@ -56,11 +61,11 @@ const historyActor =
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
 
     const status1 = Game.iff.markHostile(attacker)
-    this.roomDebug(room, attacker.id + ' has reputation change to ' + status1)
+    this.debugLine(room, attacker.id + ' has reputation change to ' + status1)
 
     if (attacker.pc) {
       const status = Game.iff.decreaseReputation(attacker.owner.username, 1)
-      this.roomDebug(room, attacker.owner.username + ' had reputation change to ' + status)
+      this.debugLine(room, attacker.owner.username + ' had reputation change to ' + status)
     }
   },
 
