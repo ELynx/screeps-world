@@ -9,6 +9,7 @@ const historyActor =
   debugLine: function (room, what) {
     if (this.verbose) {
       room.roomDebug(what)
+      console.log(what)
     }
   },
 
@@ -44,6 +45,18 @@ const historyActor =
 
     // as original API
     return null
+  },
+
+  hmiName: function (something) {
+    let result
+
+    if (something.body) result = 'Creep [' + something.name + ']'
+    else if (something.structureType) result = 'Structure [' + something.structureType + ']'
+    else result = 'Unknown [' + something.id + ']'
+
+    if (something.pos) result += ' at ' + something.pos
+
+    return result
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
@@ -105,11 +118,11 @@ const historyActor =
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
 
     const status1 = Game.iff.markHostile(attacker)
-    this.debugLine(room, attacker.id + ' has reputation change to ' + status1)
+    this.debugLine(room, this.hmiName(attacker) + ' has reputation changed to ' + status1)
 
     if (attacker.pc) {
-      const status = Game.iff.decreaseReputation(attacker.owner.username, 1)
-      this.debugLine(room, attacker.owner.username + ' had reputation change to ' + status)
+      const status = Game.iff.decreaseReputation(attackerUsername, 1)
+      this.debugLine(room, attackerUsername + ' had reputation changed to ' + status)
     }
   },
 
