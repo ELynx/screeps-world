@@ -12,7 +12,7 @@ const historyActor =
     }
   },
 
-  getObjectById: function(room, id) {
+  getObjectById: function (room, id) {
     // TODO by tombstone
     return Game.getObjectById(id)
   },
