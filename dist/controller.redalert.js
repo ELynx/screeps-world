@@ -33,7 +33,7 @@ const Targets =
 redAlert.actRange = 3
 
 redAlert.extra = function (controller) {
-  return controller._targetTicks_
+  return controller.__targetTicks
 }
 
 redAlert.roomPrepare = function (room) {
@@ -53,7 +53,7 @@ redAlert.targets = function (room) {
   if (!room.controller.upgradeBlocked) {
     const level = room.controller.level
     if (room.controller.ticksToDowngrade < Tresholds[level]) {
-      room.controller._targetTicks_ = Targets[level]
+      room.controller.__targetTicks = Targets[level]
       return [room.controller]
     }
   }

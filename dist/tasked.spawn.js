@@ -69,7 +69,7 @@ spawn.postpone = function () {
 }
 
 spawn._spawnRoomMarkCheck = function (room) {
-  return room._spawnMark_ === Game.time
+  return room.__spawnMark || false
 }
 
 spawn._spawnRoomFilter = function (room) {
@@ -83,7 +83,7 @@ spawn._spawnRoomFilter = function (room) {
 }
 
 spawn._spawnRoomMark = function (room) {
-  room._spawnMark_ = Game.time
+  room.__spawnMark = true
 }
 
 spawn._findAllSpawnRooms = function () {

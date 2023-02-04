@@ -31,7 +31,7 @@ repairController.oddOrEven = 1
 repairController.allied = true
 
 repairController.extra = function (structure) {
-  return structure._targetHp_
+  return structure.__targetHp
 }
 
 repairController.roomPrepare = function (room) {
@@ -71,26 +71,26 @@ repairController.targets = function (room) {
 
         if (structure.structureType === STRUCTURE_WALL) {
           if (structure.hits < barrHp) {
-            structure._targetHp_ = barrHp
+            structure.__targetHp = barrHp
             return true
           }
         } else if (structure.structureType === STRUCTURE_RAMPART) {
           // notice, barrHp check, rampHp set
           if (structure.hits < barrHp) {
-            structure._targetHp_ = rampHp
+            structure.__targetHp = rampHp
             return true
           }
         } else if (structure.structureType === STRUCTURE_ROAD) {
           const hp = Math.ceil(structure.hitsMax * roadMult)
           if (structure.hits < hp) {
-            structure._targetHp_ = hp
+            structure.__targetHp = hp
             return true
           }
         } else {
           const hp = Math.ceil(structure.hitsMax * otherMult)
           if (structure.hits < hp) {
             // STRATEGY some histeresis, repair to top
-            structure._targetHp_ = structure.hitsMax
+            structure.__targetHp = structure.hitsMax
             return true
           }
         }

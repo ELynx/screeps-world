@@ -34,9 +34,9 @@ strelok.prepare = function () {
 }
 
 strelok.creepPrepare = function (creep) {
-  creep._canAttack_ = creep.getActiveBodyparts(RANGED_ATTACK) > 0
-  creep._canHeal_ = creep.getActiveBodyparts(HEAL) > 0
-  creep._canHealRanged_ = creep._canHeal_
+  creep.__canAttack = creep.getActiveBodyparts(RANGED_ATTACK) > 0
+  creep.__canHeal = creep.getActiveBodyparts(HEAL) > 0
+  creep.__canHealRanged = creep.__canHeal
 
   // if hit retaliate immediately
   // check is early to be caught in following code
@@ -94,8 +94,8 @@ strelok.creepAtDestination = function (creep) {
 
     let targets = targetCreeps.concat(targetStructures)
 
-    if (creep.room._aggro_ && creep.room._aggro_.length > 0) {
-      targets = targets.concat(creep.room._aggro_)
+    if (creep.room.__aggro && creep.room.__aggro.length > 0) {
+      targets = targets.concat(creep.room.__aggro)
     }
 
     const wounded = _.filter(
@@ -123,7 +123,7 @@ strelok.creepAtDestination = function (creep) {
   const targets = _.filter(
     this.roomTargets[dest],
     function (hostile) {
-      if (hostile._aggroTarget_) {
+      if (hostile.__aggro) {
         return true
       }
 
@@ -155,7 +155,7 @@ strelok.creepAtDestination = function (creep) {
   if (fireTarget) {
     const rangeToFireTarget = creep.pos.getRangeTo(fireTarget)
 
-    if (creep._canAttack_) {
+    if (creep.__canAttack) {
       if (rangeToFireTarget <= 3) {
         let mass
 
@@ -188,11 +188,11 @@ strelok.creepAtDestination = function (creep) {
           rc = creep.rangedAttack(fireTarget)
         }
 
-        creep._canHealRanged_ = creep._canHealRanged_ && rc !== OK
+        creep.__canHealRanged = creep.__canHealRanged && rc !== OK
       } // end of traget in firing range
     } // end of if has ranged bpart
 
-    if (creep._canMove_) {
+    if (creep.__canMove) {
       // ballet when close
       if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
         let flee
@@ -238,17 +238,17 @@ strelok.creepAtDestination = function (creep) {
     }
   } // end of if no target
 
-  if (creep._canHeal_ || creep._canHealRanged_) {
+  if (creep.__canHeal || creep.__canHealRanged) {
     const healTargets = this.roomWounded[dest]
 
-    if (creep._canHeal_ && creep.hits < creep.hitsMax) {
+    if (creep.__canHeal && creep.hits < creep.hitsMax) {
       // priority 1 - heal this
       creep.heal(creep)
-    } else if (creep._canHealRanged_) {
+    } else if (creep.__canHealRanged) {
       // priority 2 - heal anyone else
       // actually check for creep directly nearby is inside
       creep.healClosest(healTargets)
-    } else if (creep._canHeal_) {
+    } else if (creep.__canHeal) {
       // priority 3 - heal anyone else directly nearby - in case of ranged attack
       creep.healAdjacent(healTargets)
     }
@@ -258,11 +258,11 @@ strelok.creepAtDestination = function (creep) {
 strelok.creepRoomTravel = function (creep) {
   this._creepRoomTravel(creep)
 
-  if (creep._canHeal_) {
+  if (creep.__canHeal) {
     if (creep.hits < creep.hitsMax) {
       creep.heal(creep)
     } else if (this.roomWounded[creep.room.name] &&
-                 this.roomWounded[creep.room.name].length > 0) {
+               this.roomWounded[creep.room.name].length > 0) {
       creep.healClosest(this.roomWounded[creep.room.name])
     }
   }
@@ -298,11 +298,11 @@ strelok.makeBody = function (spawn) {
     return [MOVE, MOVE, RANGED_ATTACK, HEAL]
   }
 
-  if (!this._bodyCache_) {
-    this._bodyCache_ = { }
+  if (!this.__bodyCache) {
+    this.__bodyCache = { }
   }
 
-  const cached = this._bodyCache_[elvl]
+  const cached = this.__bodyCache[elvl]
   if (cached) {
     return cached
   }
@@ -362,7 +362,7 @@ strelok.makeBody = function (spawn) {
 
   const body = a.concat(b).concat(c).concat(d)
 
-  this._bodyCache_[elvl] = body
+  this.__bodyCache[elvl] = body
 
   return body
 }
