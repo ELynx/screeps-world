@@ -43,7 +43,7 @@ towerProcess.work = function (room) {
     creeps,
     function (creep) {
       // callous
-      if (creep.memory && creep.memory.selfCanHeal) return false
+      if (creep.memory && creep.memory.shel) return false
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
     }

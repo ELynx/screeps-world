@@ -122,7 +122,7 @@ Creep.prototype.unlive = function () {
     // forget who they serve
     this.memory.flag = undefined
     // mark to be cycled out of existence
-    this.memory.recycle = true
+    this.memory.rccl = true
 
     return OK
   }

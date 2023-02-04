@@ -7,7 +7,7 @@ const Tasked = require('./tasked.template')
 const outlast = new Tasked('outlast')
 
 outlast._defaultAction = function (creep) {
-  if (creep.memory.selfCanHeal <= 0) return
+  if (creep.memory.shel <= 0) return
 
   if (creep.hits < creep.hitsMax) {
     creep.heal(creep)
@@ -31,18 +31,18 @@ outlast._defaultAction = function (creep) {
 
 outlast.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
-  creep.memory.selfCanHeal = creep.getActiveBodyparts(HEAL) * HEAL_POWER
+  creep.memory.shel = creep.getActiveBodyparts(HEAL) * HEAL_POWER
 }
 
 outlast.creepAtDestination = function (creep) {
   this._defaultAction(creep)
-  creep.memory.blink = true
+  creep.memory._blk = true
 }
 
 outlast.creepRoomTravel = function (creep) {
   this._defaultAction(creep)
 
-  if (!creep.memory.blink) {
+  if (!creep.memory._blk) {
     this._creepRoomTravel(creep)
     return
   }
@@ -54,7 +54,7 @@ outlast.creepRoomTravel = function (creep) {
   let autoMove = true
 
   const damage = creep.hitsMax - creep.hits
-  const selfCanHeal = creep.memory.selfCanHeal
+  const selfCanHeal = creep.memory.shel
   if (damage <= selfCanHeal || creep.ticksToLive === 2) {
     let erasePath = false
 

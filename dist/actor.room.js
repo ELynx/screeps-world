@@ -149,12 +149,12 @@ const roomActor =
         }
 
         // code that migrate creeps into room of registration
-        if (creep.memory.crum !== creep.room.name || creep.memory.roomChange) {
+        if (creep.memory.crum !== creep.room.name || creep.memory.rcng) {
           // to take off any work from previous room
           bootstrap.unassignCreep(creep)
 
           // flag to handle border transition
-          creep.memory.roomChange = true
+          creep.memory.rcng = true
 
           if (creep.fatigue === 0) {
             // get off border area
@@ -164,7 +164,7 @@ const roomActor =
             if (creep.pos.inRangeTo(posInDestRoom, rangeInDestRoom)) {
               // drop and forget the flag
               // not continue, can be used
-              creep.memory.roomChange = undefined
+              creep.memory.rcng = undefined
             } else {
               creep.moveToWrapper(posInDestRoom, { reusePath: 50, range: rangeInDestRoom })
               ++moving
