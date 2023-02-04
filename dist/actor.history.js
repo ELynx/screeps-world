@@ -12,13 +12,42 @@ const historyActor =
     }
   },
 
+  clearCaches: function () {
+    Game.__idCache = { }
+    Game.__handle_EVENT_ATTACK_attackers = { }
+    Game.__handle_EVENT_ATTACK_targets = { }
+  },
+
   getObjectById: function (room, id) {
-    // TODO by tombstone
-    return Game.getObjectById(id)
+    const cached = Game.__idCache[id]
+    if (cached) return cached
+
+    const byId = Game.getObjectById(id)
+    if (byId !== null) {
+      Game.__idCache[id] = byId
+      return byId
+    }
+
+    const tombstones = room.find(FIND_TOMBSTONES)
+    const byTombstone = _.find(tombstones, _.matchesProperty('creep.id', id))
+    if (byTombstone !== undefined) {
+      Game.__idCache[id] = byTombstone
+      return byTombstone
+    }
+
+    const ruins = room.find(FIND_RUINS)
+    const byRuin = _.find(ruins, _.matchesProperty('structure.id', id))
+    if (byRuin !== undefined) {
+      Game.__idCache[id] = byRuin
+      return byRuin
+    }
+
+    // as original API
+    return null
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
-    // skip objects out of interest
+    // skip objects that were already examined
     if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
     if (Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId]) return
 
@@ -31,31 +60,46 @@ const historyActor =
     if (attacker === null ||
         attacker.owner === undefined ||
         attacker.my) {
-      // SHORTCUT skip dead, unowned or own
+      // SHORTCUT skip unknown, unowned or own
       Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
       return
     }
 
     const target = this.getObjectById(room, eventRecord.data.targetId)
     if (target === null) {
-      // SHORTCUT skip dead
+      // SHORTCUT skip unknown
       Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
       return
     }
 
     let hostileAction = false
+    let targetUsername
+    let targetMy
 
     if (target.owner) {
       hostileAction = target.myOrAlly()
+      targetUsername = target.owner.username
+      targetMy = target.my
     } else {
       hostileAction = room.myOrAlly()
+      targetUsername = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
+      targetMy = room.controller ? room.controller.my : false
     }
 
     if (hostileAction === false) {
-      // SHORTCUT skip uninterested
+      // SHORTCUT skip targets that are definitely not of interest
       Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
       return
     }
+
+    // ! DETECT EDGE CASES !
+    const attackerUsername = attacker.owner.username
+
+    // most likely dismantle, but who knowns
+    if (attackerUsername === targetUsername) return
+
+    // fights between allies
+    if (attacker.ally && (!targetMy)) return
 
     // SHORTCUT check hostile once
     Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
@@ -76,8 +120,7 @@ const historyActor =
     // mark initial overall time
     const t0 = Game.cpu.getUsed()
 
-    Game.__handle_EVENT_ATTACK_attackers = { }
-    Game.__handle_EVENT_ATTACK_targets = { }
+    this.clearCaches()
 
     for (const roomName in Game.rooms) {
       const t1 = Game.cpu.getUsed()
