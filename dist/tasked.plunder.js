@@ -63,13 +63,13 @@ plunder.creepAtOwnRoom = function (creep) {
 }
 
 plunder.getSomeOwnRoomName = function (creep) {
-  const storage = creep.memory.storage ? Game.getObjectById(creep.memory.storage) : undefined
+  const storage = creep.memory.strI ? Game.getObjectById(creep.memory.strI) : undefined
   if (storage) return storage.room.name
 
-  const terminal = creep.memory.terminal ? Game.getObjectById(creep.memory.terminal) : undefined
+  const terminal = creep.memory.trmI ? Game.getObjectById(creep.memory.trmI) : undefined
   if (terminal) return terminal.room.name
 
-  const controller = creep.memory.controller ? Game.getObjectById(creep.memory.controller) : undefined
+  const controller = creep.memory.ctlI ? Game.getObjectById(creep.memory.ctlI) : undefined
   if (controller) return controller.room.name
 
   return undefined
@@ -160,11 +160,11 @@ plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned stuff
 
   if (creep.room.my()) {
-    if (creep.room.storage) { creep.memory.storage = creep.room.storage.id }
+    if (creep.room.storage) { creep.memory.strI = creep.room.storage.id }
 
-    if (creep.room.terminal) { creep.memory.terminal = creep.room.terminal.id }
+    if (creep.room.terminal) { creep.memory.trmI = creep.room.terminal.id }
 
-    if (creep.room.controller) { creep.memory.controller = creep.room.controller.id }
+    if (creep.room.controller) { creep.memory.ctlI = creep.room.controller.id }
   }
 
   this._creepRoomTravel(creep)
