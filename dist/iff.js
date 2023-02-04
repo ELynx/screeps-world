@@ -21,6 +21,10 @@ const MinReputation = -1
 
 const verbose = true
 
+const prepareHostileNPCMemory = function () {
+
+}
+
 const isUnowned = function (something) {
   return something.owner === undefined
 }
@@ -35,7 +39,7 @@ const getNPCFactionReputation = function (username) {
   return DefaultReputation
 }
 
-const getPcReputation = function (username) {
+const getPCReputation = function (username) {
   if (Memory.reputation === undefined) {
     return DefaultReputation
   }
@@ -43,7 +47,7 @@ const getPcReputation = function (username) {
   return Memory.reputation[username] || DefaultReputation
 }
 
-const setPcReputation = function (username, value) {
+const setPCReputation = function (username, value) {
   if (Memory.reputation === undefined) {
     Memory.reputation = { }
   }
@@ -65,8 +69,8 @@ const setPcReputation = function (username, value) {
   return toSet
 }
 
-const adjustPcReputation = function (username, amount) {
-  const now = getPcReputation(username)
+const adjustPCReputation = function (username, amount) {
+  const now = getPCReputation(username)
 
   // no automatic change to "enemy" status
   if (now < DefaultReputation) {
@@ -88,7 +92,7 @@ const adjustPcReputation = function (username, amount) {
     toSet = LowestAllyReputation - 1
   }
 
-  return setPcReputation(username, toSet)
+  return setPCReputation(username, toSet)
 }
 
 const _isPC = function (username) {
@@ -110,7 +114,7 @@ const _assignReputation = function (something) {
   const username = something.owner.username
 
   if (_isPC(username)) {
-    something.__reputation = getPcReputation(username)
+    something.__reputation = getPCReputation(username)
   } else {
     something.__reputation = getNPCFactionReputation(username)
   }
@@ -310,25 +314,27 @@ Object.defineProperty(
 
 module.exports = {
   convenience () {
+    prepareHostileNPCMemory()
+
     Game.iff = {
       makeAlly (username) {
-        return setPcReputation(username, MaxReputation)
+        return setPCReputation(username, MaxReputation)
       },
 
       makeNeutral (username) {
-        return setPcReputation(username, DefaultReputation)
+        return setPCReputation(username, DefaultReputation)
       },
 
       makeHostile (username) {
-        return setPcReputation(username, MinReputation)
+        return setPCReputation(username, MinReputation)
       },
 
       increaseReputation (username, amount) {
-        return adjustPcReputation(username, amount)
+        return adjustPCReputation(username, amount)
       },
 
       decreaseReputation (username, amount) {
-        return adjustPcReputation(username, -1 * amount)
+        return adjustPCReputation(username, -1 * amount)
       },
 
       markNPCHostile (something) {
