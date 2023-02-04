@@ -30,7 +30,7 @@ ttlController.act = function (spawn, creep) {
     }
   }
 
-  if (creep.memory.recycle === true) {
+  if (creep.memory.rccl === true) {
     renew = false
     recycle = true
   }
@@ -72,7 +72,7 @@ ttlController.filterCreep = function (creep) {
   if (creep.getActiveBodyparts(MOVE) === 0) return false
 
   // recycle was forced
-  if (creep.memory.recycle === true) return true
+  if (creep.memory.rccl === true) return true
 
   // too young
   if (creep.ticksToLive > TTL) return false

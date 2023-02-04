@@ -14,7 +14,7 @@ secutiryProcess.work = function (room) {
   this.debugHeader(room)
 
   let threatLevel = room.memory.threat || 0
-  let threatTimer = room.memory.threatT || (Game.time - ThreatStep)
+  let threatTimer = room.memory._thrtt || (Game.time - ThreatStep)
 
   const hostileCreeps = room.find(
     FIND_CREEPS,
@@ -90,12 +90,12 @@ secutiryProcess.work = function (room) {
 
   if (threatLevel > 0) {
     room.memory.threat = threatLevel
-    room.memory.threatT = threatTimer
+    room.memory._thrtt = threatTimer
 
     this.debugLine(room, 'Threat level ' + threatLevel)
   } else {
     room.memory.threat = undefined
-    room.memory.threatT = undefined
+    room.memory._thrtt = undefined
   }
 }
 

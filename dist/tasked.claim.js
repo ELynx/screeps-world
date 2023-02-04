@@ -37,8 +37,8 @@ claim.creepAtDestination = function (creep) {
 
   if (controller.hostileOrUnowned()) {
     if (creep.pos.isNearTo(controller)) {
-      if (creep.memory.clmt === undefined) {
-        creep.memory.clmt = creep.ticksToLive
+      if (creep.memory._clt === undefined) {
+        creep.memory._clt = creep.ticksToLive
       }
 
       let sign = ''
@@ -97,14 +97,14 @@ claim.creepAtDestination = function (creep) {
 
   // be sure that creep will not survive the wait
   if (rc === ERR_TIRED && creep.ticksToLive < wait) {
-    const ticksToArrive = creep.memory.clmt ? CREEP_CLAIM_LIFE_TIME - creep.memory.clmt : 0
+    const ticksToArrive = creep.memory._clt ? CREEP_CLAIM_LIFE_TIME - creep.memory._clt : 0
     const ticksBlocked = wait
     const ticksOverhead = 42 // be this early to minimize safe mode window, etc
     const spawnAfter = Game.time + ticksBlocked - ticksToArrive - ticksOverhead
 
     const flag = Game.flags[creep.getFlagName()]
     if (flag) {
-      flag.memory.after = spawnAfter
+      flag.memory.aftr = spawnAfter
     }
 
     creep.unlive()
@@ -123,7 +123,7 @@ claim.flagPrepare = function (flag) {
   }
 
   // save resources on not spamming
-  if (flag.memory.after && flag.memory.after > Game.time) {
+  if (flag.memory.aftr && flag.memory.aftr > Game.time) {
     return this.FLAG_IGNORE
   }
 
