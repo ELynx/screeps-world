@@ -18,6 +18,10 @@ beetle.wipeBreach = function (creep) {
   creep.memory._brT = undefined
 }
 
+beetle.creepPrepare = function (creep) {
+  creep.__canWithdraw = creep.body.getActiveBodyparts(CARRY) > 0
+}
+
 beetle.creepAtDestination = function (creep) {
   creep.purgeEnergy()
 
@@ -145,13 +149,11 @@ beetle.creepAtDestination = function (creep) {
         true // as array
       )
 
-      const withdraws = []
+      const withdraws = _.map(around, _.property('structure'))
 
       for (const itemKey in around) {
         const item = around[itemKey]
         const struct = item.structure
-
-        withdraws.push(struct)
 
         if (item.x !== next.x || item.y !== next.y) {
           continue
@@ -161,20 +163,18 @@ beetle.creepAtDestination = function (creep) {
           continue
         }
 
-        // walkable
-        if (struct.structureType === STRUCTURE_CONTAINER || struct.structureType === STRUCTURE_ROAD) {
-          continue
-        }
-
         if (struct.structureType === STRUCTURE_RAMPART && !struct.isPublic) {
           target = struct
           break
         }
 
-        target = struct
+        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, struct.structureType)
+        if (obstacle) {
+          target = struct
+        }
       }
 
-      if (withdraws.length > 0) {
+      if (creep.__canWithdraw && withdraws.length > 0) {
         creep.withdrawFromAdjacentStructures(withdraws)
       }
     }
@@ -184,8 +184,12 @@ beetle.creepAtDestination = function (creep) {
       rc = creep.dismantle(target)
       // coordinate effort - ask nearbys to attack
       if (rc === OK) {
-        target.__aggro = true
-        creep.room.__aggro.push(target)
+        if (target.__aggro === undefined) {
+          target.__aggro = true
+          if (creep.room.__aggro) {
+            creep.room.__aggro.push(target)
+          }
+        }
       }
     } else {
       rc = creep.moveWrapper(next.direction)
@@ -196,7 +200,7 @@ beetle.creepAtDestination = function (creep) {
       }
     }
 
-    // extend
+    // extend breach time
     if (rc === OK) {
       creep.memory._brT = Game.time
     }
