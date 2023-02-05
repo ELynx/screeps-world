@@ -44,10 +44,22 @@ function Controller (id) {
     **/
   this.oddOrEven = undefined
 
-  /**
-    Flag tp execute in allied room.
-    **/
-  this.allied = false
+  // flags to set where controller is used
+  this.my = true
+  this.ally = false
+  this.neutral = false
+  this.hostile = false
+  this.unowned = false
+
+  this.compatible = function (room) {
+    if (room.my) return this.my
+    if (room.ally) return this.ally
+    if (room.neutral) return this.neutral
+    if (room.hostile) return this.hostile
+    if (room.unowned) return this.unowned
+
+    return false
+  }
 
   /**
     Cache of target IDs that already have creep assigned.

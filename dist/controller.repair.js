@@ -28,7 +28,9 @@ repairController.actRange = 3
 
 repairController.oddOrEven = 1
 
-repairController.allied = true
+repairController.ally = true
+repairController.neutral = repairController.ally
+repairController.unowned = repairController.ally
 
 repairController.extra = function (structure) {
   return structure.__targetHp
