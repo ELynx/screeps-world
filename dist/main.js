@@ -73,8 +73,8 @@ module.exports.loop = function () {
       if (room.my) {
         room.memory.cpul = limit
         roomActor.act(room)
-      } else if (Game.flags['observe_' + room.name] &&
-                 Game.flags['observe_' + room.name].pos.roomName === room.name) {
+      } else if (Game.flags['observe_act_' + room.name] &&
+                 Game.flags['observe_act_' + room.name].pos.roomName === room.name) {
         room.memory.cpul = limit
         roomActor.act(room)
       } else {
