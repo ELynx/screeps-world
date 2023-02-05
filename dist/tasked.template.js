@@ -88,28 +88,38 @@ Creep.prototype.healAdjacent = function (creeps) {
 }
 
 Creep.prototype.meleeAdjacent = function (targets) {
-  let targetNear
-  let targetNearNoMelee
+  let target4
+  let target3
+  let target2
+  let target1
 
   for (let i = 0; i < targets.length; ++i) {
     const target = targets[i]
     if (this.pos.isNearTo(target)) {
-      targetNear = target
-
+      let noMelee = false
       if (target.body) {
         if (!_.some(target.body, _.matchesProperty('type', ATTACK))) {
-          targetNearNoMelee = target
+          noMelee = true
         }
       } else {
-        targetNearNoMelee = target
+        noMelee = true
       }
+
+      const hasAggro = target.__aggro !== undefined
+
+      target4 = target
+      if (noMelee) target3 = target
+      if (hasAggro) target2 = target
+      if (noMelee && hasAggro) target1 = target
     }
 
-    if (targetNearNoMelee) break
+    if (target1) break
   }
 
-  if (targetNearNoMelee) return this.attack(targetNearNoMelee)
-  if (targetNear) return this.attack(targetNear)
+  if (target1) return this.attack(target1)
+  if (target2) return this.attack(target2)
+  if (target3) return this.attack(target3)
+  if (target4) return this.attack(target4)
 
   return ERR_NOT_FOUND
 }
@@ -124,9 +134,9 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
   for (const targetKey in targets) {
     const target = targets[targetKey]
     if (target.structureType &&
-            target.store &&
-            target.store[RESOURCE_ENERGY] > 0 &&
-            this.pos.isNearTo(target)) {
+        target.store &&
+        target.store[RESOURCE_ENERGY] > 0 &&
+        this.pos.isNearTo(target)) {
       if (this.withdraw(target, RESOURCE_ENERGY) === OK) {
         return OK
       }
