@@ -130,8 +130,6 @@ Creep.prototype.purgeEnergy = function () {
 }
 
 Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
-  if (this.getActiveBodyparts(CARRY) === 0) return ERR_FULL
-
   for (const targetKey in targets) {
     const target = targets[targetKey]
     if (target.structureType &&
