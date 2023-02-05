@@ -6,6 +6,8 @@ const energyRestockControllerSpecialist = new Controller('energy.restock.special
 
 energyRestockControllerSpecialist.actRange = 1
 
+energyRestockControllerSpecialist.unowned = true
+
 energyRestockControllerSpecialist.act = function (target, creep) {
   return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
 }

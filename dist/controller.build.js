@@ -8,7 +8,9 @@ buildController.actRange = 3
 
 buildController.oddOrEven = 0
 
-buildController.allied = true
+buildController.ally = true
+buildController.neutral = buildController.ally
+buildController.unowned = buildController.ally
 
 buildController.act = function (site, creep) {
   return this.wrapIntent(creep, 'build', site)

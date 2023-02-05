@@ -6,7 +6,9 @@ const grabController = new Controller('grab')
 
 grabController.actRange = 1
 
-grabController.allied = true
+grabController.ally = true
+grabController.neutral = grabController.ally
+grabController.unowned = grabController.ally
 
 grabController.act = function (currentController, creep) {
   const hasUniversalStore = creep.room.storage || creep.room.terminal

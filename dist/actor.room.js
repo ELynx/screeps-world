@@ -91,10 +91,7 @@ const roomActor =
   roomControllersControl: function (room, creeps) {
     for (const id in bootstrap.roomControllers) {
       const controller = bootstrap.roomControllers[id]
-
-      if (room.ally && !controller.allied) {
-        continue
-      }
+      if (!controller.compatible(room)) continue
 
       creeps = controller.control(room, creeps)
 
@@ -180,7 +177,7 @@ const roomActor =
         } // end of subroutine of room change
 
         // grab logic, manual call
-        if (room.my || (room.ally && grabController.allied)) {
+        if (grabController.compatible(room)) {
           if (grabController.filterCreep(creep)) {
             const rc = grabController.act(undefined, creep)
             if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED || rc === bootstrap.WARN_INTENDEE_EXHAUSTED) {

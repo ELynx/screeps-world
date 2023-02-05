@@ -10,7 +10,8 @@ const TowerRestockCritical = 0.25
 
 energyRestockControllerRegular.actRange = 1
 
-energyRestockControllerRegular.allied = true
+energyRestockControllerRegular.ally = true
+energyRestockControllerRegular.neutral = buildController.ally
 
 energyRestockControllerRegular.roomPrepare = function (room) {
   this._prepareExcludedTargets(room)
@@ -51,7 +52,7 @@ energyRestockControllerRegular.targets = function (room) {
     allStructures,
     function (structure) {
       if (structure.structureType === STRUCTURE_SPAWN ||
-                structure.structureType === STRUCTURE_EXTENSION) {
+          structure.structureType === STRUCTURE_EXTENSION) {
         return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       } else if (structure.structureType === STRUCTURE_TOWER) {
         return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockNormal * structure.store.getCapacity(RESOURCE_ENERGY)
