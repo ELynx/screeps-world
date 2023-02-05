@@ -60,14 +60,14 @@ energyTakeController.validateTarget = function (target, creep) {
 }
 
 energyTakeController.targets = function (room) {
-  if (room.ally() && room.controller.safeMode) {
+  if (room.ally && room.controller.safeMode) {
     return []
   }
 
   const allStructures = room.find(FIND_STRUCTURES)
 
   let ramparts = []
-  if (room.ally()) {
+  if (room.ally) {
     ramparts = _.filter(
       allStructures,
       function (structure) {

@@ -151,8 +151,8 @@ spawnProcess.work = function (room) {
 
   const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
 
-  if (room.my()) this.my(room, live)
-  else if (room.ally()) this.ally(room, live)
+  if (room.my) this.my(room, live)
+  else if (room.ally) this.ally(room, live)
 }
 
 spawnProcess._registerBodyFunction = function (routineId) {

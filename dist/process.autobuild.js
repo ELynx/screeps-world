@@ -456,7 +456,7 @@ autobuildProcess.work = function (room) {
   }
 
   // let the flag clear
-  if (!room.my()) return
+  if (!room.my) return
 
   if (executeAutoBuild) {
     // offset regeneration time randomly so multiple rooms don't do it at same tick

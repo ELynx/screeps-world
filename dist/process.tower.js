@@ -5,7 +5,7 @@ const Process = require('./process.template')
 const towerProcess = new Process('tower')
 
 towerProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my) return
 
   this.debugHeader(room)
 

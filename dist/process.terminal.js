@@ -10,7 +10,7 @@ const MaxBuyRoomDistance = 30
 const MineralsToKeep = 30000
 
 terminalProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my) return
 
   this.debugHeader(room)
 

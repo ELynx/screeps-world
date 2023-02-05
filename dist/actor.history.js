@@ -95,7 +95,7 @@ const historyActor =
     } else {
       hostileAction = room.myOrAlly()
       targetUsername = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
-      targetMy = room.controller ? room.controller.my : false
+      targetMy = room.my
     }
 
     if (hostileAction === false) {

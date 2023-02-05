@@ -60,7 +60,7 @@ claim.creepAtDestination = function (creep) {
         let myRooms = 0
         for (const roomName in Game.rooms) {
           const someRoom = Game.rooms[roomName]
-          if (someRoom.my()) {
+          if (someRoom.my) {
             ++myRooms
           }
         }
