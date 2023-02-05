@@ -230,7 +230,7 @@ beetle.flagPrepare = function (flag) {
     // any creep of same alignment work, breach was complete
     const breached = flag.pos.hasInSquareArea(
       LOOK_CREEPS,
-      BreachCompleteRange,
+      BreachCompleteDistance,
       function (creep) {
         return creep.myOrAlly()
       }
