@@ -58,7 +58,7 @@ buildController.targets = function (room) {
   return _.filter(
     sites,
     function (site) {
-      if (!_.some(OBSTACLE_OBJECT_TYPES, site.structureType)) {
+      if (!_.some(OBSTACLE_OBJECT_TYPES, _.matches(site.structureType))) {
         return true
       }
 
