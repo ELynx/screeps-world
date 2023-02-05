@@ -443,14 +443,14 @@ autobuildProcess.work = function (room) {
   let executeAutoBuild = false
 
   if (Game.flags.autobuild &&
-        Game.flags.autobuild.room &&
-        Game.flags.autobuild.room.name === room.name) {
+      Game.flags.autobuild.room &&
+      Game.flags.autobuild.room.name === room.name) {
     Game.flags.autobuild.remove()
     executeAutoBuild = true
   } else {
     // once in 6 creep generations
     if (room.memory.abld === undefined ||
-            room.memory.abld < Game.time - (6 * CREEP_LIFE_TIME)) {
+        room.memory.abld < Game.time - (6 * CREEP_LIFE_TIME)) {
       executeAutoBuild = !(room.memory.abld === undefined)
     }
   }

@@ -146,6 +146,18 @@ spawnProcess.ally = function (room, live) {
   this.workers(room, live)
 }
 
+spawnProcess.neutral = function (room, live) {
+  this.workers(room, live)
+}
+
+spawnProcess.hostile = function (room, live) {
+}
+
+spawnProcess.unowned = function (room, live) {
+  this.restockers(room, live)
+  this.workers(room, live)
+}
+
 spawnProcess.work = function (room) {
   this.debugHeader(room)
 
@@ -153,6 +165,9 @@ spawnProcess.work = function (room) {
 
   if (room.my) this.my(room, live)
   else if (room.ally) this.ally(room, live)
+  else if (room.neutral) this.neutral(room, live)
+  else if (room.hostile) this.hostile(room, live)
+  else if (room.unowned) this.unowned(room, live)
 }
 
 spawnProcess._registerBodyFunction = function (routineId) {
