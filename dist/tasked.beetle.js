@@ -152,7 +152,9 @@ beetle.creepAtDestination = function (creep) {
   if (next) {
     let target
 
-    if (beHostile) {
+    if (
+      3,
+      ) {
       const [t, l, b, r] = creep.pos.squareArea(1)
 
       const around = creep.room.lookForAtArea(
@@ -163,8 +165,6 @@ beetle.creepAtDestination = function (creep) {
         r, // right
         true // as array
       )
-
-      const withdraws = _.map(around, _.property('structure'))
 
       for (const itemKey in around) {
         const item = around[itemKey]
@@ -183,13 +183,14 @@ beetle.creepAtDestination = function (creep) {
           break
         }
 
-        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, struct.structureType)
+        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, _.matches(struct.structureType))
         if (obstacle) {
           target = struct
         }
       }
 
-      if (creep.__canWithdraw && withdraws.length > 0) {
+      if (creep.__canWithdraw) {
+        const withdraws = _.map(around, _.property('structure'))
         creep.withdrawFromAdjacentStructures(withdraws)
       }
     }
