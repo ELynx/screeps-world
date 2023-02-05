@@ -44,13 +44,26 @@ buildController.targets = function (room) {
   const sites = this._sites(room)
   if (sites.length === 0) return []
 
-  // cannot build when creep is on site
+  const roomOwner = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
+  const roomSafeMode = room.controller && room.controller.safeMode
+
   const allCreeps = room.find(FIND_CREEPS)
+  let obstacleCreeps
+  if (roomSafeMode) {
+    obstacleCreeps = _.filter(allCreeps, _.matchesProperty('owner.username', roomOwner))
+  } else {
+    obstacleCreeps = allCreeps
+  }
+
   return _.filter(
     sites,
     function (site) {
+      if (!_.some(OBSTACLE_OBJECT_TYPES, site.structureType)) {
+        return true
+      }
+
       return !_.some(
-        allCreeps,
+        obstacleCreeps,
         function (creep) {
           return creep.pos.x === site.pos.x && creep.pos.y === site.pos.y
         }
