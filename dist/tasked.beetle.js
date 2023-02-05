@@ -4,8 +4,7 @@ const Tasked = require('./tasked.template')
 
 const beetle = new Tasked('beetle')
 
-const BreachCompleteRange = 1
-const BreachEasyRange = 3
+const BreachCompleteDistance = 1
 
 beetle.breachLength = function (breach) {
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
@@ -47,37 +46,45 @@ beetle.creepAtDestination = function (creep) {
     }
   }
 
-  let controlPos = creep.getControlPos()
+  const controlPos = creep.getControlPos()
 
-  // after arriving on the spot, start running like headless chicken
-  if (creep.pos.inRangeTo(controlPos, BreachCompleteRange)) {
-    // biased to center, as we need
-    controlPos = new RoomPosition(
+  let targetPos
+
+  if (creep.room.__aggro && creep.room.__aggro.length > 0) {
+    targetPos = creep.pos.findClosestByRange(creep.room.__aggro)
+  } else if (creep.pos.inRangeTo(controlPos, BreachCompleteDistance)) {
+    // after arriving on the spot, start running like headless chicken
+    // biased to center, as needed
+    targetPos = new RoomPosition(
       Math.floor(Math.random() * 49),
       Math.floor(Math.random() * 49),
       controlPos.roomName
     )
+  } else {
+    targetPos = controlPos
   }
 
-  // no path known
-  if (creep.memory._brP === undefined) {
-    let path
+  // how much is remaining
+  const toTargetPos = creep.pos.getRangeTo(targetPos)
 
-    // how much long is remaining
-    const toControlPos = controlPos.getRangeTo(creep.pos)
+  // there is place to go and no path known
+  if (toTargetPos > 1 && creep.memory._brP === undefined) {
+    let path
 
     // try to find a path to nearby location
     // detect obstacles so there is a chance to go through existing breaches
     // try to reach the place if nearby
-    const easyDistance = toControlPos <= BreachEasyRange ? BreachCompleteRange : BreachEasyRange
+    const easyDistance = BreachCompleteDistance * 3
+    const easyRange = toTargetPos > easyDistance ? easyDistance : BreachCompleteDistance
+
     const easyPath = creep.room.findPath(
       creep.pos,
-      controlPos,
+      targetPos,
       {
         ignoreCreeps: false,
         ignoreDestructibleStructures: false,
         maxRooms: 1,
-        range: easyDistance,
+        range: easyRange,
         maxOps: 500,
 
         serialize: false // ! to be used for position check
@@ -87,7 +94,7 @@ beetle.creepAtDestination = function (creep) {
     // check if endpoint is within wanted range
     if (easyPath.length > 0) {
       const last = easyPath[easyPath.length - 1]
-      if (controlPos.inRangeTo(last, easyDistance)) {
+      if (last.inRangeTo(targetPos, easyRange)) {
         // because expect serialized
         path = Room.serializePath(easyPath)
       }
@@ -96,15 +103,16 @@ beetle.creepAtDestination = function (creep) {
     // no, easy path was not found, need to look through walls
     if (path === undefined) {
       // come a bit closer, do not plan a trip up to the point
-      const hardDistance = Math.max(toControlPos - BreachEasyRange, BreachCompleteRange)
+      const hardRange = Math.max(toTargetPos - easyDistance, BreachCompleteDistance)
+
       path = creep.room.findPath(
         creep.pos,
-        controlPos,
+        targetPos,
         {
           ignoreCreeps: true,
           ignoreDestructibleStructures: beHostile,
           maxRooms: 1,
-          range: hardDistance,
+          range: hardRange,
 
           serialize: true
         }
@@ -116,22 +124,29 @@ beetle.creepAtDestination = function (creep) {
     creep.memory._brT = Game.time
   }
 
-  const path = Room.deserializePath(creep.memory._brP)
-  creep.room.visual.poly(path)
-
   let next
 
-  for (let i = creep.memory._brI; i < path.length; ++i) {
-    const pathItem = path[i]
+  if (toTargetPos > 1) {
+    if (creep.memory._brP) {
+      const path = Room.deserializePath(creep.memory._brP)
 
-    const supposeNowX = pathItem.x - pathItem.dx
-    const supposeNowY = pathItem.y - pathItem.dy
+      creep.room.visual.poly(path, { stroke: '#f00' })
 
-    if (creep.pos.x === supposeNowX && creep.pos.y === supposeNowY) {
-      next = pathItem
-      creep.memory._brI = i
-      break
+      for (let i = creep.memory._brI; i < path.length; ++i) {
+        const pathItem = path[i]
+
+        const supposeNowX = pathItem.x - pathItem.dx
+        const supposeNowY = pathItem.y - pathItem.dy
+
+        if (creep.pos.x === supposeNowX && creep.pos.y === supposeNowY) {
+          next = pathItem
+          creep.memory._brI = i
+          break
+        }
+      }
     }
+  } else {
+    next = targetPos
   }
 
   if (next) {
