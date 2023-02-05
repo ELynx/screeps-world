@@ -95,6 +95,7 @@ Creep.prototype.meleeAdjacent = function (targets) {
 
   for (let i = 0; i < targets.length; ++i) {
     const target = targets[i]
+
     if (this.pos.isNearTo(target)) {
       let noMelee = false
       if (target.body) {
