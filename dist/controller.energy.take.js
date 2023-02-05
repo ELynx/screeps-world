@@ -13,8 +13,6 @@ energyTakeController.unowned = energyTakeController.ally
 energyTakeController.wantToKeep = function (structure) {
   const room = structure.room
 
-  // actual, otherwise grab
-
   if (structure.structureType === STRUCTURE_TERMINAL) {
     return room.memory.trme || 0
   }
@@ -62,14 +60,14 @@ energyTakeController.validateTarget = function (target, creep) {
 }
 
 energyTakeController.targets = function (room) {
-  if (room.ally && room.controller.safeMode) {
+  if (!room.my && room.controller && room.controller.safeMode) {
     return []
   }
 
   const allStructures = room.find(FIND_STRUCTURES)
 
   let ramparts = []
-  if (room.ally) {
+  if (!room.my) {
     ramparts = _.filter(
       allStructures,
       function (structure) {
@@ -105,9 +103,9 @@ energyTakeController.targets = function (room) {
     function (structure) {
       // small checks are inside because they are executed on a lot of items
       if (structure.structureType === STRUCTURE_CONTAINER ||
-                structure.structureType === STRUCTURE_STORAGE ||
-                // STRATEGY allow to take from terminal, maybe airdrop energy
-                structure.structureType === STRUCTURE_TERMINAL) {
+          structure.structureType === STRUCTURE_STORAGE ||
+          // STRATEGY allow to take from terminal, maybe airdrop energy
+          structure.structureType === STRUCTURE_TERMINAL) {
         return isTakeable(structure)
       } else if (structure.structureType === STRUCTURE_LINK) {
         // STRATEGY do not steal from source link
