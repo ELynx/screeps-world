@@ -175,6 +175,7 @@ strelok.creepAtDestination = function (creep) {
         for (let i = 0; i < targets.length && mass === undefined; ++i) {
           const secondary = targets[i]
           if (secondary.id === fireTarget.id) continue
+          if (secondary.unowned) continue // mass does not hit unowned
           if (creep.pos.inRangeTo(secondary, 3)) {
             mass = true
             break
