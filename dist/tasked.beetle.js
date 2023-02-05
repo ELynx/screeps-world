@@ -18,7 +18,7 @@ beetle.wipeBreach = function (creep) {
 }
 
 beetle.creepPrepare = function (creep) {
-  creep.__canWithdraw = creep.body.getActiveBodyparts(CARRY) > 0
+  creep.__canWithdraw = creep.getActiveBodyparts(CARRY) > 0
 }
 
 beetle.creepAtDestination = function (creep) {
@@ -94,7 +94,7 @@ beetle.creepAtDestination = function (creep) {
     // check if endpoint is within wanted range
     if (easyPath.length > 0) {
       const last = easyPath[easyPath.length - 1]
-      if (last.inRangeTo(targetPos, easyRange)) {
+      if (targetPos.inRangeTo(last, easyRange)) {
         // because expect serialized
         path = Room.serializePath(easyPath)
       }
