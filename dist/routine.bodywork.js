@@ -42,7 +42,7 @@ const bodywork = {
     **/
   restocker: function (energyLevel) {
     if (energyLevel <= 1) {
-      return []
+      return [WORK, CARRY, MOVE]
     }
 
     if (energyLevel === 2) {
