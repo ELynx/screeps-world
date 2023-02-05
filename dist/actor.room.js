@@ -33,6 +33,10 @@ const controllerController = require('./controller.controller')
 const grabController = require('./controller.grab')
 /* eslint-enable no-unused-vars */
 
+Creep.prototype.target = function () {
+  return Game.getObjectById(this.memory.dest)
+}
+
 const roomActor =
 {
   verbose: false,

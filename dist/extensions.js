@@ -27,51 +27,12 @@ Creep.prototype.allyOrNeutral = function () {
   return this.ally || this.neutral
 }
 
-/**
-@return Game object creep is targeted to.
-**/
-Creep.prototype.target = function () {
-  return Game.getObjectById(this.memory.dest)
-}
-
 Creep.prototype.moveWrapper = function (direction) {
   return this.move(direction)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(options))
-}
-
-Creep.prototype.unlive = function () {
-  let result = false
-
-  if (this.room.my() && this.room.memory.elvl > 0) {
-    this.setControlRoom(this.room.name)
-    result = true
-  } else if (this.memory.mrts) {
-    this.setControlRoom(this.memory.mrts)
-    result = true
-  } else {
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      if (room.my() && room.memory.elvl > 0) {
-        this.setControlRoom(room.name)
-        result = true
-        break
-      }
-    }
-  }
-
-  if (result) {
-    // forget who they serve
-    this.memory.flag = undefined
-    // mark to be cycled out of existence
-    this.memory.rccl = true
-
-    return OK
-  }
-
-  return this.suicide()
 }
 
 Flag.prototype.getValue = function () {
