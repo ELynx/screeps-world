@@ -23,6 +23,10 @@ const verbose = false
 
 const usernameSafetyPrefix = 'user_'
 
+const __safe = function (username) {
+  return usernameSafetyPrefix + username
+}
+
 const prepareHostileNPCMemory = function () {
   // if defined, pull in full definition, otherwise empty
   Game.__npcReputation = Memory.npcReputation || { }
@@ -43,10 +47,6 @@ const getNPCFactionReputation = function (username) {
   if (username === UsernameSourceKeeper) return DefaultReputation
 
   return DefaultReputation
-}
-
-const __safe = function (username) {
-  return usernameSafetyPrefix + username
 }
 
 const getPCReputation = function (username) {
@@ -70,8 +70,8 @@ const setPCReputation = function (username, value) {
     toSet = MinReputation
   }
 
-  // save memory on strangers
   const safeUsername = __safe(username)
+  // save memory on strangers
   Memory.reputation[safeUsername] = (toSet === DefaultReputation) ? undefined : toSet
 
   if (verbose) {
@@ -131,7 +131,9 @@ const __assignNPCReputation = function (something, username) {
 
   // remember difference to next turn
   if (somethingReputation !== factionReputation) {
-    if (Memory.npcReputation === undefined) Memory.npcReputation = { }
+    if (Memory.npcReputation === undefined) {
+      Memory.npcReputation = { }
+    }
 
     Memory.npcReputation[something.id] = somethingReputation
   }
@@ -328,12 +330,84 @@ Object.defineProperty(
   }
 )
 
+// for uniformity of interface
+// creeps cannot be unowned
+Object.defineProperty(
+  Creep.prototype,
+  'unowned',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
 Object.defineProperty(
   Creep.prototype,
   'pc',
   {
     get: function () {
       return isPC(this)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'ally',
+  {
+    get: function () {
+      return this.controller ? isAlly(this.controller) : false
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'neutral',
+  {
+    get: function () {
+      return this.controller ? isNeutral(this.controller) : false
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'hostile',
+  {
+    get: function () {
+      return this.controller ? isHostile(this.controller) : false
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'unowned',
+  {
+    get: function () {
+      return this.controller ? isUnowned(this.controller) : true
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'pc',
+  {
+    get: function () {
+      return this.controller ? isPC(this.controller) : false
     },
     configurable: true,
     enumerable: true
