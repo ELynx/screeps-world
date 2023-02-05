@@ -3,29 +3,46 @@
 const bootstrap = require('./bootstrap')
 
 const cleanup = {
+  memoryNodeNotAccessed: function (memoryNode) {
+    if (memoryNode.nodeAccessed) {
+      // STRATEGY give unaccessed memory node N ticks before deletion
+      return memoryNode.nodeAccessed < (Game.time - 5)
+    }
+
+    return true
+  },
+
   cleanupMemory: function () {
     for (const name in Memory.creeps) {
       if (!Game.creeps[name]) {
-        delete Memory.creeps[name]
+        if (this.memoryNodeNotAccessed(Memory.creeps[name])) {
+          delete Memory.creeps[name]
+        }
       }
     }
 
     for (const name in Memory.rooms) {
       if (!Game.rooms[name]) {
-        delete Memory.rooms[name]
+        if (this.memoryNodeNotAccessed(Memory.rooms[name])) {
+          delete Memory.rooms[name]
+        }
       }
     }
 
     for (const name in Memory.flags) {
       if (!Game.flags[name]) {
-        delete Memory.flags[name]
+        if (this.memoryNodeNotAccessed(Memory.flags[name])) {
+          delete Memory.flags[name]
+        }
       }
     }
 
     if (Memory.structures) {
       for (const id in Memory.structures) {
         if (!Game.structures[id]) {
-          delete Memory.structures[id]
+          if (this.memoryNodeNotAccessed(Memory.structures[id])) {
+            delete Memory.structures[id]
+          }
         }
       }
     }
