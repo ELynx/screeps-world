@@ -152,9 +152,7 @@ beetle.creepAtDestination = function (creep) {
   if (next) {
     let target
 
-    if (
-      3,
-      ) {
+    if (beHostile) {
       const [t, l, b, r] = creep.pos.squareArea(1)
 
       const around = creep.room.lookForAtArea(
