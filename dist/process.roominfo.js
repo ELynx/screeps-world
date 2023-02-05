@@ -12,7 +12,7 @@ Calculate room energy level.
 @return Energy level of room.
 **/
 roomInfoProcess.energyLevel = function (room) {
-  const level = room.controller.level
+  const level = room.controller ? room.controller.level : 0
 
   const structs = room.find(
     FIND_STRUCTURES,
