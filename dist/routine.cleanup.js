@@ -48,6 +48,7 @@ const cleanup = {
       if (flagName === 'autobuild') continue
 
       if (flagName.startsWith('help_')) continue
+      if (flagName.startsWith('aggro_')) continue
 
       const processFound = _.some(
         flagKeys,

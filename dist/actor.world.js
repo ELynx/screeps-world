@@ -29,15 +29,26 @@ const worldActor =
     }
   },
 
+  giveOutAggro: function() {
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+
+      const flag = Game.flags['aggro_' + roomName]
+      if (flag) {
+        room.__aggro = _.filter(flag.pos.lookFor(LOOK_STRUCTURES), _.property('hits'))
+        for (const index in room.__aggro) {
+          room.__aggro[index].__aggro = true
+        }
+      } else {
+        room.__aggro = []
+      }
+    }
+  },
+
   /**
     Let task controllers do theit jobs.
     **/
   taskControllersControl: function () {
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      room.__aggro = []
-    }
-
     for (const id in bootstrap.taskControllers) {
       bootstrap.taskControllers[id].act()
     }
@@ -50,6 +61,7 @@ const worldActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
+    this.giveOutAggro()
     this.taskControllersControl()
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
