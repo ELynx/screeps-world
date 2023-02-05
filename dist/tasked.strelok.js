@@ -321,8 +321,8 @@ strelok.makeBody = function (spawn) {
   let melee = 0
   let heal = 0
 
-  // 700 for base combo and 200 per big room climb after 3
-  let budget = 700 + 200 * Math.floor((elvl - 3) / 4)
+  // 700 for base combo and 250 per next level
+  let budget = 700 + 250 * (elvl - 3)
 
   // add heal + two ranged combo
   // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
