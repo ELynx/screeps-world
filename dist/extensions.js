@@ -240,16 +240,18 @@ Structure.prototype.isActiveSimple = function () {
 
 Structure.prototype.getFromMemory = function (key) {
   if (!Memory.structures) return undefined
-
   if (!Memory.structures[this.id]) return undefined
+
+  Memory.structures[this.id].nodeAccessed = Game.time
 
   return Memory.structures[this.id][key]
 }
 
 Structure.prototype.setToMemory = function (key, value) {
   if (!Memory.structures) Memory.structures = { }
-
   if (!Memory.structures[this.id]) Memory.structures[this.id] = { }
+
+  Memory.structures[this.id].nodeAccessed = Game.time
 
   Memory.structures[this.id][key] = value
 }
