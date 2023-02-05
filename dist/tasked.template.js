@@ -256,24 +256,18 @@ function Tasked (id) {
   }
 
   this.act = function () {
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      if (room.__aggro === undefined) {
-        room.__aggro = []
-      }
-    }
-
     if (this.prepare) {
       this.prepare()
     }
 
+    const flagKey = this.id + '_'
+
     const creeps = _.filter(
       Game.creeps,
       function (creep) {
-        // creep with no memory of flag are given up
-        return creep.name.startsWith(this.id) && creep.getFlagName()
-      },
-      this
+        const flagName = creep.getFlagName()
+        return flagName && flagName.startsWith(flagKey)
+      }
     )
 
     const flagCount = { }
@@ -307,8 +301,6 @@ function Tasked (id) {
     if (this.makeBody === undefined) {
       return
     }
-
-    const flagKey = this.id + '_'
 
     for (const flagName in Game.flags) {
       if (!flagName.startsWith(flagKey)) {
