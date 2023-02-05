@@ -29,7 +29,7 @@ const worldActor =
     }
   },
 
-  giveOutAggro: function() {
+  giveOutAggro: function () {
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
 
