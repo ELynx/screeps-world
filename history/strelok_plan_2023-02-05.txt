@@ -1,4 +1,7 @@
-elvl budget tough move ranged melee heal
+elvl remain tough move ranged melee heal
+0    0      0     1    1      0     0
+1    0      0     1    1      0     0
+2    0      0     2    1      0     1
 3    0      0     3    2      0     1
 4    0      2     6    2      1     1
 5    0      2     8    3      1     1
@@ -23,7 +26,3 @@ elvl budget tough move ranged melee heal
 24   460    1     25   16     1     7
 25   710    1     25   16     1     7
 26   960    1     25   16     1     7
-27   1210   1     25   16     1     7
-28   1460   1     25   16     1     7
-29   1710   1     25   16     1     7
-30   1960   1     25   16     1     7
