@@ -28,7 +28,7 @@ rampupController.targets = function (room) {
   return room.find(FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) && structure.hits && structure.hits < RampupHits
+        return (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) && structure.hits && structure.hits < RampupHits && structure.hits <= structure.hitsMax
       }
     }
   )
