@@ -62,9 +62,9 @@ terminalProcess.work = function (room) {
       // if room has no controller than definitely not own order
       // compare by username, avoid use of "my"
       if (roomFrom &&
-                roomFrom.controller &&
-                roomFrom.controller.owner &&
-                roomFrom.controller.owner.username === room.terminal.owner.username) { return false }
+          roomFrom.controller &&
+          roomFrom.controller.owner &&
+          roomFrom.controller.owner.username === room.terminal.owner.username) { return false }
 
       // STRATEGY allowed price drop per sell of room resources
       if (noPanic && (order.price < 0.95 * lastPrice)) { return false }
@@ -97,9 +97,9 @@ terminalProcess.work = function (room) {
     // don't trade with own orders
     // see above for breakdown
     if (roomFrom &&
-            roomFrom.controller &&
-            roomFrom.controller.owner &&
-            roomFrom.controller.owner.username === room.terminal.owner.username) { continue }
+        roomFrom.controller &&
+        roomFrom.controller.owner &&
+        roomFrom.controller.owner.username === room.terminal.owner.username) { continue }
 
     if (order.price < smallestPrice) {
       smallestPrice = order.price
