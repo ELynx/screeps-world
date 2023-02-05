@@ -91,7 +91,7 @@ spawnProcess.miners = function (room, live) {
   }
 }
 
-spawnProcess.workers = function (room, live) {
+spawnProcess.workers = function (room, live, limit = undefined) {
   const addWorker = _.bind(
     function (n, priority) {
       this.addToQueue(
@@ -107,7 +107,7 @@ spawnProcess.workers = function (room, live) {
 
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
 
-  if (nowWorkers === 0) {
+  if (nowWorkers === 0 && limit === undefined) {
     addWorker(1, 'urgent')
     addWorker(1, 'normal')
 
@@ -129,8 +129,8 @@ spawnProcess.workers = function (room, live) {
 
   const wantWorkers = Math.max(freeHarvestSpots, supportedByRestockers)
 
-  const wantWorkersMin = 2 // to survive energy balance
-  const wantWorkersMax = 12 // to survive CPU
+  const wantWorkersMin = limit ? 0 : 2
+  const wantWorkersMax = limit ? limit : 12
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
   addWorker(want - nowWorkers, 'lowkey')
@@ -143,10 +143,12 @@ spawnProcess.my = function (room, live) {
 }
 
 spawnProcess.ally = function (room, live) {
+  // TODO they are crowd
   this.workers(room, live)
 }
 
 spawnProcess.neutral = function (room, live) {
+  // TODO they are crowd
   this.workers(room, live)
 }
 
@@ -154,8 +156,8 @@ spawnProcess.hostile = function (room, live) {
 }
 
 spawnProcess.unowned = function (room, live) {
+  this.workers(room, live, 2)
   this.restockers(room, live)
-  this.workers(room, live)
 }
 
 spawnProcess.work = function (room) {
