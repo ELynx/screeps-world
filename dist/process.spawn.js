@@ -130,7 +130,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   const wantWorkers = Math.max(freeHarvestSpots, supportedByRestockers)
 
   const wantWorkersMin = limit ? 0 : 2
-  const wantWorkersMax = limit ? limit : 12
+  const wantWorkersMax = limit || 12
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
   addWorker(want - nowWorkers, 'lowkey')
