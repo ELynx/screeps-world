@@ -240,27 +240,27 @@ strelok.creepAtDestination = function (creep) {
     }
   } // end of if no target
 
-  let rcHeal
   if (creep.__canHeal || creep.__canHealRanged) {
     const healTargets = this.roomWounded[dest]
 
+    let rc = ERR_TIRED
     if (creep.__canHeal && creep.hits < creep.hitsMax) {
       // priority 1 - heal this
-      rcHeal = creep.heal(creep)
+      rc = creep.heal(creep)
     } else if (creep.__canHealRanged) {
       // priority 2 - heal anyone else
       // actually check for creep directly nearby is inside
-      rcHeal = creep.healClosest(healTargets)
+      rc = creep.healClosest(healTargets)
     } else if (creep.__canHeal) {
       // priority 3 - heal anyone else directly nearby - in case of ranged attack was fired
-      rcHeal = creep.healAdjacent(healTargets)
+      rc = creep.healAdjacent(healTargets)
     }
 
-    creep.__canMelee = creep.__canMelee && rcHeal !== OK
+    creep.__canMelee = creep.__canMelee && rc !== OK
+  }
 
-    if (creep.__canMelee && targets.length > 0) {
-      creep.meleeAdjacent(targets)
-    }
+  if (creep.__canMelee && targets.length > 0) {
+    creep.meleeAdjacent(targets)
   }
 }
 
