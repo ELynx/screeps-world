@@ -186,6 +186,16 @@ const isHostile = function (something) {
 
 Object.defineProperty(
   Structure.prototype,
+  'my',
+  {
+    value: false,
+    writable: false,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Structure.prototype,
   'ally',
   {
     value: false,
@@ -348,6 +358,18 @@ Object.defineProperty(
   {
     get: function () {
       return isPC(this)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  Room.prototype,
+  'my',
+  {
+    get: function () {
+      return this.controller ? this.controller.my : false
     },
     configurable: true,
     enumerable: true
