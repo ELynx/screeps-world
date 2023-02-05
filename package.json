@@ -69,6 +69,7 @@
       "LOOK_TOMBSTONES",
       "Memory",
       "MOVE",
+      "OBSTACLE_OBJECT_TYPES",
       "OK",
       "ORDER_BUY",
       "ORDER_SELL",
