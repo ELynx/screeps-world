@@ -33,6 +33,11 @@ const worldActor =
     Let task controllers do theit jobs.
     **/
   taskControllersControl: function () {
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+      room.__aggro = []
+    }
+
     for (const id in bootstrap.taskControllers) {
       bootstrap.taskControllers[id].act()
     }
