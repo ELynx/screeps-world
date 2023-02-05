@@ -99,7 +99,7 @@ outlast.creepRoomTravel = function (creep) {
 }
 
 outlast.flagPrepare = function (flag) {
-  return this._flagCountBasic(flag, 10)
+  return this._flagCountBasic(flag, 100)
 }
 
 outlast.makeBody = function (spawn) {
@@ -111,8 +111,8 @@ outlast.makeBody = function (spawn) {
 
   // takes 300 damage
   // heal damage in 5 turns
-  // 1500 50    50    50    50    50    250   250   250   250   250
-  return [MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL]
+  // 1600 50    50    50    50    50    50    50    250   250   250   250   250
+  return [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL]
 }
 
 outlast.register()
