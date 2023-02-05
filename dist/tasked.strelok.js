@@ -301,7 +301,9 @@ strelok.makeBody = function (spawn) {
   if (elvl <= 1) {
     // 200   50    150
     return [MOVE, RANGED_ATTACK]
-  } else if (elvl <= 2) {
+  }
+
+  if (elvl <= 2) {
     // 500   50    50    150            250
     return [MOVE, MOVE, RANGED_ATTACK, HEAL]
   }
