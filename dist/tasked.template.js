@@ -146,6 +146,38 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
   return ERR_NOT_FOUND
 }
 
+Creep.prototype.unlive = function () {
+  let result = false
+
+  if (this.room.my() && this.room.memory.elvl > 0) {
+    this.setControlRoom(this.room.name)
+    result = true
+  } else if (this.memory.mrts) {
+    this.setControlRoom(this.memory.mrts)
+    result = true
+  } else {
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+      if (room.my() && room.memory.elvl > 0) {
+        this.setControlRoom(room.name)
+        result = true
+        break
+      }
+    }
+  }
+
+  if (result) {
+    // forget who they serve
+    this.memory.flag = undefined
+    // mark to be cycled out of existence
+    this.memory.rccl = true
+
+    return OK
+  }
+
+  return this.suicide()
+}
+
 function Tasked (id) {
   this.FLAG_REMOVE = 0
   this.FLAG_IGNORE = 1
