@@ -48,7 +48,7 @@ module.exports.loop = function () {
       const room = creep.room
 
       // STRATEGY limit weight for controlled vs travel rooms, per creep
-      const delta = room.my() ? 3 : (room.ally() ? 2 : 1)
+      const delta = room.my ? 3 : (room.ally ? 2 : 1)
 
       let now = limits[room.name] || 0
       now = now + delta
@@ -70,10 +70,10 @@ module.exports.loop = function () {
       room.visual.rect(5.5, 0, 5 * r / t, 0.25, { fill: '#03f' })
 
       // save CPU on all rooms where control is not needed
-      if (room.my()) {
+      if (room.my) {
         room.memory.cpul = limit
         roomActor.act(room)
-      } else if (room.ally() &&
+      } else if (room.ally &&
                  Game.flags['help_' + room.name] &&
                  Game.flags['help_' + room.name].pos.roomName === room.name) {
         room.memory.cpul = limit

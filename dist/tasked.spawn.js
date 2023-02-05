@@ -75,7 +75,7 @@ spawn._spawnRoomMarkCheck = function (room) {
 spawn._spawnRoomFilter = function (room) {
   if (this._spawnRoomMarkCheck(room)) return false
 
-  if (room.my()) {
+  if (room.my) {
     return room.memory.elvl > 0
   }
 
@@ -115,7 +115,7 @@ spawn.findSpawnRoomsFor = function (model) {
   if (model.priority === 'lowkey') {
     // find room in general
     const room = Game.rooms[model.from]
-    if (room && room.my()) {
+    if (room && room.my) {
       // test spawn-ability
       if (room.memory.elvl > 0) {
         if (this._spawnRoomMarkCheck(room)) {

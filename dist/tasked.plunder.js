@@ -149,7 +149,7 @@ plunder.creepAtOtherRooms = function (creep) {
 }
 
 plunder.creepAtDestination = function (creep) {
-  if (creep.room.my()) {
+  if (creep.room.my) {
     this.creepAtOwnRoom(creep)
   } else {
     this.creepAtOtherRooms(creep)
@@ -159,7 +159,7 @@ plunder.creepAtDestination = function (creep) {
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned stuff
 
-  if (creep.room.my()) {
+  if (creep.room.my) {
     if (creep.room.storage) { creep.memory.strI = creep.room.storage.id }
 
     if (creep.room.terminal) { creep.memory.trmI = creep.room.terminal.id }

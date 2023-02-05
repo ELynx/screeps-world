@@ -7,7 +7,7 @@ const linkProcess = new Process('link')
 const Treshold = 50
 
 linkProcess.work = function (room) {
-  if (!room.my()) return
+  if (!room.my) return
 
   this.debugHeader(room)
 
