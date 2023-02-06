@@ -96,6 +96,7 @@ beetle.creepAtDestination = function (creep) {
     // check if endpoint is within wanted range
     if (easyPath.length > 0) {
       const last = easyPath[easyPath.length - 1]
+      last.roomName = creep.room.name
       if (targetPos.inRangeTo(last, easyRange)) {
         // because expect serialized
         path = Room.serializePath(easyPath)
