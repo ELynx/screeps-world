@@ -1,5 +1,7 @@
 'use strict'
 
+const mapUtils = require('./routine.map')
+
 const Tasked = require('./tasked.template')
 
 const plunder = new Tasked('plunder')
@@ -39,7 +41,14 @@ plunder.moveAndUnload = function (creep, target) {
       if (rc === OK) break // from resource loop
     }
   } else {
-    creep.moveToWrapper(pos, { reusePath: 10, range })
+    creep.moveToWrapper(
+      pos,
+      {
+        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
+        reusePath: 10,
+        range
+      }
+    )
   }
 
   if (creep.store.getUsedCapacity() === 0) {
@@ -93,7 +102,14 @@ plunder.moveAndLoad = function (creep, target) {
       if (rc === OK) break
     }
   } else {
-    creep.moveToWrapper(target, { reusePath: 10, range: 1 })
+    creep.moveToWrapper(
+      target,
+      {
+        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
+        reusePath: 10,
+        range: 1
+      }
+    )
   }
 }
 
