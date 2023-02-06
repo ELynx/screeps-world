@@ -99,8 +99,7 @@ claim.creepAtDestination = function (creep) {
   if (rc === ERR_TIRED && creep.ticksToLive < wait) {
     const ticksToArrive = creep.memory._clt ? CREEP_CLAIM_LIFE_TIME - creep.memory._clt : 0
     const ticksBlocked = wait
-    const ticksOverhead = 42 // be this early to minimize safe mode window, etc
-    const spawnAfter = Game.time + ticksBlocked - ticksToArrive - ticksOverhead
+    const spawnAfter = Game.time + ticksBlocked - ticksToArrive
 
     const flag = Game.flags[creep.getFlagName()]
     if (flag) {
@@ -126,8 +125,11 @@ claim.flagPrepare = function (flag) {
     }
   }
 
+  // for each extra creep allow some time to arrive together
+  const syncronisities = flag.getValue() * 50
+
   // save resources on not spamming
-  if (flag.memory.aftr && flag.memory.aftr > Game.time) {
+  if (flag.memory.aftr && flag.memory.aftr > Game.time + syncronisities) {
     return this.FLAG_IGNORE
   }
 
