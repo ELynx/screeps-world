@@ -89,7 +89,7 @@ outlast.creepRoomTravel = function (creep) {
       const pos = creep.room.getControlPos()
       const range = pos.offBorderDistance()
 
-      creep.moveToWrapper(pos, { range })
+      creep.moveToWrapper(pos, { range, swampCost: 1 })
     }
   }
 
