@@ -205,7 +205,15 @@ strelok.creepAtDestination = function (creep) {
         const targetIsStructure = fireTarget.structureType !== undefined
         const targetIsNotMelee = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK))
 
-        if (targetIsStructure || targetIsNotMelee) {
+        if (targetIsStructure && fireTarget.__aggro) {
+          if (rangeToFireTarget > 2) {
+            flee = false
+            range = 2
+          } else if (rangeToFireTarget < 2) {
+            flee = true
+            range = 2
+          }
+        } else if (targetIsStructure || targetIsNotMelee) {
           if (rangeToFireTarget > 1) {
             flee = false
             range = 1
