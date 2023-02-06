@@ -15,6 +15,7 @@ beetle.wipeBreach = function (creep) {
   creep.memory._brP = undefined
   creep.memory._brI = undefined
   creep.memory._brT = undefined
+  creep.memory._brC = undefined
 }
 
 beetle.creepPrepare = function (creep) {
@@ -70,6 +71,7 @@ beetle.creepAtDestination = function (creep) {
   // there is place to go and no path known
   if (toTargetPos > 1 && creep.memory._brP === undefined) {
     let path
+    let color
 
     // try to find a path to nearby location
     // detect obstacles so there is a chance to go through existing breaches
@@ -97,6 +99,7 @@ beetle.creepAtDestination = function (creep) {
       if (targetPos.inRangeTo(last, easyRange)) {
         // because expect serialized
         path = Room.serializePath(easyPath)
+        color = '#0f0'
       }
     }
 
@@ -117,11 +120,13 @@ beetle.creepAtDestination = function (creep) {
           serialize: true
         }
       )
+      color = '#f00'
     }
 
     creep.memory._brP = path
     creep.memory._brI = 0
     creep.memory._brT = Game.time
+    creep.memory._brC = color
   }
 
   let next
@@ -130,7 +135,7 @@ beetle.creepAtDestination = function (creep) {
     if (creep.memory._brP) {
       const path = Room.deserializePath(creep.memory._brP)
 
-      creep.room.visual.poly(path, { stroke: '#f00' })
+      creep.room.visual.poly(path, { stroke: creep.memory._brC })
 
       for (let i = creep.memory._brI; i < path.length; ++i) {
         const pathItem = path[i]
