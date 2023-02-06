@@ -4,6 +4,8 @@ const Tasked = require('./tasked.template')
 
 const strelok = new Tasked('strelok')
 
+strelok.breachedExtraCreeps = 1
+
 strelok.markRoomForPatrol = function (room) {
   const flagName = this.id + '_' + room.name
 
@@ -288,8 +290,12 @@ strelok.flagPrepare = function (flag) {
     const want = flag.getValue()
 
     // automatically stop trashing low threat rooms
-    if (want === 1 && this.roomBoring[flag.pos.roomName]) {
+    if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
       return this.FLAG_REMOVE
+    }
+
+    if (this.roomBoring[flag.pos.roomName]) {
+      return this.FLAG_IGNORE
     }
   }
 
