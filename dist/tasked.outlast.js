@@ -99,6 +99,14 @@ outlast.creepRoomTravel = function (creep) {
 }
 
 outlast.flagPrepare = function (flag) {
+  if (flag.room) {
+    const allStructures = flag.room.find(FIND_STRUCTURES)
+    const hasTowers = _.some(allStructures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+    if (!hasTowers) {
+      return this.FLAG_IGNORE
+    }
+  }
+
   return this._flagCountBasic(flag, 100)
 }
 

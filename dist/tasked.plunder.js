@@ -171,6 +171,12 @@ plunder.creepRoomTravel = function (creep) {
 }
 
 plunder.flagPrepare = function (flag) {
+  if (flag.room) {
+    if (flag.room.__aggro !== undefined) {
+      return this.FLAG_IGNORE
+    }
+  }
+
   if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE
 
   return this._flagCountBasic(flag, 100)

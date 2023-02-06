@@ -39,6 +39,10 @@ const worldActor =
         for (const index in room.__aggro) {
           room.__aggro[index].__aggro = true
         }
+
+        if (room.__aggro.length === 0) {
+          room.__breached
+        }
       } else {
         room.__aggro = []
       }

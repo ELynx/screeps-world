@@ -190,6 +190,8 @@ function Tasked (id) {
   // attach methods that allow fast debug writing
   makeDebuggable(this, 'Tasked')
 
+  this.breachedExtraCreeps = 0
+
   this.prepare = undefined
 
   this.creepPrepare = undefined
@@ -308,7 +310,7 @@ function Tasked (id) {
 
       const flag = Game.flags[flagName]
 
-      const want = flag.getValue()
+      let want = flag.getValue()
 
       // sanitize flags
       if (want < 0) {
@@ -316,6 +318,10 @@ function Tasked (id) {
         flag.remove()
 
         continue
+      }
+
+      if (flag.room && flag.room.__breached) {
+        want = want + this.breachedExtraCreeps
       }
 
       if (this.flagPrepare) {
