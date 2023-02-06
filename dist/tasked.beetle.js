@@ -51,7 +51,7 @@ beetle.creepAtDestination = function (creep) {
   let targetPos
 
   if (creep.room.__aggro && creep.room.__aggro.length > 0) {
-    targetPos = creep.pos.findClosestByRange(creep.room.__aggro)
+    targetPos = creep.pos.findClosestByRange(creep.room.__aggro).pos
   } else if (creep.pos.inRangeTo(controlPos, BreachCompleteDistance)) {
     // after arriving on the spot, start running like headless chicken
     // biased to center, as needed
