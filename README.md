@@ -29,6 +29,12 @@ Fight against squads with healers.
 
 Step away and uncrowd.
 
+Remove construction sites placed by previous owner of the room.
+
+Register controller if ID is not known to preserve order.
+
+Outlast migrate to flag.
+
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
@@ -61,7 +67,7 @@ Two `attackController`s per tick. See evidence:
 
 Lodash `Chain`.
 
-Towers fight back based on event log.
+Room history generates "dirty" on attackers. Healers get dirty of healed. Towers attack most dirty. Towers attack unfocused to keep healers sef-healing.
 
 Some material on autobases:
 
@@ -84,3 +90,9 @@ Limit autobuild run to some N elements.
 Incorporate [Cartographer](https://github.com/glitchassassin/screeps-cartographer)
 
 Send resources away instead of selling out on panic.
+
+Room attack definition: drop aggro, drop streloks, claim and plunders.
+
+Tasked default movement options. Claim has spawn cheap. Auto.
+
+Flag to turn verbose naming on and off.
