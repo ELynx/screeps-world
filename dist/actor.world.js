@@ -41,7 +41,7 @@ const worldActor =
         }
 
         if (room.__aggro.length === 0) {
-          room.__breached
+          room.__breached = true
         }
       } else {
         room.__aggro = []
