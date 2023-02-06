@@ -60,7 +60,7 @@ plunder.creepAtOwnRoom = function (creep) {
   } else {
     const spawns = _.filter(Game.spawns, _.matchesProperty('room.name', creep.room.name))
     if (spawns.length > 0) {
-      this.moveAndUnload(creep, _.sample(spawns))
+      this.moveAndUnload(creep, spawns[0])
     } else {
       this.moveAndUnload(creep, creep.getControlPos())
     }
