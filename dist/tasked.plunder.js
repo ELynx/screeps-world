@@ -103,13 +103,8 @@ plunder.getSomeOwnRoomName = function (creep) {
 
 plunder.moveAndLoad = function (creep, target) {
   if (creep.pos.isNearTo(target)) {
-    for (const resourceType in target.store) {
-      if (resourceType !== RESOURCE_ENERGY) {
-        if (creep.memory.strI === undefined && creep.memory.trmI === undefined) {
-          continue
-        }
-      }
-
+    const resources = _.shuffle(Object.keys(target.store))
+    for (const resourceType in resources) {
       const rc = creep.withdraw(target, resourceType)
       if (rc === OK) break
     }
