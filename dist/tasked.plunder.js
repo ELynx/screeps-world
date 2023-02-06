@@ -87,10 +87,10 @@ plunder.getSomeOwnRoomName = function (creep) {
   if (creep.store.getUsedCapacity() > creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
     const flag = Game.flags[creep.getFlagName()]
     if (flag) {
-      const storage1 = flag.memory.strI ? Game.getObjectById(flag.memory.strI)
+      const storage1 = flag.memory.strI ? Game.getObjectById(flag.memory.strI) : undefined
       if (storage1) return storage1.room.name
 
-      const terminal1 = flag.memory.trmI ? Game.getObjectById(flag.memory.trmI)
+      const terminal1 = flag.memory.trmI ? Game.getObjectById(flag.memory.trmI) : undefined
       if (terminal1) return terminal1.room.name
     }
   }
