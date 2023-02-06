@@ -226,19 +226,8 @@ beetle.creepAtDestination = function (creep) {
 }
 
 beetle.flagPrepare = function (flag) {
-  if (flag.room) {
-    // any creep of same alignment work, breach was complete
-    const breached = flag.pos.hasInSquareArea(
-      LOOK_CREEPS,
-      BreachCompleteDistance,
-      function (creep) {
-        return creep.myOrAlly()
-      }
-    )
-
-    if (breached) {
-      return this.FLAG_REMOVE
-    }
+  if (flag.room && flag.room.__breached) {
+    return this.FLAG_IGNORE
   }
 
   return this.FLAG_SPAWN
