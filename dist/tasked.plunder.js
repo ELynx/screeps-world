@@ -39,7 +39,7 @@ plunder.moveAndUnload = function (creep, target) {
       if (rc === OK) break // from resource loop
     }
   } else {
-    creep.moveToWrapper(pos, { reusePath: 50, range })
+    creep.moveToWrapper(pos, { reusePath: 10, range })
   }
 
   if (creep.store.getUsedCapacity() === 0) {
@@ -93,7 +93,7 @@ plunder.moveAndLoad = function (creep, target) {
       if (rc === OK) break
     }
   } else {
-    creep.moveToWrapper(target, { reusePath: 50, range: 1 })
+    creep.moveToWrapper(target, { reusePath: 10, range: 1 })
   }
 }
 
