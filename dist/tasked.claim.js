@@ -113,7 +113,7 @@ claim.creepAtDestination = function (creep) {
 
 claim.flagPrepare = function (flag) {
   if (flag.room) {
-    if (flag.room.__aggro !== undefined) {
+    if (flag.room.__breached === false) {
       return this.FLAG_IGNORE
     }
 
