@@ -232,18 +232,24 @@ plunder.makeBody = function (spawn) {
   const elvl = spawn.room.memory.elvl
 
   if (elvl <= 1) {
-    // 100   50     50
+    // 100  50     50
     return [CARRY, MOVE]
   }
 
   if (elvl <= 3) {
-    // 300   50     50     50     50    50    50
+    // 300  50     50     50     50    50    50
     return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
   }
 
-  // capacity 200, steal complete full built extension
-  // 600   50     50     50     50     50    50    50    50
-  return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+  if (elvl <= 4) {
+    // capacity 200, steal complete full built extension
+    // 400  50     50     50     50     50    50    50    50
+    return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+  }
+
+  // 5+ or 1800+
+  // 1000 50     50     50     50     50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50
+  return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
 }
 
 plunder.register()
