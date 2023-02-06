@@ -96,3 +96,7 @@ Room attack definition: drop aggro, drop streloks, claim and plunders.
 Tasked default movement options. Claim has spawn cheap. Auto.
 
 Flag to turn verbose naming on and off.
+
+Flag to disable secret. Flags for verbose, etc.
+
+Border control for creep movement in tasked. Tie-in with default options?
