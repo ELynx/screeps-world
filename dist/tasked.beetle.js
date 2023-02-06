@@ -198,6 +198,7 @@ beetle.creepAtDestination = function (creep) {
       rc = creep.dismantle(target)
       // coordinate effort - ask nearbys to attack
       if (rc === OK) {
+        creep.room.visual.circle(target.pos, { fill: '#f00' })
         if (target.__aggro === undefined) {
           target.__aggro = true
           if (creep.room.__aggro) {
