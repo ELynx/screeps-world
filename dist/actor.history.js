@@ -63,7 +63,7 @@ const historyActor =
     something.dirt = now + dirt
   },
 
-  markNPCHostile: function (something, somethingUsername) {
+  markNPCHostile: function (room, something, somethingUsername) {
     const reputation = Game.iff.markNPCHostile(something)
     this.debugLine(room, this.hmiName(something) + ' owned by NPC [' + somethingUsername + '] had reputation changed to ' + reputation)
   },
@@ -132,7 +132,7 @@ const historyActor =
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
       this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked had owner reputation changed to ' + reputation)
     } else {
-      this.markNPCHostile(attacker, attackerUsername)
+      this.markNPCHostile(room, attacker, attackerUsername)
     }
 
     this.smearDirt(attacker, eventRecord.data.damage);
@@ -161,7 +161,7 @@ const historyActor =
       const reputation = Game.iff.makeHostile(attackerUsername)
       this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile [' + reputation + ']')
     } else {
-      this.markNPCHostile(attacker, attackerUsername)
+      this.markNPCHostile(room, attacker, attackerUsername)
     }
 
     // in terms of dirt, this does nothing because deed was done and targeting is not necessary
