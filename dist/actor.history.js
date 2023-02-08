@@ -63,6 +63,11 @@ const historyActor =
     attacker.dirt = now + dirt
   },
 
+  markNPCHostile: function (something, somethingUsername) {
+    const reputation = Game.iff.markNPCHostile(something)
+    this.debugLine(room, this.hmiName(something) + ' owned by NPC [' + somethingUsername + '] had reputation changed to ' + reputation)
+  },
+
   handle_EVENT_ATTACK: function (room, eventRecord) {
     // skip objects that were already examined
     if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
@@ -125,10 +130,9 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] had owner reputation changed to ' + reputation)
+      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked had owner reputation changed to ' + reputation)
     } else {
-      const reputation = Game.iff.markNPCHostile(attacker)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by NPC [' + attackerUsername + '] had reputation changed to ' + reputation)
+      this.markNPCHostile(attacker, attackerUsername)
     }
 
     this.smearDirt(attacker, eventRecord.data.damage);
@@ -157,8 +161,7 @@ const historyActor =
       const reputation = Game.iff.makeHostile(attackerUsername)
       this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile')
     } else {
-      const reputation = Game.iff.markNPCHostile(attacker)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by NPC [' + attackerUsername + '] had reputation changed to ' + reputation)
+      this.markNPCHostile(attacker, attackerUsername)
     }
 
     // in terms of dirt, this does nothing because deed was done and targeting is not necessary
