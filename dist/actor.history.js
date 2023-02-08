@@ -58,6 +58,11 @@ const historyActor =
     return result
   },
 
+  smearDirt: function(something, dirt) {
+    const now = attacker.dirt || 0
+    attacker.dirt = now + dirt
+  },
+
   handle_EVENT_ATTACK: function (room, eventRecord) {
     // skip objects that were already examined
     if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
@@ -126,8 +131,7 @@ const historyActor =
       this.debugLine(room, this.hmiName(attacker) + ' owned by NPC [' + attackerUsername + '] had reputation changed to ' + reputation)
     }
 
-    // SHORTCUT check hostile once
-    Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
+    this.smearDirt(attacker, eventRecord.data.damage);
   },
 
   /**
