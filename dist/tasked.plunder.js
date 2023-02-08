@@ -137,6 +137,8 @@ plunder.creepAtOtherRooms = function (creep) {
       allStructures,
       function (structure) {
         if (structure.store === undefined) return false
+        // nuker is no-withdraw
+        if (structure.structureType === STRUCTURE_NUKER) return false
 
         let hasResources = false
         for (const resourceType in structure.store) {
@@ -171,8 +173,9 @@ plunder.creepAtOtherRooms = function (creep) {
   }
 
   let target
+
   if (creep.memory.dest) {
-    target = _.find(targets, { id: creep.memory.dest })
+    target = _.find(targets, _.matchesProperty('id', creep.memory.dest))
   }
 
   if (target === undefined) {
@@ -193,10 +196,9 @@ plunder.creepAtDestination = function (creep) {
 
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned stuff
-
-  const flag = Game.flags[creep.getFlagName()]
-
   if (creep.room.my) {
+    const flag = Game.flags[creep.getFlagName()]
+
     if (creep.room.storage) {
       creep.memory.strI = creep.room.storage.id
       if (flag) flag.memory.strI = creep.memory.strI
