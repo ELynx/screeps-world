@@ -134,6 +134,36 @@ const historyActor =
     this.smearDirt(attacker, eventRecord.data.damage);
   },
 
+  handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
+    if (!room.myOrAlly()) return
+
+    const attacker = this.getObjectById(room, eventRecord.objectId)
+    if (attacker === null ||
+        attacker.owner === undefined ||
+        attacker.my) {
+      return
+    }
+
+    // ! DETECT EDGE CASES !
+    const attackerUsername = attacker.owner.username
+    const roomUsername = room.controller.owner.username
+
+    if (attackerUsername === roomUsername) return
+
+    // fights between allies
+    if (attacker.ally && (!room.my)) return
+
+    if (attacker.pc) {
+      const reputation = Game.iff.makeHostile(attackerUsername)
+      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile')
+    } else {
+      const reputation = Game.iff.markNPCHostile(attacker)
+      this.debugLine(room, this.hmiName(attacker) + ' owned by NPC [' + attackerUsername + '] had reputation changed to ' + reputation)
+    }
+
+    // in terms of dirt, this does nothing because deed was done and targeting is not necessary
+  },
+
   /**
     Execute history logic.
     **/
@@ -157,6 +187,9 @@ const historyActor =
         switch (eventRecord.event) {
           case EVENT_ATTACK:
             this.handle_EVENT_ATTACK(room, eventRecord)
+            break
+          case EVENT_ATTACK_CONTROLLER:
+            this.handle_EVENT_ATTACK_CONTROLLER(room, eventRecord)
             break
         }
       }
