@@ -135,7 +135,7 @@ const historyActor =
       this.markNPCHostile(room, attacker, attackerUsername)
     }
 
-    this.smearDirt(attacker, eventRecord.data.damage);
+    this.smearDirt(attacker, eventRecord.data.damage)
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
