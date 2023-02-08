@@ -58,9 +58,9 @@ const historyActor =
     return result
   },
 
-  smearDirt: function(something, dirt) {
-    const now = attacker.dirt || 0
-    attacker.dirt = now + dirt
+  smearDirt: function (something, dirt) {
+    const now = something.dirt || 0
+    something.dirt = now + dirt
   },
 
   markNPCHostile: function (something, somethingUsername) {
@@ -159,7 +159,7 @@ const historyActor =
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile')
+      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile [' + reputation + ']')
     } else {
       this.markNPCHostile(attacker, attackerUsername)
     }
