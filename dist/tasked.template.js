@@ -292,7 +292,13 @@ function Tasked (id) {
         continue
       }
 
-      if (creep.room.name === creep.getControlRoom()) {
+      const controlRoom = creep.getControlRoom()
+      if (controlRoom === undefined) {
+        creep.unlive()
+        continue
+      }
+
+      if (creep.room.name === controlRoom) {
         this.creepAtDestination(creep)
       } else {
         this.creepRoomTravel(creep)
