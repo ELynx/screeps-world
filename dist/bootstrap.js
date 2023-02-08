@@ -164,6 +164,11 @@ const bootstrap =
   },
 
   centerRoomPosition: function (roomName) {
+    if (roomName === undefined) {
+      console.log('Attempt to take center of undefined room, shard center returned')
+      return new RoomPosition(25, 25, 'E0N0')
+    }
+
     return new RoomPosition(25, 25, roomName)
   }
 }
