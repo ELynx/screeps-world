@@ -59,7 +59,7 @@ beetle.creepAtDestination = function (creep) {
     targetPos = new RoomPosition(
       Math.floor(Math.random() * 49),
       Math.floor(Math.random() * 49),
-      controlPos.roomName
+      creep.room.name
     )
   } else {
     targetPos = controlPos
