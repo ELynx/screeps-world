@@ -14,8 +14,10 @@ const historyActor =
 
   clearCaches: function () {
     Game.__idCache = { }
-    Game.__skipAttackers = { }
-    Game.__skipTargets = { }
+    Game.__skipActors = { }
+    Game.__skipAttackTargets = { }
+    Game.__skipHealTargets = { }
+    Game.__healers = { }
   },
 
   getObjectById: function (room, id) {
@@ -31,15 +33,15 @@ const historyActor =
     const tombstones = room.find(FIND_TOMBSTONES)
     const byTombstone = _.find(tombstones, _.matchesProperty('creep.id', id))
     if (byTombstone !== undefined) {
-      Game.__idCache[id] = byTombstone
-      return byTombstone
+      Game.__idCache[id] = byTombstone.creep
+      return byTombstone.creep
     }
 
     const ruins = room.find(FIND_RUINS)
     const byRuin = _.find(ruins, _.matchesProperty('structure.id', id))
     if (byRuin !== undefined) {
-      Game.__idCache[id] = byRuin
-      return byRuin
+      Game.__idCache[id] = byRuin.structure
+      return byRuin.structure
     }
 
     // as original API
@@ -58,9 +60,21 @@ const historyActor =
     return result
   },
 
-  smearDirt: function (something, dirt) {
-    const now = something.dirt || 0
-    something.dirt = now + dirt
+  _increaseSomeValue: function (something, valueName, amount) {
+    const now = something[valueName] || 0
+    something[valueName] = now + amount
+  },
+
+  increaseDirectHarm: function (something, amount) {
+    this._increaseSomeValue(something, 'directHarm', amount)
+  },
+
+  increaseSideHarm: function (something, amount) {
+    this._increaseSomeValue(something, 'sideHarm', amount)
+  },
+
+  increaseSideHarmPower: function (something, amount) {
+    this._increaseSomeValue(something, 'sideHarmPower', amount)
   },
 
   markNPCHostile: function (room, something, somethingUsername) {
@@ -70,8 +84,8 @@ const historyActor =
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
     // skip objects that were already examined and found unworthy
-    if (Game.__skipAttackers[eventRecord.objectId]) return
-    if (Game.__skipTargets[eventRecord.data.targetId]) return
+    if (Game.__skipActors[eventRecord.objectId]) return
+    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
 
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
@@ -79,18 +93,26 @@ const historyActor =
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
-    if (attacker === null ||
-        attacker.owner === undefined ||
-        attacker.my) {
-      // SHORTCUT skip unknown, unowned or own
-      Game.__skipAttackers[eventRecord.objectId] = true
+    if (attacker === null) {
+      // SHORTCUT skip unknown
+      Game.__skipActors[eventRecord.objectId] = true
+      Game.__skipAttackTargets[eventRecord.objectId] = true
+      Game.__skipHealTargets[eventRecord.objectId] = true
+      return
+    }
+
+    if (attacker.owner === undefined || attacker.my) {
+      // SHORTCUT skip unowned or own
+      Game.__skipActors[eventRecord.objectId] = true
       return
     }
 
     const target = this.getObjectById(room, eventRecord.data.targetId)
     if (target === null) {
       // SHORTCUT skip unknown
-      Game.__skipTargets[eventRecord.data.targetId] = true
+      Game.__skipActors[eventRecord.data.targetId] = true
+      Game.__skipAttackTargets[eventRecord.data.targetId] = true
+      Game.__skipHealTargets[eventRecord.data.targetId] = true
       return
     }
 
@@ -110,7 +132,7 @@ const historyActor =
 
     if (hostileAction === false) {
       // SHORTCUT skip targets that are definitely not of interest
-      Game.__skipTargets[eventRecord.data.targetId] = true
+      Game.__skipAttackTargets[eventRecord.data.targetId] = true
       return
     }
 
@@ -135,26 +157,32 @@ const historyActor =
       this.markNPCHostile(room, attacker, attackerUsername)
     }
 
-    this.smearDirt(attacker, eventRecord.data.damage)
+    this.increaseDirectHarm(attacker, eventRecord.data.damage)
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
     // skip objects that were already examined and found unworthy
-    if (Game.__skipAttackers[eventRecord.objectId]) return
-    if (Game.__skipTargets[room.name]) return
+    if (Game.__skipActors[eventRecord.objectId]) return
+    if (Game.__skipAttackTargets[room.name]) return
 
     if (!room.myOrAlly()) {
       // SHORTCUT skip rooms that are of no interest to monitor
-      Game.__skipTargets[room.name] = true
+      Game.__skipAttackTargets[room.name] = true
       return
     }
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
-    if (attacker === null ||
-        attacker.owner === undefined ||
-        attacker.my) {
-      // SHORTCUT skip unknown, unowned or own
-      Game.__skipAttackers[eventRecord.objectId] = true
+    if (attacker === null) {
+      // SHORTCUT skip unknown
+      Game.__skipActors[eventRecord.objectId] = true
+      Game.__skipAttackTargets[eventRecord.objectId] = true
+      Game.__skipHealTargets[eventRecord.objectId] = true
+      return
+    }
+
+    if (attacker.owner === undefined || attacker.my) {
+      // SHORTCUT skip unowned or own
+      Game.__skipActors[eventRecord.objectId] = true
       return
     }
 
@@ -173,8 +201,41 @@ const historyActor =
     } else {
       this.markNPCHostile(room, attacker, attackerUsername)
     }
+  },
 
-    // in terms of dirt, this does nothing because deed was done and priority targeting is not necessary
+  handle_EVENT_HEAL: function (room, eventRecord) {
+    // skip objects that were already examined and found unworthy
+    if (Game.__skipActors[eventRecord.objectId]) return
+    if (Game.__skipHealTargets[eventRecord.data.targetId]) return
+
+    const healer = this.getObjectById(room, eventRecord.objectId)
+    if (healer === null) {
+      // SHORTCUT skip unknown
+      Game.__skipActors[eventRecord.objectId] = true
+      Game.__skipAttackTargets[eventRecord.objectId] = true
+      Game.__skipHealTargets[eventRecord.objectId] = true
+      return
+    }
+
+    if (healer.owner === undefined || healer.my) {
+      // SHORTCUT skip unowned or own
+      Game.__skipActors[eventRecord.objectId] = true
+      return
+    }
+
+    const target = this.getObjectById(room, eventRecord.data.targetId)
+    if (target === null) {
+      // SHORTCUT skip unknown
+      Game.__skipActors[eventRecord.data.targetId] = true
+      Game.__skipAttackTargets[eventRecord.data.targetId] = true
+      Game.__skipHealTargets[eventRecord.data.targetId] = true
+      return
+    }
+
+    healer.__healedWhat = target
+    healer.__healedHowMuch = eventRecord.data.amount
+
+    Game.__healers[healer.id] = healer
   },
 
   /**
@@ -204,12 +265,24 @@ const historyActor =
           case EVENT_ATTACK_CONTROLLER:
             this.handle_EVENT_ATTACK_CONTROLLER(room, eventRecord)
             break
+          case EVENT_HEAL:
+            this.handle_EVENT_HEAL(room, eventRecord)
+            break
         }
       }
 
       const usedRoomPercent = bootstrap.hardCpuUsed(t1)
       this.debugLine(room, 'HCPU: ' + usedRoomPercent + '% on history actor / room')
       room.visual.rect(0, 0.25, 5 * usedRoomPercent / 100, 0.25, { fill: '#f00' })
+    }
+
+    for (const id in Game.__healers) {
+      const healer = Game.__healers[id]
+
+      if (healer.__healedWhat.directHarm) {
+        this.increaseSideHarm(healer, healer.__healedWhat.directHarm)
+        this.increaseSideHarmPower(healer, healer.__healedHowMuch)
+      }
     }
 
     const usedTotalPercent = bootstrap.hardCpuUsed(t0)
