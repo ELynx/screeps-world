@@ -14,8 +14,8 @@ const historyActor =
 
   clearCaches: function () {
     Game.__idCache = { }
-    Game.__handle_EVENT_ATTACK_attackers = { }
-    Game.__handle_EVENT_ATTACK_targets = { }
+    Game.__skipAttackers = { }
+    Game.__skipTargets = { }
   },
 
   getObjectById: function (room, id) {
@@ -69,9 +69,9 @@ const historyActor =
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
-    // skip objects that were already examined
-    if (Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId]) return
-    if (Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId]) return
+    // skip objects that were already examined and found unworthy
+    if (Game.__skipAttackers[eventRecord.objectId]) return
+    if (Game.__skipTargets[eventRecord.data.targetId]) return
 
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
@@ -83,14 +83,14 @@ const historyActor =
         attacker.owner === undefined ||
         attacker.my) {
       // SHORTCUT skip unknown, unowned or own
-      Game.__handle_EVENT_ATTACK_attackers[eventRecord.objectId] = true
+      Game.__skipAttackers[eventRecord.objectId] = true
       return
     }
 
     const target = this.getObjectById(room, eventRecord.data.targetId)
     if (target === null) {
       // SHORTCUT skip unknown
-      Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
+      Game.__skipTargets[eventRecord.data.targetId] = true
       return
     }
 
@@ -110,7 +110,7 @@ const historyActor =
 
     if (hostileAction === false) {
       // SHORTCUT skip targets that are definitely not of interest
-      Game.__handle_EVENT_ATTACK_targets[eventRecord.data.targetId] = true
+      Game.__skipTargets[eventRecord.data.targetId] = true
       return
     }
 
@@ -130,7 +130,7 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked had owner reputation changed to ' + reputation)
+      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to ' + reputation)
     } else {
       this.markNPCHostile(room, attacker, attackerUsername)
     }
@@ -139,18 +139,28 @@ const historyActor =
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
-    if (!room.myOrAlly()) return
+    // skip objects that were already examined and found unworthy
+    if (Game.__skipAttackers[eventRecord.objectId]) return
+    if (Game.__skipTargets[room.name]) return
+
+    if (!room.myOrAlly()) {
+      // SHORTCUT skip rooms that are of no interest to monitor
+      Game.__skipTargets[room.name] = true
+      return
+    }
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
     if (attacker === null ||
         attacker.owner === undefined ||
         attacker.my) {
+      // SHORTCUT skip unknown, unowned or own
+      Game.__skipAttackers[eventRecord.objectId] = true
       return
     }
 
     // ! DETECT EDGE CASES !
     const attackerUsername = attacker.owner.username
-    const roomUsername = room.controller.owner.username
+    const roomUsername = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
 
     if (attackerUsername === roomUsername) return
 
@@ -159,12 +169,12 @@ const historyActor =
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller and set reputation to hostile [' + reputation + ']')
+      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to ' + reputation)
     } else {
       this.markNPCHostile(room, attacker, attackerUsername)
     }
 
-    // in terms of dirt, this does nothing because deed was done and targeting is not necessary
+    // in terms of dirt, this does nothing because deed was done and priority targeting is not necessary
   },
 
   /**
