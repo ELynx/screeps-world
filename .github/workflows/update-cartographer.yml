@@ -8,15 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Own repository
+        uses: actions/checkout@v3
+
+      - name: Cartographer
+        uses: actions/checkout@v3
+        with:
+          repository: foo-user/bar-repo
+          path: './cartographer-repo'
 
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-      - name: Install and compile Cartographer
+      - name: Compile Cartographer
         run: |
           npm install
-          npm install screeps-cartographer
-          find . -name '*.mb' -type f -printf "%-.22T+ %M %n %-8u %-8g %8s %Tx %.8TX %p\n" | sort | cut -f 2- -d ' '
+          npm build ./cartographer-repo
+          ls ./cartographer-repo
