@@ -25,9 +25,7 @@ jobs:
 
       - name: Build Cartographer
         run: |
-          npm install
-          npm run-script build
-          cp ./dist/main.js ./my-repo/screeps-cartographer.js
+          sudo cp ./dist/main.ts ./my-repo/screeps-cartographer.js
 
       - name: Prepare commit
         run: sudo chown -Rc $UID .git/
