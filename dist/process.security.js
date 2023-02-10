@@ -32,8 +32,14 @@ secutiryProcess.work = function (room) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
         ++threatLevel
 
-        // STRATEGY PC is a greater danger
-        if (threatLevel === bootstrap.ThreatLevelLow && hostilePCs) {
+        // STRATEGY PC is a greater danger, increase threat
+        if (hostilePCs && (threatLevel <= bootstrap.ThreatLevelLow)) {
+          ++threatLevel
+        }
+
+        // STRATEGY low level rooms have no towers, increase threat
+        if (room.controller && (room.controller.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow))
+        {
           ++threatLevel
         }
 
