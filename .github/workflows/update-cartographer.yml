@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Cartographer
         run: |
-          sudo chmod 755 -R ./my-repo/
+          ls -al
           cp ./src/main.ts ./my-repo/screeps-cartographer.js
 
       - name: Prepare commit
