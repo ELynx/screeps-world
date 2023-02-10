@@ -26,9 +26,17 @@ secutiryProcess.work = function (room) {
   )
 
   if (hostileCreeps.length > 0) {
+    const hostilePCs = _.some(hostileCreeps, _.property('pc'))
+
     if (threatTimer + ThreatStep <= Game.time) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
         ++threatLevel
+
+        // STRATEGY PC is a greater danger
+        if (threatLevel === bootstrap.ThreatLevelLow && hostilePCs) {
+          ++threatLevel
+        }
+
         console.log(room.name + ' threat escalated to ' + threatLevel)
       }
 
@@ -37,10 +45,11 @@ secutiryProcess.work = function (room) {
 
     const ctrl = room.controller
 
-    if (!ctrl.safeMode &&
-            !ctrl.safeModeCooldown &&
-            !ctrl.upgradeBlocked &&
-             ctrl.safeModeAvailable > 0) {
+    if (hostilePCs &&
+        !ctrl.safeMode &&
+        !ctrl.safeModeCooldown &&
+        !ctrl.upgradeBlocked &&
+        ctrl.safeModeAvailable > 0) {
       const flagKey = this.id + '_'
 
       for (const flagName in Game.flags) {
