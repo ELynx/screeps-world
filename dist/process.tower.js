@@ -17,6 +17,7 @@ towerProcess.work = function (room) {
       }
     }
   )
+
   if (towers.length === 0) return
 
   const creeps = room.find(FIND_CREEPS)
