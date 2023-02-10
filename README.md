@@ -59,8 +59,6 @@ Worker creeps avoid hostile areas.
 ## Ideas
 Lodash `Chain`.
 
-Room history generates "dirt" on attackers. Healers get dirt of healed. Towers attack most dirty. Towers attack unfocused to keep healers sef-healing.
-
 Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
@@ -85,7 +83,7 @@ Send resources away instead of selling out on panic.
 
 Room attack definition: drop aggro, drop streloks, claim and plunders.
 
-Tasked default movement options. Claim has spawn cheap. Auto.
+Tasked default movement options. Claim has swamp cheap. Auto.
 
 Flag to turn verbose naming on and off.
 
@@ -94,3 +92,5 @@ Border control for creep movement in tasked. Tie-in with default options?
 If room hostile is PC set threat level higher.
 
 If room has no towers set threat level higher.
+
+`Game.spawns`.
