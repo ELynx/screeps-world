@@ -16,7 +16,7 @@ jobs:
       - name: Check out own repository
         uses: actions/checkout@v3
         with:
-          path: './my-repo'
+          path: "./my-repo"
 
       - name: Use Node.js 12.x
         uses: actions/setup-node@v3
@@ -37,4 +37,4 @@ jobs:
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
           commit_message: "auto-build Cartographer"
-          repository: './my-repo'
+          repository: "./my-repo"
