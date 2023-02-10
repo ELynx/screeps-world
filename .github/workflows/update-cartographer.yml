@@ -11,7 +11,7 @@ jobs:
       - name: Check out Cartographer
         uses: actions/checkout@v3
         with:
-          repository: glitchassassin/screeps
+          repository: glitchassassin/screeps-cartographer
 
       - name: Check out own repository
         uses: actions/checkout@v3
@@ -37,4 +37,4 @@ jobs:
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
           commit_message: "auto-build Cartographer"
-          repository: "./my-repo"
+          repository: "./my-repo/dist"
