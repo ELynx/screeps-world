@@ -26,5 +26,5 @@ jobs:
       - name: Compile Cartographer
         run: |
           npm install
-          npm build
-          ls -al
+          npm run-script build
+          ls ./dist -al
