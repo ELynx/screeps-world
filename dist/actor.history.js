@@ -235,6 +235,11 @@ const historyActor =
     healer.__healedWhat = target
     healer.__healedHowMuch = eventRecord.data.amount
 
+    // special case, if healed self then have some harm accounted for
+    if (healer.id === target.id) {
+      this.increaseDirectHarm(healer.__healedHowMuch)
+    }
+
     Game.__healers[healer.id] = healer
   },
 
