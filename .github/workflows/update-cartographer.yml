@@ -8,15 +8,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out own repository
-        uses: actions/checkout@v3
-        with:
-          path: './my-repo'
-
       - name: Check out Cartographer
         uses: actions/checkout@v3
         with:
           repository: glitchassassin/screeps
+
+      - name: Check out own repository
+        uses: actions/checkout@v3
+        with:
+          path: './my-repo'
 
       - name: Use Node.js 12.x
         uses: actions/setup-node@v3
@@ -25,8 +25,9 @@ jobs:
 
       - name: Build Cartographer
         run: |
-          ls -al
-          cp ./src/main.ts ./my-repo/screeps-cartographer.js
+          npm install
+          npm run-script build
+          cp ./src/main.js ./my-repo/screeps-cartographer.js
 
       - name: Prepare commit
         run: sudo chown -Rc $UID .git/
