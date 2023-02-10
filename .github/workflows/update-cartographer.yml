@@ -1,4 +1,4 @@
-name: Push to Screeps server
+name: Update Cartographer
 
 on:
   workflow_dispatch:
