@@ -30,14 +30,49 @@ towerProcess.work = function (room) {
   )
 
   if (hostileCreeps.length > 0) {
-    for (let i = 0; i < towers.length; ++i) {
-      const closestHostile = towers[i].pos.findClosestByRange(hostileCreeps)
-      if (closestHostile) {
-        towers[i].attack(closestHostile)
+    let harmful = _.filter(
+      hostileCreeps,
+      function(creep) {
+        if (creep.directHarm || creep.sideHarm) return true
+
+        // STRATEGY attack NPCs immediately, they have no complex tactics to reveal
+        return !creep.pc
       }
+    )
+
+    // STRATEGY periodically attack at random
+    if (harmful.length === 0 && (room.intl % 10 == 0)) {
+      harmful = _.sample(hostileCreeps, towers.length)
     }
 
-    return
+    if (harmful.length > 0) {
+      // STRATEGY what targets to aim first
+      harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
+
+      // step 1 - increase size to equal or greater than tower cound
+      while (harmful.length < towers.length) {
+        harmful = harmful.concat(harmful)
+      }
+
+      // step 2 - decrease size to fit the towers
+      if (harmful.length > towers.length) {
+        // side effect - left-most items have more copies on the list
+        // so most harmful stuff will be attacked multiple times
+        harmful = _.take(harmful, towers.length)
+      }
+
+      // TODO matrix solution?
+      for (let i = 0; i < towers.length; ++i) {
+        const tower = towers[i]
+
+        if (tower.__acted) continue
+
+        const target = harmful[i]
+
+        const rc = tower.attack(target)
+        if (rc === OK) tower.__acted = true
+      }
+    }
   }
 
   const damagedCreeps = _.filter(
@@ -52,9 +87,14 @@ towerProcess.work = function (room) {
 
   if (damagedCreeps.length > 0) {
     for (let i = 0; i < towers.length; ++i) {
-      const closestDamaged = towers[i].pos.findClosestByRange(damagedCreeps)
+      const tower = towers[i]
+
+      if (tower.__acted) continue
+
+      const closestDamaged = tower.pos.findClosestByRange(damagedCreeps)
       if (closestDamaged) {
-        towers[i].heal(closestDamaged)
+        const rc = tower.heal(closestDamaged)
+        if (rc === OK) tower.__acted = true
       }
     }
   }
