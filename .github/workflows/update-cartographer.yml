@@ -14,7 +14,7 @@ jobs:
       - name: Cartographer
         uses: actions/checkout@v3
         with:
-          repository: foo-user/bar-repo
+          repository: glitchassassin/screeps
           path: './cartographer-repo'
 
       - name: Use Node.js 18.x
