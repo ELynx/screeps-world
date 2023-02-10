@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Cartographer
         run: |
-          cp ./dist/main.ts ./my-repo/screeps-cartographer.js
+          cp ./src/main.ts ./my-repo/screeps-cartographer.js
 
       - name: Prepare commit
         run: sudo chown -Rc $UID .git/
