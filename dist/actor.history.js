@@ -237,7 +237,7 @@ const historyActor =
 
     // special case, if healed self then have some harm accounted for
     if (healer.id === target.id) {
-      this.increaseDirectHarm(healer.__healedHowMuch)
+      this.increaseDirectHarm(healer, healer.__healedHowMuch)
     }
 
     Game.__healers[healer.id] = healer
