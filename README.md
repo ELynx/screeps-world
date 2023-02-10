@@ -19,21 +19,21 @@ Proprietary and confidential.
 ## TODO
 Preserve registered IDs order.
 
-Fight against squads with healers.
+Remove construction sites placed by previous owner of the room.
 
-Step away and uncrowd.
+Movement and positioning:
+
+* Step away and uncrowd.
+
+* Strelok tries to attack unreachable sections.
+
+* Outlast migrate to flag.
+
+* Worker creeps avoid hostile areas.
 
 Intent queue for withdraw and transfer.
 
-Remove construction sites placed by previous owner of the room.
-
 Don't send military to enemy safe mode rooms.
-
-Outlast migrate to flag.
-
-Strelok tries to attack unreachable sections.
-
-Worker creeps avoid hostile areas.
 
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
