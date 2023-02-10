@@ -89,8 +89,4 @@ Flag to turn verbose naming on and off.
 
 Border control for creep movement in tasked. Tie-in with default options?
 
-If room hostile is PC set threat level higher.
-
-If room has no towers set threat level higher.
-
 `Game.spawns`.
