@@ -32,7 +32,7 @@ towerProcess.work = function (room) {
   if (hostileCreeps.length > 0) {
     let harmful = _.filter(
       hostileCreeps,
-      function(creep) {
+      function (creep) {
         if (creep.directHarm || creep.sideHarm) return true
 
         // STRATEGY attack NPCs immediately, they have no complex tactics to reveal
