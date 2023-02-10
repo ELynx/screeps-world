@@ -18,10 +18,10 @@ jobs:
         with:
           repository: glitchassassin/screeps
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 12.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 12.x
 
       - name: Compile Cartographer
         run: |
