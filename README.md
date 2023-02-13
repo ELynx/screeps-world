@@ -90,3 +90,5 @@ Flag to turn verbose naming on and off.
 Border control for creep movement in tasked. Tie-in with default options?
 
 `Game.spawns`.
+
+Spawn strategies. "Closest", "Strongest", "Any room", "Specific room".
