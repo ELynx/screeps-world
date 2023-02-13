@@ -14,6 +14,12 @@ claim._onProblemDetected = function (creep) {
 }
 
 claim.creepAtDestination = function (creep) {
+  const controller = creep.room.controller
+  if (!controller) {
+    this._onProblemDetected(creep)
+    return
+  }
+
   // resistance detector
   if (creep.hits < creep.hitsMax) {
     this._onProblemDetected(creep)
@@ -21,13 +27,7 @@ claim.creepAtDestination = function (creep) {
   }
 
   // blocked path detector
-  if (creep.ticksToLive <= 2) {
-    this._onProblemDetected(creep)
-    return
-  }
-
-  const controller = creep.room.controller
-  if (!controller) {
+  if (creep.ticksToLive <= 2 && creep.memory._clt === undefined) {
     this._onProblemDetected(creep)
     return
   }
@@ -89,8 +89,8 @@ claim.creepAtDestination = function (creep) {
   } // end of harmable controller
 
   if (rc === ERR_INVALID_TARGET ||
-        rc === ERR_FULL ||
-        rc === ERR_GCL_NOT_ENOUGH) {
+      rc === ERR_FULL ||
+      rc === ERR_GCL_NOT_ENOUGH) {
     this._onProblemDetected(creep)
     return
   }
