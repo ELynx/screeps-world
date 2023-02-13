@@ -67,6 +67,8 @@ Some material on autobases:
 
 * [Kasami Bot](https://github.com/kasami/kasamibot)
 
+* https://github.com/slothsoft/screeps-script
+
 TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to determine how much energy all the spawns and extensions in the room contain.
 
 TIP OF THE DAY: You can output HTML content to the console, like links to rooms. `<a href="url">link text</a>` -> `https://screeps.com/a/url`
