@@ -67,8 +67,8 @@ const bodywork = {
     }
 
     // level 6 and above
-    // 1600 100   100   100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    // 1700 100   100   100   100   100   100   100   100   100   100   50     50     50    50    50    50    50    50    50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
