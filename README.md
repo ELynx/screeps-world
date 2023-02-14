@@ -67,7 +67,7 @@ Some material on autobases:
 
 * [Kasami Bot](https://github.com/kasami/kasamibot)
 
-* https://github.com/slothsoft/screeps-script
+* <https://github.com/slothsoft/screeps-script>
 
 TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to determine how much energy all the spawns and extensions in the room contain.
 
