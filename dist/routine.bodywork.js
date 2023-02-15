@@ -77,7 +77,7 @@ const bodywork = {
     @return {Array} body.
     **/
   miner: function (energyLevel) {
-    return this.restocker(Math.min(energyLevel, 5))
+    return this.restocker(Math.max(energyLevel, 5))
   }
 }
 
