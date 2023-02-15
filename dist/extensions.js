@@ -120,36 +120,35 @@ Room.prototype.myOrAlly = function () {
   return this.my || this.ally
 }
 
-Room.prototype.sourceCapacityAvailable = function () {
-  if (this.__sourceCapacityAvailable) {
-    return this.__sourceCapacityAvailable
+Room.prototype.sourceKeeper = function () {
+  this.memory.nodeAccessed = Game.time
+
+  if (this.memory.srck !== undefined) {
+    return this.memory.srck
   }
 
-  const sources = this.find(FIND_SOURCES).length
-  if (sources === 0) {
-    this.__sourceCapacityAvailable = 0
-    return this.__sourceCapacityAvailable
-  }
-
-  if (this.controller && (this.controller.owner || this.controller.reservation)) {
-    this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_CAPACITY
-    return this.__sourceCapacityAvailable
-  }
-
-  const sourceKeeperLairs = this.find(
+  const keeperLairs = this.find(
     FIND_STRUCTURES,
     {
       filter: { structureType: STRUCTURE_KEEPER_LAIR }
     }
   ).length
 
-  if (sourceKeeperLairs > 0) {
-    this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_KEEPER_CAPACITY
-    return this.__sourceCapacityAvailable
+  this.memory.srck = keeperLairs > 0
+
+  return this.memory.srck
+}
+
+Room.prototype.sourceEnergyCapacity = function () {
+  if (this.sourceKeeper()) {
+    return SOURCE_ENERGY_KEEPER_CAPACITY
   }
 
-  this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_NEUTRAL_CAPACITY
-  return this.__sourceCapacityAvailable
+  if (this.controller && (this.controller.owner || this.controller.reservation)) {
+    return SOURCE_ENERGY_CAPACITY
+  }
+
+  return SOURCE_ENERGY_NEUTRAL_CAPACITY
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
