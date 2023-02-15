@@ -57,23 +57,23 @@ const bodywork = {
     }
 
     if (energyLevel <= 6) {
-      //1700
+      // 1700
       return [
-      //100   100   100   100   100   100   100   100   100   100
+      // 100   100   100   100   100   100   100   100   100   100
         WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-      //50     50
+        // 50     50
         CARRY, CARRY,
-      //50    50    50    50    50    50    50    50    50    50    50    50
+        // 50    50    50    50    50    50    50    50    50    50    50    50
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    //3400
+    // 3400
     return [
-    //100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
+    // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
       WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-    //50     50     50     50
+      // 50     50     50     50
       CARRY, CARRY, CARRY, CARRY,
-    //50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+      // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
       MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
