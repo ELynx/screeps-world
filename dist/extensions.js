@@ -120,6 +120,38 @@ Room.prototype.myOrAlly = function () {
   return this.my || this.ally
 }
 
+Room.prototype.sourceCapacityAvailable() {
+  if (this.__sourceCapacityAvailable) {
+    return this.__sourceCapacityAvailable
+  }
+
+  const sources = this.find(FIND_SOURCES).length
+  if (sources === 0) {
+    this.__sourceCapacityAvailable = 0
+    return this.__sourceCapacityAvailable
+  }
+
+  if (this.controller && (this.controller.owner || this.controller.reservation)) {
+    this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_CAPACITY
+    return this.__sourceCapacityAvailable
+  }
+
+  const sourceKeeperLairs = this.find(
+    FIND_STRUCTURES,
+    {
+      filter: { structureType: STRUCTURE_KEEPER_LAIR }
+    }
+  ).length
+
+  if (sourceKeeperLairs > 0) {
+    this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_KEEPER_CAPACITY
+    return this.__sourceCapacityAvailable
+  }
+
+  this.__sourceCapacityAvailable = sources * SOURCE_ENERGY_NEUTRAL_CAPACITY
+  return this.__sourceCapacityAvailable
+}
+
 RoomPosition.prototype.offBorderDistance = function () {
   return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0)
 }

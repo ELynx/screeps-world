@@ -59,7 +59,18 @@ spawnProcess._hasAndPlanned = function (room, live, type) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const want = room.memory.slvl
+  const workInRestocker = _.countBy(bodywork.restocker(room.memory.elvl))[WORK] || 0
+  if (workInRestocker <= 0) {
+    return
+  }
+
+  const workNeeded = room.sourceCapacityAvailable() / ENERGY_REGEN_TIME / HARVEST_POWER
+  const restockersNeeded = Math.ceil(workNeeded / workInRestocker)
+
+  const restockersSupported = room.memory.slvl
+
+  const want = Math.min(restockersNeeded, restockersSupported)
+
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'restocker')
     this.addToQueue(
@@ -76,6 +87,7 @@ spawnProcess.restockers = function (room, live) {
 
 spawnProcess.miners = function (room, live) {
   const want = room.memory.mlvl
+
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'miner')
     this.addToQueue(
@@ -114,20 +126,27 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     return
   }
 
-  const freeHarvestSpots = Math.max(0, room.memory.hlvl - room.memory.slvl)
-
+  let standalone = 0
   let supportedByRestockers = 0
-  if (room.memory.slvl > 0) {
+
+  const restockers = this._hasAndPlanned(room, live, 'restocker')
+  if (restockers === 0) {
     const workInRestocker = _.countBy(bodywork.restocker(room.memory.elvl))[WORK] || 0
     if (workInRestocker > 0) {
       const workInWorker = _.countBy(bodywork.worker(room.memory.elvl))[WORK] || 0
       if (workInWorker > 0) {
-        supportedByRestockers = Math.round(room.memory.slvl * workInRestocker / workInWorker)
+        // TODO check this assumption
+        // each harvest makes 2 energy, each work consumes 1
+        supportedByRestockers = Math.round(HARVEST_POWER * workInRestocker / workInWorker)
       }
     }
   }
 
-  const wantWorkers = Math.max(freeHarvestSpots, supportedByRestockers)
+  if (supportedByRestockers <= 0) {
+    standalone = room.memory.hlvl
+  }
+
+  const wantWorkers = Math.max(standalone, supportedByRestockers)
 
   const wantWorkersMin = limit ? 0 : 2
   const wantWorkersMax = limit || 12
