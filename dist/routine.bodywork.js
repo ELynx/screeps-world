@@ -30,14 +30,9 @@ const bodywork = {
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    if (energyLevel <= 5) {
-      // 750  100   100   100   50     50     50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-    }
-
-    // level 6 and above
-    // 1500 100   100   100   100   100   100   50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    // 3 and above
+    // 750  100   100   100   50     50     50     50    50    50    50    50    50
+    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
@@ -61,14 +56,9 @@ const bodywork = {
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    if (energyLevel <= 5) {
-      // 850  100   100   100   100   100   50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-    }
-
-    // level 6 and above
-    // 1600 100   100   100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    // 4 and above
+    // 850  100   100   100   100   100   50     50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
@@ -77,7 +67,7 @@ const bodywork = {
     @return {Array} body.
     **/
   miner: function (energyLevel) {
-    return this.restocker(Math.max(energyLevel, 5))
+    return this.restocker(energyLevel)
   }
 }
 
