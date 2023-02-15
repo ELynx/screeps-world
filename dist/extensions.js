@@ -120,7 +120,7 @@ Room.prototype.myOrAlly = function () {
   return this.my || this.ally
 }
 
-Room.prototype.sourceCapacityAvailable() {
+Room.prototype.sourceCapacityAvailable = function() {
   if (this.__sourceCapacityAvailable) {
     return this.__sourceCapacityAvailable
   }
