@@ -41,24 +41,38 @@ const bodywork = {
     @return {Array} body.
     **/
   restocker: function (energyLevel) {
-    if (energyLevel <= 1) {
-      return [WORK, CARRY, MOVE]
+    if (energyLevel <= 2) {
+      return this.worker(energyLevel)
     }
 
-    if (energyLevel === 2) {
-      // 550  100   100   100   50     50    50    50    50
-      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
-    }
-
-    // special case, limp a bit
     if (energyLevel === 3) {
+      // special case, limp a bit
       // 800  100   100   100   100   100   50     50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 4 and above
-    // 850  100   100   100   100   100   50     50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    if (energyLevel === 4) {
+      // 850  100   100   100   100   100   50     50    50    50    50    50    50
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
+
+    if (energyLevel <= 6) {
+      //      1700
+      //      100   100   100   100   100   100   100   100   100   100
+      return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+      //      50     50
+              CARRY, CARRY,
+      //      50    50    50    50    50    50    50    50    50    50    50    50
+              MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
+
+    //      3400
+    //      100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+    //      50     50     50     50
+            CARRY, CARRY, CARRY, CARRY,
+    //      50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
