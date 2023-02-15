@@ -90,7 +90,7 @@ ttlController.filterCreep = function (creep) {
     const room = Game.rooms[creep.memory.crum]
     if (room) {
       // renew creeps that are higher level than room can produce
-      const exampleBody = bodywork[btyp](room.memory.elvl)
+      const exampleBody = bodywork[btyp](room)
       if (exampleBody.length < creep.body.length) {
         return true
       }
