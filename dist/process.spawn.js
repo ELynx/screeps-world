@@ -59,7 +59,7 @@ spawnProcess._hasAndPlanned = function (room, live, type) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const workInRestocker = _.countBy(bodywork.restocker(room.memory.elvl))[WORK] || 0
+  const workInRestocker = _.countBy(bodywork.restocker(room))[WORK] || 0
   if (workInRestocker <= 0) {
     return
   }
@@ -138,9 +138,9 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 
   const restockers = this._hasAndPlanned(room, live, 'restocker')
   if (restockers === 0) {
-    const workInRestocker = _.countBy(bodywork.restocker(room.memory.elvl))[WORK] || 0
+    const workInRestocker = _.countBy(bodywork.restocker(room))[WORK] || 0
     if (workInRestocker > 0) {
-      const workInWorker = _.countBy(bodywork.worker(room.memory.elvl))[WORK] || 0
+      const workInWorker = _.countBy(bodywork.worker(room))[WORK] || 0
       if (workInWorker > 0) {
         // TODO check this assumption
         // each harvest makes 2 energy, each work consumes 1
@@ -202,7 +202,7 @@ spawnProcess._registerBodyFunction = function (routineId) {
   const routine = bodywork[routineId]
   const bound = _.bind(routine, bodywork)
   const wrapped = function (spawn) {
-    return bound(spawn.room.memory.elvl)
+    return bound(spawn.room)
   }
 
   queue.registerBodyFunction(routineId, wrapped)
