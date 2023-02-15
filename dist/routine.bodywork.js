@@ -16,46 +16,69 @@ CLAIM           600
 const bodywork = {
   /**
     BODY Universal worker.
-    @param {integer} energyLevel.
+    @param {Room} to what.
     @return {Array} body.
     **/
-  worker: function (energyLevel) {
+  worker: function (room) {
+    const energyLevel = room.memory.elvl
+
+    // 0 or 1
     if (energyLevel <= 1) {
       // 250  100   50     50    50
       return [WORK, CARRY, MOVE, MOVE]
     }
 
+    // 2
     if (energyLevel === 2) {
       // 500  100   100   50     50     50    50    50    50
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 3 and above
+    // 3+
     // 750  100   100   100   50     50     50     50    50    50    50    50    50
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
     BODY Restocker.
-    @param {integer} level.
+    @param {Room} to what.
     @return {Array} body.
     **/
-  restocker: function (energyLevel) {
+  restocker: function (room) {
+    const energyLevel = room.memory.elvl
+
+    // 0, 1 or 2
     if (energyLevel <= 2) {
-      return this.worker(energyLevel)
+      return this.worker(room)
     }
 
+    // 3
     if (energyLevel === 3) {
       // special case, limp a bit
       // 800  100   100   100   100   100   50     50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    if (energyLevel === 4) {
-      // 850  100   100   100   100   100   50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    // 4+
+    // target is 3000 / 300 / 2 = 5 WORK body parts
+    // 850  100   100   100   100   100   50     50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  },
+
+  /**
+    BODY Miner.
+    @param {Room} to what.
+    @return {Array} body.
+    **/
+  miner: function (room) {
+    const energyLevel = room.memory.elvl
+
+    // 0, 1, 2, 3 or 4
+    if (energyLevel <= 4) {
+      return this.restocker(room)
     }
 
+    // 5 or 6
     if (energyLevel <= 6) {
       // 1700
       return [
@@ -67,6 +90,7 @@ const bodywork = {
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
+    // 7+
     // 3400
     return [
     // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
@@ -75,15 +99,7 @@ const bodywork = {
       CARRY, CARRY, CARRY, CARRY,
       // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
       MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-  },
 
-  /**
-    BODY Miner.
-    @param {integer} level.
-    @return {Array} body.
-    **/
-  miner: function (energyLevel) {
-    return this.restocker(energyLevel)
   }
 }
 

@@ -70,8 +70,9 @@ spawnProcess.restockers = function (room, live) {
   }
 
   const workNeededPerSource = room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
-  const workNeeded = sources * workNeededPerSource
-  const restockersNeeded = Math.ceil(workNeeded / workInRestocker)
+  const restockersNeededPerSource = Math.ceil(workNeededPerSource / workInRestocker)
+
+  const restockersNeeded = sources * restockersNeededPerSource
 
   const restockersSupported = room.memory.slvl
 
