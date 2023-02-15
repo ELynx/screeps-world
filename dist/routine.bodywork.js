@@ -61,18 +61,18 @@ const bodywork = {
       //      100   100   100   100   100   100   100   100   100   100
       return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
       //      50     50
-              CARRY, CARRY,
-      //      50    50    50    50    50    50    50    50    50    50    50    50
-              MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+        CARRY, CARRY,
+        //      50    50    50    50    50    50    50    50    50    50    50    50
+        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
     //      3400
     //      100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
     return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
     //      50     50     50     50
-            CARRY, CARRY, CARRY, CARRY,
-    //      50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
-            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      CARRY, CARRY, CARRY, CARRY,
+      //      50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+      MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
