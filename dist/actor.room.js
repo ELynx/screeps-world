@@ -98,7 +98,8 @@ const roomActor =
     @param {array<Creep>} creeps.
     **/
   roomControllersControl: function (room, creeps) {
-    for (const id in automaticControllres) {
+    for (const index in automaticControllres) {
+      const id = automaticControllres[index]
       const controller = bootstrap.roomControllers[id]
       if (!controller.compatible(room)) continue
 
