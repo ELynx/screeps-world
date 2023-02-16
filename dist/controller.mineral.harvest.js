@@ -21,7 +21,10 @@ mineralHarvestController.act = function (extractor, creep) {
   for (let i = 0; i < minerals.length; ++i) {
     const mineral = minerals[i]
     const rc = this.wrapIntent(creep, 'harvest', mineral)
-    if (rc === ERR_NOT_ENOUGH_RESOURCES || rc === bootstrap.WARN_INTENDED_EXHAUSTED) {
+    if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
+        rc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+        rc === bootstrap.ERR_INTENDED_EXHAUSTED ||
+        rc === ERR_NOT_ENOUGH_RESOURCES) {
       extractor.room.memory.mlvl = 0
     }
 
