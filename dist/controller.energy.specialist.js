@@ -16,7 +16,7 @@ energySpecialistController.roomPrepare = function (room) {
   this.__restockTargets = undefined
 }
 
-energyRestockControllerSpecialist.restockTargets = function (room) {
+energySpecialistController.restockTargets = function (room) {
   if (this.__restockTargets === undefined) {
     this.__restockTargets = room.find(FIND_STRUCTURES,
       {
