@@ -2,19 +2,23 @@
 
 const Controller = require('./controller.template')
 
-const energyHarvestController = new Controller('energy.harvest')
+const energySpecialistController = new Controller('energy.specialist')
 
-energyHarvestController.actRange = 1
+energySpecialistController.actRange = 1
 
-energyHarvestController.unowned = true
+energySpecialistController.unowned = true
 
-energyHarvestController.ignoreCreepsForTargeting = false
+energySpecialistController.ignoreCreepsForTargeting = false
 
-energyHarvestController.act = function (source, creep) {
-  return this.wrapIntent(creep, 'harvest', source)
+energySpecialistController.act = function (target, creep) {
+  if (target.store) {
+    return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
+  } else {
+    return this.wrapIntent(creep, 'harvest', target)
+  }
 }
 
-energyHarvestController.validateTarget = function (allTargets, target, creep) {
+energySpecialistController.fromValidateTarget = function (allTargets, target, creep) {
   // if there is only one choice, pick it
   if (allTargets.length === 1) {
     return true
@@ -50,34 +54,24 @@ energyHarvestController.validateTarget = function (allTargets, target, creep) {
   return workNeeded > otherRestockersWork
 }
 
-energyHarvestController.targets = function (room) {
+energySpecialistController.toValidateTarget = function (allTargets, target, creep) {
+  return true
+}
+
+energySpecialistController.validateTarget = function (allTargets, target, creep) {
+  if (target.store) {
+    return this.toValidateTarget(allTargets, target, creep)
+  } else {
+    return this.fromValidateTarget(allTargets, target, creep)
+  }
+}
+
+energySpecialistController.fromTargets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => source.energy > 0)
 }
 
-energyHarvestController.filterCreep = function (creep) {
-  return this._isHarvestAble(creep)
-}
-
-energyHarvestController.register()
-
-module.exports = energyHarvestController
-
-'use strict'
-
-const Controller = require('./controller.template')
-
-const energyRestockControllerSpecialist = new Controller('energy.restock.specialist')
-
-energyRestockControllerSpecialist.actRange = 1
-
-energyRestockControllerSpecialist.unowned = true
-
-energyRestockControllerSpecialist.act = function (target, creep) {
-  return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
-}
-
-energyRestockControllerSpecialist.targets = function (room) {
+energyRestockControllerSpecialist.toTargets = function (room) {
   return room.find(FIND_STRUCTURES,
     {
       filter: function (structure) {
@@ -93,10 +87,17 @@ energyRestockControllerSpecialist.targets = function (room) {
   )
 }
 
-energyRestockControllerSpecialist.filterCreep = function (creep) {
-  return creep.memory.rstk === true && this._isWorkAble(creep)
+energySpecialistController.targets = function (room) {
+  const from = this.fromTargets(room)
+  const to = this.toTargets(room)
+
+  return from.concat(to)
 }
 
-energyRestockControllerSpecialist.register()
+energySpecialistController.filterCreep = function (creep) {
+  return creep.memory.rstk === true && (this._isHarvestAble(creep) || this._isWorkAble(creep))
+}
 
-module.exports = energyRestockControllerSpecialist
+energySpecialistController.register()
+
+module.exports = energySpecialistController
