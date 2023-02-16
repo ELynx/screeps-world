@@ -58,7 +58,7 @@ energySpecialistController.act = function (source, creep) {
         // on error, such as intended exhausted, check other target
         if (transferRc < 0) continue
 
-        // OK or warning were recived, go on
+        // OK or warning were received, go on
         return OK
       }
     }
