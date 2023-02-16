@@ -15,8 +15,8 @@ const towerProcess = require('./process.tower')
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
 const energyHarvestController = require('./controller.energy.harvest')
-const energyRestockControllerR = require('./controller.energy.restock.regular')
-const energyRestockControllerS = require('./controller.energy.restock.specialist')
+const energyRestockController = require('./controller.energy.restock')
+const energySpecialistController = require('./controller.energy.specialist')
 const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
@@ -34,9 +34,9 @@ const automaticControllres = [
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.id, // catch anyone with mineral only
   energyTakeController.id, // above harvest, decrease harvest work
+  energySpecialistController.id, // catch restockers
   energyHarvestController.id,
-  energyRestockControllerS.id, // catch restockers
-  energyRestockControllerR.id,
+  energyRestockController.id,
   repairController.id,
   buildController.id,
   upgradeController.id
