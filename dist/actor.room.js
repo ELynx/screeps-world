@@ -18,6 +18,7 @@ const energyHarvestController = require('./controller.energy.harvest')
 const energyRestockController = require('./controller.energy.restock')
 const energySpecialistController = require('./controller.energy.specialist')
 const energyTakeController = require('./controller.energy.take')
+const energyUnspecialistController = require('./controller.energy.unspecialist')
 const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
 const mineralRestockController = require('./controller.mineral.restock')
@@ -33,8 +34,9 @@ const automaticControllres = [
   rampupController.id, // build up the ramps and walls to decent level right up
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.id, // catch anyone with mineral only
+  energySpecialistController.id, // catch restockers to
+  energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
-  energySpecialistController.id, // catch restockers
   energyHarvestController.id,
   energyRestockController.id,
   repairController.id,

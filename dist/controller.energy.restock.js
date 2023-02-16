@@ -78,6 +78,10 @@ energyRestockController.targets = function (room) {
   )
 }
 
+energyRestockController.filterCreep = function (creep) {
+  return this._hasCM(creep) && this._hasEnergy(creep)
+}
+
 energyRestockController.register()
 
 module.exports = energyRestockController

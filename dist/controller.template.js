@@ -183,10 +183,13 @@ function Controller (id) {
 
   this._usesDefaultFilter = undefined
 
-  this._hasWCM = function (creep) {
-    return creep.getActiveBodyparts(WORK) > 0 &&
-           creep.getActiveBodyparts(CARRY) > 0 &&
+  this._hasCM = function (creep) {
+    return creep.getActiveBodyparts(CARRY) > 0 &&
            creep.getActiveBodyparts(MOVE) > 0
+  }
+
+  this._hasWCM = function (creep) {
+    return this._hasCM(creep) && creep.getActiveBodyparts(WORK) > 0
   }
 
   this._hasEnergy = function (creep) {
@@ -202,12 +205,12 @@ function Controller (id) {
   }
 
   this._isWorkAble = function (creep) {
-    return this._hasEnergy(creep) && this._hasWCM(creep)
+    return this._hasWCM(creep) && this._hasEnergy(creep)
   }
 
   this._isHarvestAble = function (creep) {
     // STRATEGY harvest with empty only, reduce runs to sources
-    return this._isEmpty(creep) && this._hasWCM(creep)
+    return this._hasWCM(creep) && this._isEmpty(creep)
   }
 
   /**

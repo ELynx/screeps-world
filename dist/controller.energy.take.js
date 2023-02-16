@@ -125,7 +125,8 @@ energyTakeController.filterCreep = function (creep) {
     return false
   }
 
-  return this._isHarvestAble(creep)
+  // STRATEGY take with empty only, reduce runs to containers
+  return this._hasCM(creep) && this._isEmpty(creep)
 }
 
 energyTakeController.register()

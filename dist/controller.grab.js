@@ -10,7 +10,7 @@ grabController.ally = true
 grabController.neutral = grabController.ally
 grabController.unowned = grabController.ally
 
-grabController.act = function (currentController, creep) {
+grabController.act = function (arg0, creep) {
   const hasUniversalStore = creep.room.storage || creep.room.terminal
 
   const [t, l, b, r] = creep.pos.squareArea(this.actRange)
