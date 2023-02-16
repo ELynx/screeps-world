@@ -1,7 +1,5 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
 const Controller = require('./controller.template')
 
 const energyUnspecialistController = new Controller('energy.unspecialist')
