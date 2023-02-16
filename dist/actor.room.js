@@ -42,6 +42,10 @@ const automaticControllres = [
   upgradeController.id
 ]
 
+const consumingPassByControllers = [
+  grabController.id
+]
+
 Creep.prototype.target = function () {
   return Game.getObjectById(this.memory.dest)
 }
@@ -101,7 +105,16 @@ const roomActor =
     for (const index in automaticControllres) {
       const id = automaticControllres[index]
       const controller = bootstrap.roomControllers[id]
-      if (!controller.compatible(room)) continue
+
+      if (controller === undefined) {
+        this.debugLine(room, 'Unknown controller [' + id + ']')
+        continue
+      }
+
+      if (!controller.compatible(room)) {
+        this.debugLine(room, 'Skipping incompatible controller [' + id + ']')
+        continue
+      }
 
       creeps = controller.control(room, creeps)
 
@@ -113,6 +126,38 @@ const roomActor =
         this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length)
       }
     }
+  },
+
+  _passByControllersControl: function (controllers, room, creep) {
+    for (const index in controllers) {
+      const id = controllers[index]
+      const controller = bootstrap.roomControllers[id]
+
+      if (controller === undefined) {
+        this.debugLine(room, 'Unknown controller [' + id + ']')
+        continue
+      }
+
+      if (!controller.compatible(room)) {
+        this.debugLine(room, 'Skipping incompatible controller [' + id + ']')
+        continue
+      }
+
+      if (controller.filterCreep(creep)) {
+        const rc = controller.act(undefined, creep)
+        if (rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
+            rc === bootstrap.WANR_BOTH_EXHAUSED ||
+            rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
+          return rc
+        }
+      }
+    }
+
+    return OK
+  },
+
+  consumingPassByControllersControl: function (room, creep) {
+    return this._passByControllersControl(consumingPassByControllers, room, creep)
   },
 
   /**
@@ -186,17 +231,12 @@ const roomActor =
           }
         } // end of subroutine of room change
 
-        // grab logic, manual call
-        if (grabController.compatible(room)) {
-          if (grabController.filterCreep(creep)) {
-            const rc = grabController.act(undefined, creep)
-            if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED || rc === bootstrap.WARN_INTENDEE_EXHAUSTED) {
-              if (mineralHarvestController.id === creep.memory.ctrl ||
-                  energyTakeController.id === creep.memory.ctrl ||
-                  energyHarvestController.id === creep.memory.ctrl) {
-                bootstrap.unassignCreep(creep)
-              }
-            }
+        const consumingRc = this.consumingPassByControllersControl(room, creep)
+        if (consumingRc !== OK) {
+          if (energyHarvestController.id === creep.memory.ctrl ||
+              energyTakeController.id === creep.memory.ctrl ||
+              mineralHarvestController.id === creep.memory.ctrl) {
+            bootstrap.unassignCreep(creep)
           }
         }
 
