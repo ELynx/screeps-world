@@ -99,8 +99,8 @@ const intent = {
 
     let rc = OK
 
-    if (exchange >= sourceHas) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
-    if (exchange >= targetFree) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (exchange >= sourceHas) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= targetFree) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -133,8 +133,8 @@ const intent = {
 
     let rc = OK
 
-    if (actualProgress >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
-    if (actualProgress >= remainingProgress) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (actualProgress >= energy) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (actualProgress >= remainingProgress) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -192,12 +192,12 @@ const intent = {
       this.intentCapacityChange(creep, what, toBeStored)
 
       // if capacity left is less or equal to intent, then this is last harvest before full
-      if (freeCapacity <= toBeHarvested) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+      if (freeCapacity <= toBeHarvested) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
     }
 
     this.subIntended(target, key, toBeHarvested)
 
-    if (toBeHarvested >= amount) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (toBeHarvested >= amount) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -228,8 +228,8 @@ const intent = {
 
     let rc = OK
 
-    if (exchange >= canPick) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
-    if (exchange >= amount) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (exchange >= canPick) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (exchange >= amount) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -267,8 +267,8 @@ const intent = {
 
     let rc = OK
 
-    if (repairCost >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
-    if (this.getWithIntended(target, key, target.hits) >= wantHits) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (repairCost >= energy) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (this.getWithIntended(target, key, target.hits) >= wantHits) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },
@@ -322,14 +322,19 @@ const intent = {
 
     let rc = OK
 
-    if (actualUpgrades >= energy) rc = bootstrap.WARN_INTENDEE_EXHAUSTED
-    if (actualUpgrades >= remainingUpgrades) rc = bootstrap.WARN_INTENDED_EXHAUSTED
+    if (actualUpgrades >= energy) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+
+    let intendedExhaused = false
+
+    if (actualUpgrades >= remainingUpgrades) intendedExhaused = true
 
     if (targetTicksToDowngrade) {
       if (this.getWithIntended(target, keyTicks, target.ticksToDowngrade) >= targetTicksToDowngrade) {
-        rc = bootstrap.WARN_INTENDED_EXHAUSTED
+        intendedExhaused = true
       }
     }
+
+    if (intendedExhaused) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
     return rc
   },

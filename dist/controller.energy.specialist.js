@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Controller = require('./controller.template')
 
 const energySpecialistController = new Controller('energy.specialist')
@@ -10,15 +12,47 @@ energySpecialistController.unowned = true
 
 energySpecialistController.ignoreCreepsForTargeting = false
 
-energySpecialistController.act = function (target, creep) {
-  if (target.store) {
-    return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
-  } else {
-    return this.wrapIntent(creep, 'harvest', target)
-  }
+energyRestockControllerSpecialist.TODO = function (room) {
+  return room.find(FIND_STRUCTURES,
+    {
+      filter: function (structure) {
+        if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
+          if (structure.isActiveSimple() && structure.isSource()) {
+            return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+          }
+        }
+
+        return false
+      }
+    }
+  )
 }
 
-energySpecialistController.fromValidateTarget = function (allTargets, target, creep) {
+energySpecialistController.act = function (source, creep) {
+  const harvestRc = this.wrapIntent(creep, 'harvest', source)
+
+  // if all is OK then return OK
+  if (harvestRc === OK) {
+    return harvestRc
+  }
+
+  // if this will be a last dig for capacity, search for drop site nearby
+  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
+      harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
+    // TODO find and act
+  }
+
+  // if this will be a last dig for source, see if wait is warranted
+  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED || harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
+    // TODO anything?
+  }
+
+  // whatever error transpired, continue
+  return harvestRc
+}
+
+energySpecialistController.validateTarget = function (allTargets, target, creep) {
   // if there is only one choice, pick it
   if (allTargets.length === 1) {
     return true
@@ -26,11 +60,6 @@ energySpecialistController.fromValidateTarget = function (allTargets, target, cr
 
   // if there is no one in the room, no collision
   if (target.room === undefined) {
-    return true
-  }
-
-  // non-restockers do not care and just go for energy
-  if (creep.memory.rstk === undefined) {
     return true
   }
 
@@ -54,48 +83,13 @@ energySpecialistController.fromValidateTarget = function (allTargets, target, cr
   return workNeeded > otherRestockersWork
 }
 
-energySpecialistController.toValidateTarget = function (allTargets, target, creep) {
-  return true
-}
-
-energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  if (target.store) {
-    return this.toValidateTarget(allTargets, target, creep)
-  } else {
-    return this.fromValidateTarget(allTargets, target, creep)
-  }
-}
-
-energySpecialistController.fromTargets = function (room) {
+energySpecialistController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => source.energy > 0)
 }
 
-energyRestockControllerSpecialist.toTargets = function (room) {
-  return room.find(FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
-          if (structure.isActiveSimple() && structure.isSource()) {
-            return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-          }
-        }
-
-        return false
-      }
-    }
-  )
-}
-
-energySpecialistController.targets = function (room) {
-  const from = this.fromTargets(room)
-  const to = this.toTargets(room)
-
-  return from.concat(to)
-}
-
 energySpecialistController.filterCreep = function (creep) {
-  return creep.memory.rstk === true && (this._isHarvestAble(creep) || this._isWorkAble(creep))
+  return creep.memory.rstk === true && this._isHarvestAble(creep)
 }
 
 energySpecialistController.register()

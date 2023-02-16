@@ -10,6 +10,8 @@ const bootstrap =
   WARN_INTENDED_EXHAUSTED: 2,
   // intent is valid, but next such action will exhaust intendee
   WARN_INTENDEE_EXHAUSTED: 1,
+  // intent is valid, but next such action will exhause both intended and intendee
+  WANR_BOTH_EXHAUSED: WARN_INTENDED_EXHAUSTED + WARN_INTENDEE_EXHAUSTED,
   // intent not found
   ERR_INVALID_INTENT_NAME: -10000,
   // intent args not given properly
