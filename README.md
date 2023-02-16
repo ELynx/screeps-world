@@ -94,3 +94,5 @@ Border control for creep movement in tasked. Tie-in with default options?
 Spawn strategies. "Closest", "Strongest", "Any room", "Specific room".
 
 Controller flag reserved, iff statuses for reserved.
+
+Source keeper for room type in actor.
