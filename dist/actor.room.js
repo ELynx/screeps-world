@@ -4,34 +4,43 @@ const bootstrap = require('./bootstrap')
 
 const mapUtils = require('./routine.map')
 
-/* eslint-disable no-unused-vars */
-const secutiryProcess = require('./process.security')
-const roomInfoProcess = require('./process.roominfo')
-const towerProcess = require('./process.tower')
-const spawnProcess = require('./process.spawn')
-const linkProcess = require('./process.link')
-const terminalProcess = require('./process.terminal')
 const autobuildProcess = require('./process.autobuild')
+const linkProcess = require('./process.link')
+const roomInfoProcess = require('./process.roominfo')
+const secutiryProcess = require('./process.security')
+const spawnProcess = require('./process.spawn')
+const terminalProcess = require('./process.terminal')
+const towerProcess = require('./process.tower')
 
-/**
-Order of load is priority order for creep assignment.
-**/
-const redAlert = require('./controller.redalert') // always on top
-const ttlController = require('./controller.ttl') // catch recyclees
-const rampupController = require('./controller.rampup') // build up the ramps and walls to decent level right up
-const controllerMineralHarvest = require('./controller.mineral.harvest') // catch miners to mineral
-const controllerMineralRestock = require('./controller.mineral.restock') // catch anyone with mineral only
-const energyTakeController = require('./controller.energy.take') // above harvest, decrease harvest work
-const energyHarvestController = require('./controller.energy.harvest')
-const energyRestockControllerS = require('./controller.energy.restock.specialist') // catch restockers
-const energyRestockControllerR = require('./controller.energy.restock.regular')
-const repairController = require('./controller.repair')
 const buildController = require('./controller.build')
 const controllerController = require('./controller.controller')
-
-// these do not register
+const energyHarvestController = require('./controller.energy.harvest')
+const energyRestockControllerR = require('./controller.energy.restock.regular')
+const energyRestockControllerS = require('./controller.energy.restock.specialist')
+const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
-/* eslint-enable no-unused-vars */
+const mineralHarvestController = require('./controller.mineral.harvest')
+const mineralRestockController = require('./controller.mineral.restock')
+const rampupController = require('./controller.rampup')
+const redAlert = require('./controller.redalert')
+const repairController = require('./controller.repair')
+const ttlController = require('./controller.ttl')
+
+// STRATEGY priority for creep assignment
+const automaticControllres = [
+  redAlert.id, // always on top
+  ttlController.id, // catch recyclees
+  rampupController.id, // build up the ramps and walls to decent level right up
+  mineralHarvestController.id, // catch miners to mineral
+  mineralRestockController.id, // catch anyone with mineral only
+  energyTakeController.id, // above harvest, decrease harvest work
+  energyHarvestController.id,
+  energyRestockControllerS.id, // catch restockers
+  energyRestockControllerR.id,
+  repairController.id,
+  buildController.id,
+  controllerController.id
+]
 
 Creep.prototype.target = function () {
   return Game.getObjectById(this.memory.dest)
@@ -89,7 +98,7 @@ const roomActor =
     @param {array<Creep>} creeps.
     **/
   roomControllersControl: function (room, creeps) {
-    for (const id in bootstrap.roomControllers) {
+    for (const id in automaticControllres) {
       const controller = bootstrap.roomControllers[id]
       if (!controller.compatible(room)) continue
 
@@ -181,7 +190,7 @@ const roomActor =
           if (grabController.filterCreep(creep)) {
             const rc = grabController.act(undefined, creep)
             if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED || rc === bootstrap.WARN_INTENDEE_EXHAUSTED) {
-              if (controllerMineralHarvest.id === creep.memory.ctrl ||
+              if (mineralHarvestController.id === creep.memory.ctrl ||
                   energyTakeController.id === creep.memory.ctrl ||
                   energyHarvestController.id === creep.memory.ctrl) {
                 bootstrap.unassignCreep(creep)

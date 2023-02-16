@@ -48,7 +48,6 @@ grabController.filterCreep = function (creep) {
   return this._hasFreeCapacity(creep)
 }
 
-// NOT registered, called from room actor explicitly
-grabController.registerInProfiler()
+grabController.register()
 
 module.exports = grabController
