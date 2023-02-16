@@ -13,7 +13,7 @@ const terminalProcess = require('./process.terminal')
 const towerProcess = require('./process.tower')
 
 const buildController = require('./controller.build')
-const controllerController = require('./controller.controller')
+const downgradeController = require('./controller.downgrade')
 const energyHarvestController = require('./controller.energy.harvest')
 const energyRestockControllerR = require('./controller.energy.restock.regular')
 const energyRestockControllerS = require('./controller.energy.restock.specialist')
@@ -22,13 +22,13 @@ const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
 const mineralRestockController = require('./controller.mineral.restock')
 const rampupController = require('./controller.rampup')
-const redAlert = require('./controller.redalert')
 const repairController = require('./controller.repair')
 const ttlController = require('./controller.ttl')
+const upgradeController = require('./controller.upgrade')
 
 // STRATEGY priority for creep assignment
 const automaticControllres = [
-  redAlert.id, // always on top
+  downgradeController.id, // always on top
   ttlController.id, // catch recyclees
   rampupController.id, // build up the ramps and walls to decent level right up
   mineralHarvestController.id, // catch miners to mineral
@@ -39,7 +39,7 @@ const automaticControllres = [
   energyRestockControllerR.id,
   repairController.id,
   buildController.id,
-  controllerController.id
+  upgradeController.id
 ]
 
 Creep.prototype.target = function () {
