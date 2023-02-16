@@ -37,6 +37,7 @@ repairController.extra = function (structure) {
 }
 
 repairController.roomPrepare = function (room) {
+  this._roomPrepare(room)
   this._prepareExcludedTargets(room)
 }
 
