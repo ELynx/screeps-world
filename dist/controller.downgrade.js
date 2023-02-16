@@ -2,7 +2,7 @@
 
 const Controller = require('./controller.template')
 
-const redAlert = new Controller('redalert')
+const downgradeController = new Controller('downgrade')
 
 // STRATEGY safe mode could not be activated below 50% - 5000, don't allow that drop
 const Tresholds =
@@ -30,26 +30,26 @@ const Targets =
   8: CONTROLLER_DOWNGRADE[8] / 2
 }
 
-redAlert.actRange = 3
+downgradeController.actRange = 3
 
-redAlert.extra = function (controller) {
+downgradeController.extra = function (controller) {
   return controller.__targetTicks
 }
 
-redAlert.roomPrepare = function (room) {
+downgradeController.roomPrepare = function (room) {
   this._prepareExcludedTargets(room)
 }
 
-redAlert.observeMyCreep = function (creep) {
+downgradeController.observeMyCreep = function (creep) {
   // actually only single creep / WORK ups the timer
   this._excludeTarget(creep)
 }
 
-redAlert.act = function (controller, creep) {
+downgradeController.act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller, creep.memory.xtra)
 }
 
-redAlert.targets = function (room) {
+downgradeController.targets = function (room) {
   if (!room.controller.upgradeBlocked) {
     const level = room.controller.level
     if (room.controller.ticksToDowngrade < Tresholds[level]) {
@@ -61,6 +61,6 @@ redAlert.targets = function (room) {
   return []
 }
 
-redAlert.register()
+downgradeController.register()
 
-module.exports = redAlert
+module.exports = downgradeController
