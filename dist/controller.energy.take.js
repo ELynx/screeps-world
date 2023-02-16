@@ -39,7 +39,7 @@ energyTakeController.act = function (structure, creep) {
   return this.wrapIntent(creep, 'withdraw', structure, RESOURCE_ENERGY, howMuch)
 }
 
-energyTakeController.validateTarget = function (target, creep) {
+energyTakeController.validateTarget = function (allTargets, target, creep) {
   // STRATEGY max distance to link, those are placed for a reason
   if (target.structureType === STRUCTURE_LINK && creep.pos.getRangeTo(target) > 10) {
     return false

@@ -259,11 +259,12 @@ function Controller (id) {
     @return Not assigned creeps.
     **/
   this.assignCreeps = function (room, roomCreeps) {
-    let remainingTargets = this._findTargets(room)
+    const allTargets = this._findTargets(room)
 
-    this.debugLine(room, 'Targets checked ' + remainingTargets.length)
+    this.debugLine(room, 'Targets checked ' + allTargets.length)
     this.debugLine(room, 'Creeps checked  ' + roomCreeps.length)
 
+    let remainingTargets = allTargets.slice(0)
     let unassignedCreeps = []
 
     for (let i = 0; i < roomCreeps.length; ++i) {
@@ -304,7 +305,7 @@ function Controller (id) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
-          if (this.validateTarget(currentTarget, creep) === false) {
+          if (this.validateTarget(allTargets, currentTarget, creep) === false) {
             continue
           }
         } // to next target
