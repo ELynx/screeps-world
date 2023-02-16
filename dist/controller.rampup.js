@@ -13,6 +13,7 @@ rampupController.neutral = rampupController.ally
 const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1
 
 rampupController.roomPrepare = function (room) {
+  this._roomPrepare(room)
   this._prepareExcludedTargets(room)
 }
 

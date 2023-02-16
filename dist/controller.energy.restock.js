@@ -14,6 +14,7 @@ energyRestockController.ally = true
 energyRestockController.neutral = energyRestockController.ally
 
 energyRestockController.roomPrepare = function (room) {
+  this._roomPrepare(room)
   this._prepareExcludedTargets(room)
 }
 

@@ -112,11 +112,17 @@ function Controller (id) {
     )
   }
 
+  this._roomPrepare = function (room) {
+    this.__targetCache = undefined
+  }
+
   /**
     Prepare for new room.
     @param {Room} room.
     **/
-  this.roomPrepare = undefined
+  this.roomPrepare = function (room) {
+    this._roomPrepare(room)
+  }
 
   /**
     Observe creep that is already controlled.
@@ -401,8 +407,6 @@ function Controller (id) {
       }
     }
 
-    // wipe the cache from previous room now
-    this.__targetCache = undefined
     if (this._findTargets(room).length === 0) {
       this.debugLine(room, 'Fast exit, no targets')
       return roomCreeps

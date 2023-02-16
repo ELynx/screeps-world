@@ -37,6 +37,7 @@ downgradeController.extra = function (controller) {
 }
 
 downgradeController.roomPrepare = function (room) {
+  this._roomPrepare(room)
   this._prepareExcludedTargets(room)
 }
 
