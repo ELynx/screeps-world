@@ -46,8 +46,8 @@ energySpecialistController.act = function (source, creep) {
   }
 
   // if this will be a last dig for capacity, search for drop site nearby
-  if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
-      harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
+  if (harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
+      harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
     const restockTargets = this.restockTargets(creep.room)
     for (let i = 0; i < restockTargets.length; ++i) {
@@ -74,7 +74,7 @@ energySpecialistController.act = function (source, creep) {
   // amortize source exhaustion
   if (harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
       harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
-      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED ||
       harvestRc === ERR_NOT_ENOUGH_RESOURCES) {
     if (source.ticksToRegeneration && source.ticksToRegeneration <= WaitNearEmptySource) {
       return OK
