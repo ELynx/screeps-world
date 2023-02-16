@@ -45,7 +45,7 @@ energySpecialistController.act = function (source, creep) {
   }
 
   // if this will be a last dig for capacity, search for drop site nearby
-  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+  if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
     const restockTargets = this.restockTargets(creep.room)
