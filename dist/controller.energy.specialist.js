@@ -6,34 +6,35 @@ const Controller = require('./controller.template')
 
 const energySpecialistController = new Controller('energy.specialist')
 
+const WaitNearEmptySource = 10
+
+const unspecialistId = 'energy.unspecialist'
+
 energySpecialistController.actRange = 1
 
 energySpecialistController.unowned = true
 
 energySpecialistController.ignoreCreepsForTargeting = false
 
-energySpecialistController.roomPrepare = function (room) {
-  this.__restockTargets = undefined
-}
-
 energySpecialistController.restockTargets = function (room) {
-  if (this.__restockTargets === undefined) {
-    this.__restockTargets = room.find(FIND_STRUCTURES,
-      {
-        filter: function (structure) {
-          if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
-            if (structure.isActiveSimple() && structure.isSource()) {
-              return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-            }
-          }
+  const unspecialist = bootstrap.roomControllers[unspecialistId]
 
-          return false
-        }
-      }
-    )
+  if (unspecialist === undefined) {
+    this.debugLine(room, 'Missing unspecialist')
+    return []
   }
 
-  return this.__restockTargets
+  return unspecialist._findTargets(room)
+}
+
+energySpecialistController.restock = function (target, creep) {
+  const unspecialist = bootstrap.roomControllers[unspecialistId]
+
+  if (unspecialist === undefined) {
+    return bootstrap.ERR_INVALID_INTENT_NAME
+  }
+
+  return unspecialist.act(target, creep)
 }
 
 energySpecialistController.act = function (source, creep) {
@@ -53,14 +54,30 @@ energySpecialistController.act = function (source, creep) {
       const restockTarget = restockTargets[i]
 
       if (creep.pos.isNearTo(restockTarget)) {
-        const transferRc = this.wrapIntent(creep, 'transfer', restockTarget, RESOURCE_ENERGY)
+        const restockRc = this.restock(restockTarget, creep)
 
         // on error, such as intended exhausted, check other target
-        if (transferRc < 0) continue
+        if (restockRc < 0) continue
 
-        // OK or warning were received, go on
-        return OK
+        // restock was OK or warning
+
+        if (harvestRc !== bootstrap.WANR_BOTH_EXHAUSED) {
+          // source will have more energy, and some of current will be offloaded
+          return OK
+        }
+
+        break // from target loop
       }
+    }
+  }
+
+  // amortize source exhaustion
+  if (harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
+      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === ERR_NOT_ENOUGH_RESOURCES) {
+    if (source.ticksToRegeneration && source.ticksToRegeneration <= WaitNearEmptySource) {
+      return OK
     }
   }
 
