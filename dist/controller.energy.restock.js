@@ -2,30 +2,30 @@
 
 const Controller = require('./controller.template')
 
-const energyRestockControllerRegular = new Controller('energy.restock.regular')
+const energyRestockController = new Controller('energy.restock')
 
 // STRATEGY parameters for restocking
 const TowerRestockNormal = 0.9
 const TowerRestockCritical = 0.25
 
-energyRestockControllerRegular.actRange = 1
+energyRestockController.actRange = 1
 
-energyRestockControllerRegular.ally = true
-energyRestockControllerRegular.neutral = energyRestockControllerRegular.ally
+energyRestockController.ally = true
+energyRestockController.neutral = energyRestockController.ally
 
-energyRestockControllerRegular.roomPrepare = function (room) {
+energyRestockController.roomPrepare = function (room) {
   this._prepareExcludedTargets(room)
 }
 
-energyRestockControllerRegular.observeMyCreep = function (creep) {
+energyRestockController.observeMyCreep = function (creep) {
   this._excludeTarget(creep)
 }
 
-energyRestockControllerRegular.act = function (target, creep) {
+energyRestockController.act = function (target, creep) {
   return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
 }
 
-energyRestockControllerRegular.targets = function (room) {
+energyRestockController.targets = function (room) {
   const allStructures = room.find(
     FIND_STRUCTURES,
     {
@@ -78,6 +78,6 @@ energyRestockControllerRegular.targets = function (room) {
   )
 }
 
-energyRestockControllerRegular.register()
+energyRestockController.register()
 
-module.exports = energyRestockControllerRegular
+module.exports = energyRestockController
