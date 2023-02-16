@@ -31,7 +31,7 @@ energyHarvestController.validateTarget = function (target, creep) {
   for (let i = 0; i < others.length; ++i) {
     const other = others[i]
     if (other.memory.rstk) {
-      otherRestockersWork += _.countBy(other.body)[WORK] || 0
+      otherRestockersWork += _.countBy(other.body, 'type')[WORK] || 0
     }
   }
 
