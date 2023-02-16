@@ -12,20 +12,28 @@ energySpecialistController.unowned = true
 
 energySpecialistController.ignoreCreepsForTargeting = false
 
-energyRestockControllerSpecialist.TODO = function (room) {
-  return room.find(FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
-          if (structure.isActiveSimple() && structure.isSource()) {
-            return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-          }
-        }
+energySpecialistController.roomPrepare = function (room) {
+  this.__restockTargets = undefined
+}
 
-        return false
+energyRestockControllerSpecialist.restockTargets = function (room) {
+  if (this.__restockTargets === undefined) {
+    this.__restockTargets = room.find(FIND_STRUCTURES,
+      {
+        filter: function (structure) {
+          if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
+            if (structure.isActiveSimple() && structure.isSource()) {
+              return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            }
+          }
+
+          return false
+        }
       }
-    }
-  )
+    )
+  }
+
+  return this.__restockTargets
 }
 
 energySpecialistController.act = function (source, creep) {
@@ -40,12 +48,20 @@ energySpecialistController.act = function (source, creep) {
   if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
       harvestRc === bootstrap.WANR_BOTH_EXHAUSED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
-    // TODO find and act
-  }
+    const restockTargets = this.restockTargets(creep.room)
+    for (let i = 0; i < restockTargets.length; ++i) {
+      const restockTarget = restockTargets[i]
 
-  // if this will be a last dig for source, see if wait is warranted
-  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED || harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
-    // TODO anything?
+      if (creep.pos.isNearTo(restockTarget)) {
+        const transferRc = this.wrapIntent(creep, 'transfer', restockTarget, RESOURCE_ENERGY)
+
+        // on error, such as intended exhausted, check other target
+        if (transferRc < 0) continue
+
+        // OK or warning were recived, go on
+        return OK
+      }
+    }
   }
 
   // whatever error transpired, continue
