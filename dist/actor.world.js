@@ -2,22 +2,29 @@
 
 const bootstrap = require('./bootstrap')
 
-/* eslint-disable no-unused-vars */
-/**
-Order of load is priority for task execution.
-**/
-// generate spawn(s)
-const taskedOutlast = require('./tasked.outlast') // very tick-sensitive logic, run first
-const taskedBeetle = require('./tasked.beetle') // generates aggro
-const taskedStrelok = require('./tasked.strelok') // consumes aggro
-const taskedPlunder = require('./tasked.plunder') // paramilitary
-const taskedClaim = require('./tasked.claim') // one-off
-const taskedObserve = require('./tasked.observe') // lowest prio
-// consume spawn(s)
-const taskedSpawn = require('./tasked.spawn')
-// other
+const taskedBeetle = require('./tasked.beetle')
+const taskedClaim = require('./tasked.claim')
+const taskedObserve = require('./tasked.observe')
+const taskedOutlast = require('./tasked.outlast')
 const taskedPixel = require('./tasked.pixelgenerator')
-/* eslint-enable no-unused-vars */
+const taskedPlunder = require('./tasked.plunder')
+const taskedSpawn = require('./tasked.spawn')
+const taskedStrelok = require('./tasked.strelok')
+
+// STRATEGY Priority for task execution.
+const automaticControllers = [
+  // generate spawn(s)
+  taskedOutlast.id, // very tick-sensitive logic, run first
+  taskedBeetle.id, // generates aggro
+  taskedStrelok.id, // consumes aggro
+  taskedPlunder.id, // paramilitary
+  taskedClaim.id, // post-militray
+  taskedObserve.id, // lowest prio
+  // consume spawn(s)
+  taskedSpawn.id,
+  // other
+  taskedPixel.id
+]
 
 const worldActor =
 {
@@ -55,8 +62,15 @@ const worldActor =
     Let task controllers do theit jobs.
     **/
   taskControllersControl: function () {
-    for (const id in bootstrap.taskControllers) {
-      bootstrap.taskControllers[id].act()
+    for (const index in automaticControllers) {
+      const id = automaticControllres[index]
+      const automaticController = bootstrap.taskControllers[id]
+
+      if (automaticController === undefined) {
+        continue
+      }
+
+      automaticController.act()
     }
   },
 
