@@ -13,6 +13,7 @@ const unspecialistId = 'energy.unspecialist'
 energySpecialistController.actRange = 1
 
 energySpecialistController.unowned = true
+energySpecialistController.sourceKeeper = energySpecialistController.unowned
 
 energySpecialistController.ignoreCreepsForTargeting = false
 

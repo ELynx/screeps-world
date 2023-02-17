@@ -47,8 +47,8 @@ module.exports.loop = function () {
       const creep = Game.creeps[creepName]
       const room = creep.room
 
-      // STRATEGY limit weight for controlled vs travel rooms, per creep
-      const delta = room.my ? 3 : (room.ally ? 2 : 1)
+      // STRATEGY limit weight for controlled vs other rooms, per creep
+      const delta = room.my ? 3 : 2
 
       let now = limits[room.name] || 0
       now = now + delta

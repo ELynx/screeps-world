@@ -79,6 +79,7 @@ Flag.prototype.resetSecondaryColor = function () {
 }
 
 // ones that do get harmful effects
+// special case - controller reserved by self is unowned
 OwnedStructure.prototype.hostileOrUnowned = function () {
   return this.unowned || this.hostile
 }

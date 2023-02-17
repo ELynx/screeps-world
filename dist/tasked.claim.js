@@ -35,6 +35,7 @@ claim.creepAtDestination = function (creep) {
   let rc = ERR_TIRED
   let wait = CREEP_CLAIM_LIFE_TIME // by default wait is longer than life
 
+  // as per special case, controller reserved by self is considered not owned
   if (controller.hostileOrUnowned()) {
     if (creep.pos.isNearTo(controller)) {
       if (creep.memory._clt === undefined) {

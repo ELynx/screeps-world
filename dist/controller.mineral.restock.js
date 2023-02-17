@@ -11,6 +11,7 @@ mineralRestockController.actRange = 1
 mineralRestockController.ally = true
 mineralRestockController.neutral = mineralRestockController.ally
 mineralRestockController.unowned = mineralRestockController.ally
+mineralRestockController.sourceKeeper = mineralRestockController.unowned
 
 mineralRestockController.act = function (withStore, creep) {
   for (const resourceType in creep.store) {

@@ -7,6 +7,7 @@ const energyHarvestController = new Controller('energy.harvest')
 energyHarvestController.actRange = 1
 
 energyHarvestController.unowned = true
+energyHarvestController.sourceKeeper = energyHarvestController.unowned
 
 energyHarvestController.ignoreCreepsForTargeting = false
 

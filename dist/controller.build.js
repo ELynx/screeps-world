@@ -11,6 +11,7 @@ buildController.oddOrEven = 0
 buildController.ally = true
 buildController.neutral = buildController.ally
 buildController.unowned = buildController.ally
+buildController.sourceKeeper = buildController.unowned
 
 buildController.act = function (site, creep) {
   return this.wrapIntent(creep, 'build', site)
