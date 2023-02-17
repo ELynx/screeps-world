@@ -126,8 +126,8 @@ const historyActor =
       targetMy = target.my
     } else {
       hostileAction = room.myOrAlly()
-      targetUsername = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
-      targetMy = room.my
+      targetUsername = room.extendedOwnerUsername()
+      targetMy = room.myOrMyReserved()
     }
 
     if (hostileAction === false) {
@@ -188,12 +188,12 @@ const historyActor =
 
     // ! DETECT EDGE CASES !
     const attackerUsername = attacker.owner.username
-    const roomUsername = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
+    const roomUsername = room.extendedOwnerUsername()
 
     if (attackerUsername === roomUsername) return
 
     // fights between allies
-    if (attacker.ally && (!room.my)) return
+    if (attacker.ally && (!room.myOrMyReserved())) return
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)

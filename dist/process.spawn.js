@@ -207,6 +207,9 @@ spawnProcess.neutral = function (room, live) {
 spawnProcess.hostile = function (room, live) {
 }
 
+spawnProcess.sourceKeeper = function (room, live) {
+}
+
 spawnProcess.unowned = function (room, live) {
   this.workers(room, live, 2)
   this.restockers(room, live)
@@ -217,10 +220,17 @@ spawnProcess.work = function (room) {
 
   const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
 
+  // controller is my
   if (room.my) this.my(room, live)
+  // controller is ally or reserved by ally
   else if (room.ally) this.ally(room, live)
+  // controller is neutral or reserved by neutral
   else if (room.neutral) this.neutral(room, live)
+  // controller is hostile or reserved by hostile
   else if (room.hostile) this.hostile(room, live)
+  // room is source keeper room
+  else if (room.sourceKeeper()) this.sourceKeeper(room, live)
+  // room has no controller / controller is not owned / controller is not reserved above EXCLUDING my
   else if (room.unowned) this.unowned(room, live)
 }
 

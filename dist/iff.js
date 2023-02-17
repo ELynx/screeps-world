@@ -36,8 +36,8 @@ const prepareHostileNPCMemory = function () {
 }
 
 const _extendedOwnerUsername = function (something) {
-  if (something.reservation) return something.reservation.username
   if (something.owner) return something.owner.username
+  if (something.reservation) return something.reservation.username
 
   return undefined
 }
@@ -450,7 +450,11 @@ module.exports = {
   convenience () {
     prepareHostileNPCMemory()
 
+    const ownUsername = Game.spawns.length > 0 ? Game.spawns[0].owner.username : undefined
+
     Game.iff = {
+      ownUsername,
+
       makeAlly (username) {
         return setPCReputation(username, MaxReputation)
       },
@@ -474,6 +478,11 @@ module.exports = {
       markNPCHostile (something) {
         something.__reputation = MinReputation
         return something.__reputation
+      },
+
+      extendedOwnerUsername (something) {
+        if (something === undefined) return undefined
+        return _extendedOwnerUsername(something)
       }
     }
   }
