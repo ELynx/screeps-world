@@ -6,82 +6,6 @@ const Process = require('./process.template')
 
 const roomInfoProcess = new Process('roomInfo')
 
-/**
-Calculate room energy level.
-@param {Room} room.
-@return Energy level of room.
-**/
-roomInfoProcess.energyLevel = function (room) {
-  const level = room.controller ? room.controller.level : 0
-
-  const structs = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_SPAWN ||
-               structure.structureType === STRUCTURE_EXTENSION
-      }
-    }
-  )
-
-  let spawnCount = 0
-  let extensionCount = 0
-
-  for (let i = 0; i < structs.length; ++i) {
-    const struct = structs[i]
-
-    if (struct.structureType === STRUCTURE_SPAWN) {
-      ++spawnCount
-    } else if (struct.structureType === STRUCTURE_EXTENSION) {
-      ++extensionCount
-    }
-  }
-
-  spawnCount = Math.min(spawnCount, CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][level])
-  extensionCount = Math.min(extensionCount, CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level])
-
-  // room cold start
-  if (spawnCount === 0) {
-    return 0
-  }
-
-  const roomCreeps = room.getRoomControlledCreeps()
-  const energyGivingCreeps = _.filter(
-    roomCreeps,
-    function (creep) {
-      if (creep.memory.minr) return false
-
-      return true
-    }
-  )
-
-  // has spawn, has no creeps, means creeps wiped or room start
-  if (energyGivingCreeps.length === 0) {
-    // there is no one to refill spawns, etc
-    // there is only a dribble of energy up to 300
-    // still can try to spawn weaklings
-    return 1
-  }
-
-  let energyCapacity = EXTENSION_ENERGY_CAPACITY[level] * extensionCount
-  energyCapacity += SPAWN_ENERGY_CAPACITY * spawnCount
-
-  if (energyCapacity >= 800) {
-    // above 800 (aka full built RCL 3) go in increments of 500
-    return Math.floor((energyCapacity - 799) / 500) + 3
-  }
-
-  if (energyCapacity >= 550) {
-    return 2
-  }
-
-  if (energyCapacity >= 300) {
-    return 1
-  }
-
-  return 0
-}
-
 roomInfoProcess._walkable = function (terrain, position) {
   if (terrain.get(position.x, position.y) !== TERRAIN_MASK_WALL) {
     return true
@@ -115,7 +39,7 @@ roomInfoProcess.harvestLevel = function (room) {
         const x = source.pos.x + dx
         const y = source.pos.y + dy
 
-        if (x < 0 || x > 49 || y < 0 || y > 49) {
+        if (x <= 0 || x >= 49 || y <= 0 || y >= 49) {
           continue
         }
 
@@ -158,6 +82,10 @@ roomInfoProcess.sourceLevel = function (room) {
   )
 
   let total = containers.length
+
+  if (!room.my) {
+    return total
+  }
 
   const links = _.filter(
     allStructures,
@@ -224,6 +152,7 @@ Calculate room mining level.
 @return Mining level of room.
 **/
 roomInfoProcess.miningLevel = function (room) {
+  // TODO unowned and other owned rooms
   // quick test
   if (room.terminal === undefined && room.storage === undefined) {
     return 0
@@ -258,7 +187,7 @@ roomInfoProcess.miningLevel = function (room) {
   return 1
 }
 
-roomInfoProcess.wallLevel = function (room) {
+roomInfoProcess._wallLevel = function (room) {
   const walls = room.find(
     FIND_STRUCTURES,
     {
@@ -288,7 +217,7 @@ roomInfoProcess.wallLevel = function (room) {
 }
 
 // STRATEGY wall build-up, basis levels
-roomInfoProcess._walls = function (room) {
+roomInfoProcess.wallLevel = function (room) {
   const TargetBarrierHp = [
     0,
     5,
@@ -308,7 +237,7 @@ roomInfoProcess._walls = function (room) {
 
   const roomPlanned = room.memory.wlvl
   if (roomPlanned) {
-    const roomHas = this.wallLevel(room)
+    const roomHas = this._wallLevel(room)
 
     // if walls are under-level, build up from what is available
     if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) return roomHas + 1
@@ -342,11 +271,10 @@ roomInfoProcess.work = function (room) {
       Game.flags.recount.remove()
     }
 
-    room.memory.elvl = this.energyLevel(room)
     room.memory.hlvl = this.harvestLevel(room)
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
-    room.memory.wlvl = this._walls(room)
+    room.memory.wlvl = this.wallLevel(room)
 
     // offset regeneration time randomly so multiple rooms don't do it at same tick
     room.memory.intl = Game.time + Math.ceil(Math.random() * 42)

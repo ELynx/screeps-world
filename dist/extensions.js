@@ -90,7 +90,28 @@ OwnedStructure.prototype.myOrAlly = function () {
 }
 
 Room.prototype.level = function () {
-  return this.my ? this.controller.level : 0
+  if (!this.my) return 0
+
+  if (this.__level) return this.__level
+
+  const totalCapacity = this.energyCapacityAvailable
+
+  const extensionCapacity = EXTENSION_ENERGY_CAPACITY[this.controller.level]
+
+  for (let i = 0; i <= this.controller.level; ++i) {
+    const canHaveSpawns = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][i]
+    const canHaveExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][i]
+
+    const maxTotalCapacity = canHaveSpawns * SPAWN_ENERGY_CAPACITY + canHaveExtensions * extensionCapacity
+
+    if (totalCapacity >= maxTotalCapacity) {
+      this.__level = i
+    } else {
+      break
+    }
+  }
+
+  return this.__level
 }
 
 Room.prototype.roomDebug = function (what) {
