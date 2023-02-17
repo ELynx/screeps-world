@@ -63,7 +63,7 @@ const worldActor =
     **/
   taskControllersControl: function () {
     for (const index in automaticControllers) {
-      const id = automaticControllres[index]
+      const id = automaticControllers[index]
       const automaticController = bootstrap.taskControllers[id]
 
       if (automaticController === undefined) {
