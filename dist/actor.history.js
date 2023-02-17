@@ -243,6 +243,21 @@ const historyActor =
     Game.__healers[healer.id] = healer
   },
 
+  processHealers: function () {
+    for (const id in Game.__healers) {
+      const healer = Game.__healers[id]
+
+      if (healer.__healedWhat.directHarm) {
+        this.increaseSideHarm(healer, healer.__healedWhat.directHarm)
+        this.increaseSideHarmPower(healer, healer.__healedHowMuch)
+      }
+    }
+  },
+
+  processPostLog: function () {
+    this.processHealers()
+  },
+
   /**
     Execute history logic.
     **/
@@ -281,14 +296,7 @@ const historyActor =
       room.visual.rect(0, 0.25, 5 * usedRoomPercent / 100, 0.25, { fill: '#f00' })
     }
 
-    for (const id in Game.__healers) {
-      const healer = Game.__healers[id]
-
-      if (healer.__healedWhat.directHarm) {
-        this.increaseSideHarm(healer, healer.__healedWhat.directHarm)
-        this.increaseSideHarmPower(healer, healer.__healedHowMuch)
-      }
-    }
+    this.processPostLog()
 
     const usedTotalPercent = bootstrap.hardCpuUsed(t0)
     for (const roomName in Game.rooms) {
