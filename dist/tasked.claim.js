@@ -137,31 +137,28 @@ claim.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-claim.makeBody = function (spawn) {
-  const elvl = spawn.room.memory.elvl
+claim.makeBody = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
 
-  // cannot spawn 650+
-  if (elvl <= 2) return []
+  if (energy < 750) return []
 
-  if (elvl <= 3) {
+  if (energy < 850) {
     // on swamp move 1 unit per 2 ticks
     // move up front to allow crawl even damaged
-    // 750   50    50    600    50
+    // 750  50    50    600    50
     return [MOVE, MOVE, CLAIM, MOVE]
   }
 
-  if (elvl <= 4) {
+  if (energy < 1700) {
     // on swamp move 1 unit per 1 tick
     // move up front to allow crawl even damaged
-    // 850   50    50    50    50    600    50
+    // 850  50    50    50    50    600    50
     return [MOVE, MOVE, MOVE, MOVE, CLAIM, MOVE]
   }
 
-  // 5+ or 1800+
-
   // on swamp move 1 unit per 1 tick
   // move up front to allow crawl even damaged
-  // 1700  50    50    50    50    50    50    50    50    50    600    600    50
+  // 1700 50    50    50    50    50    50    50    50    50    600    600    50
   return [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM, MOVE]
 }
 

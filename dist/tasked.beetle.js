@@ -239,16 +239,16 @@ beetle.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-beetle.makeBody = function (spawn) {
-  const elvl = spawn.room.memory.elvl
+beetle.makeBody = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
 
-  if (elvl <= 1) {
-    // 150   50    100
+  if (energy < 250) {
+    // 150  50    100
     return [MOVE, WORK]
   }
 
-  if (elvl <= 2) {
-    // 250   50    50    50     100
+  if (energy < 300) {
+    // 250  50    50    50     100
     return [MOVE, MOVE, CARRY, WORK]
   }
 
@@ -256,13 +256,15 @@ beetle.makeBody = function (spawn) {
     this.__bodyCache = { }
   }
 
+  const elvl = Math.ceil((energy - 300) / 500)
+
   const cached = this.__bodyCache[elvl]
   if (cached) {
     return cached
   }
 
   // 300 for base combo and 150 per next level
-  const budget = 300 + 150 * (elvl - 3)
+  const budget = 300 + 150 * elvl
   const pairs = Math.min(Math.floor(budget / 150), 25)
 
   const a = new Array(pairs)

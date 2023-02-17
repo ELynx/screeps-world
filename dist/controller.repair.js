@@ -60,8 +60,8 @@ repairController.targets = function (room) {
 
   // STRATEGY don't run with every booboo
   // STRATEGY in unowned rooms fix roads 1 step up
-  const roadMult = fromArray(TargetRoadHpMultiplier, room.memory.elvl + (room.my ? 0 : 1))
-  const otherMult = fromArray(TargetStructureHpMultiplier, room.memory.elvl)
+  const roadMult = fromArray(TargetRoadHpMultiplier, room.level() + (room.my ? 0 : 1))
+  const otherMult = fromArray(TargetStructureHpMultiplier, room.level())
 
   // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)
   const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500)

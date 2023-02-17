@@ -227,10 +227,10 @@ roomInfoProcess.wallLevel = function (room) {
     25
   ]
 
-  let elvl = room.memory.elvl
-  if (elvl >= TargetBarrierHp.length) elvl = TargetBarrierHp.length - 1
+  let level = room.level()
+  if (level >= TargetBarrierHp.length) level = TargetBarrierHp.length - 1
 
-  const targetByEnergyLevel = TargetBarrierHp[elvl]
+  const targetByEnergyLevel = TargetBarrierHp[level]
 
   // walls can be inherited and force room into over-repair
   // control the wlvl to not increment in great steps

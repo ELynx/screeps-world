@@ -148,7 +148,7 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
 Creep.prototype.unlive = function () {
   let result = false
 
-  if (this.room.my && this.room.memory.elvl > 0) {
+  if (this.room.level() > 0) {
     this.setControlRoom(this.room.name)
     result = true
   } else if (this.memory.mrts) {
@@ -157,7 +157,7 @@ Creep.prototype.unlive = function () {
   } else {
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
-      if (room.my && room.memory.elvl > 0) {
+      if (room.level() > 0) {
         this.setControlRoom(room.name)
         result = true
         break
@@ -207,7 +207,7 @@ function Tasked (id) {
   }
 
   this._creepRoomTravel = function (creep) {
-    if (creep.room.memory.elvl > 0) {
+    if (creep.room.level() > 0) {
       // remember unliving room
       creep.memory.mrts = creep.room.name
     }
