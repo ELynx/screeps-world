@@ -49,6 +49,7 @@ function Controller (id) {
   this.ally = false
   this.neutral = false
   this.hostile = false
+  this.sourceKeeper = false
   this.unowned = false
 
   this.compatible = function (room) {
@@ -56,6 +57,7 @@ function Controller (id) {
     if (room.ally) return this.ally
     if (room.neutral) return this.neutral
     if (room.hostile) return this.hostile
+    if (room.sourceKeeper()) return this.sourceKeeper
     if (room.unowned) return this.unowned
 
     return false

@@ -7,6 +7,7 @@ const energyUnspecialistController = new Controller('energy.unspecialist')
 energyUnspecialistController.actRange = 1
 
 energyUnspecialistController.unowned = true
+energyUnspecialistController.sourceKeeper = energyUnspecialistController.unowned
 
 energyUnspecialistController.ignoreCreepsForTargeting = false
 

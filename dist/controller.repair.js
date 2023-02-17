@@ -31,6 +31,7 @@ repairController.oddOrEven = 1
 repairController.ally = true
 repairController.neutral = repairController.ally
 repairController.unowned = repairController.ally
+repairController.sourceKeeper = repairController.unowned
 
 repairController.extra = function (structure) {
   return structure.__targetHp

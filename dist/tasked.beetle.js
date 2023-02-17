@@ -28,7 +28,7 @@ beetle.creepAtDestination = function (creep) {
   let beHostile = true
 
   if (Game.rooms.sim === undefined) {
-    if (creep.room.controller && !creep.room.controller.hostileOrUnowned()) {
+    if (room.myOrMyReserved() || room.ally || room.neutral) {
       beHostile = false
     }
   }
