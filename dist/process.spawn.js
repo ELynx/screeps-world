@@ -90,7 +90,7 @@ spawnProcess.restockers = function (room, live) {
     const now = this._hasAndPlanned(room, live, 'restocker')
     this.addToQueue(
       room.name,
-      room.my ? room.name : queue.FROM_CLOSEST_ROOM
+      room.my ? room.name : queue.FROM_CLOSEST_ROOM,
       'restocker',
       room.my ? 'restocker' : restockerBody
       {
