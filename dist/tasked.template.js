@@ -198,6 +198,14 @@ function Tasked (id) {
 
   this.creepAtDestination = undefined
 
+  this.spawnFrom = function (flag) {
+    return spawn.FROM_ANY_ROOM
+  }
+
+  this.spawnPriority = function (flag) {
+    return 'normal'
+  }
+
   this._creepRoomTravel = function (creep) {
     if (creep.room.memory.elvl > 0) {
       // remember unliving room
@@ -361,12 +369,28 @@ function Tasked (id) {
               flag: flagName
             }
 
-      spawn.addNormal(
+      const spawnFromStrategy = this.spawnFrom(flag)
+      const spawnPriorityStrategy = this.spawnPriority(flag)
+
+      let spawnCallback
+
+      if (spawnPriorityStrategy === 'urgent') {
+        spawnCallback = _.bind(spawn.addUrgent, spawn)
+      } else if (spawnPriorityStrategy === 'lowkey') {
+        spawnCallback = _.bind(spawn.addLowkey, spawn)
+      } else if (spawnPriorityStrategy === 'normal') {
+        spawnCallback = _.bind(spawn.addNormal, spawn)
+      } else {
+        this.debugLine('Unknown spawn priority strategy [' + spawnPriorityStrategy + ']')
+        spawnCallback = _.bind(spawn.addNormal, spawn)
+      }
+
+      spawnCallback(
         flagName, // id in queue
         this.id, // body, string indicates to call body function
         flagName, // name (prefix)
         creepMemory, // memory
-        spawn.FROM_ANY_ROOM, // from
+        spawnFromStrategy, // from
         flag.pos.roomName, // to
         want - has // n
       )

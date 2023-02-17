@@ -2,6 +2,8 @@
 
 const spawn = {
   FROM_ANY_ROOM: 'ANY',
+  FROM_CLOSEST_ROOM: 'CLOSEST',
+  FROM_STRONGEST_ROOM: 'STRONGEST',
 
   bodyFunctions: { },
 
