@@ -199,7 +199,7 @@ function Tasked (id) {
   this.creepAtDestination = undefined
 
   this.spawnFrom = function (flag) {
-    return spawn.FROM_ANY_ROOM
+    return spawn.FROM_CLOSEST_ROOM
   }
 
   this.spawnPriority = function (flag) {
