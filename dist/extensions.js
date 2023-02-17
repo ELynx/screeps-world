@@ -139,12 +139,16 @@ Room.prototype.sourceKeeper = function () {
   return this.memory.srck
 }
 
+Room.prototype.ownedOrReserved = function () {
+  return this.controller && (this.controller.owner || this.controller.reservation)
+}
+
 Room.prototype.sourceEnergyCapacity = function () {
   if (this.sourceKeeper()) {
     return SOURCE_ENERGY_KEEPER_CAPACITY
   }
 
-  if (this.controller && (this.controller.owner || this.controller.reservation)) {
+  if (this.ownedOrReserved()) {
     return SOURCE_ENERGY_CAPACITY
   }
 
