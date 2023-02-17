@@ -35,8 +35,15 @@ const prepareHostileNPCMemory = function () {
   Memory.npcReputation = undefined
 }
 
+const _extendedOwnerUsername = function (something) {
+  if (something.reservation) return something.reservation.username
+  if (something.owner) return something.owner.username
+
+  return undefined
+}
+
 const isUnowned = function (something) {
-  return something.owner === undefined
+  return _extendedOwnerUsername(something) === undefined
 }
 
 const getNPCFactionReputation = function (username) {
@@ -115,9 +122,10 @@ const isPC = function (something) {
   // you are PC
   if (something.my) return true
 
-  if (isUnowned(something)) return false
+  const username = _extendedOwnerUsername(something)
+  if (username === undefined) return false
 
-  return _isPC(something.owner.username)
+  return _isPC(username)
 }
 
 const __assignPCReputation = function (something, username) {
@@ -141,8 +149,7 @@ const __assignNPCReputation = function (something, username) {
   something.__reputation = somethingReputation
 }
 
-const _assignReputation = function (something) {
-  const username = something.owner.username
+const _assignReputation = function (something, username) {
   if (_isPC(username)) {
     __assignPCReputation(something, username)
   } else {
@@ -154,9 +161,10 @@ const isAlly = function (something) {
   // you are not your ally
   if (something.my) return false
 
-  if (isUnowned(something)) return false
+   const username = _extendedOwnerUsername(something)
+   if (username === undefined) return false
 
-  _assignReputation(something)
+  _assignReputation(something, username)
 
   return something.__reputation >= LowestAllyReputation
 }
@@ -165,9 +173,10 @@ const isNeutral = function (something) {
   // you are not your neutral
   if (something.my) return false
 
-  if (isUnowned(something)) return false
+   const username = _extendedOwnerUsername(something)
+   if (username === undefined) return false
 
-  _assignReputation(something)
+  _assignReputation(something, username)
 
   return something.__reputation >= DefaultReputation &&
          something.__reputation < LowestAllyReputation
@@ -177,9 +186,10 @@ const isHostile = function (something) {
   // your are not your hostile
   if (something.my) return false
 
-  if (isUnowned(something)) return false
+   const username = _extendedOwnerUsername(something)
+   if (username === undefined) return false
 
-  _assignReputation(something)
+  _assignReputation(something, username)
 
   return something.__reputation < DefaultReputation
 }
