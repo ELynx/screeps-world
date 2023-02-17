@@ -237,11 +237,8 @@ spawnProcess.work = function (room) {
 spawnProcess._registerBodyFunction = function (routineId) {
   const routine = bodywork[routineId]
   const bound = _.bind(routine, bodywork)
-  const wrapped = function (spawn) {
-    return bound(spawn.room)
-  }
 
-  queue.registerBodyFunction(routineId, wrapped)
+  queue.registerBodyFunction(routineId, bound)
 }
 
 spawnProcess.registerBodyFunctions = function () {
