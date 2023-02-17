@@ -110,12 +110,10 @@ outlast.flagPrepare = function (flag) {
   return this._flagCountBasic(flag, 100)
 }
 
-outlast.makeBody = function (spawn) {
-  const elvl = spawn.room.memory.elvl
+outlast.makeBody = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
 
-  if (elvl < 5) {
-    return []
-  }
+  if (energy < 1600) return []
 
   // takes 300 damage
   // heal damage in 5 turns

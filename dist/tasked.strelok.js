@@ -11,7 +11,7 @@ strelok.markRoomForPatrol = function (room) {
 
   const flag = Game.flags[flagName]
   if (flag) {
-    const patrolUnits = Math.min(3, room.memory.elvl + 1)
+    const patrolUnits = Math.min(3, room.level() + 1)
     flag.setValue(patrolUnits)
   } else {
     // STRATEGY (49, 49) is reserved for strelok indicator flag
@@ -310,15 +310,15 @@ strelok.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-strelok.makeBody = function (spawn) {
-  const elvl = spawn.room.memory.elvl
+strelok.makeBody = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
 
-  if (elvl <= 1) {
+  if (energy < 500) {
     // 200   50    150
     return [MOVE, RANGED_ATTACK]
   }
 
-  if (elvl <= 2) {
+  if (energy < 700) {
     // 500   50    50    150            250
     return [MOVE, MOVE, RANGED_ATTACK, HEAL]
   }
@@ -326,6 +326,8 @@ strelok.makeBody = function (spawn) {
   if (!this.__bodyCache) {
     this.__bodyCache = { }
   }
+
+  const elvl = Math.ceil((energy - 300) / 500)
 
   const cached = this.__bodyCache[elvl]
   if (cached) {
@@ -339,7 +341,7 @@ strelok.makeBody = function (spawn) {
   let heal = 0
 
   // 700 for base combo and 250 per next level
-  let budget = 700 + 250 * (elvl - 3)
+  let budget = 700 + 250 * elvl
 
   // add heal + two ranged combo
   // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3

@@ -235,26 +235,25 @@ plunder.flagPrepare = function (flag) {
   return this._flagCountBasic(flag, 100)
 }
 
-plunder.makeBody = function (spawn) {
-  const elvl = spawn.room.memory.elvl
+plunder.makeBody = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
 
-  if (elvl <= 1) {
+  if (energy < 300) {
     // 100  50     50
     return [CARRY, MOVE]
   }
 
-  if (elvl <= 3) {
+  if (energy < 400) {
     // 300  50     50     50     50    50    50
     return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
   }
 
-  if (elvl <= 4) {
+  if (energy < 1000) {
     // capacity 200, steal complete full built extension
     // 400  50     50     50     50     50    50    50    50
     return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
   }
 
-  // 5+ or 1800+
   // 1000 50     50     50     50     50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50
   return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
 }

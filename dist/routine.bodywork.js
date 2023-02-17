@@ -26,21 +26,18 @@ const bodywork = {
       return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    const energyLevel = room.memory.elvl
+    const energy = room.extendedAvailableEnergyCapacity()
 
-    // 0 or 1
-    if (energyLevel <= 1) {
+    if (energy < 500) {
       // 250  100   50     50    50
       return [WORK, CARRY, MOVE, MOVE]
     }
 
-    // 2
-    if (energyLevel === 2) {
+    if (energy < 750) {
       // 500  100   100   50     50     50    50    50    50
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 3+
     // 750  100   100   100   50     50     50     50    50    50    50    50    50
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
@@ -73,30 +70,26 @@ const bodywork = {
       return a.concat(b).concat(c)
     }
 
-    const energyLevel = room.memory.elvl
+    const energy = room.extendedAvailableEnergyCapacity()
 
-    // 0 or 1
-    if (energyLevel <= 1) {
+    if (energy < 550) {
       // 250  100   50     50    50
       return [WORK, CARRY, MOVE, MOVE]
     }
 
-    // 2
-    if (energyLevel === 2) {
+    if (energy < 800) {
       // 550  100   100   100   50     50    50    50    50
       return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
     // TODO constant-ise
 
-    // 3
-    if (energyLevel === 3) {
+    if (energy < 850) {
       // special case, limp a bit when loaded
       // 800  100   100   100   100   100   50     50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 4+
     // target is 3000 / 300 / 2 = 5 WORK body parts
     // 850  100   100   100   100   100   50     50    50    50    50    50    50
     return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
@@ -108,35 +101,30 @@ const bodywork = {
     @return {Array} body.
     **/
   miner: function (room) {
-    const energyLevel = room.memory.elvl
+    const energy = room.extendedAvailableEnergyCapacity()
 
-    // 0 or 1
-    if (energyLevel <= 1) {
+    if (energy < 550) {
       // 250  100   50     50    50
       return [WORK, CARRY, MOVE, MOVE]
     }
 
-    // 2
-    if (energyLevel === 2) {
+    if (energy < 800) {
       // 550  100   100   100   50     50    50    50    50
       return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 3
-    if (energyLevel === 3) {
+    if (energy < 850) {
       // special case, limp a bit when loaded
       // 800  100   100   100   100   100   50     50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 4
-    if (energyLevel === 4) {
+    if (energy < 1700) {
       // 850  100   100   100   100   100   50     50    50    50    50    50    50
       return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 5 or 6
-    if (energyLevel <= 6) {
+    if (energy < 3400) {
       // 1700
       return [
       // 100   100   100   100   100   100   100   100   100   100
@@ -147,7 +135,6 @@ const bodywork = {
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 7+
     // 3400
     return [
     // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
