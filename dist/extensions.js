@@ -89,6 +89,10 @@ OwnedStructure.prototype.myOrAlly = function () {
   return this.my || this.ally
 }
 
+Room.prototype.level = function () {
+  return this.my ? this.controller.level : 0
+}
+
 Room.prototype.roomDebug = function (what) {
   if (this.__debugY === undefined) {
     this.__debugY = 1.5
@@ -165,6 +169,27 @@ Room.prototype.sourceEnergyCapacity = function () {
   }
 
   return SOURCE_ENERGY_NEUTRAL_CAPACITY
+}
+
+Room.prototype.extendedAvailableEnergyCapacity = function () {
+  if (!this.my) return 0
+
+  if (this.__extendedAvailableEnergyCapacity) return this.__extendedAvailableEnergyCapacity
+
+  // if there are no spawns in this room, nothing will help
+  if (!_.some(Game.spawns, _.matchesProperty('pos.roomName', this.name))) {
+    this.__extendedAvailableEnergyCapacity = 0
+    return this.__extendedAvailableEnergyCapacity
+  }
+
+  // if there are no workers, only dribble will help
+  if (!_.some(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))) {
+    this.__extendedAvailableEnergyCapacity = SPAWN_ENERGY_CAPACITY
+    return this.__extendedAvailableEnergyCapacity
+  }
+
+  this.__extendedAvailableEnergyCapacity = this.energyCapacityAvailable
+  return this.__extendedAvailableEnergyCapacity
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
