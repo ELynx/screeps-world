@@ -28,7 +28,7 @@ const ttlController = require('./controller.ttl')
 const upgradeController = require('./controller.upgrade')
 
 // STRATEGY priority for creep assignment
-const automaticControllres = [
+const automaticControllers = [
   downgradeController.id, // always on top
   ttlController.id, // catch recyclees
   rampupController.id, // build up the ramps and walls to decent level right up
@@ -104,8 +104,8 @@ const roomActor =
     @param {array<Creep>} creeps.
     **/
   roomControllersControl: function (room, creeps) {
-    for (const index in automaticControllres) {
-      const id = automaticControllres[index]
+    for (const index in automaticControllers) {
+      const id = automaticControllers[index]
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
