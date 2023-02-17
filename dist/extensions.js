@@ -116,8 +116,19 @@ Room.prototype.getRoomControlledCreeps = function () {
   return this.__roomCreeps
 }
 
+Room.prototype.extendedOwnerUsername = function () {
+  return Game.iff.extendedOwnerUsername(this.controller)
+}
+
+Room.prototype.myOrMyReserved = function () {
+  if (this.my) return true
+
+  const username = this.extendedOwnerUsername()
+  return Game.iff.ownUsername === username
+}
+
 Room.prototype.myOrAlly = function () {
-  return this.my || this.ally
+  return this.myOrMyReserved() || this.ally
 }
 
 Room.prototype.sourceKeeper = function () {
