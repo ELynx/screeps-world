@@ -155,7 +155,7 @@ spawn._spawnsByDistance = function (roomName) {
       }
 
       // if distance is same, sort by power inside
-      return spawn1.room.level() - spawn2.room.level()
+      return spawn2.room.level() - spawn1.room.level()
     }
   )
 
