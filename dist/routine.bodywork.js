@@ -82,8 +82,6 @@ const bodywork = {
       return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // TODO constant-ise
-
     if (energy < 850) {
       // special case, limp a bit when loaded
       // 800  100   100   100   100   100   50     50    50    50    50    50
