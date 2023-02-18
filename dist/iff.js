@@ -450,7 +450,7 @@ module.exports = {
   convenience () {
     prepareHostileNPCMemory()
 
-    const getSomethingOwned = function() {
+    const getSomethingOwned = function () {
       if (Game.structures.length > 0) return Game.structures[0]
       if (Game.creeps.length > 0) return Game.creeps[0]
       if (Game.powerCreeps.length > 0) return Game.powerCreeps[0]
