@@ -62,6 +62,8 @@ towerProcess.work = function (room) {
       }
 
       // TODO matrix solution?
+      harmful = _.shuffle(harmful)
+
       for (let i = 0; i < towers.length; ++i) {
         const tower = towers[i]
 
