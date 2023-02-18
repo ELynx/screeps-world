@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Remove construction sites placed by previous owner of the room.
-
 Movement and positioning:
 
 * Step away and uncrowd.
