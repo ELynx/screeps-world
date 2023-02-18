@@ -161,8 +161,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
       if (workInRestocker > 0) {
         const workInWorker = _.countBy(workerBody)[WORK] || 0
         if (workInWorker > 0) {
-          // TODO check this assumption
-          // each harvest makes 2 energy, each work consumes 1
+          // STRATEGY harvest to spend ratio
           supportedByRestockers = Math.round(HARVEST_POWER * workInRestocker / workInWorker)
         }
       }
