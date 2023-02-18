@@ -240,6 +240,18 @@ spawn.spawnNext = function () {
 
   if (spawns.length === 0) return false
 
+  if (spawns.length > 1 && nextModel.priority === 'lowkey') {
+    if (nextModel.from === queue.FROM_CLOSEST_ROOM ||
+        nextModel.from === queue.FROM_STRONGEST_ROOM) {
+      const firstRoomName = spawns[0].room.name
+
+      // TODO spawn from strongest only
+      // TODO spawn from closest only
+
+      spawns = _.takeWhile(spawns, _.matchesProperty('room.name', firstRoomName))
+    }
+  }
+
   for (let i = 0; i < spawns.length; ++i) {
     const spawn = spawns[i]
 
