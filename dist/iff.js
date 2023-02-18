@@ -3,7 +3,7 @@
 const UsernameInvader = 'Invader'
 const UsernamePowerBank = 'Power Bank'
 const UsernamePublic = 'Public'
-const UsernameScreeps = 'Screeps'
+const UsernameScreeps = SYSTEM_USERNAME
 const UsernameSourceKeeper = 'Source Keeper'
 
 const NPCs = [
@@ -450,7 +450,17 @@ module.exports = {
   convenience () {
     prepareHostileNPCMemory()
 
-    const ownUsername = Game.spawns.length > 0 ? Game.spawns[0].owner.username : undefined
+    const getSomethingOwned = function() {
+      if (Game.structures.length > 0) return Game.structures[0]
+      if (Game.creeps.length > 0) return Game.creeps[0]
+      if (Game.powerCreeps.length > 0) return Game.powerCreeps[0]
+      if (Game.constructionSites.length > 0) return Game.constructionSites[0]
+
+      return undefined
+    }
+
+    const somethingOwned = getSomethingOwned()
+    const ownUsername = somethingOwned !== undefined ? somethingOwned.owner.username : undefined
 
     Game.iff = {
       ownUsername,
