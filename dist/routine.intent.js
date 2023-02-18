@@ -475,7 +475,7 @@ const intent = {
                   '] on spawn [' + spawn.name +
                   '] with code ' + intentRc + ' where expected code was ' + rc)
 
-      this.restoreIntents(spawn, backupCreep)
+      this.restoreIntents(spawn, backupSpawn)
       this.restoreIntents(spawn.room, backupRoom)
       this.restoreIntents(arg0, backupArg0)
       this.restoreIntents(arg1, backupArg1)
