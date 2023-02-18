@@ -6,19 +6,57 @@ const Tasked = require('./tasked.template')
 
 const spawn = new Tasked('spawn')
 
+spawn._maxEnergyCapacity = function () {
+  if (Game.__maxEnergyCapacity) return Game.__maxEnergyCapacity
+
+  Game.__maxEnergyCapacity = 0
+
+  for (const id in Game.spawns) {
+    const roomCapacity = Game.spawns[id].room.extendedAvailableEnergyCapacity()
+
+    if (Game.__maxEnergyCapacity < roomCapacity) {
+      Game.__maxEnergyCapacity = roomCapacity
+    }
+  }
+
+  return Game.__maxEnergyCapacity
+}
+
+spawn._bodyCost = function (body) {
+  const costArray = _.map(
+    body,
+    function (part) {
+      return BODYPART_COST[part] || 1000000
+    }
+  )
+
+  return _.sum(costArray)
+}
+
 /**
  * Should model be dismissed from spawn process
  **/
 spawn.dismiss = function (model) {
-  // sanitize of old models
+  // sanitize old models
   if (model._time < Game.time - CREEP_LIFE_TIME) {
     return true
   }
 
-  // sanitize of manually deleted flags
+  // sanitize deleted flags
   if (model.memory && model.memory.flag) {
     const flag = Game.flags[model.memory.flag]
     return flag === undefined
+  }
+
+  // sanitize too expensive preset models
+  if (_.isArray(model.body)) {
+    const maxCost = this._maxEnergyCapacity()
+    const bodyCost = this._bodyCost(model.body)
+
+    if (bodyCost > maxCost) {
+      console.log('spawn.dismiss found model [' + model.name + '] of body ' + model.body + ' and cost ' + bodyCost + ' with max capacity ' + maxCost)
+      return true
+    }
   }
 
   return false
