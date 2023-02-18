@@ -22,6 +22,22 @@ buildController._sites = function (room) {
   const allSites = room.find(FIND_CONSTRUCTION_SITES)
   if (allSites.length === 0) return []
 
+  // STRATEGY in own rooms remove foreigh construction sites
+  if (room.my) {
+    let skipBeat = false
+
+    for (let i = 0; i < allSites.length; ++i) {
+      const site = allSites[i]
+
+      if (Game.iff.ownUsername && Game.iff.ownUsername !== site.owner.username) {
+        site.remove()
+        skipBeat = true
+      }
+    }
+
+    if (skipBeat) return []
+  }
+
   const spawns = _.filter(
     allSites,
     {
