@@ -400,8 +400,8 @@ const intent = {
     const intentRc = _.bind(intent, creep)(arg0, arg1, arg2)
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
-                        '] on creep [' + creep.name +
-                        '] with code ' + intentRc + ' where expected code was ' + rc)
+                  '] on creep [' + creep.name +
+                  '] with code ' + intentRc + ' where expected code was ' + rc)
 
       this.restoreIntents(creep, backupCreep)
       this.restoreIntents(arg0, backupArg0)
@@ -439,6 +439,52 @@ const intent = {
     const value = something.store.getUsedCapacity()
 
     return this.getWithIntended(something, key, value)
+  },
+
+  wrapSpawnIntent: function (spawn, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
+    if (spawn === undefined) {
+      console.log('wrapSpawnIntent received undefined argument [spawn]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    const intent = spawn[intentName]
+    if (intent === undefined) {
+      console.log('Invalid intent [' + intentName + '] called for spawn [' + spawn.name + ']')
+      return bootstrap.ERR_INVALID_INTENT_NAME
+    }
+
+    let rc = OK
+
+    const backupSpawn = this.backupIntents(spawn)
+    const backupRoom = this.backupIntents(spawn.room)
+    const backupArg0 = this.backupIntents(arg0)
+    const backupArg1 = this.backupIntents(arg1)
+    const backupArg2 = this.backupIntents(arg2)
+
+    const intentHandler = this['spawn_intent_' + intentName]
+    if (intentHandler) {
+      rc = _.bind(intentHandler, this)(spawn, arg0, arg1, arg2)
+      if (rc < OK) return rc // OK is 0, warnings are greater than zero
+    } else {
+      console.log('Unvalidated intent [' + intentName + '] called for spawn [' + spawn.name + ']')
+    }
+
+    const intentRc = _.bind(intent, spawn)(arg0, arg1, arg2)
+    if (intentRc !== OK) {
+      console.log('Unforceen error occurred during intent call [' + intentName +
+                  '] on spawn [' + spawn.name +
+                  '] with code ' + intentRc + ' where expected code was ' + rc)
+
+      this.restoreIntents(spawn, backupCreep)
+      this.restoreIntents(spawn.room, backupRoom)
+      this.restoreIntents(arg0, backupArg0)
+      this.restoreIntents(arg1, backupArg1)
+      this.restoreIntents(arg2, backupArg2)
+
+      return intentRc
+    }
+
+    return rc
   }
 }
 
