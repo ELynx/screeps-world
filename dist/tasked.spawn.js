@@ -240,8 +240,6 @@ spawn.spawnNext = function () {
 
   if (spawns.length === 0) return false
 
-  // TODO length by priority
-
   for (let i = 0; i < spawns.length; ++i) {
     const spawn = spawns[i]
 
