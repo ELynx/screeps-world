@@ -161,8 +161,8 @@ const isAlly = function (something) {
   // you are not your ally
   if (something.my) return false
 
-   const username = _extendedOwnerUsername(something)
-   if (username === undefined) return false
+  const username = _extendedOwnerUsername(something)
+  if (username === undefined) return false
 
   _assignReputation(something, username)
 
@@ -173,8 +173,8 @@ const isNeutral = function (something) {
   // you are not your neutral
   if (something.my) return false
 
-   const username = _extendedOwnerUsername(something)
-   if (username === undefined) return false
+  const username = _extendedOwnerUsername(something)
+  if (username === undefined) return false
 
   _assignReputation(something, username)
 
@@ -186,8 +186,8 @@ const isHostile = function (something) {
   // your are not your hostile
   if (something.my) return false
 
-   const username = _extendedOwnerUsername(something)
-   if (username === undefined) return false
+  const username = _extendedOwnerUsername(something)
+  if (username === undefined) return false
 
   _assignReputation(something, username)
 
