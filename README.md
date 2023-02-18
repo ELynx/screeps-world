@@ -12,7 +12,7 @@ Proprietary and confidential.
 ## Folders
 `.github` and `github_conf` - GitHub specific items, such as action definitions
 
-`dist` - deployed to official server
+`dist` - deployment payload
 
 `history` - historical data worth saving
 
@@ -30,6 +30,8 @@ Movement and positioning:
 * Worker creeps avoid hostile areas.
 
 Intent queue for withdraw and transfer.
+
+Intent queue for spawn.
 
 Don't send military to enemy safe mode rooms.
 
@@ -69,8 +71,6 @@ Some material on autobases:
 
 * [Screeps Script](https://github.com/slothsoft/screeps-script)
 
-TIP OF THE DAY: Use Room.energyAvailable and Room.energyCapacityAvailable to determine how much energy all the spawns and extensions in the room contain. Check if isActive is called, or any other verification is done.
-
 TIP OF THE DAY: You can output HTML content to the console, like links to rooms. `<a href="url">link text</a>` -> `https://screeps.com/a/url`
 
 Fatigue based emergent road building. CostMatrix has ser-de.
@@ -88,5 +88,3 @@ Tasked default movement options. Claim has swamp cheap. Auto.
 Flag to turn verbose naming on and off.
 
 Border control for creep movement in tasked. Tie-in with default options?
-
-Spawn intent. Wrapper first, then actual impl.
