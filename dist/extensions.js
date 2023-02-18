@@ -269,7 +269,7 @@ RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition
         const x = pos.x + dx
         const y = pos.y + dy
 
-        if (x < 0 || x > 49 || y < 0 || y > 49) continue
+        if (x <= 0 || x >= 49 || y <= 0 || y >= 49) continue
 
         result[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, pos.roomName)
       }
