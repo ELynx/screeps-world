@@ -9,6 +9,7 @@
     "globals": [
       "_",
       "ATTACK",
+      "BODYPART_COST",
       "BOTTOM",
       "BOTTOM_LEFT",
       "BOTTOM_RIGHT",
