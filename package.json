@@ -112,6 +112,7 @@
       "StructureContainer",
       "StructureLink",
       "StructureTerminal",
+      "SYSTEM_USERNAME",
       "TERRAIN_MASK_WALL",
       "TOP",
       "TOP_LEFT",
