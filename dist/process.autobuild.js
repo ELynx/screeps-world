@@ -63,7 +63,9 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
     const y = center.y + dy
 
     // prevent out of bounds
-    if (x < 0 || x > 49 || y < 0 || y > 49) { continue }
+    if (x <= 0 || x >= 49 || y <= 0 || y >= 49) {
+      continue
+    }
 
     const blocked = terrain.get(x, y) === TERRAIN_MASK_WALL
 
