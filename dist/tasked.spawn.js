@@ -1,6 +1,7 @@
 'use strict'
 
 const queue = require('./routine.spawn')
+const intent = require('./routine.intent')
 
 const Tasked = require('./tasked.template')
 
@@ -11,8 +12,8 @@ spawn._maxEnergyCapacity = function () {
 
   Game.__maxEnergyCapacity = 0
 
-  for (const id in Game.spawns) {
-    const roomCapacity = Game.spawns[id].room.extendedAvailableEnergyCapacity()
+  for (const name in Game.spawns) {
+    const roomCapacity = Game.spawns[name].room.extendedAvailableEnergyCapacity()
 
     if (Game.__maxEnergyCapacity < roomCapacity) {
       Game.__maxEnergyCapacity = roomCapacity
@@ -106,85 +107,82 @@ spawn.postpone = function () {
   return queue.postpone()
 }
 
-spawn._spawnRoomMarkCheck = function (room) {
-  return room.__spawnMark || false
-}
+spawn._spawnsCanSpawn = function () {
+  if (Game.__spawnsCanSpawn) return Game.__spawnsCanSpawn
 
-spawn._spawnRoomFilter = function (room) {
-  if (this._spawnRoomMarkCheck(room)) return false
-
-  if (room.my) {
-    return room.memory.elvl > 0
-  }
-
-  return false
-}
-
-spawn._spawnRoomMark = function (room) {
-  room.__spawnMark = true
-}
-
-spawn._findAllSpawnRooms = function () {
-  const sourceRooms = []
-  for (const roomName in Game.rooms) {
-    const room = Game.rooms[roomName]
-    if (this._spawnRoomFilter(room)) {
-      sourceRooms.push(room)
-    }
-  }
-
-  return sourceRooms
-}
-
-spawn.findStrongestSpawnRooms = function () {
-  const sourceRooms = this._findAllSpawnRooms()
-  sourceRooms.sort(
-    function (room1, room2) {
-      return room2.memory.elvl - room1.memory.elvl
+  const spawns = _.filter(
+    Game.spawns,
+    function (spawn) {
+      return spawn.spawning === null && spawn.isActiveSimple()
     }
   )
 
-  return sourceRooms
+  Game.__spawnsCanSpawn = spawns
+
+  return spawns
 }
 
-spawn.findSpawnRoomsFor = function (model) {
-  // STRATEGY lowkey creeps are spawned in their own room, unless room cannot spawn them
-  // n.b. spawn them at all, not "right now" because spawn points are busy, etc
-  if (model.priority === 'lowkey') {
-    // find room in general
-    const room = Game.rooms[model.from]
-    if (room && room.my) {
-      // test spawn-ability
-      if (room.memory.elvl > 0) {
-        if (this._spawnRoomMarkCheck(room)) {
-          // room was already used this tick
-          return []
-        } else {
-          return [room]
-        }
+spawn._spawnsByLevel = function () {
+  if (Game.__spawnsByLevel) return Game.__spawnsByLevel
+
+  const spawns = this._spawnsCanSpawn().slice(0)
+  spawns.sort(
+    function (spawn1, spawn2) {
+      return spawn2.room.level() - spawn1.room.level()
+    }
+  )
+
+  Game.__spawnsByLevel = spawns
+
+  return spawns
+}
+
+spawn._spawnsByDistance = function (roomName) {
+  if (Game.__spawnsByDistance) {
+    const cached = Game.__spawnsByDistance(roomName)
+    if (cached) return cached
+  }
+
+  const spawns = this._spawnsCanSpawn().slice(0)
+  spawns.sort(
+    function (spawn1, spawn2) {
+      const d1 = Game.map.getRoomLinearDistance(spawn1.room.name, roomName)
+      const d2 = Game.map.getRoomLinearDistance(spawn2.room.name, roomName)
+
+      // if distance is different, favor distance
+      if (d1 !== d2) {
+        return d1 - d2
       }
-    }
-  }
 
-  const sourceRooms = this._findAllSpawnRooms()
-  sourceRooms.sort(
-    function (room1, room2) {
-      const d1 = Game.map.getRoomLinearDistance(room1.name, model.from)
-      const d2 = Game.map.getRoomLinearDistance(room2.name, model.from)
-
-      return d1 - d2
+      // if distance is same, sort by power inside
+      return spawn1.room.level() - spawn2.room.level()
     }
   )
 
-  return sourceRooms
-}
-
-spawn._spawnFilter = function (structure) {
-  if (structure.structureType === STRUCTURE_SPAWN) {
-    return !structure.spawning && structure.isActiveSimple()
+  if (Game.__spawnsByDistance === undefined) {
+    Game.__spawnsByDistance = { }
   }
 
-  return false
+  Game.__spawnsByDistance[roomName] = spawns
+
+  return spawns
+}
+
+spawn._spawnsInRoom = function (roomName) {
+  if (Game.__spawnsInRoom) {
+    const cached = Game.__spawnsInRoom(roomName)
+    if (cached) return cached
+  }
+
+  const spawns = _.filter(this._spawnsCanSpawn(), _.matchesProperty('room.name', roomName))
+
+  if (Game.__spawnsInRoom === undefined) {
+    Game.__spawnsInRoom = { }
+  }
+
+  Game.__spawnsInRoom[roomName] = spawns
+
+  return spawns
 }
 
 spawn.makeBody = function (spawn, model) {
@@ -196,7 +194,7 @@ spawn.makeBody = function (spawn, model) {
     const bodyFunction = queue.getBodyFunction(model.body)
     if (bodyFunction === undefined) return undefined
 
-    return bodyFunction(spawn)
+    return bodyFunction(spawn.room)
   }
 
   return undefined
@@ -204,12 +202,12 @@ spawn.makeBody = function (spawn, model) {
 
 spawn.spawnNextErrorHandler = function (spawn, model, index, rc = undefined) {
   let message =
-        'spawn.spawnNext error condition ' + index +
-        ' detected for ' + JSON.stringify(model) +
-        ' at ' + spawn.room.name + ' [' + spawn.id + ']'
+        'spawn.spawnNext error condition [' + index +
+        '] detected for [' + JSON.stringify(model) +
+        '] at room [' + spawn.room.name + '] spawn [' + spawn.name + ']'
 
   if (rc) {
-    message += ' with rc ' + rc
+    message += ' with rc [' + rc + ']'
   }
 
   console.log(message)
@@ -228,83 +226,72 @@ spawn.spawnNext = function () {
   // queue is empty
   if (nextModel === undefined) return false
 
-  let sourceRooms
+  let spawns
+
   if (nextModel.from === queue.FROM_ANY_ROOM) {
-    sourceRooms = this.findStrongestSpawnRooms()
+    spawns = _.shuffle(this._spawnsCanSpawn())
+  } else if (nextModel.from === queue.FROM_CLOSEST_ROOM) {
+    spawns = this._spawnsByDistance(nextModel.to)
+  } else if (nextModel.from === queue.FROM_STRONGEST_ROOM) {
+    spawns = this._spawnsByLevel()
   } else {
-    sourceRooms = this.findSpawnRoomsFor(nextModel)
+    spawns = _.shuffle(this._spawnsInRoom(nextModel.from))
   }
 
-  if (sourceRooms.length === 0) return false
+  if (spawns.length === 0) return false
 
-  for (let i = 0; i < sourceRooms.length; ++i) {
-    const sourceRoom = sourceRooms[i]
+  // TODO length by priority
 
-    const spawns = sourceRoom.find(
-      FIND_STRUCTURES,
+  for (let i = 0; i < spawns.length; ++i) {
+    const spawn = spawns[i]
+
+    const body = this.makeBody(spawn, nextModel)
+    if (body === undefined) {
+      return this.spawnNextErrorHandler(spawn, nextModel, 1)
+    }
+
+    if (body.length === 0) {
+      continue // not enough power, next spawn
+    }
+
+    const dryRun = intent.wrapSpawnIntent(
+      spawn,
+      'spawnCreep',
+      body,
+      nextModel.name,
       {
-        filter: this._spawnFilter
+        dryRun: true
       }
     )
 
-    if (spawns.length === 0) {
-      this._spawnRoomMark(sourceRoom)
-      continue
+    if (dryRun === ERR_NOT_ENOUGH_ENERGY) {
+      continue // not enough power, next spawn
     }
 
-    // because if one spawn cannot spawn, others cannot too
-    // eslint-disable-next-line no-unreachable-loop
-    for (let j = 0; j < spawns.length; ++j) {
-      const spawn = spawns[j]
+    if (dryRun < OK) {
+      return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun)
+    }
 
-      const body = this.makeBody(spawn, nextModel)
-      if (body === undefined) {
-        return this.spawnNextErrorHandler(spawn, nextModel, 1)
+    const actualRun = intent.wrapSpawnIntent(
+      spawn,
+      'spawnCreep',
+      body,
+      nextModel.name,
+      {
+        memory: nextModel.memory,
+        directions: [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT]
       }
+    )
 
-      if (body.length === 0) {
-        break // from spawns cycle, room is not powerful enough
-      }
+    if (actualRun < OK) {
+      return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun)
+    }
 
-      const dryRun = spawn.spawnCreep(
-        body,
-        nextModel.name,
-        {
-          dryRun: true
-        }
-      )
+    // remove the model
+    queue.get()
 
-      if (dryRun === ERR_NOT_ENOUGH_ENERGY) {
-        break // from spawns cycle, room will not have more energy
-      }
-
-      if (dryRun !== OK) {
-        return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun)
-      }
-
-      const actualRun = spawn.spawnCreep(
-        body,
-        nextModel.name,
-        {
-          memory: nextModel.memory,
-          directions: [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT]
-        }
-      )
-
-      if (actualRun !== OK) {
-        return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun)
-      }
-
-      // remove the model
-      queue.get()
-
-      // TODO handle multiple spawns faster
-      // STRATEGY don't spawn more creeps in same room to prevent energy owerdraft
-      this._spawnRoomMark(sourceRoom)
-
-      return true
-    } // end of spawn loop
-  } // end of loop for rooms
+    return true
+  } // end of loop for spawns
 
   // maybe move model in queue
   // if movement was successful, try next one
