@@ -24,10 +24,12 @@ spawn._maxEnergyCapacity = function () {
 }
 
 spawn._bodyCost = function (body) {
+  const usedBody = (body.length > MAX_CREEP_SIZE) ? body.slice(0, MAX_CREEP_SIZE) : body
+
   const costArray = _.map(
-    body,
-    function (part) {
-      return BODYPART_COST[part] || 1000000
+    usedBody,
+    function (type) {
+      return BODYPART_COST[type] || 1000000
     }
   )
 
@@ -265,25 +267,7 @@ spawn.spawnNext = function () {
       continue // not enough power, next spawn
     }
 
-    const dryRun = intent.wrapSpawnIntent(
-      spawn,
-      'spawnCreep',
-      body,
-      nextModel.name,
-      {
-        dryRun: true
-      }
-    )
-
-    if (dryRun === ERR_NOT_ENOUGH_ENERGY) {
-      continue // not enough power, next spawn
-    }
-
-    if (dryRun < OK) {
-      return this.spawnNextErrorHandler(spawn, nextModel, 2, dryRun)
-    }
-
-    const actualRun = intent.wrapSpawnIntent(
+    const actualRunRc = intent.wrapSpawnIntent(
       spawn,
       'spawnCreep',
       body,
@@ -294,8 +278,12 @@ spawn.spawnNext = function () {
       }
     )
 
-    if (actualRun < OK) {
-      return this.spawnNextErrorHandler(spawn, nextModel, 3, actualRun)
+    if (actualRunRc === ERR_NOT_ENOUGH_ENERGY) {
+      continue // to next spawn
+    }
+
+    if (actualRunRc < OK) {
+      return this.spawnNextErrorHandler(spawn, nextModel, 2, actualRunRc)
     }
 
     // remove the model
