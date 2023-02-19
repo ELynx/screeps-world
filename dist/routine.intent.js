@@ -438,8 +438,8 @@ const intent = {
       directions: options ? options.directions : undefined,
       spawn,
 
-      cancel: function() { },
-      setDirections: function(directions) { }
+      cancel: function () { },
+      setDirections: function (directions) { }
     }
 
     this.setIntended(spawn, spawningKey, planedSpawning)
