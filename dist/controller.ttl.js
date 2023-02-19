@@ -1,5 +1,6 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
 const bodywork = require('./routine.bodywork')
 
 const Controller = require('./controller.template')
@@ -16,10 +17,11 @@ ttlController.act = function (spawn, creep) {
   let renew = true
   let recycle = false
 
-  // if spawning started
-  if (spawn.spawning) {
+  // if spawning is ongoing
+  const spawning = intentSolver.getSpawnSpawning(spawn)
+  if (spawning) {
     // if creep will not live long enough
-    if (creep.ticksToLive <= spawn.spawning.remainingTime) {
+    if (creep.ticksToLive <= spawning.remainingTime) {
       // just give some resources back
       renew = false
       recycle = true
@@ -30,21 +32,22 @@ ttlController.act = function (spawn, creep) {
     }
   }
 
+  // override for recycle calls
   if (creep.memory.rccl === true) {
     renew = false
     recycle = true
   }
 
   if (renew) {
-    const rc = spawn.renewCreep(creep)
-    if (rc === OK) return rc
+    const rc = intentSolver.wrapSpawnIntent(spawn, 'renewCreep', creep)
+    if (rc >= OK) return rc
 
     // forgetaboutit
     recycle = true
   }
 
   if (recycle) {
-    return spawn.recycleCreep(creep)
+    return intentSolver.wrapSpawnIntent(spawn, 'recycleCreep', creep)
   }
 
   // keep on target if can be dealt with later

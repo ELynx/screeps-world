@@ -10,6 +10,13 @@ if (UPGRADE_CONTROLLER_POWER !== 1) {
 const MadeUpLargeNumber = 1000000
 
 const intent = {
+  getIntended: function (something, key, tickValue) {
+    if (something.__intents) {
+      return something.__intents[key] || tickValue
+    }
+    return tickValue
+  },
+
   getWithIntended: function (something, key, tickValue) {
     if (something.__intents) {
       return tickValue + (something.__intents[key] || 0)
@@ -356,7 +363,17 @@ const intent = {
     return rc
   },
 
-  spawn_intent_spawnCreep: function (spawn, body, name, memory) {
+  spawn_intent_spawnCreep: function (spawn, body, name, options) {
+    // TODO
+    return OK
+  },
+
+  spawn_intent_renewCreep: function (spawn, creep) {
+    // TODO
+    return OK
+  },
+
+  spawn_intent_recycleCreep: function (spawn, creep) {
     // TODO
     return OK
   },
@@ -407,6 +424,13 @@ const intent = {
     const value = something.amount
 
     return this.getWithIntended(something, key, value)
+  },
+
+  getSpawnSpawning: function (spawn) {
+    const key = '__spawning'
+    const value = spawn.spawning
+
+    return this.getIntended(spawn, key, value)
   },
 
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
@@ -485,7 +509,7 @@ const intent = {
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on spawn [' + spawn.name +
-                  '] with code ' + intentRc + ' where expected code was ' + rc)
+                  '] with code ' + intentRc + ' where expected code was [' + rc + ']')
 
       this.restoreIntents(spawn, backupSpawn)
       this.restoreIntents(spawn.room, backupRoom)
