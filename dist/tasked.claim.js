@@ -119,15 +119,18 @@ claim.creepAtDestination = function (creep) {
 }
 
 claim.flagPrepare = function (flag) {
+  // in case of visibility, check flag sanity
   if (flag.room) {
-    if (flag.room.__breached === false) {
-      return this.FLAG_IGNORE
+    if (flag.room.controller === undefined) {
+      return this.FLAG_REMOVE
     }
 
-    if (flag.room.controller) {
-      return this._roomCheck(flag.room) ? this.FLAG_SPAWN : this.FLAG_REMOVE
-    } else {
+    if (!this._roomCheck(flag.room)) {
       return this.FLAG_REMOVE
+    }
+
+    if (flag.room.__breached === false) {
+      return this.FLAG_IGNORE
     }
   }
 
