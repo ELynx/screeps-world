@@ -132,6 +132,7 @@ plunder.creepAtOtherRooms = function (creep) {
   let targets = this.roomTargets[creep.room.name]
   if (targets === undefined) {
     const allStructures = creep.room.find(FIND_STRUCTURES)
+    const allRuins = creep.room.find(FIND_RUINS)
 
     const ramparts = _.filter(
       allStructures,
@@ -140,16 +141,18 @@ plunder.creepAtOtherRooms = function (creep) {
       }
     )
 
+    const candidateTargets = allStructures.concat(allRuins)
+
     targets = _.filter(
-      allStructures,
-      function (structure) {
-        if (structure.store === undefined) return false
+      candidateTargets,
+      function (candiadate) {
+        if (candiadate.store === undefined) return false
         // nuker is no-withdraw
-        if (structure.structureType === STRUCTURE_NUKER) return false
+        if (candiadate.structureType && candiadate.structureType === STRUCTURE_NUKER) return false
 
         let hasResources = false
-        for (const resourceType in structure.store) {
-          if (structure.store[resourceType] > 0) {
+        for (const resourceType in candiadate.store) {
+          if (candiadate.store[resourceType] > 0) {
             hasResources = true
             break
           }
@@ -159,7 +162,7 @@ plunder.creepAtOtherRooms = function (creep) {
         const hasRamp = _.some(
           ramparts,
           function (ramp) {
-            return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
+            return ramp.pos.x === candiadate.pos.x && ramp.pos.y === candiadate.pos.y
           }
         )
 
