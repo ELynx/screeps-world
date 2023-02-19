@@ -441,6 +441,13 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
+  getAmount: function (something) {
+    const key = '__amount'
+    const value = something.amount
+
+    return this.getWithIntended(something, key, value)
+  },
+
   wrapSpawnIntent: function (spawn, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (spawn === undefined) {
       console.log('wrapSpawnIntent received undefined argument [spawn]')
