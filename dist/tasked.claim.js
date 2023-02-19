@@ -13,6 +13,14 @@ claim._onProblemDetected = function (creep) {
   creep.unlive()
 }
 
+claim._roomCheck = function (room) {
+  if (room.my) return false
+  if (room.ally) return false
+  if (room.neutral) return false
+
+  return true
+}
+
 claim.creepAtDestination = function (creep) {
   const controller = creep.room.controller
   if (!controller) {
@@ -35,8 +43,9 @@ claim.creepAtDestination = function (creep) {
   let rc = ERR_TIRED
   let wait = CREEP_CLAIM_LIFE_TIME // by default wait is longer than life
 
-  // as per special case, controller reserved by self is considered not owned
-  if (controller.hostileOrUnowned()) {
+  const beNotHostile
+
+  if (this._roomCheck(creep.room)) {
     if (creep.pos.isNearTo(controller)) {
       if (creep.memory._clt === undefined) {
         creep.memory._clt = creep.ticksToLive
@@ -117,10 +126,8 @@ claim.flagPrepare = function (flag) {
       return this.FLAG_IGNORE
     }
 
-    const flagController = flag.room.controller
-    if (flagController) {
-      // done about it
-      if (!flagController.hostileOrUnowned()) return this.FLAG_REMOVE
+    if (flag.room.controller) {
+      return this._roomCheck(flag.room) ? this.FLAG_SPAWN : this.FLAG_REMOVE
     } else {
       return this.FLAG_REMOVE
     }
