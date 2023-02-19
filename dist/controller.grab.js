@@ -81,7 +81,7 @@ grabController.targets = function (room) {
         grabs.push(
           {
             type: LOOK_TOMBSTONES,
-            LOOK_TOMBSTONES: tombstone
+            [LOOK_TOMBSTONES]: tombstone
           }
         )
 
@@ -107,7 +107,7 @@ grabController.targets = function (room) {
         grabs.push(
           {
             type: LOOK_RUINS,
-            LOOK_RUINS: ruin
+            [LOOK_RUINS]: ruin
           }
         )
 
@@ -130,7 +130,7 @@ grabController.targets = function (room) {
         grabs.push(
           {
             type: LOOK_RESOURCES,
-            LOOK_RESOURCES: resource
+            [LOOK_RESOURCES]: resource
           }
         )
 
