@@ -16,7 +16,7 @@ buildController.unowned = buildController.ally
 buildController.sourceKeeper = buildController.unowned
 
 buildController.act = function (site, creep) {
-  let rc = this.wrapIntent(creep, 'build', site)
+  const rc = this.wrapIntent(creep, 'build', site)
 
   // TODO without tick skip
 
