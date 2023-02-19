@@ -21,17 +21,21 @@ const historyActor =
   },
 
   getObjectById: function (room, id) {
-    // 1st likely case for observing own room history
-    const creep = Game.creeps[id]
-    if (creep) return creep
-
-    // 2nd likely case
+    // 2nd likely case, but direct cache is given
     const structure = Game.structures[id]
     if (structure) return structure
 
-    // now check the rest of cache
+    // check self-filled cache
     const cached = Game.__idCache[id]
     if (cached) return cached
+
+    // 1st likely case, but search is needed
+    for (const creepName in Game.creeps) {
+      const creep = Game.creeps[creepName]
+      Game.__idCache[creep.id] = creep
+
+      if (creep.id === id) return creep
+    }
 
     const byId = Game.getObjectById(id)
     if (byId !== null) {
