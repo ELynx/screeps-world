@@ -356,6 +356,11 @@ const intent = {
     return rc
   },
 
+  spawn_intent_spawnCreep: function (spawn, body, name, memory) {
+    // TODO
+    return OK
+  },
+
   backupIntents: function (something) {
     if (something && something.__intents) {
       return _.cloneDeep(something.__intents)
