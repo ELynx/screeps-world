@@ -17,6 +17,13 @@ const intent = {
     return tickValue
   },
 
+  setIntended: function (something, key, value) {
+    if (something.__intents === undefined) {
+      something.__intents = { }
+    }
+    something.__intents[key] = value
+  },
+
   getWithIntended: function (something, key, tickValue) {
     if (something.__intents) {
       return tickValue + (something.__intents[key] || 0)
@@ -364,9 +371,12 @@ const intent = {
   },
 
   _creepBodyCost: function (body) {
+    if (!_.isArray(body)) return undefined
+
     let total = 0
 
-    for (let i = 0; i < body.length; ++i) {
+    // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/spawns/create-creep.js#L36
+    for (let i = 0; i < body.length && i < MAX_CREEP_SIZE; ++i) {
       const part = body[i]
 
       // support both model and creep
@@ -382,8 +392,62 @@ const intent = {
   },
 
   spawn_intent_spawnCreep: function (spawn, body, name, options) {
-    // TODO
-    return OK
+    if (body === undefined) {
+      console.log('spawn_intent_spawnCreep received undefined argument [body]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    if (name === undefined) {
+      console.log('spawn_intent_spawnCreep received undefined argument [name]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    const spawningKey = '__spawning'
+    const spawningValue = spawn.spawning
+    const spawning = this.getIntended(spawn, spawningKey, spawningValue)
+
+    if (spawning) {
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
+    }
+
+    const bodyCost = this._creepBodyCost(body)
+    if (bodyCost === undefined) {
+      console.log('spawn_intent_spawnCreep received invalid argument [body]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    // TODO support for `energyStructures`
+    const energyAvailableKey = '__energyAvailable'
+    const energyAvailableValue = spawn.room.energyAvailable
+    const energyAvailable = this.getWithIntended(spawn.room, energyAvailableKey, energyAvailableValue)
+
+    if (energyAvailable < bodyCost) {
+      return ERR_NOT_ENOUGH_ENERGY
+    }
+
+    if (options && options.dryRun) {
+      return OK
+    }
+
+    const spawnTime = Math.min(body.length, MAX_CREEP_SIZE) * CREEP_SPAWN_TIME
+
+    const planedSpawning = {
+      name,
+      needTime: spawnTime,
+      remainingTime: spawnTime + 1,
+      directions: options ? options.direction : undefined
+    }
+
+    this.setIntended(spawn, spawningKey, planedSpawning)
+    this.subIntended(spawn.room, energyAvailableKey, bodyCost)
+
+    let rc = bootstrap.WARN_INTENDEE_EXHAUSTED
+
+    if (bodyCost >= energyAvailable) {
+      rc += bootstrap.WARN_INTENDED_EXHAUSTED
+    }
+
+    return rc
   },
 
   spawn_intent_renewCreep: function (spawn, creep) {

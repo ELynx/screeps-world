@@ -74,6 +74,7 @@
       "LOOK_SOURCES",
       "LOOK_STRUCTURES",
       "LOOK_TOMBSTONES",
+      "MAX_CREEP_SIZE",
       "Memory",
       "MOVE",
       "OBSTACLE_OBJECT_TYPES",
