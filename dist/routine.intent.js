@@ -370,6 +370,40 @@ const intent = {
     }
   },
 
+  getFreeCapacity: function (something, type = undefined) {
+    // repeat after original API
+    const nonUniversal = something.store.getCapacity() === null
+    if (nonUniversal && type === undefined) {
+      return null
+    }
+
+    return this.__getFreeCapacity(something, type, nonUniversal)
+  },
+
+  getUsedCapacity: function (something, type = undefined) {
+    // repeat after original API
+    const nonUniversal = something.store.getCapacity() === null
+    if (nonUniversal && type === undefined) {
+      return null
+    }
+
+    if (type !== undefined) {
+      return this._getUsedCapacity(something, type)
+    }
+
+    const key = '__stored_total'
+    const value = something.store.getUsedCapacity()
+
+    return this.getWithIntended(something, key, value)
+  },
+
+  getAmount: function (something) {
+    const key = '__amount'
+    const value = something.amount
+
+    return this.getWithIntended(something, key, value)
+  },
+
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (creep === undefined) {
       console.log('wrapCreepIntent received undefined argument [creep]')
@@ -412,40 +446,6 @@ const intent = {
     }
 
     return rc
-  },
-
-  getFreeCapacity: function (something, type = undefined) {
-    // repeat after original API
-    const nonUniversal = something.store.getCapacity() === null
-    if (nonUniversal && type === undefined) {
-      return null
-    }
-
-    return this.__getFreeCapacity(something, type, nonUniversal)
-  },
-
-  getUsedCapacity: function (something, type = undefined) {
-    // repeat after original API
-    const nonUniversal = something.store.getCapacity() === null
-    if (nonUniversal && type === undefined) {
-      return null
-    }
-
-    if (type !== undefined) {
-      return this._getUsedCapacity(something, type)
-    }
-
-    const key = '__stored_total'
-    const value = something.store.getUsedCapacity()
-
-    return this.getWithIntended(something, key, value)
-  },
-
-  getAmount: function (something) {
-    const key = '__amount'
-    const value = something.amount
-
-    return this.getWithIntended(something, key, value)
   },
 
   wrapSpawnIntent: function (spawn, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
