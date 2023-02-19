@@ -22,6 +22,27 @@ const bootstrap =
   ERR_INTENDED_EXHAUSTED: -10003,
 
   /**
+   Same as built-in, but tries to get some shortcuts
+   **/
+  getObjectById: function (id) {
+    // most of cases is some kind of `my` structure
+    const structure = Game.structures[id]
+    if (structure) return structure
+
+    if (Game.__bootstrap_getObjectById === undefined) {
+      Game.__bootstrap_getObjectById = { }
+    }
+
+    const cached = Game.__bootstrap_getObjectById[id]
+    if (cached) return cached
+
+    const found = Game.getObjectById(id)
+    cached[id] = found
+
+    return found
+  },
+
+  /**
     CPU used from hard shard limit.
     @return integer percent of used shard limit.
     **/

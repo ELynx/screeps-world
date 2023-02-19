@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const mapUtils = require('./routine.map')
 const spawn = require('./routine.spawn')
 
@@ -82,25 +84,25 @@ plunder.creepAtOwnRoom = function (creep) {
 }
 
 plunder.getSomeOwnRoomName = function (creep) {
-  const storage = creep.memory.strI ? Game.getObjectById(creep.memory.strI) : undefined
+  const storage = creep.memory.strI ? bootstrap.getObjectById(creep.memory.strI) : undefined
   if (storage) return storage.room.name
 
-  const terminal = creep.memory.trmI ? Game.getObjectById(creep.memory.trmI) : undefined
+  const terminal = creep.memory.trmI ? bootstrap.getObjectById(creep.memory.trmI) : undefined
   if (terminal) return terminal.room.name
 
   // intervention - if not energy, search for storage or terminal globally
   if (creep.store.getUsedCapacity() > creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
     const flag = Game.flags[creep.getFlagName()]
     if (flag) {
-      const storage1 = flag.memory.strI ? Game.getObjectById(flag.memory.strI) : undefined
+      const storage1 = flag.memory.strI ? bootstrap.getObjectById(flag.memory.strI) : undefined
       if (storage1) return storage1.room.name
 
-      const terminal1 = flag.memory.trmI ? Game.getObjectById(flag.memory.trmI) : undefined
+      const terminal1 = flag.memory.trmI ? bootstrap.getObjectById(flag.memory.trmI) : undefined
       if (terminal1) return terminal1.room.name
     }
   }
 
-  const controller = creep.memory.ctlI ? Game.getObjectById(creep.memory.ctlI) : undefined
+  const controller = creep.memory.ctlI ? bootstrap.getObjectById(creep.memory.ctlI) : undefined
   if (controller) return controller.room.name
 
   return undefined
