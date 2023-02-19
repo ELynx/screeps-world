@@ -77,7 +77,7 @@ grabController.targets = function (room) {
     for (let j = 0; j < typesToGrab.length; ++j) {
       const typeToGrab = typesToGrab[j]
 
-      if (intentSolver.getUsedCapacity(tombstone, typeToGrab) > 0) {
+      if (tombstone.store.getUsedCapacity(typeToGrab) > 0) {
         grabs.push(
           {
             type: LOOK_TOMBSTONES,
@@ -103,7 +103,7 @@ grabController.targets = function (room) {
     for (let j = 0; j < typesToGrab.length; ++j) {
       const typeToGrab = typesToGrab[j]
 
-      if (intentSolver.getUsedCapacity(ruin, typeToGrab) > 0) {
+      if (ruin.store.getUsedCapacity(typeToGrab) > 0) {
         grabs.push(
           {
             type: LOOK_RUINS,
@@ -126,7 +126,7 @@ grabController.targets = function (room) {
     const resource = resources[i]
 
     if (hasUniversalStore || resource.resourceType === RESOURCE_ENERGY) {
-      if (intentSolver.getAmount(resource) > 0) {
+      if (resource.amount > 0) {
         grabs.push(
           {
             type: LOOK_RESOURCES,
