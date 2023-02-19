@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Controller = require('./controller.template')
 
 const buildController = new Controller('build')
@@ -14,7 +16,19 @@ buildController.unowned = buildController.ally
 buildController.sourceKeeper = buildController.unowned
 
 buildController.act = function (site, creep) {
-  return this.wrapIntent(creep, 'build', site)
+  let rc = this.wrapIntent(creep, 'build', site)
+
+  // TODO without tick skip
+
+  // this is last build, there is more energy in creep
+  if (rc === bootstrap.WARN_INTENDED_EXHAUSTED) {
+    // keep in place for ramp-up
+    if (site.structureType === STRUCTURE_WALL || site.structureType === STRUCTURE_RAMPART) {
+      return OK
+    }
+  }
+
+  return rc
 }
 
 // STRATEGY build priorities
