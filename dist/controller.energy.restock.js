@@ -31,7 +31,7 @@ energyRestockController.targets = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.store && structure.isActiveSimple()
+        return structure.store && structure.isActiveSimple
       }
     }
   )

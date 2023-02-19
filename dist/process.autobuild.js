@@ -197,7 +197,7 @@ autobuildProcess.sourceLink = function (room) {
 
   if (canHave > reserve) {
     const filterForLinks = function (structure) {
-      return structure.structureType === STRUCTURE_LINK && structure.isActiveSimple()
+      return structure.structureType === STRUCTURE_LINK
     }
 
     const links = room.find(
@@ -263,7 +263,7 @@ autobuildProcess.sourceContainer = function (room) {
 
   if (canHave > ContainerReserve) {
     const filterForContainers = function (structure) {
-      return structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple()
+      return structure.structureType === STRUCTURE_CONTAINER
     }
 
     const containers = room.find(
