@@ -141,7 +141,7 @@ const roomActor =
       }
 
       if (controller.filterCreep(creep)) {
-        const rc = controller.act(undefined, creep)
+        const rc = controller.act(room, creep)
         if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
             rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
