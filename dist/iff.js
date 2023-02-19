@@ -38,6 +38,8 @@ const prepareHostileNPCMemory = function () {
 }
 
 const _getFromObjectHash = function (objectHash) {
+  // because only first key is needed
+  // eslint-disable-next-line no-unreachable-loop
   for (let key in objectHash) {
     return objectHash[key]
   }
