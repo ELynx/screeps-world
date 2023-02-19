@@ -185,7 +185,8 @@ const roomActor =
       // filter per creep controllers once
       const roomConsumingPassByControllers = _.filter(
         consumingPassByControllers,
-        function (controller) {
+        function (controllerId) {
+          const controller = bootstrap.roomControllers[controllerId]
           return controller.compatible(room)
         }
       )
