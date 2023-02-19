@@ -162,7 +162,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
         const workInWorker = _.countBy(workerBody)[WORK] || 0
         if (workInWorker > 0) {
           // STRATEGY harvest to spend ratio
-          supportedByRestockers = Math.round(HARVEST_POWER * workInRestocker / workInWorker)
+          supportedByRestockers = restockers * Math.round(HARVEST_POWER * workInRestocker / workInWorker)
         }
       }
     }
