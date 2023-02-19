@@ -86,3 +86,5 @@ Tasked default movement options. Claim has swamp cheap. Auto.
 Flag to turn verbose naming on and off.
 
 Border control for creep movement in tasked. Tie-in with default options?
+
+Spawn intent uber-wrapper with delayed call to spawn. Store all intended parameters for examination and modification.

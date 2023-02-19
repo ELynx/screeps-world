@@ -363,17 +363,75 @@ const intent = {
     return rc
   },
 
+  _creepBodyCost: function (body) {
+    let total = 0
+
+    for (let i = 0; i < body.length; ++i) {
+      const part = body[i]
+
+      // support both model and creep
+      const type = part.type ? part.type : part
+      const cost = BODYPART_COST[type]
+
+      if (cost === undefined) return undefined
+
+      total += cost
+    }
+
+    return total
+  },
+
   spawn_intent_spawnCreep: function (spawn, body, name, options) {
     // TODO
     return OK
   },
 
   spawn_intent_renewCreep: function (spawn, creep) {
-    // TODO
+    if (creep === undefined || creep.body === undefined) {
+      console.log('spawn_intent_renewCreep received invalid argument [creep]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    if (_.some(creep.body, _.matchesProperty('type', CLAIM))) {
+      console.log('spawn_intent_renewCreep received creep with CLAIM part, cannot renew')
+      return ERR_INVALID_TARGET
+    }
+
+    const spawningKey = '__spawning'
+    const spawningValue = spawn.spawning
+    const spawning = this.getIntended(spawn, spawningKey, spawningValue)
+    if (spawning) {
+      return ERR_BUSY
+    }
+
+    const ttlPower = Math.floor(SPAWN_RENEW_RATIO * CREEP_LIFE_TIME / CREEP_SPAWN_TIME / creep.body.length);
+    const ttlKey = '__ticksToLive'
+    const ttlValue = creep.ticksToLive
+    const ttl = this.getWithIntended(creep, ttlKey, ttlValue)
+    if (ttl + ttlPower > CREEP_LIFE_TIME) {
+      return ERR_FULL
+    }
+
+    const bodyCost = this._creepBodyCost(creep.body)
+    const energyCost = Math.ceil(SPAWN_RENEW_RATIO * bodyCost / CREEP_SPAWN_TIME / creep.body.length);
+    const roomEnergyKey = '__energyAvailable'
+    const roomEnergyValue = spawn.room.energyAvailable
+    const roomEnergy = this.getWithIntended(spawn.room, roomEnergyKey, roomEnergyValue)
+    if (roomEnergy < energyCost) {
+      return ERR_NOT_ENOUGH_ENERGY
+    }
+
+
+
     return OK
   },
 
   spawn_intent_recycleCreep: function (spawn, creep) {
+    if (creep === undefined || creep.body === undefined) {
+      console.log('spawn_intent_recycleCreep received undefined argument [creep]')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
     return OK
   },
 
