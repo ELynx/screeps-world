@@ -20,7 +20,7 @@ energyUnspecialistController.targets = function (room) {
     {
       filter: function (structure) {
         if (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_CONTAINER) {
-          if (structure.isActiveSimple && structure.isSource()) {
+          if (structure.isSource() && structure.isActiveSimple) {
             return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
           }
         }
