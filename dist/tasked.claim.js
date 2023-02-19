@@ -43,8 +43,6 @@ claim.creepAtDestination = function (creep) {
   let rc = ERR_TIRED
   let wait = CREEP_CLAIM_LIFE_TIME // by default wait is longer than life
 
-  const beNotHostile
-
   if (this._roomCheck(creep.room)) {
     if (creep.pos.isNearTo(controller)) {
       if (creep.memory._clt === undefined) {
