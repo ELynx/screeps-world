@@ -130,18 +130,13 @@ const roomActor =
     }
   },
 
-  _passByControllersControl: function (controllers, room, creep) {
+  creepControllersControl: function (controllers, room, creep) {
     for (const index in controllers) {
       const id = controllers[index]
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
         this.debugLine(room, 'Unknown controller [' + id + ']')
-        continue
-      }
-
-      if (!controller.compatible(room)) {
-        this.debugLine(room, 'Skipping incompatible controller [' + id + ']')
         continue
       }
 
@@ -158,19 +153,12 @@ const roomActor =
     return OK
   },
 
-  consumingPassByControllersControl: function (room, creep) {
-    return this._passByControllersControl(consumingPassByControllers, room, creep)
-  },
-
   /**
     @param {Room} room
     **/
   act: function (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
-
-    // clean up controllers
-    this.roomControllersPrepare(room)
 
     secutiryProcess.work(room)
     roomInfoProcess.work(room)
@@ -189,7 +177,19 @@ const roomActor =
     const unassignedCreeps = []
 
     const roomCreeps = room.getRoomControlledCreeps()
+
     if (roomCreeps.length > 0) {
+      // clean up controllers
+      this.roomControllersPrepare(room)
+
+      // filter per creep controllers once
+      const roomConsumingPassByControllers = _.filter(
+        consumingPassByControllers,
+        function (controller) {
+          return controller.compatible(room)
+        }
+      )
+
       // do some statistics
       let spawning = 0
       let assigned = 0
@@ -233,7 +233,7 @@ const roomActor =
           }
         } // end of subroutine of room change
 
-        const consumingRc = this.consumingPassByControllersControl(room, creep)
+        const consumingRc = this.creepControllersControl(roomConsumingPassByControllers, room, creep)
         if (consumingRc !== OK) {
           if (energyHarvestController.id === creep.memory.ctrl ||
               energyTakeController.id === creep.memory.ctrl ||
