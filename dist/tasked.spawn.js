@@ -113,7 +113,8 @@ spawn._spawnsCanSpawn = function () {
   const spawns = _.filter(
     Game.spawns,
     function (spawn) {
-      return spawn.spawning === null && spawn.isActiveSimple()
+      const spawning = intent.getSpawnSpawning(spawn)
+      return spawning === null && spawn.isActiveSimple()
     }
   )
 
