@@ -23,7 +23,7 @@ grabController.roomPrepare = function (room) {
 }
 
 grabController.act = function (room, creep) {
-  const hasUniversalStore = creep.room.storage || creep.room.terminal
+  const hasUniversalStore = room.storage || room.terminal
 
   const grabs = this._findTargets(room)
 
