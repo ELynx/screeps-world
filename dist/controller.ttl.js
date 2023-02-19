@@ -61,7 +61,7 @@ ttlController.targets = function (room) {
       filter: function (structure) {
         if (structure.structureType === STRUCTURE_SPAWN) {
           // STRATEGY direct creep to nearest spawn, figure out on arrival
-          return structure.isActiveSimple()
+          return structure.isActiveSimple
         }
 
         return false

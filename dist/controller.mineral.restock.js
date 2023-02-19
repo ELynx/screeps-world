@@ -27,7 +27,7 @@ mineralRestockController.act = function (withStore, creep) {
 }
 
 mineralRestockController._checkStore = function (structure) {
-  if (structure && structure.isActiveSimple()) {
+  if (structure && structure.isActiveSimple {
     return structure.store.getFreeCapacity() > 0
   }
 

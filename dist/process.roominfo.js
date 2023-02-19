@@ -69,7 +69,7 @@ roomInfoProcess.sourceLevel = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.isActiveSimple()
+        return structure.isActiveSimple
       }
     }
   )
@@ -161,7 +161,7 @@ roomInfoProcess.miningLevel = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
       }
     }
   )

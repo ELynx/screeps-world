@@ -116,7 +116,7 @@ spawn._spawnsCanSpawn = function () {
     Game.spawns,
     function (spawn) {
       const spawning = intent.getSpawnSpawning(spawn)
-      return spawning === null && spawn.isActiveSimple()
+      return spawning === null && spawn.isActiveSimple
     }
   )
 

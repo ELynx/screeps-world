@@ -73,7 +73,7 @@ repairController.targets = function (room) {
       filter: function (structure) {
         if (!structure.hits || structure.hits >= structure.hitsMax) return false
 
-        if (!structure.isActiveSimple()) return false
+        if (!structure.isActiveSimple) return false
 
         if (structure.structureType === STRUCTURE_WALL) {
           if (structure.hits < barrHp) {

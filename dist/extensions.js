@@ -310,15 +310,7 @@ RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
   return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y)
 }
 
-Structure.prototype.isActiveSimple = function () {
-  // if special flag is set on the room
-  if (this.room.memory.noSimple) {
-    return this.isActive()
-  }
-
-  // simple strategy, this is most likely any way
-  return true
-}
+Structure.prototype.isActiveSimple = true
 
 Structure.prototype.getFromMemory = function (key) {
   if (!Memory.structures) return undefined

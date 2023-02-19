@@ -13,7 +13,7 @@ towerProcess.work = function (room) {
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        return structure.structureType === STRUCTURE_TOWER && structure.isActiveSimple()
+        return structure.structureType === STRUCTURE_TOWER && structure.isActiveSimple
       }
     }
   )
