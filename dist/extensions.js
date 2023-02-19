@@ -78,12 +78,6 @@ Flag.prototype.resetSecondaryColor = function () {
   this.setColor(this.color, this.color)
 }
 
-// ones that do get harmful effects
-// special case - controller reserved by self is unowned
-OwnedStructure.prototype.hostileOrUnowned = function () {
-  return this.unowned || this.hostile
-}
-
 // anything that get benefits
 OwnedStructure.prototype.myOrAlly = function () {
   return this.my || this.ally
@@ -314,11 +308,6 @@ RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
 
 RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
   return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y)
-}
-
-// ones that do get harmful effects
-Structure.prototype.hostileOrUnowned = function () {
-  return true
 }
 
 Structure.prototype.isActiveSimple = function () {
