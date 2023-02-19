@@ -49,7 +49,7 @@ const consumingPassByControllers = [
 ]
 
 Creep.prototype.target = function () {
-  return Game.getObjectById(this.memory.dest)
+  return bootstrap.getObjectById(this.memory.dest)
 }
 
 const roomActor =
