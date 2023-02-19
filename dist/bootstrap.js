@@ -37,7 +37,7 @@ const bootstrap =
     if (cached) return cached
 
     const found = Game.getObjectById(id)
-    cached[id] = found
+    Game.__bootstrap_getObjectById[id] = found
 
     return found
   },
