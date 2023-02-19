@@ -4,7 +4,7 @@ const Controller = require('./controller.template')
 
 const repairController = new Controller('repair')
 
-  // STRATEGY hits to initiate repair
+// STRATEGY hits to initiate repair
 
 const TargetRoadHpMultiplier = [
   0.0,
