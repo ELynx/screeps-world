@@ -23,6 +23,8 @@ const verbose = false
 
 const usernameSafetyPrefix = 'user_'
 
+let ownUsername
+
 const __safe = function (username) {
   return usernameSafetyPrefix + username
 }
@@ -35,7 +37,28 @@ const prepareHostileNPCMemory = function () {
   Memory.npcReputation = undefined
 }
 
+const _getFromObjectHash = function (objectHash) {
+  for (let key in objectHash) {
+    return objectHash[key]
+  }
+
+  return undefined
+}
+
+const getSomethingOwned = function () {
+  return _getFromObjectHash(Game.structures) ||
+         _getFromObjectHash(Game.creeps) ||
+         _getFromObjectHash(Game.powerCreeps) ||
+         _getFromObjectHash(Game.constructionSites)
+}
+
 const _extendedOwnerUsername = function (something) {
+  // fill in reference if was lost
+  if (ownUsername === undefined) {
+    const somethingOwned = getSomethingOwned()
+    ownUsername = somethingOwned ? somethingOwned.owner.username : undefined
+  }
+
   if (something.owner) return something.owner.username
   if (something.reservation) return something.reservation.username
 
@@ -124,6 +147,7 @@ const isPC = function (something) {
 
   const username = _extendedOwnerUsername(something)
   if (username === undefined) return false
+  if (username === ownUsername) return true
 
   return _isPC(username)
 }
@@ -162,7 +186,7 @@ const isAlly = function (something) {
   if (something.my) return false
 
   const username = _extendedOwnerUsername(something)
-  if (username === undefined) return false
+  if (username === undefined || username === ownUsername) return false
 
   _assignReputation(something, username)
 
@@ -174,7 +198,7 @@ const isNeutral = function (something) {
   if (something.my) return false
 
   const username = _extendedOwnerUsername(something)
-  if (username === undefined) return false
+  if (username === undefined || username === ownUsername) return false
 
   _assignReputation(something, username)
 
@@ -187,7 +211,7 @@ const isHostile = function (something) {
   if (something.my) return false
 
   const username = _extendedOwnerUsername(something)
-  if (username === undefined) return false
+  if (username === undefined || username === ownUsername) return false
 
   _assignReputation(something, username)
 
@@ -450,17 +474,10 @@ module.exports = {
   convenience () {
     prepareHostileNPCMemory()
 
-    const getSomethingOwned = function () {
-      if (Game.structures.length > 0) return Game.structures[0]
-      if (Game.creeps.length > 0) return Game.creeps[0]
-      if (Game.powerCreeps.length > 0) return Game.powerCreeps[0]
-      if (Game.constructionSites.length > 0) return Game.constructionSites[0]
-
-      return undefined
+    if (ownUsername === undefined) {
+      const somethingOwned = getSomethingOwned()
+      ownUsername = somethingOwned ? somethingOwned.owner.username : undefined
     }
-
-    const somethingOwned = getSomethingOwned()
-    const ownUsername = somethingOwned !== undefined ? somethingOwned.owner.username : undefined
 
     Game.iff = {
       ownUsername,
