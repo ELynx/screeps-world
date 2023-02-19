@@ -374,7 +374,6 @@ const intent = {
   },
 
   spawn_intent_recycleCreep: function (spawn, creep) {
-    // TODO
     return OK
   },
 
