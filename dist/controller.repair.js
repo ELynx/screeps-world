@@ -4,6 +4,8 @@ const Controller = require('./controller.template')
 
 const repairController = new Controller('repair')
 
+  // STRATEGY hits to initiate repair
+
 const TargetRoadHpMultiplier = [
   0.0,
   0.16,
@@ -58,7 +60,6 @@ repairController.act = function (target, creep) {
 repairController.targets = function (room) {
   const barrHp = room.memory.wlvl * 1000
 
-  // STRATEGY don't run with every booboo
   // STRATEGY in unowned rooms fix roads 1 step up
   const roadMult = fromArray(TargetRoadHpMultiplier, room.level() + (room.my ? 0 : 1))
   const otherMult = fromArray(TargetStructureHpMultiplier, room.level())
