@@ -29,8 +29,6 @@ Movement and positioning:
 
 Intent queue for withdraw and transfer.
 
-Intent queue for spawn.
-
 Don't send military to enemy safe mode rooms.
 
 Cluster restock.
@@ -83,8 +81,16 @@ Room attack definition: drop aggro, drop streloks, claim and plunders.
 
 Tasked default movement options. Claim has swamp cheap. Auto.
 
-Flag to turn verbose naming on and off.
-
 Border control for creep movement in tasked. Tie-in with default options?
 
-Spawn intent uber-wrapper with delayed call to spawn. Store all intended parameters for examination and modification.
+Flag to turn verbose naming on and off.
+
+Spawn intent uber-wrapper:
+
+* Delayed call to spawn
+
+* Store all intended parameters for examination and modification.
+
+* Replace renew with recycle when spawn is called.
+
+* Cancel without energy loss.
