@@ -435,7 +435,11 @@ const intent = {
       name,
       needTime: spawnTime,
       remainingTime: spawnTime + 1,
-      directions: options ? options.direction : undefined
+      directions: options ? options.directions : undefined,
+      spawn,
+
+      cancel: function() { },
+      setDirections: function(directions) { }
     }
 
     this.setIntended(spawn, spawningKey, planedSpawning)
