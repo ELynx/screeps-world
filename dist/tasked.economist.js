@@ -15,11 +15,6 @@ economist.act = function () {
 
       const energySpent = intents.__spent_total || 0
       const energyAcquired = intents.__acquired_total || 0
-
-      room.memory.elvl = (room.memory.elvl || 0) + energyAcquired - energySpent
-    } else {
-      // don't balance energy of not directly controlled rooms
-      room.memory.elvl = 0
     }
   }
 }
