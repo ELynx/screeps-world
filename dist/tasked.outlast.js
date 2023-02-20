@@ -7,10 +7,12 @@ const Tasked = require('./tasked.template')
 const outlast = new Tasked('outlast')
 
 outlast._defaultAction = function (creep) {
+  // this means creep is destroyed
   if (creep.memory.shel <= 0) return
 
   if (creep.hits < creep.hitsMax) {
-    creep.heal(creep)
+    const rc = creep.heal(creep)
+    creep.__canMelee = creep.__canMelee && (rc != OK)
   } else {
     const creeps = creep.room.find(
       FIND_CREEPS,
@@ -25,13 +27,30 @@ outlast._defaultAction = function (creep) {
         )
       }
     )
-    creep.healClosest(creeps)
+    const rc = creep.healClosest(creeps)
+    creep.__canMelee = creep.__canMelee && (rc != OK)
+  }
+
+  if (creep.__canMelee) {
+    const creeps = creep.room.find(
+      FIND_CREEPS,
+      {
+        filter: function(someCreep) {
+          return someCreep.hostile
+        }
+      }
+    )
+
+    if (creeps.length > 0) {
+      creep.meleeAdjacent(creeps)
+    }
   }
 }
 
 outlast.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
   creep.memory.shel = creep.getActiveBodyparts(HEAL) * HEAL_POWER
+  creep.__canMelee = creep.getActiveBodyparts(ATTACK)
 }
 
 outlast.creepAtDestination = function (creep) {
@@ -113,12 +132,12 @@ outlast.flagPrepare = function (flag) {
 outlast.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
 
-  if (energy < 1600) return []
+  if (energy < 1630) return []
 
   // takes 300 damage
   // heal damage in 5 turns
-  // 1600 50    50    50    50    50    50    50    250   250   250   250   250
-  return [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL]
+  // 1630 50    50    50    50    50    50    80      250   250   250   250   250
+  return [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, HEAL, HEAL, HEAL, HEAL, HEAL]
 }
 
 outlast.register()
