@@ -15,6 +15,17 @@ economist.act = function () {
 
       const energySpent = intents.__spent_total || 0
       const energyAcquired = intents.__acquired_total || 0
+
+      room.memory.spnt = (room.memory.spnt || 0) + energySpent
+      room.memory.aqrd = (room.memory.aqrd || 0) + energyAcquired
+
+      if (room.memory.aqrd >= SOURCE_ENERGY_CAPACITY) {
+        room.memory.epct = Math.round(100 * room.memory.spnt / room.memory.aqrd)
+        room.memory.spnt = 0
+        room.memory.aqrd = 0
+
+        console.log(roomName + ' balanced at ' + room.memory.epct + '%')
+      }
     }
   }
 }
