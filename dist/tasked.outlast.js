@@ -35,7 +35,7 @@ outlast._defaultAction = function (creep) {
     const creeps = creep.room.find(
       FIND_CREEPS,
       {
-        filter: function(someCreep) {
+        filter: function (someCreep) {
           return someCreep.hostile
         }
       }
