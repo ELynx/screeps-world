@@ -44,6 +44,16 @@ const intent = {
     this.addIntended(something, key, -1 * intentValue)
   },
 
+  roomEnergySpent: function (something, key, value) {
+    this.addIntended(something.room, '__spent_' + key, value)
+    this.addIntended(something.room, '__spent_total', value)
+  },
+
+  roomEnergyAcquired: function (something, key, value) {
+    this.addIntended(something.room, '__acquired_' + key, value)
+    this.addIntended(something.room, '__acquired_total', value)
+  },
+
   /**
    * Internal use, type is always defined
    **/
@@ -144,6 +154,7 @@ const intent = {
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * actualProgress)
     this.addIntended(target, key, actualProgress)
+    this.roomEnergySpent(creep, 'build', actualProgress)
 
     let rc = OK
 
@@ -210,6 +221,7 @@ const intent = {
     }
 
     this.subIntended(target, key, toBeHarvested)
+    this.roomEnergyAcquired(creep, 'harvest', toBeHarvested)
 
     if (toBeHarvested >= amount) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
@@ -278,6 +290,7 @@ const intent = {
 
     this.intentCapacityChange(creep, RESOURCE_ENERGY, -1 * repairCost)
     this.addIntended(target, key, repairEffect)
+    this.roomEnergySpent(creep, 'repair', repairCost)
 
     let rc = OK
 
@@ -333,6 +346,7 @@ const intent = {
     if (upgrades === 0) {
       this.addIntended(target, keyTicks, CONTROLLER_DOWNGRADE_RESTORE)
     }
+    this.roomEnergySpent(creep, 'upgradeController', actualUpgrades)
 
     let rc = OK
 
@@ -444,6 +458,7 @@ const intent = {
 
     this.setIntended(spawn, spawningKey, planedSpawning)
     this.subIntended(spawn.room, energyAvailableKey, bodyCost)
+    this.roomEnergySpent(spawn, 'spawnCreep', bodyCost)
 
     let rc = bootstrap.WARN_INTENDEE_EXHAUSTED
 
@@ -515,6 +530,10 @@ const intent = {
     const value = spawn.spawning
 
     return this.getIntended(spawn, key, value)
+  },
+
+  getRoomIntents: function (room) {
+    return room.__intents || { }
   },
 
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
