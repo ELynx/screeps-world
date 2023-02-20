@@ -20,20 +20,21 @@ secutiryProcess.work = function (room) {
     FIND_CREEPS,
     {
       filter: function (creep) {
-        return creep.hostile
+        // faster check first
+        return (!creep.my) && creep.hostile
       }
     }
   )
 
   if (hostileCreeps.length > 0) {
-    const hostilePCs = _.some(hostileCreeps, _.property('pc'))
+    const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
 
     if (threatTimer + ThreatStep <= Game.time) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
         ++threatLevel
 
         // STRATEGY PC is a greater danger, increase threat
-        if (hostilePCs && (threatLevel <= bootstrap.ThreatLevelLow)) {
+        if ((hostilePCs.length > 0) && (threatLevel <= bootstrap.ThreatLevelLow)) {
           ++threatLevel
         }
 
@@ -50,7 +51,7 @@ secutiryProcess.work = function (room) {
 
     const ctrl = room.controller
 
-    if (hostilePCs &&
+    if (hostilePCs.length > 0 &&
         !ctrl.safeMode &&
         !ctrl.safeModeCooldown &&
         !ctrl.upgradeBlocked &&
@@ -72,11 +73,10 @@ secutiryProcess.work = function (room) {
           continue
         }
 
-        const trigger = flag.pos.hasInSquareArea(
-          LOOK_CREEPS,
-          range,
-          function (creep) {
-            return creep.pc && creep.hostile
+        const trigger = _.some(
+          hostilePCs,
+          function (someCreep) {
+            return someCreep.pos.inRangeTo(flag.pos, range)
           }
         )
 
