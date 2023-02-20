@@ -20,8 +20,7 @@ secutiryProcess.work = function (room) {
     FIND_CREEPS,
     {
       filter: function (creep) {
-        // faster check first
-        return (!creep.my) && creep.hostile
+        return creep.hostile
       }
     }
   )

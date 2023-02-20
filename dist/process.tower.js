@@ -25,8 +25,7 @@ towerProcess.work = function (room) {
   const hostileCreeps = _.filter(
     creeps,
     function (creep) {
-      // faster check first
-      return (!creep.my) && creep.hostile
+      return creep.hostile
     }
   )
 
