@@ -532,6 +532,7 @@ const intent = {
     let rc = OK
 
     const backupCreep = this.backupIntents(creep)
+    const backupRoom = this.backupIntents(creep.room)
     const backupArg0 = this.backupIntents(arg0)
     const backupArg1 = this.backupIntents(arg1)
     const backupArg2 = this.backupIntents(arg2)
@@ -551,6 +552,7 @@ const intent = {
                   '] with code ' + intentRc + ' where expected code was ' + rc)
 
       this.restoreIntents(creep, backupCreep)
+      this.restoreIntents(creep.room, backupRoom)
       this.restoreIntents(arg0, backupArg0)
       this.restoreIntents(arg1, backupArg1)
       this.restoreIntents(arg2, backupArg2)
