@@ -12,7 +12,7 @@ outlast._defaultAction = function (creep) {
 
   if (creep.hits < creep.hitsMax) {
     const rc = creep.heal(creep)
-    creep.__canMelee = creep.__canMelee && (rc != OK)
+    creep.__canMelee = creep.__canMelee && rc !== OK
   } else {
     const creeps = creep.room.find(
       FIND_CREEPS,
@@ -28,7 +28,7 @@ outlast._defaultAction = function (creep) {
       }
     )
     const rc = creep.healClosest(creeps)
-    creep.__canMelee = creep.__canMelee && (rc != OK)
+    creep.__canMelee = creep.__canMelee && rc !== OK
   }
 
   if (creep.__canMelee) {
