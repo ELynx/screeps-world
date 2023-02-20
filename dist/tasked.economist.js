@@ -12,8 +12,8 @@ economist.act = function () {
 
     const intents = intentSolver.getRoomIntents(room)
 
-    const energySpent = intents['__spent_total'] || 0
-    const energyAcquired = intents['__acquired_total'] || 0
+    const energySpent = intents.__spent_total || 0
+    const energyAcquired = intents.__acquired_total || 0
 
     console.log(roomName + ' spent ' + energySpent + ' and acquired ' + energyAcquired)
   }
