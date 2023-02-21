@@ -33,6 +33,14 @@ Don't send military to enemy safe mode rooms.
 
 Cluster restock.
 
+Restructure world controller so each tasked does not check all creeps.
+
+Account for tower spending energy, renew, etc. Basically, more intent wrappers.
+
+Monitor invaders power goal and prepare for them.
+
+Sell off commodities.
+
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
