@@ -467,10 +467,10 @@ autobuildProcess.work = function (room) {
     const t0 = Game.cpu.getUsed()
     console.log('Autobuild for room ' + room.name + ' started at ' + t0)
 
-    if (Object.keys(Game.constructionSites).length < 100) {
+    if (Object.keys(Game.constructionSites).length < MAX_CONSTRUCTION_SITES) {
       this.actualWork(room)
     } else {
-      console.log('100 or more construction sites, cannot plan more')
+      console.log(MAX_CONSTRUCTION_SITES + ' or more construction sites, cannot plan more')
     }
 
     const t1 = Game.cpu.getUsed()
