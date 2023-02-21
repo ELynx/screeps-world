@@ -84,6 +84,7 @@
       "ORDER_SELL",
       "OwnedStructure",
       "PathFinder",
+      "PIXEL_CPU_COST",
       "RAMPART_DECAY_AMOUNT",
       "RANGED_ATTACK",
       "REPAIR_COST",
