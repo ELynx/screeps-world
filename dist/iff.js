@@ -19,7 +19,7 @@ const LowestAllyReputation = 25
 const DefaultReputation = 0
 const MinReputation = -1
 
-const verbose = false
+let verbose = false
 
 const usernameSafetyPrefix = 'user_'
 
@@ -483,6 +483,11 @@ module.exports = {
 
     Game.iff = {
       ownUsername,
+
+      setVerbose (newVerbose) {
+        verbose = newVerbose
+        return verbose
+      },
 
       makeAlly (username) {
         return setPCReputation(username, MaxReputation)

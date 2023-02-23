@@ -34,6 +34,7 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
 module.exports.loop = function () {
   profiler.wrap(function () {
     iff.convenience()
+    iff.setVerbose(Game.flags.verbose !== undefined)
 
     // history acts before clean-up because it relies on memory of dead
     historyActor.act()

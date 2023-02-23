@@ -30,10 +30,8 @@ const automaticControllers = [
 
 const worldActor =
 {
-  verbose: false,
-
   debugLine: function (room, what) {
-    if (this.verbose) {
+    if (Game.flags.verbose) {
       room.roomDebug(what)
     }
   },

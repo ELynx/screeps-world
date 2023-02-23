@@ -4,10 +4,8 @@ const bootstrap = require('./bootstrap')
 
 const historyActor =
 {
-  verbose: false,
-
   debugLine: function (room, what) {
-    if (this.verbose) {
+    if (Game.flags.verbose) {
       room.roomDebug(what)
     }
   },
@@ -256,6 +254,26 @@ const historyActor =
     Game.__healers[healer.id] = healer
   },
 
+  processRoomLog: function (room) {
+    const eventLog = room.getEventLog()
+
+    for (const index in eventLog) {
+      const eventRecord = eventLog[index]
+
+      switch (eventRecord.event) {
+        case EVENT_ATTACK:
+          this.handle_EVENT_ATTACK(room, eventRecord)
+          break
+        case EVENT_ATTACK_CONTROLLER:
+          this.handle_EVENT_ATTACK_CONTROLLER(room, eventRecord)
+          break
+        case EVENT_HEAL:
+          this.handle_EVENT_HEAL(room, eventRecord)
+          break
+      }
+    }
+  },
+
   processHealers: function () {
     for (const id in Game.__healers) {
       const healer = Game.__healers[id]
@@ -286,23 +304,7 @@ const historyActor =
       const room = Game.rooms[roomName]
       room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
 
-      const eventLog = room.getEventLog()
-
-      for (const index in eventLog) {
-        const eventRecord = eventLog[index]
-
-        switch (eventRecord.event) {
-          case EVENT_ATTACK:
-            this.handle_EVENT_ATTACK(room, eventRecord)
-            break
-          case EVENT_ATTACK_CONTROLLER:
-            this.handle_EVENT_ATTACK_CONTROLLER(room, eventRecord)
-            break
-          case EVENT_HEAL:
-            this.handle_EVENT_HEAL(room, eventRecord)
-            break
-        }
-      }
+      this.processRoomLog(room)
 
       const usedRoomPercent = bootstrap.hardCpuUsed(t1)
       this.debugLine(room, 'HCPU: ' + usedRoomPercent + '% on history actor / room')
