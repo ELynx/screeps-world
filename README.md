@@ -102,3 +102,5 @@ Spawn intent uber-wrapper:
 * Cancel without energy loss.
 
 Monitor invader power goal and prepare for them.
+
+Font in UI, set it to monospace.
