@@ -37,8 +37,6 @@ Restructure world controller so each tasked does not check all creeps.
 
 Account for tower spending energy, renew, etc. Basically, more intent wrappers.
 
-Monitor invaders power goal and prepare for them.
-
 Sell off commodities.
 
 ## Intents
@@ -102,3 +100,5 @@ Spawn intent uber-wrapper:
 * Replace renew with recycle when spawn is called.
 
 * Cancel without energy loss.
+
+Monitor invader power goal and prepare for them.
