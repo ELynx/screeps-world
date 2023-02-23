@@ -54,10 +54,8 @@ Creep.prototype.target = function () {
 
 const roomActor =
 {
-  verbose: false,
-
   debugLine: function (room, what) {
-    if (this.verbose) {
+    if (Game.flags.verbose) {
       room.roomDebug(what)
     }
   },
@@ -215,7 +213,7 @@ const roomActor =
           // flag to handle border transition
           creep.memory.rcng = true
 
-          if (creep.fatigue === 0) {
+          if (creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0) {
             // get off border area
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
