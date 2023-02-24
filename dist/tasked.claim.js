@@ -5,7 +5,7 @@ const Tasked = require('./tasked.template')
 const claim = new Tasked('claim')
 
 claim._onProblemDetected = function (creep) {
-  const flag = Game.flags[creep.getFlagName()]
+  const flag = creep.flag
   if (flag) {
     flag.setValue(0)
   }
@@ -109,7 +109,7 @@ claim.creepAtDestination = function (creep) {
     const ticksBlocked = wait
     const spawnAfter = Game.time + ticksBlocked - ticksToArrive
 
-    const flag = Game.flags[creep.getFlagName()]
+    const flag = creep.flag
     if (flag) {
       flag.memory.aftr = spawnAfter
     }

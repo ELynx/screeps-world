@@ -55,20 +55,18 @@ secutiryProcess.work = function (room) {
         !ctrl.safeModeCooldown &&
         !ctrl.upgradeBlocked &&
         ctrl.safeModeAvailable > 0) {
-      const flagKey = this.id + '_'
+      const flags = Game.flagsByShortcut[this.id] || []
 
-      for (const flagName in Game.flags) {
-        if (!flagName.startsWith(flagKey)) {
-          continue
-        }
+      for (const index in flags) {
+        const flag = flags[index]
 
-        const flag = Game.flags[flagName]
         if (flag.pos.roomName !== room.name) {
           continue
         }
 
         const range = flag.getValue()
         if (range < 0) {
+          flag.remove()
           continue
         }
 

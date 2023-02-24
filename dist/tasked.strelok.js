@@ -6,6 +6,7 @@ const strelok = new Tasked('strelok')
 
 strelok.breachedExtraCreeps = 1
 
+// TODO optimize
 strelok.markRoomForPatrol = function (room) {
   const flagName = this.id + '_' + room.name
 

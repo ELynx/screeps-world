@@ -8,8 +8,8 @@ const profiler = require('./screeps-profiler')
 const extensions = require('./extensions')
 /* eslint-enable no-unused-vars */
 
-const historyActor = require('./actor.history')
 const cleanup = require('./routine.cleanup')
+const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')
 
@@ -21,8 +21,8 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
   console.log('Profiler enabled by flag in room ' + Game.flags.profiler.pos.roomName)
 
   profiler.registerObject(iff, 'iff')
-  profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(cleanup, 'cleanup')
+  profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
 
@@ -36,10 +36,10 @@ module.exports.loop = function () {
     iff.convenience()
     iff.setVerbose(Game.flags.verbose !== undefined)
 
-    // history acts before clean-up because it relies on memory of dead
-    historyActor.act()
-
     cleanup.cleanup()
+    Game.assingFlagShortcuts()
+
+    historyActor.act()
 
     const limits = { }
     let total = 0
