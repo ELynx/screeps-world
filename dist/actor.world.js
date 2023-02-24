@@ -2,6 +2,7 @@
 
 const bootstrap = require('./bootstrap')
 
+const taskedAggro = require('./tasked.aggro')
 const taskedBeetle = require('./tasked.beetle')
 const taskedClaim = require('./tasked.claim')
 const taskedEconomist = require('./tasked.economist')
@@ -16,10 +17,11 @@ const taskedStrelok = require('./tasked.strelok')
 const automaticControllers = [
   // generate spawn(s)
   taskedOutlast.id, // very tick-sensitive logic, run first
+  taskedAggro.id, // generates aggro and breach
   taskedBeetle.id, // generates aggro
   taskedStrelok.id, // consumes aggro
   taskedPlunder.id, // paramilitary
-  taskedClaim.id, // post-militray
+  taskedClaim.id, // a bit paramilitary
   taskedObserve.id, // lowest prio
   // consume spawn(s)
   taskedSpawn.id,
@@ -33,28 +35,6 @@ const worldActor =
   debugLine: function (room, what) {
     if (Game.flags.verbose) {
       room.roomDebug(what)
-    }
-  },
-
-  giveOutAggro: function () {
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-
-      const flag = Game.flags['aggro_' + roomName]
-      if (flag) {
-        room.__aggro = _.filter(flag.pos.lookFor(LOOK_STRUCTURES), _.property('hits'))
-        for (const index in room.__aggro) {
-          room.__aggro[index].__aggro = true
-        }
-
-        if (room.__aggro.length === 0) {
-          room.__breached = true
-        } else {
-          room.__breached = false
-        }
-      } else {
-        room.__aggro = []
-      }
     }
   },
 
@@ -81,7 +61,6 @@ const worldActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
-    this.giveOutAggro()
     this.taskControllersControl()
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
