@@ -33,12 +33,6 @@ Don't send military to enemy safe mode rooms.
 
 Cluster restock.
 
-Restructure world controller so each tasked does not check all creeps.
-
-Account for tower spending energy, renew, etc. Basically, more intent wrappers.
-
-Sell off commodities.
-
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
@@ -83,6 +77,8 @@ Limit autobuild run to some N elements.
 
 Send resources away instead of selling out on panic.
 
+Sell off commodities.
+
 Room attack definition: drop aggro, drop streloks, claim and plunders.
 
 Tasked default movement options. Claim has swamp cheap. Auto.
@@ -104,3 +100,5 @@ Spawn intent uber-wrapper:
 Monitor invader power goal and prepare for them.
 
 Font in UI, set it to monospace.
+
+Account for tower spending energy, renew, etc. Basically, more intent wrappers.
