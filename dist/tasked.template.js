@@ -265,20 +265,12 @@ function Tasked (id) {
       this.prepare()
     }
 
-    const flagKey = this.id + '_'
+    const creepsCountKey = '__creeps_count_' + this.id
 
-    const creeps = _.filter(
-      Game.creeps,
-      function (creep) {
-        const flagName = creep.getFlagName()
-        return flagName && flagName.startsWith(flagKey)
-      }
-    )
+    const creeps = Game.creepsByShortcut[this.id] || []
 
-    const flagCount = { }
-
-    for (let i = 0; i < creeps.length; ++i) {
-      const creep = creeps[i]
+    for (const index in creeps) {
+      const creep = creeps[index]
 
       creep.__canMove = creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0
 
@@ -287,10 +279,11 @@ function Tasked (id) {
       }
 
       // count how many creeps are already going to destination
-      const flagName = creep.getFlagName()
-      let now = flagCount[flagName] || 0
-      ++now
-      flagCount[flagName] = now
+      if (creep.flag) {
+        const was = creep.flag[creepsCountKey] || 0
+        const now = was + 1
+        creep.flag[creepsCountKey] = now
+      }
 
       if (creep.spawning) {
         continue
@@ -313,18 +306,16 @@ function Tasked (id) {
       return
     }
 
-    for (const flagName in Game.flags) {
-      if (!flagName.startsWith(flagKey)) {
-        continue
-      }
+    const flags = Game.flagsByShortcut[this.id] || []
 
-      const flag = Game.flags[flagName]
+    for (const index in flags) {
+      const flag = flags[index]
 
       let want = flag.getValue()
 
       // sanitize flags
       if (want < 0) {
-        spawn.erase(flagName)
+        spawn.erase(flag.name)
         flag.remove()
 
         continue
@@ -337,20 +328,20 @@ function Tasked (id) {
       if (this.flagPrepare) {
         const decision = this.flagPrepare(flag)
         if (decision === this.FLAG_IGNORE) {
-          spawn.erase(flagName) // to free up queue
+          spawn.erase(flag.name) // to free up queue
           flag.resetSecondaryColor()
           continue
         }
 
         if (decision !== this.FLAG_SPAWN) {
-          spawn.erase(flagName)
+          spawn.erase(flag.name)
           flag.remove()
 
           continue
         }
       }
 
-      const has = (flagCount[flagName] || 0) + spawn.count(flagName)
+      const has = (flag[creepsCountKey] || 0) + spawn.count(flag.name)
 
       if (has < want) {
         flag.setSecondaryColor(COLOR_GREY)
@@ -359,11 +350,10 @@ function Tasked (id) {
         continue
       }
 
-      const creepMemory =
-            {
-              crum: flag.pos.roomName,
-              flag: flagName
-            }
+      const creepMemory = {
+        crum: flag.pos.roomName,
+        flag: flag.name
+      }
 
       const spawnFromStrategy = this.spawnFrom(flag)
       const spawnPriorityStrategy = this.spawnPriority(flag)
@@ -382,9 +372,9 @@ function Tasked (id) {
       }
 
       spawnCallback(
-        flagName, // id in queue
+        flag.name, // id in queue
         this.id, // body, string indicates to call body function
-        flagName, // name (prefix)
+        flag.name, // name (prefix)
         creepMemory, // memory
         spawnFromStrategy, // from
         flag.pos.roomName, // to

@@ -397,37 +397,34 @@ StructureTerminal.prototype.autoSell = function (order, keep = 0) {
 }
 
 Game.assingFlagShortcuts = function () {
+  const cutShort = function (name) {
+    const index = name.indexOf('_')
+
+    // don't cut names starting with _
+    if (index > 0) {
+      return name.substring(0, index)
+    } else {
+      return name
+    }
+  }
+
+  for (const flagName in Game.flags) {
+    const flag = Game.flags[flagName]
+    flag.shortcut = cutShort(flag.name)
+  }
+
   for (const creepName in Game.creeps) {
     const creep = Game.creeps[creepName]
 
     if (creep.memory.flag) {
-      const flag = Game.flags[creep.memory.flag]
-      if (flag) {
-        creep.flag = flag
-
-        if (flag.creeps === undefined) {
-          flag.creeps = [creep]
-        } else {
-          flag.creeps.push(creep)
-        }
-      } else {
-        creep.flag = undefined
-      }
+      creep.flag = Game.flags[creep.memory.flag]
+      creep.shortcut = cutShort(creep.memory.flag)
     } else {
       creep.flag = undefined
+      creep.shortcut = '__no_flag__'
     }
   }
 
-  Game.flagsByShortcut = _.groupBy(
-    Game.flags,
-    function (flag) {
-      const index = flag.name.indexOf('_')
-      // don't shortcut names starting with _
-      if (index > 0) {
-        return flag.name.substring(0, index)
-      } else {
-        return flag.name
-      }
-    }
-  )
+  Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
+  Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
 }
