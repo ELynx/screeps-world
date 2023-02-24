@@ -16,12 +16,8 @@ Room.prototype.getControlPos = function () {
   return bootstrap.centerRoomPosition(this.name)
 }
 
-Creep.prototype.getFlagName = function () {
-  return this.memory.flag
-}
-
 Creep.prototype.getFlagPos = function () {
-  const flag = Game.flags[this.getFlagName()]
+  const flag = this.flag
   if (flag) {
     // bottom row is for special indicator flags, etc.
     // they point to "the room in general"
@@ -245,7 +241,7 @@ function Tasked (id) {
   this._flagCountCreep = function (creep) {
     if (creep.memory.fcnt) return
 
-    const flag = Game.flags[creep.getFlagName()]
+    const flag = creep.flag
     if (flag) {
       const now = flag.memory.fcnt || 0
       flag.memory.fcnt = now + 1

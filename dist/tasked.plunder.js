@@ -92,8 +92,8 @@ plunder.getSomeOwnRoomName = function (creep) {
 
   // intervention - if not energy, search for storage or terminal globally
   if (creep.store.getUsedCapacity() > creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
-    const flag = Game.flags[creep.getFlagName()]
-    if (flag) {
+    if (creep.flag) {
+      const flag = creep.flag
       const storage1 = flag.memory.strI ? bootstrap.getObjectById(flag.memory.strI) : undefined
       if (storage1) return storage1.room.name
 
@@ -207,7 +207,7 @@ plunder.creepAtDestination = function (creep) {
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned stuff
   if (creep.room.my) {
-    const flag = Game.flags[creep.getFlagName()]
+    const flag = creep.flag
 
     if (creep.room.storage) {
       creep.memory.strI = creep.room.storage.id

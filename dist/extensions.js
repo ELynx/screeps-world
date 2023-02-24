@@ -395,3 +395,39 @@ StructureTerminal.prototype.autoSell = function (order, keep = 0) {
 
   return ERR_INVALID_ARGS
 }
+
+Game.assingFlagShortcuts = function () {
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName]
+
+    if (creep.memory.flag) {
+      const flag = Game.flags[creep.memory.flag]
+      if (flag) {
+        creep.flag = flag
+
+        if (flag.creeps === undefined) {
+          flag.creeps = [creep]
+        } else {
+          flag.creeps.push(creep)
+        }
+      } else {
+        creep.flag = undefined
+      }
+    } else {
+      creep.flag = undefined
+    }
+  }
+
+  Game.flagsByShortcut = _.groupBy(
+    Game.flags,
+    function (flag) {
+      const index = flag.name.indexOf('_')
+      // don't shortcut names starting with _
+      if (index > 0) {
+        return flag.name.substring(0, index)
+      } else {
+        return flag.name
+      }
+    }
+  )
+}
