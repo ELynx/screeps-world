@@ -58,7 +58,7 @@ Flag.prototype.setValue = function (newValue) {
   }
 
   if (this.color !== newColor) {
-    this.setColor(newColor, this.secondaryColor)
+    this.setColor(newColor, newColor)
   }
 }
 
