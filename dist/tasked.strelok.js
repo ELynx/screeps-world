@@ -299,6 +299,8 @@ strelok.flagPrepare = function (flag) {
       return this.FLAG_REMOVE
     }
 
+    // TODO debug; room visibility affects spawn
+    // TODO consider if necessary
     if (this.roomBoring[flag.pos.roomName]) {
       return this.FLAG_IGNORE
     }
