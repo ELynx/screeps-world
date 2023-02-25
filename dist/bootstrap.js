@@ -175,7 +175,7 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
-  moveOptionsWrapper: function (options) {
+  moveOptionsWrapper: function (creep, options) {
     _.defaults(
       options,
       { plainCost: 1 },

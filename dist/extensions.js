@@ -17,7 +17,7 @@ Creep.prototype.moveWrapper = function (direction) {
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
-  return this.moveTo(destination, bootstrap.moveOptionsWrapper(options))
+  return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 }
 
 Flag.prototype.getValue = function () {
