@@ -5,7 +5,6 @@ const bootstrap = require('./bootstrap')
 const taskedAggro = require('./tasked.aggro')
 const taskedBeetle = require('./tasked.beetle')
 const taskedClaim = require('./tasked.claim')
-const taskedEconomist = require('./tasked.economist')
 const taskedObserve = require('./tasked.observe')
 const taskedOutlast = require('./tasked.outlast')
 const taskedPixel = require('./tasked.pixelgenerator')
@@ -26,7 +25,6 @@ const automaticControllers = [
   // consume spawn(s)
   taskedSpawn.id,
   // other
-  taskedEconomist.id,
   taskedPixel.id
 ]
 
