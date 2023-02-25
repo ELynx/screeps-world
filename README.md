@@ -27,8 +27,6 @@ Movement and positioning:
 
 * Worker creeps avoid hostile areas.
 
-Intent queue for withdraw and transfer.
-
 Don't send military to enemy safe mode rooms.
 
 Cluster restock.
@@ -75,19 +73,23 @@ Fatigue based emergent road building. CostMatrix has ser-de.
 
 Limit autobuild run to some N elements.
 
-`upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
-
 Send resources away instead of selling out on panic.
 
 Sell off commodities.
 
 Room attack definition: drop aggro, drop streloks, claim and plunders.
 
-Tasked default movement options. Claim has swamp cheap. Auto.
-
-Border control for creep movement in tasked. Tie-in with default options?
+Border control for creep movement in tasked.
 
 Flag to turn verbose naming on and off.
+
+`upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
+
+Intent queue for withdraw and transfer.
+
+Account for tower spending energy, renew, etc. Basically, more intent wrappers.
+
+Monitor invader power goal and prepare for them.
 
 Spawn intent uber-wrapper:
 
@@ -99,8 +101,4 @@ Spawn intent uber-wrapper:
 
 * Cancel without energy loss.
 
-Monitor invader power goal and prepare for them.
-
 Font in UI, set it to monospace.
-
-Account for tower spending energy, renew, etc. Basically, more intent wrappers.
