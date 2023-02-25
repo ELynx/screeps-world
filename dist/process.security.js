@@ -13,7 +13,7 @@ secutiryProcess.work = function (room) {
 
   this.debugHeader(room)
 
-  let threatWas = room.memory.threat
+  const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
   let threatTimer = room.memory._ttt || (Game.time - ThreatStep)
 
