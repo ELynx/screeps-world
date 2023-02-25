@@ -36,7 +36,7 @@ plunder.moveAndUnload = function (creep, target) {
 
   if (creep.pos.inRangeTo(pos, range)) {
     for (const resourceType in creep.store) {
-      let rc
+      let rc = ERR_NOT_FOUND
       if (target.store && target.store.getFreeCapacity(resourceType) > 0) {
         rc = creep.transfer(target, resourceType)
       }
@@ -44,8 +44,6 @@ plunder.moveAndUnload = function (creep, target) {
       if (rc !== OK) {
         rc = creep.drop(resourceType)
       }
-
-      if (rc === OK) break // from resource loop
     }
   } else {
     creep.moveToWrapper(
@@ -69,6 +67,8 @@ plunder.moveAndUnload = function (creep, target) {
 }
 
 plunder.creepAtOwnRoom = function (creep) {
+  // TODO more intelligent unload
+  // TODO factory
   if (creep.room.storage) {
     this.moveAndUnload(creep, creep.room.storage)
   } else if (creep.room.terminal) {
@@ -235,7 +235,9 @@ plunder.flagPrepare = function (flag) {
     }
   }
 
-  if (this.roomBoring[flag.pos.roomName]) return this.FLAG_REMOVE
+  if (this.roomBoring[flag.pos.roomName]) {
+    return this.FLAG_REMOVE
+  }
 
   return this._flagCountBasic(flag, 100)
 }
