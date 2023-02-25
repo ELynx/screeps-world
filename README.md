@@ -71,6 +71,8 @@ TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 
 Fatigue based emergent road building. CostMatrix has ser-de.
 
+[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for byte 8 array support.
+
 Limit autobuild run to some N elements.
 
 `upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
