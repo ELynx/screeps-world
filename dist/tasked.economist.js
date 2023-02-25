@@ -23,8 +23,6 @@ economist.act = function () {
         room.memory.epct = Math.round(100 * room.memory.spnt / room.memory.aqrd)
         room.memory.spnt = 0
         room.memory.aqrd = 0
-
-        console.log(roomName + ' balanced at ' + room.memory.epct + '%')
       }
     }
   }
