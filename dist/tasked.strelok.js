@@ -6,18 +6,19 @@ const strelok = new Tasked('strelok')
 
 strelok.breachedExtraCreeps = 1
 
-// TODO optimize
-strelok.markRoomForPatrol = function (room) {
-  const flagName = this.id + '_' + room.name
+strelok.cleanUpPatrolFlags = function () {
+  const flags = Game.flagsByShortcut[this.id] || []
+  for (const index in flags) {
+    const flag = flags[index]
 
-  const flag = Game.flags[flagName]
-  if (flag) {
-    const patrolUnits = Math.min(3, room.level() + 1)
-    flag.setValue(patrolUnits)
-  } else {
-    // STRATEGY (49, 49) is reserved for strelok indicator flag
-    const flagPos = new RoomPosition(49, 49, room.name)
-    flagPos.createFlagWithValue(flagName, 1)
+    if (flag.name === this.id + '_' + flag.pos.roomName) {
+      const room = flag.room
+      if (room && room.my) {
+        continue // to next flag
+      }
+
+      flag.remove()
+    }
   }
 }
 
@@ -28,12 +29,7 @@ strelok.prepare = function () {
 
   this.roomBoring = { }
 
-  for (const roomName in Game.rooms) {
-    const room = Game.rooms[roomName]
-    if (room.my) {
-      this.markRoomForPatrol(room)
-    }
-  }
+  this.cleanUpPatrolFlags()
 }
 
 strelok.creepPrepare = function (creep) {
