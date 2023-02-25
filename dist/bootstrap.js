@@ -1,7 +1,6 @@
 'use strict'
 
-const bootstrap =
-{
+const bootstrap = {
   ThreatLevelLow: 1,
   ThreatLevelMedium: 3,
   ThreatLevelMax: 5,

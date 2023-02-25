@@ -4,11 +4,8 @@
 const iff = require('./iff')
 const profiler = require('./screeps-profiler')
 
-/* eslint-disable no-unused-vars */
-const extensions = require('./extensions')
-/* eslint-enable no-unused-vars */
-
 const cleanup = require('./routine.cleanup')
+const extensions = require('./extensions')
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')
@@ -22,6 +19,7 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
 
   profiler.registerObject(iff, 'iff')
   profiler.registerObject(cleanup, 'cleanup')
+  profiler.registerObject(extensions, 'extensions')
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
@@ -34,10 +32,10 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
 module.exports.loop = function () {
   profiler.wrap(function () {
     iff.convenience()
-    iff.setVerbose(Game.flags.verbose !== undefined)
+    Game.iff.setVerbose(Game.flags.verbose !== undefined)
 
     cleanup.cleanup()
-    Game.assingFlagShortcuts()
+    extensions.assingFlagShortcuts()
 
     historyActor.act()
 

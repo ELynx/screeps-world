@@ -396,35 +396,39 @@ StructureTerminal.prototype.autoSell = function (order, keep = 0) {
   return ERR_INVALID_ARGS
 }
 
-Game.assingFlagShortcuts = function () {
-  const cutShort = function (name) {
-    const index = name.indexOf('_')
+const extensions = {
+  assingFlagShortcuts: function () {
+    const cutShort = function (name) {
+      const index = name.indexOf('_')
 
-    // don't cut names starting with _
-    if (index > 0) {
-      return name.substring(0, index)
-    } else {
-      return name
+      // don't cut names starting with _
+      if (index > 0) {
+        return name.substring(0, index)
+      } else {
+        return name
+      }
     }
-  }
 
-  for (const flagName in Game.flags) {
-    const flag = Game.flags[flagName]
-    flag.shortcut = cutShort(flag.name)
-  }
-
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName]
-
-    if (creep.memory.flag) {
-      creep.flag = Game.flags[creep.memory.flag]
-      creep.shortcut = cutShort(creep.memory.flag)
-    } else {
-      creep.flag = undefined
-      creep.shortcut = '__no_flag__'
+    for (const flagName in Game.flags) {
+      const flag = Game.flags[flagName]
+      flag.shortcut = cutShort(flag.name)
     }
-  }
 
-  Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
-  Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
+    for (const creepName in Game.creeps) {
+      const creep = Game.creeps[creepName]
+
+      if (creep.memory.flag) {
+        creep.flag = Game.flags[creep.memory.flag]
+        creep.shortcut = cutShort(creep.memory.flag)
+      } else {
+        creep.flag = undefined
+        creep.shortcut = '__no_flag__'
+      }
+    }
+
+    Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
+    Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
+  }
 }
+
+module.exports = extensions
