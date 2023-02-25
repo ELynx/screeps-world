@@ -5,26 +5,30 @@ const Tasked = require('./tasked.template')
 const aggro = new Tasked('aggro')
 
 aggro.act = function () {
-  // TODO by flag to allow multi-aggro
   for (const roomName in Game.rooms) {
     const room = Game.rooms[roomName]
+    room.__aggro = []
+    room.__breached = undefined
+  }
 
-    const flag = Game.flags['aggro_' + roomName]
-    if (flag) {
-      // TODO not roads
-      room.__aggro = _.filter(flag.pos.lookFor(LOOK_STRUCTURES), _.property('hits'))
+  const flags = Game.flagsByShortcut[this.id] || []
+  for (const index in flags) {
+    const flag = flags[index]
+    const room = flag.room
 
-      for (const index in room.__aggro) {
-        room.__aggro[index].__aggro = true
-      }
+    if (room) {
+      const atPos = flag.pos.lookFor(LOOK_STRUCTURES)
 
-      if (room.__aggro.length === 0) {
-        room.__breached = true
-      } else {
-        room.__breached = false
-      }
-    } else {
-      room.__aggro = []
+      const aggros = _.filter(
+        atPos,
+        function (structure) {
+          return structure.hits && structure.structureType != STRUCTURE_ROAD
+        }
+      )
+
+      room.__aggro = room.__aggro.concat(aggros)
+
+      room.__breached = room.__aggro.length === 0
     }
   }
 }
