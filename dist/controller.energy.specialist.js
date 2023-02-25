@@ -87,11 +87,6 @@ energySpecialistController.act = function (source, creep) {
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // if there is only one choice, pick it
-  if (allTargets.length === 1) {
-    return true
-  }
-
   // if there is no one in the room, no collision
   if (target.room === undefined) {
     return true
