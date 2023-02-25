@@ -19,7 +19,7 @@ economist.act = function () {
       room.memory.spnt = (room.memory.spnt || 0) + energySpent
       room.memory.aqrd = (room.memory.aqrd || 0) + energyAcquired
 
-      if (room.memory.aqrd >= SOURCE_ENERGY_CAPACITY) {
+      if (room.memory.aqrd >= INVADERS_ENERGY_GOAL) {
         room.memory.epct = Math.round(100 * room.memory.spnt / room.memory.aqrd)
         room.memory.spnt = 0
         room.memory.aqrd = 0

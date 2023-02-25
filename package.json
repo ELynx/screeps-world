@@ -65,6 +65,7 @@
       "HARVEST_POWER",
       "HEAL",
       "HEAL_POWER",
+      "INVADERS_ENERGY_GOAL",
       "LEFT",
       "LOOK_CONSTRUCTION_SITES",
       "LOOK_CREEPS",
