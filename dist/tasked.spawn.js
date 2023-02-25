@@ -48,7 +48,9 @@ spawn.dismiss = function (model) {
   // sanitize deleted flags
   if (model.memory && model.memory.flag) {
     const flag = Game.flags[model.memory.flag]
-    return flag === undefined
+    if (flag === undefined) {
+      return true
+    }
   }
 
   // sanitize too expensive preset models
