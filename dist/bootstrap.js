@@ -175,11 +175,62 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
+  _movementCost: function (creep) {
+    if (creep.__movementCost === undefined) {
+      let nonMoveNonCarry = 0
+      let carry = 0
+      let move = 0
+
+      for (const index in creep.body) {
+        const part = creep.body[index]
+
+        if (part.type === MOVE) {
+          if (part.hits > 0) {
+            // TODO boost
+            move += 2
+          } else {
+            ++nonMoveNonCarry
+          }
+        } else if (part.type === CARRY) {
+          ++carry
+        } else {
+          ++nonMoveNonCarry
+        }
+      }
+
+      // STRATEGY save CPU on actual computation
+      // under normal operation creeps are either full or empty
+      if (creep.store.getUsedCapacity() === 0) {
+        carry = 0
+      }
+
+      // to prevent MOVE only creeps from 0 costs
+      const weight = Math.max(1, nonMoveNonCarry + carry)
+
+      creep.__movementCost = { }
+
+      if (move > 0) {
+        creep.__movementCost.roadCost = Math.ceil(weight / move)
+        creep.__movementCost.plainCost = Math.ceil(2 * weight / move)
+        creep.__movementCost.swampCost = Math.ceil(5 * weight / move)
+      } else {
+        creep.__movementCost.roadCost = weight
+        creep.__movementCost.plainCost = 2 * weight
+        creep.__movementCost.swampCost = 5 * weight
+      }
+    }
+  },
+
   moveOptionsWrapper: function (creep, options) {
+    this._movementCost(creep)
+
+    const plainCost = (creep.__movementCost ? creep.__movementCost.plainCost : undefined) || 1
+    const swampCost = (creep.__movementCost ? creep.__movementCost.swampCost : undefined) || 5
+
     _.defaults(
       options,
-      { plainCost: 1 },
-      { swampCost: 5 }
+      { plainCost },
+      { swampCost }
     )
 
     return options
