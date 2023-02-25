@@ -328,6 +328,7 @@ function Controller (id) {
             creep.pos,
             currentTarget.pos,
             bootstrap.moveOptionsWrapper(
+              creep,
               {
                 costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
                 ignoreCreeps: this.ignoreCreepsForTargeting,
