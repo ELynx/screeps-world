@@ -22,7 +22,7 @@ aggro.act = function () {
       const aggros = _.filter(
         atPos,
         function (structure) {
-          return structure.hits && structure.structureType != STRUCTURE_ROAD
+          return structure.hits && structure.structureType !== STRUCTURE_ROAD
         }
       )
 
