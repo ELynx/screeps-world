@@ -100,5 +100,3 @@ Spawn intent uber-wrapper:
 * Replace renew with recycle when spawn is called.
 
 * Cancel without energy loss.
-
-Font in UI, set it to monospace.
