@@ -437,6 +437,80 @@ const extensions = {
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
     Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
+
+    Game.spawnsById = { }
+    Game.storages = { }
+    Game.extractors = { }
+    Game.labs = { }
+    Game.terminals = { }
+    Game.factories = { }
+    Game.observers = { }
+    Game.powerSpawns = { }
+    Game.nukers = { }
+
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+
+      room.containers = { }
+      room.spawns = { }
+      room.extensions = { }
+      room.towers = { }
+      room.links = { }
+      room.labs = { }
+    }
+
+    for (const id in Game.structures) {
+      const structure = Game.structures[id]
+
+      switch (structure.structureType) {
+      case STRUCTURE_CONTAINER:
+        structure.room.containers[structure.id] = structure
+        break
+      case STRUCTURE_SPAWN:
+        Game.spawnsById[structure.id] = structure
+        structure.room.spawns[structure.id] = structure
+        break
+      case STRUCTURE_EXTENSION:
+        structure.room.extensions[structure.id] = structure
+        break
+      case STRUCTURE_TOWER:
+        structure.room.towers[structure.id] = structure
+        break
+      case STRUCTURE_STORAGE:
+        Game.storages[structure.id] = structure
+        break
+      case STRUCTURE_LINK:
+        structure.room.links[structure.id] = structure
+        break
+      case STRUCTURE_EXTRACTOR:
+        Game.extractors[structure.id] = structure
+        structure.room.extractor = structure
+        break
+      case STRUCTURE_LAB:
+        Game.labs[structure.id] = structure
+        structure.room.labs[structure.id] = structure
+        break
+      case STRUCTURE_TERMINAL:
+        Game.terminals[structure.id] = structure
+        break
+      case STRUCTURE_FACTORY:
+        Game.factories[structure.id] = structure
+        structure.room.factory = structure
+        break
+      case STRUCTURE_OBSERVER:
+        Game.observers[structure.id] = structure
+        structure.room.observer = structure
+        break
+      case STRUCTURE_POWER_SPAWN:
+        Game.powerSpawns[structure.id] = structure
+        structure.room.powerSpawn = structure
+        break
+      case STRUCTURE_NUKER:
+        Game.nukers[structure.id] = structure
+        structure.room.nuker = structure
+        break
+      }
+    }
   }
 }
 
