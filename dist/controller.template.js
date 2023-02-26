@@ -456,16 +456,12 @@ function Controller (id) {
     return intentSolver.wrapCreepIntent(creep, intentName, arg0, arg1, arg2)
   }
 
-  this.registerInProfiler = function () {
-    profiler.registerObject(this, this.id)
-  }
-
   /**
     Register into bootstrap.
     **/
   this.register = function () {
     bootstrap.registerRoomController(this)
-    this.registerInProfiler()
+    profiler.registerObject(this, this.id)
   }
 };
 
