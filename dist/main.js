@@ -35,7 +35,7 @@ module.exports.loop = function () {
     Game.iff.setVerbose(Game.flags.verbose !== undefined)
 
     cleanup.cleanup()
-    extensions.assingFlagShortcuts()
+    extensions.shortcuts()
 
     historyActor.act()
 

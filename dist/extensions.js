@@ -406,7 +406,7 @@ StructureTerminal.prototype.autoSell = function (order, keep = 0) {
 }
 
 const extensions = {
-  assingFlagShortcuts: function () {
+  shortcuts: function () {
     const cutShort = function (name) {
       const index = name.indexOf('_')
 
