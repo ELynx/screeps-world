@@ -39,6 +39,15 @@ mineralHarvestController.targets = function (room) {
     return []
   }
 
+  // shortcut for `my`
+  if (room.extractor) {
+    if (room.extractor.isActiveSimple) {
+      return [room.extractor]
+    } else {
+      return []
+    }
+  }
+
   return room.find(
     FIND_STRUCTURES,
     {

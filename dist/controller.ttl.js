@@ -55,19 +55,8 @@ ttlController.act = function (spawn, creep) {
 }
 
 ttlController.targets = function (room) {
-  return room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        if (structure.structureType === STRUCTURE_SPAWN) {
-          // STRATEGY direct creep to nearest spawn, figure out on arrival
-          return structure.isActiveSimple
-        }
-
-        return false
-      }
-    }
-  )
+  // since works only in `my` rooms, save CPU on filter
+  return _.values(room.spawns)
 }
 
 ttlController.filterCreep = function (creep) {
