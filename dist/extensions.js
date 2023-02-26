@@ -125,10 +125,18 @@ Room.prototype.getRoomControlledCreeps = function () {
     this.__roomCreeps = _.filter(
       Game.creeps,
       function (creep) {
-        // skip tasked
-        if (creep.memory.flag) return false
+        // check room
+        if (creep.memory.crum !== this.name) {
+          return false
+        }
 
-        return creep.memory.crum === this.name
+        // loaded plunder are given to controllers when they are in room
+        if (creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
+          return true
+        }
+
+        // control non-tasked
+        return creep.shortcut === '__no_flag__'
       },
       this
     )

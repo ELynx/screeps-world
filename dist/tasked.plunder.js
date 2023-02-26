@@ -1,9 +1,7 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
-const mapUtils = require('./routine.map')
 const spawn = require('./routine.spawn')
+const mapUtils = require('./routine.map')
 
 const Tasked = require('./tasked.template')
 
@@ -22,39 +20,9 @@ plunder.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
 }
 
-plunder.moveAndUnload = function (creep, target) {
-  let pos
-  let range
-
-  if (target.pos) {
-    pos = target.pos
-    range = 1
-  } else {
-    pos = target
-    range = 5 // good enough
-  }
-
-  if (creep.pos.inRangeTo(pos, range)) {
-    for (const resourceType in creep.store) {
-      let rc = ERR_NOT_FOUND
-      if (target.store && target.store.getFreeCapacity(resourceType) > 0) {
-        rc = creep.transfer(target, resourceType)
-      }
-
-      if (rc !== OK) {
-        rc = creep.drop(resourceType)
-      }
-    }
-  } else {
-    creep.moveToWrapper(
-      pos,
-      {
-        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-        reusePath: 10,
-        range
-      }
-    )
-  }
+plunder.creepAtOwnRoom = function (creep) {
+  // all control (was) done by room controller
+  // see if it is time for next raid or end of career
 
   if (creep.store.getUsedCapacity() === 0) {
     const whereFlag = creep.getFlagPos()
@@ -66,44 +34,29 @@ plunder.moveAndUnload = function (creep, target) {
   }
 }
 
-plunder.creepAtOwnRoom = function (creep) {
-  // TODO more intelligent unload
-  // TODO factory
-  if (creep.room.storage) {
-    this.moveAndUnload(creep, creep.room.storage)
-  } else if (creep.room.terminal) {
-    this.moveAndUnload(creep, creep.room.terminal)
-  } else {
-    const spawns = _.filter(Game.spawns, _.matchesProperty('room.name', creep.room.name))
-    if (spawns.length > 0) {
-      this.moveAndUnload(creep, spawns[0])
-    } else {
-      this.moveAndUnload(creep, creep.getControlPos())
-    }
-  }
-}
-
 plunder.getSomeOwnRoomName = function (creep) {
-  const storage = creep.memory.strI ? bootstrap.getObjectById(creep.memory.strI) : undefined
-  if (storage) return storage.room.name
-
-  const terminal = creep.memory.trmI ? bootstrap.getObjectById(creep.memory.trmI) : undefined
-  if (terminal) return terminal.room.name
-
-  // intervention - if not energy, search for storage or terminal globally
+  // if not (only) energy, recall room with "high" production
   if (creep.store.getUsedCapacity() > creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
-    if (creep.flag) {
-      const flag = creep.flag
-      const storage1 = flag.memory.strI ? bootstrap.getObjectById(flag.memory.strI) : undefined
-      if (storage1) return storage1.room.name
+    // recall creep
+    if (creep.memory.hrum) {
+      return creep.memory.hrum
+    }
 
-      const terminal1 = flag.memory.trmI ? bootstrap.getObjectById(flag.memory.trmI) : undefined
-      if (terminal1) return terminal1.room.name
+    // recall operation
+    if (creep.flag && creep.flag.memory.hrum) {
+      return creep.flag.memory.hrum
     }
   }
 
-  const controller = creep.memory.ctlI ? bootstrap.getObjectById(creep.memory.ctlI) : undefined
-  if (controller) return controller.room.name
+  // recall last room seen by creep
+  if (creep.memory.arum) {
+    return creep.memory.arum
+  }
+
+  // backup, recall last room seen by flag
+  if (creep.flag && creep.flag.memory.arum) {
+    return creep.flag.memory.arum
+  }
 
   return undefined
 }
@@ -205,23 +158,20 @@ plunder.creepAtDestination = function (creep) {
 }
 
 plunder.creepRoomTravel = function (creep) {
-  // keep track of closest owned stuff
+  // keep track of closest owned rooms
   if (creep.room.my) {
-    const flag = creep.flag
+    const high = creep.room.terminal !== undefined || creep.room.storage !== undefined
 
-    if (creep.room.storage) {
-      creep.memory.strI = creep.room.storage.id
-      if (flag) flag.memory.strI = creep.memory.strI
+    creep.memory.arum = creep.room.name
+    if (high) {
+      creep.memory.hrum = creep.room.name
     }
 
-    if (creep.room.terminal) {
-      creep.memory.trmI = creep.room.terminal.id
-      if (flag) flag.memory.trmI = creep.memory.trmI
-    }
-
-    if (creep.room.controller) {
-      creep.memory.ctlI = creep.room.controller.id
-      if (flag) flag.memory.ctlI = creep.memory.ctlI
+    if (creep.flag) {
+      creep.flag.memory.arum = creep.room.name
+      if (high) {
+        creep.flag.memory.hrum = creep.room.name
+      }
     }
   }
 
