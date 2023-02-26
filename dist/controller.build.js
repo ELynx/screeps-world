@@ -18,11 +18,9 @@ buildController.sourceKeeper = buildController.unowned
 buildController.act = function (site, creep) {
   const rc = this.wrapIntent(creep, 'build', site)
 
-  // TODO without tick skip
-
   // this is last build, there is more energy in creep
   if (rc === bootstrap.WARN_INTENDED_EXHAUSTED) {
-    // keep in place for ramp-up
+    // STRATEGY keep in place for ramp-up
     if (site.structureType === STRUCTURE_WALL || site.structureType === STRUCTURE_RAMPART) {
       return OK
     }
@@ -75,12 +73,12 @@ buildController.targets = function (room) {
   const sites = this._sites(room)
   if (sites.length === 0) return []
 
-  const roomOwner = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
-  const roomSafeMode = room.controller && room.controller.safeMode
-
   const allCreeps = room.find(FIND_CREEPS)
   let obstacleCreeps
+
+  const roomSafeMode = room.controller && room.controller.safeMode
   if (roomSafeMode) {
+    const roomOwner = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
     obstacleCreeps = _.filter(allCreeps, _.matchesProperty('owner.username', roomOwner))
   } else {
     obstacleCreeps = allCreeps
