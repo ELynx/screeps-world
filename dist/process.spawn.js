@@ -113,8 +113,7 @@ spawnProcess.miners = function (room, live) {
       'miner',
       'miner',
       {
-        minr: true,
-        rstk: true
+        minr: true
       },
       want - now,
       'lowkey'
