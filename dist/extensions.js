@@ -110,10 +110,11 @@ Room.prototype.level = function () {
 
 Room.prototype.roomDebug = function (what) {
   if (this.__debugY === undefined) {
-    this.__debugY = 1.5
+    this.__debugY = 1.2
   }
 
-  this.visual.text(what, 0, this.__debugY++, { align: 'left', font: 'courier' })
+  this.visual.text(what, 0, this.__debugY, { align: 'left', font: '0.6 Courier New' })
+  this.__debugY += 0.6
 }
 
 /**
