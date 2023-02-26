@@ -286,21 +286,19 @@ strelok.creepRoomTravel = function (creep) {
 
 strelok.flagPrepare = function (flag) {
   if (flag.room && flag.room.my) {
-    // if in currently owned room spawn only when threat level is above "minimal"
-    if (!(flag.room.memory.threat > 1)) {
+    const threat = flag.room.memory.threat || 0
+    if (threat <= 1) {
       // keep flag but don't spawn
       return this.FLAG_IGNORE
     }
   } else {
     const want = flag.getValue()
 
-    // automatically stop trashing low threat rooms
+    // automatically stop 1 target attacks
     if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
       return this.FLAG_REMOVE
     }
 
-    // TODO debug; room visibility affects spawn
-    // TODO consider if necessary
     if (this.roomBoring[flag.pos.roomName]) {
       return this.FLAG_IGNORE
     }
