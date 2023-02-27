@@ -153,21 +153,19 @@ Calculate room mining level.
 **/
 roomInfoProcess.miningLevel = function (room) {
   if (room.my) {
-    if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] < 1) return 0
-    if (room.storage === undefined && room.terrain === undefined) return 0
-  }
-
-  const extractors = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
+    if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
+    if (room.storage === undefined && room.terminal === undefined) return 0
+  } else {
+    const extractors = room.find(
+      FIND_STRUCTURES,
+      {
+        filter: function (structure) {
+          return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
+        }
       }
-    }
-  )
+    )
 
-  if (extractors.length === 0) {
-    return 0
+    if (extractors.length === 0) return 0
   }
 
   const minerals = room.find(
@@ -179,9 +177,7 @@ roomInfoProcess.miningLevel = function (room) {
     }
   )
 
-  if (minerals.length === 0) {
-    return 0
-  }
+  if (minerals.length === 0) return 0
 
   return 1
 }
