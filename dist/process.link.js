@@ -11,14 +11,7 @@ linkProcess.work = function (room) {
 
   this.debugHeader(room)
 
-  const allLinks = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_LINK && structure.isActiveSimple
-      }
-    }
-  )
+  const allLinks = _.filter(room.links, _.property('isActiveSimple'))
 
   if (allLinks.length === 0) {
     return
@@ -51,8 +44,7 @@ linkProcess.work = function (room) {
     }
   }
 
-  if (sourceLinks.length === 0 ||
-        destLinks.length === 0) {
+  if (sourceLinks.length === 0 || destLinks.length === 0) {
     return
   }
 
@@ -67,7 +59,7 @@ linkProcess.work = function (room) {
 
   destLinks.sort(
     function (l1, l2) {
-      // STRATEGY keep it CPU-simple
+      // STRATEGY least energy first
       return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY]
     }
   )
