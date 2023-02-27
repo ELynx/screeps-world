@@ -124,6 +124,8 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
 }
 
 autobuildProcess.extractor = function (room) {
+  if (room.extractor) return
+
   if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0) {
     const minerals = room.find(FIND_MINERALS)
     for (let i = 0; i < minerals.length; ++i) {
@@ -192,21 +194,13 @@ autobuildProcess.sourceLink = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] || 0
   if (canHave === 0) return
 
+  const links = _.values(room.links)
+  if (links.length >= canHave) return
+
   // out of two, reserve one, otherwise links will wait for whole level to complete
   const reserve = canHave <= 2 ? 1 : TargetLinkReserve
 
   if (canHave > reserve) {
-    const filterForLinks = function (structure) {
-      return structure.structureType === STRUCTURE_LINK
-    }
-
-    const links = room.find(
-      FIND_STRUCTURES,
-      {
-        filter: filterForLinks
-      }
-    )
-
     const linksCS = room.find(
       FIND_CONSTRUCTION_SITES,
       {
@@ -262,14 +256,10 @@ autobuildProcess.sourceContainer = function (room) {
   if (canHave === 0) return
 
   if (canHave > ContainerReserve) {
-    const filterForContainers = function (structure) {
-      return structure.structureType === STRUCTURE_CONTAINER
-    }
-
     const containers = room.find(
       FIND_STRUCTURES,
       {
-        filter: filterForContainers
+        filter: { structureType: STRUCTURE_CONTAINER }
       }
     )
 
@@ -280,7 +270,7 @@ autobuildProcess.sourceContainer = function (room) {
       }
     )
 
-    // if still have links to plan
+    // if still have containers to plan
     if (canHave > containers.length + containersCS.length) {
       const sources = room.find(FIND_SOURCES)
 
