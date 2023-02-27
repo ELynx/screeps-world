@@ -9,14 +9,7 @@ towerProcess.work = function (room) {
 
   this.debugHeader(room)
 
-  const towers = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_TOWER && structure.isActiveSimple
-      }
-    }
-  )
+  const towers = _.filter(room.towers, _.property('isActiveSimple'))
 
   if (towers.length === 0) return
 
