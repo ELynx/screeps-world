@@ -278,9 +278,6 @@ const historyActor =
   },
 
   act: function () {
-    // mark initial overall time
-    const t0 = Game.cpu.getUsed()
-
     this.clearCaches()
 
     for (const roomName in Game.rooms) {
@@ -292,15 +289,10 @@ const historyActor =
 
       const usedRoomPercent = bootstrap.hardCpuUsed(t1)
       room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(0, 0.25, 5 * usedRoomPercent / 100, 0.25, { fill: '#f00' })
+      room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
     }
 
     this.processPostLog()
-
-    const usedTotalPercent = bootstrap.hardCpuUsed(t0)
-    for (const roomName in Game.rooms) {
-      Game.rooms[roomName].visual.rect(0, 0, 5 * usedTotalPercent / 100, 0.5, { fill: '#03f' })
-    }
   }
 }
 
