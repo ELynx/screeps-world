@@ -26,7 +26,7 @@ const TargetStructureHpMultiplier = [
 ]
 
 const fromArray = function (from, index) {
-  return from[Math.min(index, from.length - 1)];
+  return from[Math.min(index, from.length - 1)]
 }
 
 repairController.actRange = 3
