@@ -214,8 +214,6 @@ spawnProcess.unowned = function (room, live) {
 }
 
 spawnProcess.work = function (room) {
-  this.debugHeader(room)
-
   const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
 
   // controller is my

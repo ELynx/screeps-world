@@ -4,7 +4,6 @@ const profiler = require('./screeps-profiler')
 
 const bootstrap = require('./bootstrap')
 
-const makeDebuggable = require('./routine.debuggable')
 const mapUtils = require('./routine.map')
 const intentSolver = require('./routine.intent')
 
@@ -21,8 +20,6 @@ function Controller (id) {
     Unique identifier.
     **/
   this.id = id
-
-  makeDebuggable(this, 'Controller')
 
   /**
     Range at which `act` can be used.
@@ -272,9 +269,6 @@ function Controller (id) {
   this.assignCreeps = function (room, roomCreeps) {
     const allTargets = this._findTargets(room)
 
-    this.debugLine(room, 'Targets checked ' + allTargets.length)
-    this.debugLine(room, 'Creeps checked  ' + roomCreeps.length)
-
     let remainingTargets = allTargets.slice(0)
     let unassignedCreeps = []
 
@@ -378,8 +372,6 @@ function Controller (id) {
       }
     } // end of creeps loop
 
-    this.debugLine(room, 'Creeps assigned ' + (roomCreeps.length - unassignedCreeps.length))
-
     return unassignedCreeps
   }
 
@@ -389,29 +381,24 @@ function Controller (id) {
     @param {array<Creeps>} roomCreeps to control.
     **/
   this.control = function (room, roomCreeps) {
-    this.debugHeader(room)
-
     if (!this.targets) {
-      this.debugLine('Controller missing targets method!')
+      console.log('Controller ' + this.id + 'missing targets method')
       return roomCreeps
     }
 
     if (this.oddOrEven) {
       if ((room.memory.intl + Game.time) % 2 !== this.oddOrEven) {
-        this.debugLine(room, 'Fast exit, oddOrEven check')
         return roomCreeps
       }
     }
 
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
-        this.debugLine(room, 'Fast exit, no creeps with default parameters')
         return roomCreeps
       }
     }
 
     if (this._findTargets(room).length === 0) {
-      this.debugLine(room, 'Fast exit, no targets')
       return roomCreeps
     }
 
@@ -429,9 +416,6 @@ function Controller (id) {
     if (creepMatch.length === 0) {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
-        this.debugLine(room, 'No creeps with default parameters found')
-      } else {
-        this.debugLine(room, 'No creeps found')
       }
 
       return roomCreeps
@@ -445,7 +429,6 @@ function Controller (id) {
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
-        this.debugLine(room, 'All creeps with default parameters used')
       }
 
       return creepSkip

@@ -108,15 +108,6 @@ Room.prototype.level = function () {
   return this.__level
 }
 
-Room.prototype.roomDebug = function (what) {
-  if (this.__debugY === undefined) {
-    this.__debugY = 1.2
-  }
-
-  this.visual.text(what, 0, this.__debugY, { align: 'left', font: '0.6 Courier New' })
-  this.__debugY += 0.6
-}
-
 /**
 Get a list of creeps assigned to a room, cached
 **/

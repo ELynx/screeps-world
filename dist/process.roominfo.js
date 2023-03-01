@@ -254,8 +254,6 @@ roomInfoProcess.wallLevel = function (room) {
 }
 
 roomInfoProcess.work = function (room) {
-  this.debugHeader(room)
-
   const force = Game.flags.recount && Game.flags.recount.pos.roomName === room.name
 
   // once in a creep life update room info

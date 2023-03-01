@@ -30,15 +30,6 @@ const automaticControllers = [
 
 const worldActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
-    }
-  },
-
-  /**
-    Let task controllers do theit jobs.
-    **/
   taskControllersControl: function () {
     for (const index in automaticControllers) {
       const id = automaticControllers[index]
@@ -52,9 +43,6 @@ const worldActor =
     }
   },
 
-  /**
-    Execute world level logic.
-    **/
   act: function () {
     // mark initial time
     const t0 = Game.cpu.getUsed()
@@ -64,7 +52,6 @@ const worldActor =
     const usedPercent = bootstrap.hardCpuUsed(t0)
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
-      this.debugLine(room, 'HCPU: ' + usedPercent + '% on world actor')
       room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
       room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
     }

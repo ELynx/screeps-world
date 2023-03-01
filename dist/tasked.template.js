@@ -4,7 +4,6 @@ const profiler = require('./screeps-profiler')
 
 const bootstrap = require('./bootstrap')
 
-const makeDebuggable = require('./routine.debuggable')
 const spawn = require('./routine.spawn')
 
 Room.prototype.getControlPos = function () {
@@ -182,9 +181,6 @@ function Tasked (id) {
     Unique identifier.
     **/
   this.id = id
-
-  // attach methods that allow fast debug writing
-  makeDebuggable(this, 'Tasked')
 
   this.breachedExtraCreeps = 0
 
@@ -367,7 +363,7 @@ function Tasked (id) {
       } else if (spawnPriorityStrategy === 'normal') {
         spawnCallback = _.bind(spawn.addNormal, spawn)
       } else {
-        this.debugLine('Unknown spawn priority strategy [' + spawnPriorityStrategy + ']')
+        console.log('Unknown spawn priority strategy [' + spawnPriorityStrategy + ']')
         spawnCallback = _.bind(spawn.addNormal, spawn)
       }
 

@@ -9,8 +9,6 @@ const Treshold = 50
 linkProcess.work = function (room) {
   if (!room.my) return
 
-  this.debugHeader(room)
-
   const allLinks = _.filter(room.links, _.property('isActiveSimple'))
 
   if (allLinks.length === 0) {

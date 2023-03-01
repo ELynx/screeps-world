@@ -4,12 +4,6 @@ const bootstrap = require('./bootstrap')
 
 const historyActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
-    }
-  },
-
   clearCaches: function () {
     Game.__idCache = { }
     Game.__skipActors = { }
@@ -90,7 +84,6 @@ const historyActor =
 
   markNPCHostile: function (room, something, somethingUsername) {
     const reputation = Game.iff.markNPCHostile(something)
-    this.debugLine(room, this.hmiName(something) + ' owned by NPC [' + somethingUsername + '] had reputation changed to ' + reputation)
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
@@ -163,7 +156,7 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to ' + reputation)
     } else {
       this.markNPCHostile(room, attacker, attackerUsername)
     }
@@ -208,7 +201,7 @@ const historyActor =
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to ' + reputation)
     } else {
       this.markNPCHostile(room, attacker, attackerUsername)
     }
@@ -289,9 +282,6 @@ const historyActor =
     this.processHealers()
   },
 
-  /**
-    Execute history logic.
-    **/
   act: function () {
     // mark initial overall time
     const t0 = Game.cpu.getUsed()
@@ -302,12 +292,11 @@ const historyActor =
       const t1 = Game.cpu.getUsed()
 
       const room = Game.rooms[roomName]
-      room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
 
       this.processRoomLog(room)
 
       const usedRoomPercent = bootstrap.hardCpuUsed(t1)
-      this.debugLine(room, 'HCPU: ' + usedRoomPercent + '% on history actor / room')
+      room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
       room.visual.rect(0, 0.25, 5 * usedRoomPercent / 100, 0.25, { fill: '#f00' })
     }
 
@@ -315,9 +304,7 @@ const historyActor =
 
     const usedTotalPercent = bootstrap.hardCpuUsed(t0)
     for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      this.debugLine(room, 'HCPU: ' + usedTotalPercent + '% on history actor / total')
-      room.visual.rect(0, 0, 5 * usedTotalPercent / 100, 0.5, { fill: '#03f' })
+      Game.rooms[roomName].visual.rect(0, 0, 5 * usedTotalPercent / 100, 0.5, { fill: '#03f' })
     }
   }
 }
