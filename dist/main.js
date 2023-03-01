@@ -32,7 +32,7 @@ if (Game.flags.profiler && Game.flags.profiler.pos) {
 module.exports.loop = function () {
   profiler.wrap(function () {
     iff.convenience()
-    Game.iff.setVerbose(Game.flags.verbose !== undefined)
+    Game.iff.setVerbose(true)
 
     cleanup.cleanup()
     extensions.shortcuts()

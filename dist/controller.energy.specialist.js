@@ -21,7 +21,7 @@ energySpecialistController.restockTargets = function (room) {
   const unspecialist = bootstrap.roomControllers[unspecialistId]
 
   if (unspecialist === undefined) {
-    this.debugLine(room, 'Missing unspecialist')
+    console.log('Missing unspecialist')
     return []
   }
 

@@ -63,7 +63,6 @@ const cleanup = {
       if (flagName === 'profiler') continue
       if (flagName === 'recount') continue
       if (flagName === 'autobuild') continue
-      if (flagName === 'verbose') continue
 
       const processFound = _.some(
         flagKeys,

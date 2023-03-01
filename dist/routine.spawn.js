@@ -29,7 +29,6 @@ const spawn = {
       const emptyStructure = this.makeEmptyStructure()
 
       console.log('Generating empty structure for spawn_v1')
-      console.log(JSON.stringify(emptyStructure))
 
       Memory.spawn_v1 = emptyStructure
     }

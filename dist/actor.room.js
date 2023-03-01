@@ -54,26 +54,12 @@ Creep.prototype.target = function () {
 
 const roomActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
-    }
-  },
-
-  /**
-    Prepare controllers for next room.
-    @param {Room} room.
-    **/
   roomControllersPrepare: function (room) {
     for (const id in bootstrap.roomControllersPrepare) {
       bootstrap.roomControllersPrepare[id].roomPrepare(room)
     }
   },
 
-  /**
-    Find controller and let it observe a creep.
-    @param {Creep} creep.
-    **/
   roomControllersObserveOwn: function (creep) {
     const controller = bootstrap.roomControllersObserveOwn[creep.memory.ctrl]
     if (controller) {
@@ -81,12 +67,6 @@ const roomActor =
     }
   },
 
-  /**
-    Find a controller, execute it's act.
-    @param {Object} target object.
-    @param {Creep} creep.
-    @return True if creep was acted upon.
-    **/
   roomControllersAct: function (target, creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
@@ -96,23 +76,17 @@ const roomActor =
     return false
   },
 
-  /**
-    Let room controllers do theit jobs.
-    @param {Room} room.
-    @param {array<Creep>} creeps.
-    **/
   roomControllersControl: function (room, creeps) {
     for (const index in automaticControllers) {
       const id = automaticControllers[index]
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
-        this.debugLine(room, 'Unknown controller [' + id + ']')
+        console.log('Unknown controller [' + id + ']')
         continue
       }
 
       if (!controller.compatible(room)) {
-        this.debugLine(room, 'Skipping incompatible controller [' + id + ']')
         continue
       }
 
@@ -120,10 +94,7 @@ const roomActor =
 
       // if all creeps had been taken
       if (creeps.length === 0) {
-        this.debugLine(room, 'All creeps assigned after controller [' + id + ']')
         return
-      } else {
-        this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length)
       }
     }
   },
@@ -134,7 +105,7 @@ const roomActor =
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
-        this.debugLine(room, 'Unknown controller [' + id + ']')
+        console.log('Unknown controller [' + id + ']')
         continue
       }
 
@@ -151,9 +122,6 @@ const roomActor =
     return OK
   },
 
-  /**
-    @param {Room} room
-    **/
   act: function (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
@@ -189,19 +157,11 @@ const roomActor =
         }
       )
 
-      // do some statistics
-      let spawning = 0
-      let assigned = 0
-      let working = 0
-      let resting = 0
-      let moving = 0
-
       for (let i = 0; i < roomCreeps.length; ++i) {
         const creep = roomCreeps[i]
 
         // spawning creep can do nothing
         if (creep.spawning) {
-          ++spawning
           continue
         }
 
@@ -224,7 +184,6 @@ const roomActor =
               creep.memory.rcng = undefined
             } else {
               creep.moveToWrapper(posInDestRoom, { reusePath: 50, range: rangeInDestRoom })
-              ++moving
               continue // to next creep
             }
           } else {
@@ -250,13 +209,11 @@ const roomActor =
           if (target) {
             if (creep.pos.inRangeTo(target, creep.memory.dact)) {
               keepAssignment = this.roomControllersAct(target, creep)
-              working = working + keepAssignment
             } else {
               if (creep.getActiveBodyparts(MOVE) === 0) {
                 keepAssignment = false
               } else if (creep.fatigue > 0) {
                 keepAssignment = true
-                ++resting
               } else {
                 // STRATEGY creep movement, main CPU sink
 
@@ -280,20 +237,17 @@ const roomActor =
                   } else {
                     // so assignment is not dropped
                     rc = OK
-                    this.debugLine(room, 'Creep ' + creep.name + ' stalls')
                     creep.say('(P)')
                   }
                 }
 
                 keepAssignment = rc === OK
-                moving = moving + keepAssignment
               } // end of "has MOVE" and "fatigue equals 0"
             } // end of "not in range"
           } // end of if target found
 
           if (keepAssignment) {
             this.roomControllersObserveOwn(creep)
-            ++assigned
           } else {
             bootstrap.unassignCreep(creep)
             unassignedCreeps.push(creep)
@@ -304,14 +258,6 @@ const roomActor =
           unassignedCreeps.push(creep)
         }
       } // end of creeps loop
-
-      // log statistics
-      this.debugLine(room, 'Busy creeps ' + assigned)
-      this.debugLine(room, '-> spawning ' + spawning)
-      this.debugLine(room, '-> working  ' + working)
-      this.debugLine(room, '-> resting  ' + resting)
-      this.debugLine(room, '-> moving   ' + moving)
-      this.debugLine(room, 'Free creeps ' + unassignedCreeps.length)
     } // end of roomCreeps
 
     if (unassignedCreeps.length > 0) {
@@ -327,7 +273,6 @@ const roomActor =
     }
 
     const usedPercent = bootstrap.hardCpuUsed(t0)
-    this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '% on room actor')
     room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
   } // end of act method
 }

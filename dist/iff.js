@@ -486,7 +486,6 @@ module.exports = {
 
       setVerbose (newVerbose) {
         verbose = newVerbose
-        return verbose
       },
 
       makeAlly (username) {

@@ -430,8 +430,6 @@ autobuildProcess.actualWork = function (room) {
 }
 
 autobuildProcess.work = function (room) {
-  this.debugHeader(room)
-
   let executeAutoBuild = false
 
   if (Game.flags.autobuild &&

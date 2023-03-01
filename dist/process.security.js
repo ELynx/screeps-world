@@ -11,8 +11,6 @@ const ThreatStep = 60
 secutiryProcess.work = function (room) {
   if (!room.my) return
 
-  this.debugHeader(room)
-
   const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
   let threatTimer = room.memory._ttt || (Game.time - ThreatStep)
@@ -103,8 +101,6 @@ secutiryProcess.work = function (room) {
   if (threatLevel > 0) {
     room.memory.threat = threatLevel
     room.memory._ttt = threatTimer
-
-    this.debugLine(room, 'Threat level ' + threatLevel)
   } else {
     room.memory.threat = undefined
     room.memory._ttt = undefined

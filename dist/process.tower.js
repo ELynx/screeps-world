@@ -7,8 +7,6 @@ const towerProcess = new Process('tower')
 towerProcess.work = function (room) {
   if (!room.my) return
 
-  this.debugHeader(room)
-
   const towers = _.filter(room.towers, _.property('isActiveSimple'))
 
   if (towers.length === 0) return
