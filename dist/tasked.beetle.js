@@ -189,7 +189,8 @@ beetle.creepAtDestination = function (creep) {
         }
 
         const obstacle = _.some(OBSTACLE_OBJECT_TYPES, _.matches(struct.structureType))
-        if (obstacle) {
+        const buildable = _.some(CONSTRUCTION_COST, _.matches(struct.structureType))
+        if (obstacle && buildable) {
           target = struct
         }
       }
