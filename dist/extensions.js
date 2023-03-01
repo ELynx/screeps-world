@@ -414,8 +414,12 @@ const extensions = {
       flag.shortcut = cutShort(flag.name)
     }
 
+    Game.creepsById = { }
+
     for (const creepName in Game.creeps) {
       const creep = Game.creeps[creepName]
+
+      Game.creepsById[creep.id] = creep
 
       if (creep.memory.flag) {
         creep.flag = Game.flags[creep.memory.flag]
