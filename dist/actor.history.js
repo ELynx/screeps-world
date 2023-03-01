@@ -83,7 +83,7 @@ const historyActor =
   },
 
   markNPCHostile: function (room, something, somethingUsername) {
-    const reputation = Game.iff.markNPCHostile(something)
+    Game.iff.markNPCHostile(something)
   },
 
   handle_EVENT_ATTACK: function (room, eventRecord) {
