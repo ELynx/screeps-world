@@ -39,9 +39,7 @@ buildController._sites = function (room) {
   if (room.my && room.controller.level < 2) {
     let skipBeat = false
 
-    for (let i = 0; i < allSites.length; ++i) {
-      const site = allSites[i]
-
+    for (const site of allSites) {
       if (Game.iff.ownUsername && Game.iff.ownUsername !== site.owner.username) {
         site.remove()
         skipBeat = true
