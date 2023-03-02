@@ -50,12 +50,12 @@ function Controller (id) {
   this.unowned = false
 
   this.compatible = function (room) {
-    if (room.my) return this.my
-    if (room.ally) return this.ally
-    if (room.neutral) return this.neutral
-    if (room.hostile) return this.hostile
-    if (room.sourceKeeper()) return this.sourceKeeper
-    if (room.unowned) return this.unowned
+    if (this.my && room.my) return true
+    if (this.ally && room.ally) return true
+    if (this.neutral && room.neutral) return true
+    if (this.hostile && room.hostile) return true
+    if (this.sourceKeeper && room.sourceKeeper()) return true
+    if (this.unowned && room.unowned) return true
 
     return false
   }
