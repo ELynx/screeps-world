@@ -8,11 +8,6 @@ const grabController = new Controller('grab')
 
 grabController.actRange = 1
 
-grabController.ally = true
-grabController.neutral = grabController.ally
-grabController.unowned = grabController.ally
-grabController.sourceKeeper = grabController.unowned
-
 grabController.roomPrepare = function (room) {
   this._roomPrepare(room)
 
@@ -27,18 +22,16 @@ grabController.act = function (room, creep) {
 
   const grabs = this._findTargets(room)
 
-  for (let i = 0; i < grabs.length; ++i) {
-    const grab = grabs[i]
+  for (const grab of grabs) {
     const from = grab[grab.type]
 
     if (!creep.pos.isNearTo(from)) continue
 
     if (grab.type === LOOK_TOMBSTONES ||
         grab.type === LOOK_RUINS) {
-      const typesToGrab = hasUniversalStore ? Object.keys(from.store) : [RESOURCE_ENERGY]
+      const typesToGrab = hasUniversalStore ? _.keys(from.store) : [RESOURCE_ENERGY]
 
-      for (let j = 0; j < typesToGrab.length; ++j) {
-        const typeToGrab = typesToGrab[j]
+      for (const typeToGrab of typesToGrab) {
         if (intentSolver.getUsedCapacity(from, typeToGrab) > 0) {
           const rc = this.wrapIntent(creep, 'withdraw', from, typeToGrab)
           if (rc !== OK) return rc
@@ -70,13 +63,10 @@ grabController.targets = function (room) {
 
   const grabs = []
 
-  for (let i = 0; i < tombstones.length; ++i) {
-    const tombstone = tombstones[i]
-    const typesToGrab = hasUniversalStore ? Object.keys(tombstone.store) : [RESOURCE_ENERGY]
+  for (const tombstone of tombstones) {
+    const typesToGrab = hasUniversalStore ? _.keys(tombstone.store) : [RESOURCE_ENERGY]
 
-    for (let j = 0; j < typesToGrab.length; ++j) {
-      const typeToGrab = typesToGrab[j]
-
+    for (const typeToGrab of typesToGrab) {
       if (tombstone.store.getUsedCapacity(typeToGrab) > 0) {
         grabs.push(
           {
@@ -96,13 +86,10 @@ grabController.targets = function (room) {
     }
   }
 
-  for (let i = 0; i < ruins.length; ++i) {
-    const ruin = ruins[i]
-    const typesToGrab = hasUniversalStore ? Object.keys(ruin.store) : [RESOURCE_ENERGY]
+  for (const ruin of ruins) {
+    const typesToGrab = hasUniversalStore ? _.keys(ruin.store) : [RESOURCE_ENERGY]
 
-    for (let j = 0; j < typesToGrab.length; ++j) {
-      const typeToGrab = typesToGrab[j]
-
+    for (const typeToGrab of typesToGrab) {
       if (ruin.store.getUsedCapacity(typeToGrab) > 0) {
         grabs.push(
           {
@@ -122,9 +109,7 @@ grabController.targets = function (room) {
     }
   }
 
-  for (let i = 0; i < resources.length; ++i) {
-    const resource = resources[i]
-
+  for (const resource of resources) {
     if (hasUniversalStore || resource.resourceType === RESOURCE_ENERGY) {
       if (resource.amount > 0) {
         grabs.push(

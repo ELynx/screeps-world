@@ -21,7 +21,7 @@ energyHarvestController.targets = function (room) {
 }
 
 energyHarvestController.filterCreep = function (creep) {
-  return (creep.memory.rstk || false) === false && this._isHarvestAble(creep)
+  return this._isNotRestocker(creep) && this._isHarvestAble(creep)
 }
 
 energyHarvestController.register()

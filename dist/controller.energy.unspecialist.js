@@ -7,7 +7,7 @@ const energyUnspecialistController = new Controller('energy.unspecialist')
 energyUnspecialistController.actRange = 1
 
 energyUnspecialistController.unowned = true
-energyUnspecialistController.sourceKeeper = energyUnspecialistController.unowned
+energyUnspecialistController.sourceKeeper = true
 
 energyUnspecialistController.ignoreCreepsForTargeting = false
 
@@ -32,7 +32,7 @@ energyUnspecialistController.targets = function (room) {
 }
 
 energyUnspecialistController.filterCreep = function (creep) {
-  return creep.memory.rstk === true && this._hasCM(creep) && this._hasEnergy(creep)
+  return this._isRestocker(creep) && this._hasCM(creep) && this._hasEnergy(creep)
 }
 
 energyUnspecialistController.register()
