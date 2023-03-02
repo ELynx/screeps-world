@@ -16,7 +16,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= +1; ++dy) {
       // don't check center
-      if (dx === 0 && dy === 0) { continue }
+      if (dx === 0 && dy === 0) continue
 
       const x = center.x + dx
       const y = center.y + dy
@@ -72,8 +72,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
     if (blocked) continue // to next index
 
     const toVisits = Magic[index]
-    for (let i = 0; i < toVisits.length; ++i) {
-      const toVisit = toVisits[i]
+    for (const toVisit of toVisits) {
       weights[index] += weights[toVisit]
     }
 
@@ -96,7 +95,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
 
 autobuildProcess.logConstructionSite = function (room, posOrRoomObject, structureType, rc) {
   const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
-  const message = 'Planned ' + structureType + ' at ' + pos + ' with result code ' + rc
+  const message = 'Planned [' + structureType + '] at ' + pos + ' with result code [' + rc + ']'
 
   console.log(message)
   Game.notify(message, 30)
@@ -109,8 +108,7 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   }
 
   const structs = room.lookForAt(LOOK_STRUCTURES, posOrRoomObject)
-  for (let i = 0; i < structs.length; ++i) {
-    const struct = structs[i]
+  for (const struct of structs) {
     if (struct.structureType === structureType) {
       return ERR_FULL
     }
@@ -126,10 +124,10 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
 autobuildProcess.extractor = function (room) {
   if (room.extractor) return
 
-  if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] > 0) {
+  const level = room.controller ? room.controller.level : 0
+  if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][level] > 0) {
     const minerals = room.find(FIND_MINERALS)
-    for (let i = 0; i < minerals.length; ++i) {
-      const mineral = minerals[i]
+    for (const mineral of minerals) {
       this.tryPlan(room, mineral, STRUCTURE_EXTRACTOR)
     }
   }
@@ -138,12 +136,12 @@ autobuildProcess.extractor = function (room) {
 // STRATEGY weight of goodness of place near the source
 // return best position regardless of buildings and roads
 // thus always should return same distribution for source
-autobuildProcess.weightAroundTheSource = function (x, y, dx, dy, terrainMask) {
+autobuildProcess.weightAroundTheSource = function (x, y, dx, dy, terrainValue) {
   // no harvester can stand on the endge, discourage
   if (x <= 0 || y <= 0 || x >= 49 || y >= 49) { return -10 }
 
   // check for walls, they get no bonuses
-  if (terrainMask === TERRAIN_MASK_WALL) {
+  if (terrainValue === TERRAIN_MASK_WALL) {
     // walls can be develop, but are expensive
     return 1
   }
@@ -173,7 +171,7 @@ autobuildProcess.weightSource = function (room, source) {
   let result = 0
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
-      if (dx === 0 && dy === 0) { continue }
+      if (dx === 0 && dy === 0) continue
 
       const x = center.x + dx
       const y = center.y + dy
@@ -191,7 +189,8 @@ autobuildProcess.weightSource = function (room, source) {
 const TargetLinkReserve = 1
 
 autobuildProcess.sourceLink = function (room) {
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][room.controller.level] || 0
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][level] || 0
   if (canHave === 0) return
 
   const links = _.values(room.links)
@@ -238,7 +237,7 @@ autobuildProcess.sourceLink = function (room) {
 
             // only when not totally bad decision
             if (at.weight > 0) {
-              // always think in like of "one souce - one link"
+              // always think in line of "one souce - one link"
               this.tryPlan(room, at, STRUCTURE_LINK)
             }
           }
@@ -252,7 +251,8 @@ autobuildProcess.sourceLink = function (room) {
 const ContainerReserve = 0
 
 autobuildProcess.sourceContainer = function (room) {
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][room.controller.level] || 0
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][level] || 0
   if (canHave === 0) return
 
   if (canHave > ContainerReserve) {
@@ -301,9 +301,9 @@ autobuildProcess.sourceContainer = function (room) {
               const x = source.pos.x + dx
               const y = source.pos.y + dy
 
-              const terrainMask = terrain.get(x, y)
+              const terrainValue = terrain.get(x, y)
 
-              const weight = this.weightAroundTheSource(x, y, dx, dy, terrainMask)
+              const weight = this.weightAroundTheSource(x, y, dx, dy, terrainValue)
               if (weight > 0) {
                 positions.push(
                   {
@@ -333,7 +333,8 @@ autobuildProcess.sourceContainer = function (room) {
 }
 
 autobuildProcess.coverRamparts = function (room) {
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][room.controller.level] || 0
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][level] || 0
   if (canHave === 0) return
 
   // this function has potential to create a lot of sites
@@ -366,9 +367,7 @@ autobuildProcess.coverRamparts = function (room) {
       let hasWall = false
       let hasRamp = false
 
-      for (let i = 0; i < atXY.length; ++i) {
-        const structure = atXY[i]
-
+      for (const structure of atXY) {
         if (structure.structureType !== STRUCTURE_ROAD) {
           onlyRoad = false
         }
@@ -400,7 +399,8 @@ autobuildProcess.coverRamparts = function (room) {
 }
 
 autobuildProcess.wallsAroundController = function (room) {
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][room.controller.level] || 0
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
   if (canHave === 0) return
 
   const terrain = room.getTerrain()
@@ -412,9 +412,9 @@ autobuildProcess.wallsAroundController = function (room) {
       const x = room.controller.pos.x + dx
       const y = room.controller.pos.y + dy
 
-      const terrainMask = terrain.get(x, y)
+      const terrainValue = terrain.get(x, y)
 
-      if (terrainMask === TERRAIN_MASK_WALL) continue
+      if (terrainValue === TERRAIN_MASK_WALL) continue
 
       this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
     }
@@ -430,12 +430,13 @@ autobuildProcess.actualWork = function (room) {
 }
 
 autobuildProcess.work = function (room) {
+  const autobuildFlag = Game.flags.autobuild
   let executeAutoBuild = false
 
-  if (Game.flags.autobuild &&
-      Game.flags.autobuild.room &&
-      Game.flags.autobuild.room.name === room.name) {
-    Game.flags.autobuild.remove()
+  if (autobuildFlag &&
+      autobuildFlag.room &&
+      autobuildFlag.room.name === room.name) {
+    autobuildFlag.remove()
     executeAutoBuild = true
   } else {
     // once in 6 creep generations
@@ -453,16 +454,16 @@ autobuildProcess.work = function (room) {
     room.memory.abld = Game.time + Math.ceil(Math.random() * 6 * CREEP_LIFE_TIME)
 
     const t0 = Game.cpu.getUsed()
-    console.log('Autobuild for room ' + room.name + ' started at ' + t0)
+    console.log('Autobuild for room [' + room.name + '] started at [' + t0 + ']')
 
-    if (Object.keys(Game.constructionSites).length < MAX_CONSTRUCTION_SITES) {
+    if (_.keys(Game.constructionSites).length < MAX_CONSTRUCTION_SITES) {
       this.actualWork(room)
     } else {
       console.log(MAX_CONSTRUCTION_SITES + ' or more construction sites, cannot plan more')
     }
 
     const t1 = Game.cpu.getUsed()
-    console.log('Autobuild for room ' + room.name + ' finished at ' + t1 + ' and took ' + (t1 - t0))
+    console.log('Autobuild for room [' + room.name + '] finished at [' + t1 + '] and took [' + (t1 - t0) + ']')
   }
 }
 
