@@ -12,9 +12,8 @@ roomInfoProcess._walkable = function (terrain, position) {
   }
 
   const atPosition = position.lookFor(LOOK_STRUCTURES)
-  for (const k in atPosition) {
-    const struct = atPosition[k]
-    if (struct.structureType === STRUCTURE_ROAD) {
+  for (structure of atPosition) {
+    if (structure.structureType === STRUCTURE_ROAD) {
       return true
     }
   }
@@ -32,9 +31,7 @@ roomInfoProcess.harvestLevel = function (room) {
 
     for (let dx = -1; dx <= 1; ++dx) {
       for (let dy = -1; dy <= 1; ++dy) {
-        if (dx === 0 && dy === 0) {
-          continue
-        }
+        if (dx === 0 && dy === 0) continue
 
         const x = source.pos.x + dx
         const y = source.pos.y + dy
@@ -49,8 +46,7 @@ roomInfoProcess.harvestLevel = function (room) {
   }
 
   let walkable = 0
-  for (const index in positions) {
-    const position = positions[index]
+  for (const position of positions) {
     if (this._walkable(terrain, position)) {
       ++walkable
     }
@@ -59,11 +55,6 @@ roomInfoProcess.harvestLevel = function (room) {
   return walkable
 }
 
-/**
-Calculate room source level.
-@param {Room} room.
-@return Source level of room.
-**/
 roomInfoProcess.sourceLevel = function (room) {
   const allStructures = room.find(
     FIND_STRUCTURES,
@@ -96,8 +87,7 @@ roomInfoProcess.sourceLevel = function (room) {
 
   let hasExchange = false
   if (links.length > 1) {
-    for (let i = 0; i < links.length; ++i) {
-      const link = links[i]
+    for (const link of links) {
       if (!link.isSource()) {
         hasExchange = true
         break
@@ -111,8 +101,7 @@ roomInfoProcess.sourceLevel = function (room) {
 
   const consideredPositions = { }
 
-  for (const index in containers) {
-    const container = containers[index]
+  for (const container of containers) {
     const p = container.pos
     consideredPositions[(p.x + 1) + 100 * (p.y + 1)] = p
   }
@@ -120,8 +109,7 @@ roomInfoProcess.sourceLevel = function (room) {
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
 
-  for (let i = 0; i < links.length; ++i) {
-    const link = links[i]
+  for (const link of links) {
     if (link.isSource()) {
       let notFound = true
       for (let j = 0; j < sources.length && notFound; ++j) {
@@ -139,6 +127,7 @@ roomInfoProcess.sourceLevel = function (room) {
           notFound = false
         }
       }
+
       if (notFound === false) ++total
     }
   }
@@ -198,8 +187,8 @@ roomInfoProcess._wallLevel = function (room) {
 
   // fill in array of wall hits
   const hits = []
-  for (let i = 0; i < walls.length; ++i) {
-    hits.push(Math.floor(walls[i].hits / 1000))
+  for (const wall of walls) {
+    hits.push(Math.floor(wall.hits / 1000))
   }
 
   hits.sort(
