@@ -144,7 +144,7 @@ spawn._spawnsByLevel = function () {
 
 spawn._spawnsByDistance = function (roomName) {
   if (Game.__spawnsByDistance) {
-    const cached = Game.__spawnsByDistance(roomName)
+    const cached = Game.__spawnsByDistance[roomName]
     if (cached) return cached
   }
 
@@ -175,11 +175,12 @@ spawn._spawnsByDistance = function (roomName) {
 
 spawn._spawnsInRoom = function (roomName) {
   if (Game.__spawnsInRoom) {
-    const cached = Game.__spawnsInRoom(roomName)
+    const cached = Game.__spawnsInRoom[roomName]
     if (cached) return cached
   }
 
-  const spawns = _.filter(this._spawnsCanSpawn(), _.matchesProperty('room.name', roomName))
+  const room = Game.rooms[roomName]
+  const spawns = room ? _.values(room.spawns) : []
 
   if (Game.__spawnsInRoom === undefined) {
     Game.__spawnsInRoom = { }
