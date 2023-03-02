@@ -77,8 +77,7 @@ const roomActor =
   },
 
   roomControllersControl: function (room, creeps) {
-    for (const index in automaticControllers) {
-      const id = automaticControllers[index]
+    for (const id of automaticControllers) {
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
@@ -100,8 +99,7 @@ const roomActor =
   },
 
   creepControllersControl: function (controllers, room, creep) {
-    for (const index in controllers) {
-      const id = controllers[index]
+    for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
@@ -111,6 +109,7 @@ const roomActor =
 
       if (controller.filterCreep(creep)) {
         const rc = controller.act(room, creep)
+        // TODO this is specific to consuming controllers
         if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
             rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
@@ -157,9 +156,7 @@ const roomActor =
         }
       )
 
-      for (let i = 0; i < roomCreeps.length; ++i) {
-        const creep = roomCreeps[i]
-
+      for (const creep of roomCreeps) {
         // spawning creep can do nothing
         if (creep.spawning) {
           continue
@@ -167,6 +164,7 @@ const roomActor =
 
         // code that migrate creeps into room of registration
         if (creep.memory.crum !== creep.room.name || creep.memory.rcng) {
+          // TODO understand why and probably remove
           // to take off any work from previous room
           bootstrap.unassignCreep(creep)
 
@@ -183,7 +181,13 @@ const roomActor =
               // not continue, can be used
               creep.memory.rcng = undefined
             } else {
-              creep.moveToWrapper(posInDestRoom, { reusePath: 50, range: rangeInDestRoom })
+              creep.moveToWrapper(
+                posInDestRoom,
+                {
+                  range: rangeInDestRoom,
+                  reusePath: _.random(7, 11)
+                }
+              )
               continue // to next creep
             }
           } else {
@@ -231,7 +235,8 @@ const roomActor =
                       {
                         costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
                         maxRooms: 1,
-                        range: creep.memory.dact
+                        range: creep.memory.dact,
+                        reusePath: _.random(7, 11)
                       }
                     )
                   } else {
@@ -272,8 +277,10 @@ const roomActor =
       terminalProcess.work(room)
     }
 
-    const usedPercent = bootstrap.hardCpuUsed(t0)
-    room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
+    if (Game.flags.dashboard) {
+      const usedPercent = bootstrap.hardCpuUsed(t0)
+      room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
+    }
   } // end of act method
 }
 
