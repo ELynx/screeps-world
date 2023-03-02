@@ -222,7 +222,13 @@ const roomActor =
                 // STRATEGY creep movement, main CPU sink
 
                 // first move by cached path
-                let rc = creep.moveToWrapper(target, { noPathFinding: true })
+                let rc = creep.moveToWrapper(
+                  target,
+                  {
+                    noPathFinding: true,
+                    reusePath: _.random(7, 11)
+                  }
+                )
 
                 // no movement, see if pathfinding is possible
                 if (rc === ERR_NOT_FOUND) {

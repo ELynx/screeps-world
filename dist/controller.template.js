@@ -218,6 +218,18 @@ function Controller (id) {
     return this._hasWCM(creep) && this._isEmpty(creep)
   }
 
+  this._isRestocker = function (creep) {
+    return creep.memory.rstk || false
+  }
+
+  this._isNotRestocker = function (creep) {
+    return !this._isRestocker(creep)
+  }
+
+  this._isMiner = function (creep) {
+    return creep.memory.minr || false
+  }
+
   /**
     Creep that has energy and can perform general work
     @param {Creep} creep to look at.
@@ -304,9 +316,7 @@ function Controller (id) {
       let target
       let path
 
-      for (let j = 0; j < targets.length; ++j) {
-        const currentTarget = targets[j]
-
+      for (const currentTarget of targets) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
@@ -405,11 +415,11 @@ function Controller (id) {
     let creepMatch = []
     const creepSkip = []
 
-    for (let i = 0; i < roomCreeps.length; ++i) {
-      if (this.filterCreep(roomCreeps[i])) {
-        creepMatch.push(roomCreeps[i])
+    for (const creep of roomCreeps) {
+      if (this.filterCreep(creep)) {
+        creepMatch.push(creep)
       } else {
-        creepSkip.push(roomCreeps[i])
+        creepSkip.push(creep)
       }
     }
 

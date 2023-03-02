@@ -7,9 +7,9 @@ const energyTakeController = new Controller('energy.take')
 energyTakeController.actRange = 1
 
 energyTakeController.ally = true
-energyTakeController.neutral = energyTakeController.ally
-energyTakeController.unowned = energyTakeController.ally
-energyTakeController.sourceKeeper = energyTakeController.unowned
+energyTakeController.neutral = true
+energyTakeController.unowned = true
+energyTakeController.sourceKeeper = true
 
 energyTakeController.wantToKeep = function (structure) {
   const room = structure.room
@@ -46,8 +46,7 @@ energyTakeController.validateTarget = function (allTargets, target, creep) {
 
   let othersWant = 0
   const others = this._allAssignedTo(target)
-  for (let i = 0; i < others.length; ++i) {
-    const other = others[i]
+  for (const other of others) {
     othersWant += other.store.getFreeCapacity(RESOURCE_ENERGY)
   }
 
@@ -116,13 +115,8 @@ energyTakeController.targets = function (room) {
 }
 
 energyTakeController.filterCreep = function (creep) {
-  // not restocker
-  if (creep.memory.rstk === true) {
-    return false
-  }
-
   // STRATEGY take with empty only, reduce runs to containers
-  return this._hasCM(creep) && this._isEmpty(creep)
+  return this._isNotRestocker(creep) && this._hasCM(creep) && this._isEmpty(creep)
 }
 
 energyTakeController.register()

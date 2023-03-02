@@ -18,8 +18,7 @@ mineralHarvestController.act = function (extractor, creep) {
 
   // because room has only one mineral
   // eslint-disable-next-line no-unreachable-loop
-  for (let i = 0; i < minerals.length; ++i) {
-    const mineral = minerals[i]
+  for (const mineral of minerals) {
     const rc = this.wrapIntent(creep, 'harvest', mineral)
     if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
         rc === bootstrap.WARN_INTENDED_EXHAUSTED ||
@@ -59,7 +58,7 @@ mineralHarvestController.targets = function (room) {
 }
 
 mineralHarvestController.filterCreep = function (creep) {
-  return creep.memory.minr === true && this._isHarvestAble(creep)
+  return this._isMiner(creep) && this._isHarvestAble(creep)
 }
 
 mineralHarvestController.register()
