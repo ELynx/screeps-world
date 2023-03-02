@@ -17,6 +17,10 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
+Room level 0 support in `process.spawn`. Room level 0 cannot spawn, treat differently.
+
+Spawn caches do not take `spawning` into account.
+
 Movement and positioning:
 
 * Step away and uncrowd.
