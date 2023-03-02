@@ -115,12 +115,12 @@ const bootstrap = {
   imitateMoveCreate: function (target, creep, path) {
     const pos = target.pos
     creep.memory._move =
-        {
-          dest: { x: pos.x, y: pos.y, room: pos.roomName },
-          time: Game.time,
-          path: Room.serializePath(path),
-          room: creep.room.name
-        }
+    {
+      dest: { x: pos.x, y: pos.y, room: pos.roomName },
+      time: Game.time,
+      path: Room.serializePath(path),
+      room: creep.room.name
+    }
   },
 
   imitateMoveErase: function (creep) {
