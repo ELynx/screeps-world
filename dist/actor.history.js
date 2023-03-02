@@ -280,16 +280,20 @@ const historyActor =
   act: function () {
     this.clearCaches()
 
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
+    const dashboard = Game.flags.dashboard
 
+    for (const roomName in Game.rooms) {
       const t1 = Game.cpu.getUsed()
+
+      const room = Game.rooms[roomName]
 
       this.processRoomLog(room)
 
-      const usedRoomPercent = bootstrap.hardCpuUsed(t1)
-      room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
+      if (dashboard) {
+        const usedRoomPercent = bootstrap.hardCpuUsed(t1)
+        room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
+        room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
+      }
     }
 
     this.processPostLog()
