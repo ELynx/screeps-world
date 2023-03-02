@@ -281,9 +281,9 @@ const historyActor =
     this.clearCaches()
 
     for (const roomName in Game.rooms) {
-      const t1 = Game.cpu.getUsed()
-
       const room = Game.rooms[roomName]
+
+      const t1 = Game.cpu.getUsed()
 
       this.processRoomLog(room)
 
