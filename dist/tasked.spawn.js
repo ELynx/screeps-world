@@ -241,7 +241,14 @@ spawn.spawnNext = function () {
   } else if (nextModel.from === queue.FROM_STRONGEST_ROOM) {
     spawns = this._spawnsByLevel()
   } else {
-    spawns = _.shuffle(this._spawnsInRoom(nextModel.from))
+    // important check - can room spawn anything?
+    const room = Game.rooms[nextModel.from]
+    if (room && room.my && room.level() > 0) {
+      spawns = _.shuffle(this._spawnsInRoom(nextModel.from))
+    } else {
+      // fall back to closest
+      spawns = this._spawnsByDistance(nextModel.from)
+    }
   }
 
   if (spawns.length === 0) return false
