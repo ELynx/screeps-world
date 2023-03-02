@@ -27,9 +27,7 @@ linkProcess.work = function (room) {
     return someLink.store.getFreeCapacity(RESOURCE_ENERGY) > Treshold
   }
 
-  for (let i = 0; i < allLinks.length; ++i) {
-    const link = allLinks[i]
-
+  for (const link of allLinks) {
     // quick flag, source keeps to be source
     if (link.isSource()) {
       if (useAsSource(link)) {
@@ -46,14 +44,12 @@ linkProcess.work = function (room) {
     return
   }
 
-  if (sourceLinks.length > 1 && destLinks.length > 1) {
-    sourceLinks.sort(
-      function (l1, l2) {
-        // STRATEGY most energy first
-        return l2.store[RESOURCE_ENERGY] - l1.store[RESOURCE_ENERGY]
-      }
-    )
-  }
+  sourceLinks.sort(
+    function (l1, l2) {
+      // STRATEGY most energy first
+      return l2.store[RESOURCE_ENERGY] - l1.store[RESOURCE_ENERGY]
+    }
+  )
 
   destLinks.sort(
     function (l1, l2) {
