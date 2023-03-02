@@ -224,8 +224,8 @@ RoomPosition.prototype.findInSquareArea = function (lookForType, squareStep, fil
   const [t, l, b, r] = this.squareArea(squareStep)
   const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true)
 
-  for (const itemKey in items) {
-    const item = items[itemKey][lookForType]
+  for (const itemInfo of items) {
+    const item = itemInfo[lookForType]
 
     if (filterFunction) {
       if (filterFunction(item)) {
@@ -278,8 +278,8 @@ RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition
   const intersections = _.intersection(_.keys(fromThis), _.keys(fromOther))
 
   const result = []
-  for (const index of intersections) {
-    result.push(fromThis[index])
+  for (const intersection of intersections) {
+    result.push(fromThis[intersection])
   }
 
   return result
