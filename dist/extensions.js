@@ -151,6 +151,10 @@ Room.prototype.myOrAlly = function () {
   return this.myOrMyReserved() || this.ally
 }
 
+Room.prototype.ownedOrReserved = function () {
+  return this.controller && (this.controller.owner || this.controller.reservation)
+}
+
 Room.prototype.sourceKeeper = function () {
   this.memory.nodeAccessed = Game.time
 
@@ -170,17 +174,13 @@ Room.prototype.sourceKeeper = function () {
   return this.memory.srck
 }
 
-Room.prototype.ownedOrReserved = function () {
-  return this.controller && (this.controller.owner || this.controller.reservation)
-}
-
 Room.prototype.sourceEnergyCapacity = function () {
-  if (this.sourceKeeper()) {
-    return SOURCE_ENERGY_KEEPER_CAPACITY
-  }
-
   if (this.ownedOrReserved()) {
     return SOURCE_ENERGY_CAPACITY
+  }
+
+  if (this.sourceKeeper()) {
+    return SOURCE_ENERGY_KEEPER_CAPACITY
   }
 
   return SOURCE_ENERGY_NEUTRAL_CAPACITY
@@ -241,7 +241,7 @@ RoomPosition.prototype.findInSquareArea = function (lookForType, squareStep, fil
 
 RoomPosition.prototype.hasInSquareArea = function (lookForType, squareStep, filterFunction = undefined) {
   const id = this.findInSquareArea(lookForType, squareStep, filterFunction)
-  return !(id === undefined)
+  return id !== undefined
 }
 
 RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition) {
@@ -275,12 +275,11 @@ RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition
   const fromThis = aroundAsMap(this)
   const fromOther = aroundAsMap(otherRoomPosition)
 
-  const intersections = _.intersection(Object.keys(fromThis), Object.keys(fromOther))
+  const intersections = _.intersection(_.keys(fromThis), _.keys(fromOther))
 
   const result = []
-  for (const outerIndex in intersections) {
-    const innerIndex = intersections[outerIndex]
-    result.push(fromThis[innerIndex])
+  for (const index of intersections) {
+    result.push(fromThis[index])
   }
 
   return result
@@ -409,30 +408,7 @@ const extensions = {
       }
     }
 
-    for (const flagName in Game.flags) {
-      const flag = Game.flags[flagName]
-      flag.shortcut = cutShort(flag.name)
-    }
-
     Game.creepsById = { }
-
-    for (const creepName in Game.creeps) {
-      const creep = Game.creeps[creepName]
-
-      Game.creepsById[creep.id] = creep
-
-      if (creep.memory.flag) {
-        creep.flag = Game.flags[creep.memory.flag]
-        creep.shortcut = cutShort(creep.memory.flag)
-      } else {
-        creep.flag = undefined
-        creep.shortcut = '__no_flag__'
-      }
-    }
-
-    Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
-    Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
-
     Game.spawnsById = { }
     Game.storages = { }
     Game.extractors = { }
@@ -446,7 +422,8 @@ const extensions = {
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
 
-      room.containers = { }
+      room.flags = { }
+      room.creeps = { }
       room.spawns = { }
       room.extensions = { }
       room.towers = { }
@@ -454,13 +431,37 @@ const extensions = {
       room.labs = { }
     }
 
+    for (const flagName in Game.flags) {
+      const flag = Game.flags[flagName]
+      flag.shortcut = cutShort(flag.name)
+
+      if (flag.room) {
+        flag.room.flags[flagName] = flag
+      }
+    }
+
+    for (const creepName in Game.creeps) {
+      const creep = Game.creeps[creepName]
+
+      Game.creepsById[creep.id] = creep
+      creep.room.creeps[creep.id] = creep
+
+      if (creep.memory.flag) {
+        creep.flag = Game.flags[creep.memory.flag]
+        creep.shortcut = cutShort(creep.memory.flag)
+      } else {
+        creep.flag = undefined
+        creep.shortcut = '__no_flag__'
+      }
+    }
+
+    Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
+    Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
+
     for (const id in Game.structures) {
       const structure = Game.structures[id]
 
       switch (structure.structureType) {
-        case STRUCTURE_CONTAINER:
-          structure.room.containers[structure.id] = structure
-          break
         case STRUCTURE_SPAWN:
           Game.spawnsById[structure.id] = structure
           structure.room.spawns[structure.id] = structure
