@@ -234,7 +234,7 @@ const roomActor =
                 if (rc === ERR_NOT_FOUND) {
                   // percent
                   const cpuUsed = bootstrap.hardCpuUsed(t0)
-                  if (cpuUsed <= room.memory.cpul) {
+                  if (cpuUsed <= room.__cpuLimit) {
                     // STRATEGY tweak point for creep movement
                     rc = creep.moveToWrapper(
                       target,
@@ -275,11 +275,11 @@ const roomActor =
       this.roomControllersControl(room, unassignedCreeps)
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
       autobuildProcess.work(room)
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
       terminalProcess.work(room)
     }
 
