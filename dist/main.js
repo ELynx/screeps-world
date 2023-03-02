@@ -39,6 +39,8 @@ module.exports.loop = function () {
 
     historyActor.act()
 
+    const dashboard = Game.flags.dashboard
+
     // prevent division by zero
     const total = Math.max(1, _.keys(Game.creeps).length)
 
@@ -49,20 +51,22 @@ module.exports.loop = function () {
       // STRATEGY CPU limit allocation for controlled vs other rooms
       const r = _.keys(room.creeps).length * (room.my ? 3 : 2)
       const t = total
-      const limit = Math.ceil(100 * r / t)
 
-      room.visual.rect(5.5, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(5.5, 0, 5 * r / t, 0.25, { fill: '#03f' })
+      room.__cpuLimit = Math.ceil(100 * r / t)
+
+      if (dashboard) {
+        room.visual.rect(5.5, 0, 5, 0.5, { fill: '#0f0' })
+        room.visual.rect(5.5, 0, 5 * r / t, 0.25, { fill: '#03f' })
+      }
 
       if (room.my) {
-        room.memory.cpul = limit
-        roomActor.act(room)
-      } else if (Game.flags['observe_act_' + room.name] &&
-                 Game.flags['observe_act_' + room.name].pos.roomName === room.name) {
-        room.memory.cpul = limit
         roomActor.act(room)
       } else {
-        room.memory.cpul = undefined
+        const actFlag = Game.flags['observe_act_' + room.name]
+
+        if (actFlag && actFlag.pos.roomName === room.name) {
+          roomActor.act(room)
+        }
       }
     }
 
