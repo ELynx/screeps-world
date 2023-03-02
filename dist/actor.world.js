@@ -31,8 +31,7 @@ const automaticControllers = [
 const worldActor =
 {
   taskControllersControl: function () {
-    for (const index in automaticControllers) {
-      const id = automaticControllers[index]
+    for (const id of automaticControllers) {
       const automaticController = bootstrap.taskControllers[id]
 
       if (automaticController === undefined) {
@@ -44,16 +43,17 @@ const worldActor =
   },
 
   act: function () {
-    // mark initial time
     const t0 = Game.cpu.getUsed()
 
     this.taskControllersControl()
 
-    const usedPercent = bootstrap.hardCpuUsed(t0)
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
+    if (Game.flags.dashboard) {
+      const usedPercent = bootstrap.hardCpuUsed(t0)
+      for (const roomName in Game.rooms) {
+        const room = Game.rooms[roomName]
+        room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
+        room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
+      }
     }
   } // end of act method
 }
