@@ -77,19 +77,15 @@ const historyActor =
     this._increaseSomeValue(something, 'sideHarmPower', amount)
   },
 
-  markNPCHostile: function (room, something, somethingUsername) {
-    Game.iff.markNPCHostile(something)
-  },
-
   handle_EVENT_ATTACK: function (room, eventRecord) {
-    // skip objects that were already examined and found unworthy
-    if (Game.__skipActors[eventRecord.objectId]) return
-    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
-
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
     // SHORTCUT nuke is detected elsewhere
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
+
+    // skip objects that were already examined and found unworthy
+    if (Game.__skipActors[eventRecord.objectId]) return
+    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
     if (attacker === null) {
@@ -115,7 +111,7 @@ const historyActor =
       return
     }
 
-    let hostileAction = false
+    let hostileAction
     let targetUsername
     let targetMy
 
@@ -142,7 +138,7 @@ const historyActor =
     if (attackerUsername === targetUsername) return
 
     // fights between allies
-    if (attacker.ally && (!targetMy)) return
+    if (!targetMy && attacker.ally) return
 
     if (attacker.pc) {
       // STRATEGY PC reputation decrease per hostile action
@@ -151,9 +147,9 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to [' + reputation + ']')
     } else {
-      this.markNPCHostile(room, attacker, attackerUsername)
+      Game.iff.markNPCHostile(something)
     }
 
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
@@ -192,13 +188,13 @@ const historyActor =
     if (attackerUsername === roomUsername) return
 
     // fights between allies
-    if (attacker.ally && (!room.myOrMyReserved())) return
+    if (!room.myOrMyReserved() && attacker.ally) return
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to [' + reputation + ']')
     } else {
-      this.markNPCHostile(room, attacker, attackerUsername)
+      Game.iff.markNPCHostile(something)
     }
   },
 
@@ -245,9 +241,7 @@ const historyActor =
   processRoomLog: function (room) {
     const eventLog = room.getEventLog()
 
-    for (const index in eventLog) {
-      const eventRecord = eventLog[index]
-
+    for (const eventRecord of eventLog) {
       switch (eventRecord.event) {
         case EVENT_ATTACK:
           this.handle_EVENT_ATTACK(room, eventRecord)
@@ -283,14 +277,14 @@ const historyActor =
     const dashboard = Game.flags.dashboard
 
     for (const roomName in Game.rooms) {
-      const t1 = Game.cpu.getUsed()
+      const t0 = Game.cpu.getUsed()
 
       const room = Game.rooms[roomName]
 
       this.processRoomLog(room)
 
       if (dashboard) {
-        const usedRoomPercent = bootstrap.hardCpuUsed(t1)
+        const usedRoomPercent = bootstrap.hardCpuUsed(t0)
         room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
         room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
       }
