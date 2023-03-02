@@ -568,7 +568,7 @@ const intent = {
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on creep [' + creep.name +
-                  '] with code ' + intentRc + ' where expected code was ' + rc)
+                  '] with code [' + intentRc + '] where expected code was [' + rc + ']')
 
       this.restoreIntents(creep, backupCreep)
       this.restoreIntents(creep.room, backupRoom)
@@ -614,7 +614,7 @@ const intent = {
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on spawn [' + spawn.name +
-                  '] with code ' + intentRc + ' where expected code was [' + rc + ']')
+                  '] with code [' + intentRc + '] where expected code was [' + rc + ']')
 
       this.restoreIntents(spawn, backupSpawn)
       this.restoreIntents(spawn.room, backupRoom)
