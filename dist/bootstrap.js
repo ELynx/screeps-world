@@ -222,6 +222,10 @@ const bootstrap = {
   },
 
   moveOptionsWrapper: function (creep, options) {
+    if (options.plainCost && options.swampCost) {
+      return options
+    }
+
     this._movementCost(creep)
 
     const plainCost = (creep.__movementCost ? creep.__movementCost.plainCost : undefined) || 1
