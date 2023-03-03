@@ -19,11 +19,7 @@ Room.prototype.addAggro = function (agroArray) {
 }
 
 Room.prototype.breached = function () {
-  return room.__breached
-}
-
-Room.prototype.setBreached = function (breached) {
-  room.__breached = breached
+  return room.__aggro ? room.__aggro.length === 0 : undefined
 }
 
 Room.prototype.getControlPos = function () {
@@ -108,9 +104,7 @@ Creep.prototype.meleeAdjacent = function (targets) {
   let target2
   let target1
 
-  for (let i = 0; i < targets.length; ++i) {
-    const target = targets[i]
-
+  for (const target of targets) {
     if (this.pos.isNearTo(target)) {
       let noMelee = false
       if (target.body) {
@@ -145,8 +139,7 @@ Creep.prototype.purgeEnergy = function () {
 }
 
 Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
-  for (const targetKey in targets) {
-    const target = targets[targetKey]
+  for (const target of targets) {
     if (target.structureType &&
         target.store &&
         target.store[RESOURCE_ENERGY] > 0 &&
@@ -192,6 +185,10 @@ Creep.prototype.unlive = function () {
   return this.suicide()
 }
 
+Flag.prototype.resetCount = function () {
+  this.memory.fcnt = undefined
+}
+
 function Tasked (id) {
   this.FLAG_REMOVE = 0
   this.FLAG_IGNORE = 1
@@ -226,7 +223,13 @@ function Tasked (id) {
 
     if (creep.__canMove) {
       const controlPos = creep.getControlPos()
-      creep.moveToWrapper(controlPos, { reusePath: 50, range: controlPos.offBorderDistance() })
+      creep.moveToWrapper(
+        controlPos,
+        {
+          range: controlPos.offBorderDistance(),
+          reusePath: _.random(7, 11)
+        }
+      )
     }
   }
 
@@ -285,9 +288,7 @@ function Tasked (id) {
 
     const creeps = Game.creepsByShortcut[this.id] || []
 
-    for (const index in creeps) {
-      const creep = creeps[index]
-
+    for (const creep of creeps) {
       creep.__canMove = creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0
 
       if (this.creepPrepare) {
@@ -324,9 +325,7 @@ function Tasked (id) {
 
     const flags = Game.flagsByShortcut[this.id] || []
 
-    for (const index in flags) {
-      const flag = flags[index]
-
+    for (const flag of flags) {
       let want = flag.getValue()
 
       // sanitize flags
@@ -337,14 +336,15 @@ function Tasked (id) {
         continue
       }
 
-      if (flag.room && flag.room.__breached) {
+      if (flag.room && flag.room.breached()) {
         want = want + this.breachedExtraCreeps
       }
 
       if (this.flagPrepare) {
         const decision = this.flagPrepare(flag)
+
         if (decision === this.FLAG_IGNORE) {
-          spawn.erase(flag.name) // to free up queue
+          spawn.erase(flag.name)
           flag.resetSecondaryColor()
           continue
         }
@@ -352,7 +352,6 @@ function Tasked (id) {
         if (decision !== this.FLAG_SPAWN) {
           spawn.erase(flag.name)
           flag.remove()
-
           continue
         }
       }
