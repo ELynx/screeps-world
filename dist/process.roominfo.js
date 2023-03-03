@@ -44,7 +44,8 @@ roomInfoProcess.harvestLevel = function (room) {
   }
 
   let walkable = 0
-  for (const position of positions) {
+  for (const index in positions) {
+    const position = positions[index]
     if (this._walkable(terrain, position)) {
       ++walkable
     }
