@@ -26,9 +26,7 @@ roomInfoProcess.harvestLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
 
   const positions = { }
-  for (let i = 0; i < sources.length; ++i) {
-    const source = sources[i]
-
+  for (const source of sources) {
     for (let dx = -1; dx <= 1; ++dx) {
       for (let dy = -1; dy <= 1; ++dy) {
         if (dx === 0 && dy === 0) continue
