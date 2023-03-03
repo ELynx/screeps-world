@@ -6,6 +6,26 @@ const bootstrap = require('./bootstrap')
 
 const spawn = require('./routine.spawn')
 
+Room.prototype.aggro = function () {
+  return room.__aggro || []
+}
+
+Room.prototype.addAggro = function (agroArray) {
+  if (room.__aggro) {
+    room.__aggro = room.__aggro.concat(agroArray)
+  } else {
+    room.__aggro = agroArray
+  }
+}
+
+Room.prototype.breached = function () {
+  return room.__breached
+}
+
+Room.prototype.setBreached = function (breached) {
+  room.__breached = breached
+}
+
 Room.prototype.getControlPos = function () {
   // some interesting positions first
   if (this.storage) return this.storage.pos
