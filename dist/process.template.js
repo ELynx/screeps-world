@@ -5,15 +5,8 @@ const profiler = require('./screeps-profiler')
 const bootstrap = require('./bootstrap')
 
 function Process (id) {
-  /**
-    Unique identifier.
-    **/
   this.id = id
 
-  /**
-    Work on a room.
-    @param {Room} room to process.
-    **/
   this.work = undefined
 
   this._register = function () {
@@ -24,6 +17,6 @@ function Process (id) {
   this.register = function () {
     this._register()
   }
-};
+}
 
 module.exports = Process
