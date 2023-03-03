@@ -20,13 +20,13 @@ const bodywork = {
     @return {Array} body.
     **/
   worker: function (room) {
-    // cannot produce creeps -> no level regulation
-    if (!room.my) {
+    const energy = room.extendedAvailableEnergyCapacity()
+
+    // call for new or foreign room
+    if (energy === 0) {
       // 750  100   100   100   50     50     50     50    50    50    50    50    50
       return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
-
-    const energy = room.extendedAvailableEnergyCapacity()
 
     if (energy < 500) {
       // 250  100   50     50    50
@@ -68,6 +68,13 @@ const bodywork = {
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
+
+    // call for new room
+    if (energy === 0) {
+      // target is 3000 / 300 / 2 = 5 WORK body parts
+      // 850  100   100   100   100   100   50     50    50    50    50    50    50
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
 
     if (energy < 550) {
       // 250  100   50     50    50
