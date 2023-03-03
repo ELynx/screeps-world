@@ -24,13 +24,13 @@ const mineralHarvestController = require('./controller.mineral.harvest')
 const mineralRestockController = require('./controller.mineral.restock')
 const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
-const ttlController = require('./controller.ttl')
+const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
 // STRATEGY priority for creep assignment
 const automaticControllers = [
   downgradeController.id, // always on top
-  ttlController.id, // catch recyclees
+  unliveController.id, // catch recyclees
   rampupController.id, // build up the ramps and walls to decent level right up
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.id, // catch anyone with mineral only

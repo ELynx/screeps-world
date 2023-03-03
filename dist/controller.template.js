@@ -230,6 +230,10 @@ function Controller (id) {
     return creep.memory.minr || false
   }
 
+  this._isRecyclee = function (creep) {
+    return creep.memory.rccl || false
+  }
+
   /**
     Creep that has energy and can perform general work
     @param {Creep} creep to look at.
