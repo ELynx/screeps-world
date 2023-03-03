@@ -149,7 +149,7 @@ const historyActor =
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
       console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to [' + reputation + ']')
     } else {
-      Game.iff.markNPCHostile(something)
+      Game.iff.markNPCHostile(attacker)
     }
 
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
@@ -194,7 +194,7 @@ const historyActor =
       const reputation = Game.iff.makeHostile(attackerUsername)
       console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to [' + reputation + ']')
     } else {
-      Game.iff.markNPCHostile(something)
+      Game.iff.markNPCHostile(attacker)
     }
   },
 
