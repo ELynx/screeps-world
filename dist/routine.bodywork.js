@@ -99,13 +99,13 @@ const bodywork = {
     if (!room.my) {
     // if decision is ever made to mide outside, it must be done with superior machines
     // 3400
-    return [
-    // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
-      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-      // 50     50     50     50
-      CARRY, CARRY, CARRY, CARRY,
-      //50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
-      MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return [
+        // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
+        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+        // 50     50     50     50
+        CARRY, CARRY, CARRY, CARRY,
+        // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
@@ -138,7 +138,7 @@ const bodywork = {
         WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
         // 50     50
         CARRY, CARRY,
-        //50    50    50    50    50    50    50    50    50    50    50    50
+        // 50    50    50    50    50    50    50    50    50    50    50    50
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
@@ -148,7 +148,7 @@ const bodywork = {
       WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
       // 50     50     50     50
       CARRY, CARRY, CARRY, CARRY,
-      //50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+      // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
       MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   }
 }
