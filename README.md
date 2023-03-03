@@ -106,3 +106,7 @@ Spawn intent uber-wrapper:
 * Replace renew with recycle when spawn is called.
 
 * Cancel without energy loss.
+
+Tasked subspecies.
+
+Instead of healing by towers spawn strelok healer subspecies.
