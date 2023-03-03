@@ -63,19 +63,18 @@ plunder.getSomeOwnRoomName = function (creep) {
 
 plunder.moveAndLoad = function (creep, target) {
   if (creep.pos.isNearTo(target)) {
-    const resourceTypes = _.shuffle(Object.keys(target.store))
-    for (const index in resourceTypes) {
-      const resourceType = resourceTypes[index]
+    const resourceTypes = _.shuffle(_.keys(target.store))
+    for (const resourceType of resourceTypes) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc === OK) break
+      if (rc !== OK) break
     }
   } else {
     creep.moveToWrapper(
       target,
       {
         costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-        reusePath: 10,
-        range: 1
+        range: 1,
+        reusePath: _.random(7, 11)
       }
     )
   }
@@ -180,7 +179,7 @@ plunder.creepRoomTravel = function (creep) {
 
 plunder.flagPrepare = function (flag) {
   if (flag.room) {
-    if (flag.room.__breached === false) {
+    if (flag.room.breached() === false) {
       return this.FLAG_IGNORE
     }
   }
