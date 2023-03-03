@@ -20,7 +20,6 @@ aggro.act = function () {
       )
 
       room.addAggro(atPosTargets)
-      room.setBreached(room.aggro().length === 0)
     }
   }
 }
