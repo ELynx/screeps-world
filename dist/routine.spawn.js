@@ -121,9 +121,7 @@ const spawn = {
 
   __count: function (target, id) {
     let withId = 0
-    for (let i = 0; i < target.length; ++i) {
-      const stored = target[i]
-
+    for (const stored of target) {
       if (stored.id === id) {
         ++withId
       }
