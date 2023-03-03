@@ -65,16 +65,21 @@ claim.creepAtDestination = function (creep) {
         sign = ''
         rc = creep.attackController(controller)
       } else {
-        let myRooms = 0
-        for (const roomName in Game.rooms) {
-          const someRoom = Game.rooms[roomName]
-          if (someRoom.my) {
-            ++myRooms
+        let doClaim = false
+
+        if (creep.memory.flag.indexOf('CLAIM') !== -1) {
+          let myRooms = 0
+          for (const roomName in Game.rooms) {
+            const someRoom = Game.rooms[roomName]
+            if (someRoom.my) {
+              ++myRooms
+            }
           }
+
+          doClaim = Game.gcl.level > myRooms
         }
 
-        if (Game.gcl.level > myRooms) {
-          // TODO conditional claim
+        if (doClaim) {
           sign = ''
           rc = creep.claimController(controller)
         } else {
