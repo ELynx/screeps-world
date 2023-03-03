@@ -8,9 +8,7 @@ strelok.breachedExtraCreeps = 1
 
 strelok.cleanUpPatrolFlags = function () {
   const flags = Game.flagsByShortcut[this.id] || []
-  for (const index in flags) {
-    const flag = flags[index]
-
+  for (const flag of flags) {
     if (flag.name === this.id + '_' + flag.pos.roomName) {
       const room = flag.room
       if (room && room.my) {
@@ -94,8 +92,8 @@ strelok.creepAtDestination = function (creep) {
 
     let targets = targetCreeps.concat(targetStructures)
 
-    if (creep.room.__aggro && creep.room.__aggro.length > 0) {
-      targets = targets.concat(creep.room.__aggro)
+    if (creep.room.aggro().length > 0) {
+      targets = targets.concat(creep.room.aggro())
     }
 
     const wounded = _.filter(
