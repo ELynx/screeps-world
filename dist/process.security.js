@@ -54,15 +54,9 @@ secutiryProcess.work = function (room) {
         !ctrl.safeModeCooldown &&
         !ctrl.upgradeBlocked &&
         ctrl.safeModeAvailable > 0) {
-      const flags = Game.flagsByShortcut[this.id] || []
+      const flags = _.filter(room.flags, _.matchesProperty('shortcut', this.id))
 
-      for (const index in flags) {
-        const flag = flags[index]
-
-        if (flag.pos.roomName !== room.name) {
-          continue
-        }
-
+      for (const flag of flags) {
         const range = flag.getValue()
         if (range < 0) {
           flag.remove()
@@ -79,7 +73,7 @@ secutiryProcess.work = function (room) {
         if (trigger) {
           const rc = ctrl.activateSafeMode()
 
-          const notification = 'Room ' + room.name + ' requested safe mode [' + rc + ']'
+          const notification = 'Room [' + room.name + '] requested safe mode [' + rc + ']'
 
           console.log(notification)
           Game.notify(notification)
