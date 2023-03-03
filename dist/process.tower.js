@@ -79,9 +79,7 @@ towerProcess.work = function (room) {
   )
 
   if (damagedCreeps.length > 0) {
-    for (let i = 0; i < towers.length; ++i) {
-      const tower = towers[i]
-
+    for (const tower of towers) {
       if (tower.__acted) continue
 
       const closestDamaged = tower.pos.findClosestByRange(damagedCreeps)
