@@ -58,6 +58,10 @@ spawnProcess._hasAndPlanned = function (room, live, type) {
   return has + planned
 }
 
+spawnProcess._canSpawn = function (room) {
+  return room.extendedAvailableEnergyCapacity() > 0
+}
+
 spawnProcess.restockers = function (room, live) {
   const restockerBody = bodywork.restocker(room)
 
@@ -88,11 +92,13 @@ spawnProcess.restockers = function (room, live) {
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'restocker')
+    const roomCanSpawn = this._canSpawn(room)
+
     this.addToQueue(
       room.name,
-      room.my ? room.name : queue.FROM_CLOSEST_ROOM,
+      roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
       'restocker',
-      room.my ? 'restocker' : restockerBody,
+      roomCanSpawn ? 'restocker' : restockerBody,
       {
         rstk: true
       },
@@ -107,9 +113,10 @@ spawnProcess.miners = function (room, live) {
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'miner')
+
     this.addToQueue(
       room.name,
-      room.my ? room.name : queue.FROM_CLOSEST_ROOM,
+      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
       'miner',
       'miner',
       {
@@ -180,9 +187,11 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   const wantWorkersMax = limit || 12
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
+  const roomCanSpawn = this._canSpawn(room)
+
   addWorker(
-    room.my ? room.name : queue.FROM_CLOSEST_ROOM,
-    room.my ? 'worker' : workerBody,
+    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    roomCanSpawn ? 'worker' : workerBody,
     want - nowWorkers,
     'normal'
   )
@@ -209,8 +218,8 @@ spawnProcess.sourceKeeper = function (room, live) {
 }
 
 spawnProcess.unowned = function (room, live) {
-  this.workers(room, live, 2)
   this.restockers(room, live)
+  this.workers(room, live, 2)
 }
 
 spawnProcess.work = function (room) {

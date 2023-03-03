@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Room level 0 support in `process.spawn`. Room level 0 cannot spawn, treat differently.
-
 Movement and positioning:
 
 * Step away and uncrowd.
@@ -95,6 +93,8 @@ Account for tower spending energy, renew, etc. Basically, more intent wrappers.
 
 Monitor invader power goal and prepare for them.
 
+Monitor Source Keeper respawn.
+
 Spawn intent uber-wrapper:
 
 * Delayed call to spawn
@@ -107,4 +107,4 @@ Spawn intent uber-wrapper:
 
 Tasked subspecies.
 
-Instead of healing by towers spawn strelok healer subspecies.
+Instead of healing by towers spawn healers.
