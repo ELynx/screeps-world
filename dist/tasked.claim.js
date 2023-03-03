@@ -52,7 +52,7 @@ claim.creepAtDestination = function (creep) {
       let sign = ''
 
       if (controller.owner && controller.owner.username !== creep.owner.username) {
-        sign = 'Your base is under attack'
+        sign = ''
         rc = creep.attackController(controller)
 
         // see if creep can wait it out
@@ -62,7 +62,7 @@ claim.creepAtDestination = function (creep) {
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)
       } else if (controller.reservation && controller.reservation.username !== creep.owner.username) {
-        sign = 'Taking over'
+        sign = ''
         rc = creep.attackController(controller)
       } else {
         let myRooms = 0
@@ -74,10 +74,11 @@ claim.creepAtDestination = function (creep) {
         }
 
         if (Game.gcl.level > myRooms) {
+          // TODO conditional claim
           sign = ''
           rc = creep.claimController(controller)
         } else {
-          sign = 'I was here'
+          sign = ''
           rc = creep.reserveController(controller)
         }
       }
@@ -91,7 +92,14 @@ claim.creepAtDestination = function (creep) {
       }
       // end of creep is near pos
     } else {
-      creep.moveToWrapper(controller, { maxRooms: 1, reusePath: 50, range: 1 })
+      creep.moveToWrapper(
+        controller,
+        {
+          maxRooms: 1,
+          range: 1,
+          reusePath: _.random(7, 11)
+        }
+      )
       rc = OK // keep walking
     }
   } // end of harmable controller
@@ -129,7 +137,7 @@ claim.flagPrepare = function (flag) {
       return this.FLAG_REMOVE
     }
 
-    if (flag.room.__breached === false) {
+    if (flag.room.breached() === false) {
       return this.FLAG_IGNORE
     }
   }
