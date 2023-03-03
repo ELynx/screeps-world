@@ -7,19 +7,19 @@ const bootstrap = require('./bootstrap')
 const spawn = require('./routine.spawn')
 
 Room.prototype.aggro = function () {
-  return room.__aggro || []
+  return this.__aggro || []
 }
 
 Room.prototype.addAggro = function (agroArray) {
-  if (room.__aggro) {
-    room.__aggro = room.__aggro.concat(agroArray)
+  if (this.__aggro) {
+    this.__aggro = this.__aggro.concat(agroArray)
   } else {
-    room.__aggro = agroArray
+    this.__aggro = agroArray
   }
 }
 
 Room.prototype.breached = function () {
-  return room.__aggro ? room.__aggro.length === 0 : undefined
+  return this.__aggro ? this.__aggro.length === 0 : undefined
 }
 
 Room.prototype.getControlPos = function () {

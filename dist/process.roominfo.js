@@ -12,7 +12,7 @@ roomInfoProcess._walkable = function (terrain, position) {
   }
 
   const atPosition = position.lookFor(LOOK_STRUCTURES)
-  for (structure of atPosition) {
+  for (const structure of atPosition) {
     if (structure.structureType === STRUCTURE_ROAD) {
       return true
     }
