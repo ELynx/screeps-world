@@ -225,8 +225,7 @@ const roomActor =
                 let rc = creep.moveToWrapper(
                   target,
                   {
-                    noPathFinding: true,
-                    reusePath: _.random(7, 11)
+                    noPathFinding: true
                   }
                 )
 
