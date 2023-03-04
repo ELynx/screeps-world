@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Rampup starves restock.
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
