@@ -17,6 +17,8 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
+Rampup starves restock.
+
 Movement and positioning:
 
 * Step away and uncrowd.
@@ -31,7 +33,13 @@ Don't send military to enemy safe mode rooms.
 
 Cluster restock.
 
-Beetle with ATTACK instead of WORK.
+Beetle with ATTACK instead of WORK:
+
+* Melee around as Strelok.
+
+* Check pipeline for `attack` and `dismantle`.
+
+* Melee creeps in front.
 
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
