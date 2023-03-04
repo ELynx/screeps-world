@@ -15,8 +15,6 @@ energySpecialistController.actRange = 1
 energySpecialistController.unowned = true
 energySpecialistController.sourceKeeper = true
 
-energySpecialistController.ignoreCreepsForTargeting = false
-
 energySpecialistController.restockTargets = function (room) {
   const unspecialist = bootstrap.roomControllers[unspecialistId]
 

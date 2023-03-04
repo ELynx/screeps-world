@@ -21,6 +21,9 @@ PathFinder.CostMatrix.prototype.setBordersUnwalkable = function () {
   }
 }
 
+PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function () {
+}
+
 const map = {
   costCallback_costMatrixWithUnwalkableBorders: function (roomName, costMatrix) {
     if (Game.__unwalkableBordersCostCallbackCache === undefined) {
@@ -36,6 +39,25 @@ const map = {
     modified.setBordersUnwalkable()
 
     Game.__unwalkableBordersCostCallbackCache[roomName] = modified
+
+    return modified
+  },
+
+  costCallback_costMatrixForRoomActivity: function (roomName, costMatrix) {
+    if (Game.__roomActivityCostCallbackCache === undefined) {
+      Game.__roomActivityCostCallbackCache = { }
+    }
+
+    const cached = Game.__roomActivityCostCallbackCache[roomName]
+    if (cached) {
+      return cached
+    }
+
+    const modified = costMatrix.clone()
+    modified.setBordersUnwalkable()
+    modified.setStationaryCreepsUnwalkabke()
+
+    Game.__roomActivityCostCallbackCache[roomName] = modified
 
     return modified
   }

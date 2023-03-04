@@ -9,8 +9,6 @@ energyHarvestController.actRange = 1
 energyHarvestController.unowned = true
 energyHarvestController.sourceKeeper = true
 
-energyHarvestController.ignoreCreepsForTargeting = false
-
 energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }

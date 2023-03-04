@@ -230,7 +230,7 @@ const roomActor =
                     rc = creep.moveToWrapper(
                       target,
                       {
-                        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
+                        costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
                         maxRooms: 1,
                         range: creep.memory.dact,
                         reusePath: _.random(3, 5)
