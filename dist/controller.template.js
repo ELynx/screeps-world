@@ -32,11 +32,6 @@ function Controller (id) {
   this.extra = undefined
 
   /**
-    Flag to check reach-ability of target for creeps during targeting.
-    **/
-  this.ignoreCreepsForTargeting = true
-
-  /**
     Flag to execute target search with interleave.
     **/
   this.oddOrEven = undefined
@@ -338,8 +333,7 @@ function Controller (id) {
             bootstrap.moveOptionsWrapper(
               creep,
               {
-                costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-                ignoreCreeps: this.ignoreCreepsForTargeting,
+                costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
                 maxRooms: 1,
                 range: this.actRange
               }

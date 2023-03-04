@@ -9,8 +9,6 @@ energyUnspecialistController.actRange = 1
 energyUnspecialistController.unowned = true
 energyUnspecialistController.sourceKeeper = true
 
-energyUnspecialistController.ignoreCreepsForTargeting = false
-
 energyUnspecialistController.act = function (target, creep) {
   return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
 }
