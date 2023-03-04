@@ -20,6 +20,10 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 }
 
+Creep.prototype.fatigueWrapper = function () {
+  return OK
+}
+
 Flag.prototype.getValue = function () {
   switch (this.color) {
     case COLOR_PURPLE:
