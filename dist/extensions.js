@@ -12,16 +12,20 @@ Creep.prototype.allyOrNeutral = function () {
   return this.ally || this.neutral
 }
 
+Creep.prototype.fatigueWrapper = function () {
+  return OK
+}
+
 Creep.prototype.moveWrapper = function (direction) {
   return this.move(direction)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
-  return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
-}
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
 
-Creep.prototype.fatigueWrapper = function () {
-  return OK
+  return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 }
 
 Flag.prototype.getValue = function () {
