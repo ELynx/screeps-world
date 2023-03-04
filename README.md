@@ -19,6 +19,8 @@ Proprietary and confidential.
 ## TODO
 Rampup starves restock.
 
+Spawn blocked in one room starves other rooms.
+
 Movement and positioning:
 
 * Step away and uncrowd.
@@ -87,7 +89,15 @@ Send resources away instead of selling out on panic.
 
 Sell off commodities.
 
-Room attack definition: drop aggro, drop streloks, claim and plunders.
+Room attack definition:
+
+* Breached only Streloks on towers and spawns.
+
+* Outlasts.
+
+* Plunders on major structures.
+
+* Claim on controller.
 
 Border control for creep movement in tasked.
 
