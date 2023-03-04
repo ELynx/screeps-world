@@ -167,20 +167,16 @@ const roomActor =
           creep.memory.rcng = true
 
           if (creep.getActiveBodyparts(MOVE) > 0) {
-            if (creep.fatigue === 0) {
-              const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
-              const rangeInDestRoom = posInDestRoom.offBorderDistance()
+            const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
+            const rangeInDestRoom = posInDestRoom.offBorderDistance()
 
-              creep.moveToWrapper(
-                posInDestRoom,
-                {
-                  range: rangeInDestRoom,
-                  reusePath: _.random(3, 5)
-                }
-              )
-            } else {
-              creep.fatigueWrapper()
-            }
+            creep.moveToWrapper(
+              posInDestRoom,
+              {
+                range: rangeInDestRoom,
+                reusePath: _.random(3, 5)
+              }
+            )
           }
 
           continue
