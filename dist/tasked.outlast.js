@@ -113,6 +113,7 @@ outlast.creepRoomTravel = function (creep) {
         {
           plainCost: 1,
           swampCost: 1,
+          ignoreRoads: true,
           range
         }
       )
