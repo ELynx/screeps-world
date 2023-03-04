@@ -426,7 +426,8 @@ autobuildProcess.actualWork = function (room) {
   this.extractor(room)
   this.sourceLink(room)
   this.sourceContainer(room)
-  this.coverRamparts(room)
+  // TODO rethink
+  // this.coverRamparts(room)
 }
 
 autobuildProcess.work = function (room) {
