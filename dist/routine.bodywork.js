@@ -38,8 +38,13 @@ const bodywork = {
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 750  100   100   100   50     50     50     50    50    50    50    50    50
-    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    if (energy < 1500) {
+      // 750  100   100   100   50     50     50     50    50    50    50    50    50
+      return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
+
+    // 1500 100   100   100   100   100   100   50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
@@ -107,11 +112,9 @@ const bodywork = {
     // if decision is ever made to mide outside, it must be done with superior machines
     // 3400
       return [
-        // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-        // 50     50     50     50
-        CARRY, CARRY, CARRY, CARRY,
-        // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+        // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
+        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
+        // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
@@ -141,21 +144,17 @@ const bodywork = {
     if (energy < 3400) {
       // 1700
       return [
-      // 100   100   100   100   100   100   100   100   100   100
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-        // 50     50
-        CARRY, CARRY,
-        // 50    50    50    50    50    50    50    50    50    50    50    50
+        // 100 100  100   100   100   100   100   100   100   100   50     50
+        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY,
+        // 50 50    50    50    50    50    50    50    50    50    50    50
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
     // 3400
     return [
-    // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
-      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-      // 50     50     50     50
-      CARRY, CARRY, CARRY, CARRY,
-      // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+      // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
+      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
+      // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
       MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   }
 }
