@@ -163,37 +163,31 @@ const roomActor =
         }
 
         // code that migrate creeps into room of registration
-        if (creep.memory.crum !== creep.room.name || creep.memory.rcng) {
-          // TODO understand why and probably remove
-          // to take off any work from previous room
-          bootstrap.unassignCreep(creep)
-
-          // flag to handle border transition
+        if (creep.memory.crum !== creep.room.name) {
           creep.memory.rcng = true
 
-          if (creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0) {
-            // get off border area
-            const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
-            const rangeInDestRoom = posInDestRoom.offBorderDistance()
+          if (creep.getActiveBodyparts(MOVE) > 0) {
+            if (creep.fatigue === 0) {
+              const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
+              const rangeInDestRoom = posInDestRoom.offBorderDistance()
 
-            if (creep.pos.inRangeTo(posInDestRoom, rangeInDestRoom)) {
-              // drop and forget the flag
-              // not continue, can be used
-              creep.memory.rcng = undefined
-            } else {
               creep.moveToWrapper(
                 posInDestRoom,
                 {
                   range: rangeInDestRoom,
-                  reusePath: _.random(7, 11)
+                  reusePath: _.random(3, 5)
                 }
               )
-              continue // to next creep
+            } else {
+              creep.fatigueWrapper()
             }
-          } else {
-            continue // to the next creep
           }
-        } // end of subroutine of room change
+
+          continue
+        } else if (creep.memory.rcng) {
+          creep.memory.rcng = undefined
+          bootstrap.imitateMoveErase(creep)
+        }
 
         const consumingRc = this.creepControllersControl(roomConsumingPassByControllers, room, creep)
         if (consumingRc !== OK) {
@@ -213,11 +207,13 @@ const roomActor =
           if (target) {
             if (creep.pos.inRangeTo(target, creep.memory.dact)) {
               keepAssignment = this.roomControllersAct(target, creep)
+              bootstrap.imitateMoveErase(creep)
             } else {
               if (creep.getActiveBodyparts(MOVE) === 0) {
                 keepAssignment = false
               } else if (creep.fatigue > 0) {
                 keepAssignment = true
+                creep.fatigueWrapper()
               } else {
                 // STRATEGY creep movement, main CPU sink
 
@@ -241,13 +237,14 @@ const roomActor =
                         costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
                         maxRooms: 1,
                         range: creep.memory.dact,
-                        reusePath: _.random(7, 11)
+                        reusePath: _.random(3, 5)
                       }
                     )
                   } else {
                     // so assignment is not dropped
                     rc = OK
                     creep.say('(P)')
+                    creep.fatigueWrapper()
                   }
                 }
 
@@ -279,7 +276,7 @@ const roomActor =
     }
 
     // if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
-    //  terminalProcess.work(room)
+    //   terminalProcess.work(room)
     // }
 
     if (Game.flags.dashboard) {
