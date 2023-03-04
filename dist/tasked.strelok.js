@@ -224,15 +224,33 @@ strelok.creepAtDestination = function (creep) {
         }
 
         if (flee !== undefined) {
-          creep.moveToWrapper(fireTarget, { maxRooms: 1, range, flee })
+          creep.moveToWrapper(
+            fireTarget,
+            {
+              flee,
+              maxRooms: 1,
+              range,
+              reusePath: 0
+            }
+          )
         }
       } else {
         // STRATEGY follow creep tightly
-        const reuse = moveTarget.structureType ? 10 : 0
+        const reusePath = moveTarget.structureType ? _.random(3, 5) : 0
         // STRATEGY bump into structure
         const range = moveTarget.structureType ? 1 : 3
-        creep.moveToWrapper(moveTarget, { maxRooms: 1, reusePath: reuse, range })
+
+        creep.moveToWrapper(
+          moveTarget,
+          {
+            maxRooms: 1,
+            range,
+            reusePath
+          }
+        )
       }
+    } else {
+      creep.fatigueWrapper()
     }
     // end of if target
   } else {
