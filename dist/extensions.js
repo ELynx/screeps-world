@@ -12,7 +12,7 @@ Creep.prototype.allyOrNeutral = function () {
   return this.ally || this.neutral
 }
 
-Creep.prototype.fatigueWrapper = function () {
+Creep.prototype.fatigueWrapper = function (options = { }) {
   return OK
 }
 
@@ -22,7 +22,7 @@ Creep.prototype.moveWrapper = function (direction) {
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
   if (this.fatigue > 0) {
-    return this.fatigueWrapper()
+    return this.fatigueWrapper(options)
   }
 
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
