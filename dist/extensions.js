@@ -12,18 +12,79 @@ Creep.prototype.allyOrNeutral = function () {
   return this.ally || this.neutral
 }
 
-Creep.prototype.fatigueWrapper = function (options = { }) {
+Creep.prototype.rememberPosition = function () {
+  this.memory._pos =
+  {
+    from:
+    {
+      x: this.pos.x,
+      y: this.pos.y,
+      room: this.pos.roomName
+    },
+    time: Game.time,
+    room: this.room.name
+  }
+}
+
+Creep.prototype.forgetPosition = function () {
+  this.memory._pos = undefined
+}
+
+Creep.prototype.moved = function () {
+  // quick reference
+  const p = this.memory._pos
+
+  if (p === undefined) return undefined
+
+  if (Game.time > p.time + 1) {
+    this.forgetPosition()
+    return undefined
+  }
+
+  if (this.room.name !== p.room) {
+    this.forgetPosition()
+    return undefined
+  }
+
+  return this.pos.x !== p.from.x || this.pos.y !== p.from.y || this.pos.roomName !== p.from.room
+}
+
+Creep.prototype._refreshMove = function () {
+  if (this.memory._move) {
+    this.memory._move.time = Game.time
+  }
+}
+
+Creep.prototype.fatigueWrapper = function () {
+  this._refreshMove()
+
+  if (this.memory._pos) {
+    this.memory._pos.time = Game.time
+  }
+
   return OK
 }
 
 Creep.prototype.moveWrapper = function (direction) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  this.rememberPosition()
+
   return this.move(direction)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
   if (this.fatigue > 0) {
-    return this.fatigueWrapper(options)
+    return this.fatigueWrapper()
   }
+
+  if (this.moved()) {
+    this._refreshMove()
+  }
+
+  this.rememberPosition()
 
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 }
