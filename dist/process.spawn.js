@@ -103,7 +103,7 @@ spawnProcess.restockers = function (room, live) {
         rstk: true
       },
       want - now,
-      'lowkey'
+      'normal'
     )
   }
 }
