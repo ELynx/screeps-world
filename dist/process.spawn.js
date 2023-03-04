@@ -223,7 +223,7 @@ spawnProcess.unowned = function (room, live) {
 }
 
 spawnProcess.work = function (room) {
-  const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
+  const live = _.countBy(room.getRoomControlledCreeps(true), 'memory.btyp')
 
   // controller is my
   if (room.my) this.my(room, live)
