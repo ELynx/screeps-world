@@ -227,9 +227,11 @@ function Tasked (id) {
         controlPos,
         {
           range: controlPos.offBorderDistance(),
-          reusePath: _.random(7, 11)
+          reusePath: _.random(3, 5)
         }
       )
+    } else {
+      creep.fatigueWrapper()
     }
   }
 
@@ -239,6 +241,7 @@ function Tasked (id) {
 
   this._coastToHalt = function (creep) {
     if (!creep.__canMove) {
+      creep.fatigueWrapper()
       return
     }
 
@@ -249,7 +252,14 @@ function Tasked (id) {
 
     const haltRange = Math.min(15, pos.offBorderDistance())
     if (!creep.pos.inRangeTo(pos, haltRange)) {
-      creep.moveToWrapper(pos, { maxRooms: 1, reusePath: 50, range: haltRange })
+      creep.moveToWrapper(
+        pos,
+        {
+          maxRooms: 1,
+          range: haltRange,
+          reusePath: _.random(7, 11)
+        }
+      )
     }
   }
 
