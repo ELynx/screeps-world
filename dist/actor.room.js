@@ -31,7 +31,6 @@ const upgradeController = require('./controller.upgrade')
 const automaticControllers = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
-  rampupController.id, // build up the ramps and walls to decent level right up
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.id, // catch anyone with mineral only
   energySpecialistController.id, // catch restockers to
@@ -39,6 +38,7 @@ const automaticControllers = [
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
   energyRestockController.id,
+  rampupController.id,
   repairController.id,
   buildController.id,
   upgradeController.id
