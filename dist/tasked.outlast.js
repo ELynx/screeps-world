@@ -112,8 +112,8 @@ outlast.creepRoomTravel = function (creep) {
         pos,
         {
           plainCost: 1,
-          range,
-          swampCost: 1
+          swampCost: 1,
+          range
         }
       )
     }
