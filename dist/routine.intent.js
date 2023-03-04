@@ -9,6 +9,7 @@ if (UPGRADE_CONTROLLER_POWER !== 1) {
 // made up value that is used as boundary for "limitless" operations
 const MadeUpLargeNumber = 1000000
 
+// TODO boost
 const intent = {
   getIntended: function (something, key, tickValue) {
     if (something.__intents) {
