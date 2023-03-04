@@ -180,9 +180,9 @@ Room.prototype.level = function () {
 /**
 Get a list of creeps assigned to a room, cached
 **/
-Room.prototype.getRoomControlledCreeps = function () {
-  if (this.__roomCreeps === undefined) {
-    this.__roomCreeps = _.filter(
+Room.prototype.getRoomControlledCreeps = function (withSpawning = undefined) {
+  if (this.__roomCreepsAll === undefined) {
+    this.__roomCreepsAll = _.filter(
       Game.creeps,
       function (creep) {
         // check room
@@ -199,6 +199,19 @@ Room.prototype.getRoomControlledCreeps = function () {
         return creep.shortcut === '__no_flag__'
       },
       this
+    )
+  }
+
+  if (withSpawning) {
+    return this.__roomCreepsAll
+  }
+
+  if (this.__roomCreeps === undefined) {
+    this.__roomCreeps = _.filter(
+      this.__roomCreepsAll,
+      function (creep) {
+        return !creep.spawning
+      }
     )
   }
 

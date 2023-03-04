@@ -157,11 +157,6 @@ const roomActor =
       )
 
       for (const creep of roomCreeps) {
-        // spawning creep can do nothing
-        if (creep.spawning) {
-          continue
-        }
-
         // code that migrate creeps into room of registration
         if (creep.memory.crum !== creep.room.name) {
           creep.memory.rcng = true
