@@ -238,7 +238,7 @@ const roomActor =
 
         // first move by cached path
         let rc = creep.moveToWrapper(
-          target,
+          creep.__target,
           {
             noPathFinding: true,
             reusePath: _.random(3, 5)
@@ -251,7 +251,7 @@ const roomActor =
           if (cpuUsed <= room.__cpuLimit) {
             // STRATEGY tweak point for creep movement
             rc = creep.moveToWrapper(
-              target,
+              creep.__target,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
                 maxRooms: 1,
