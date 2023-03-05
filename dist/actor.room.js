@@ -128,9 +128,13 @@ const roomActor =
   },
 
   canBeReached: function (target, range) {
-    if (range > 1) return true
+    // not that smart now
+    if (range !== 1) return true
 
-    // TODO
+    if (target.__canBeReached !== undefined) {
+      return target.__canBeReached
+    }
+
     return true
   },
 
