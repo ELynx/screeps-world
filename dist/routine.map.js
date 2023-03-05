@@ -21,7 +21,23 @@ PathFinder.CostMatrix.prototype.setBordersUnwalkable = function () {
   }
 }
 
-PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function () {
+PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function (roomName) {
+  if (!this._bits) {
+    return
+  }
+
+  const room = Game.rooms[roomName]
+
+  if (room === undefined) return
+
+  for (const id in room.creeps) {
+    const creep = room.creeps[id]
+
+    if (creep.__atPosition) {
+      // https://github.com/screeps/engine/blob/78d980e50821ea9956d940408b733c44fc9d94ed/src/game/path-finder.js#L25
+      this._bits[creep.pos.x * 50 + creep.pos.y] = 255
+    }
+  }
 }
 
 const map = {
@@ -55,7 +71,7 @@ const map = {
 
     const modified = costMatrix.clone()
     modified.setBordersUnwalkable()
-    modified.setStationaryCreepsUnwalkabke()
+    modified.setStationaryCreepsUnwalkabke(roomName)
 
     Game.__roomActivityCostCallbackCache[roomName] = modified
 
