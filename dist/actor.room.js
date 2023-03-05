@@ -223,6 +223,7 @@ const roomActor =
         // state - there is a target not in range
 
         if (creep.getActiveBodyparts(MOVE) === 0) {
+          creep.__atPosition = true
           creep.__target = undefined
           bootstrap.unassignCreep(creep)
           continue
