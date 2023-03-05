@@ -127,6 +127,13 @@ const roomActor =
     return OK
   },
 
+  canBeReached: function (target, range) {
+    if (range > 1) return true
+
+    // TODO
+    return true
+  },
+
   act: function (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
@@ -204,7 +211,8 @@ const roomActor =
               const keep = this.roomControllersAct(creep.__target, creep)
 
               if (keep) {
-                creep.__atPosition = true
+                creep.__atTarget = true
+                creep.blockPosition()
               } else {
                 creep.__target = undefined
                 bootstrap.unassignCreep(creep)
@@ -217,13 +225,13 @@ const roomActor =
       // loop 3 - movement within room
       for (const creep of roomCreeps) {
         if (creep.__roomChange) continue
-        if (creep.__atPosition) continue
+        if (creep.__atTarget) continue
         if (creep.__target === undefined) continue
 
         // state - there is a target not in range
 
         if (creep.getActiveBodyparts(MOVE) === 0) {
-          creep.__atPosition = true
+          creep.blockPosition()
           creep.__target = undefined
           bootstrap.unassignCreep(creep)
           continue
@@ -246,7 +254,7 @@ const roomActor =
         )
 
         // no movement, see if pathfinding is possible by CPU usage
-        if (rc === ERR_NOT_FOUND) {
+        if (rc === ERR_NOT_FOUND && this.canBeReached(creep.__target, creep.memory.dact)) {
           const cpuUsed = bootstrap.hardCpuUsed(t0)
           if (cpuUsed <= room.__cpuLimit) {
             // STRATEGY tweak point for creep movement

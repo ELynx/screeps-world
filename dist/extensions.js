@@ -89,6 +89,15 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 }
 
+Creep.prototype.blockPosition = function () {
+  this.room.blocked.push(
+    {
+      x: this.pos.x,
+      y: this.pos.y
+    }
+  )
+}
+
 Flag.prototype.getValue = function () {
   switch (this.color) {
     case COLOR_PURPLE:
@@ -511,6 +520,8 @@ const extensions = {
       room.towers = { }
       room.links = { }
       room.labs = { }
+
+      room.blocked = []
     }
 
     for (const flagName in Game.flags) {
