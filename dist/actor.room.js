@@ -70,7 +70,13 @@ const roomActor =
   roomControllersAct: function (target, creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
-      return controller.act(target, creep) === OK
+      const rc = controller.act(target, creep)
+
+      if (rc >= OK && _.isFunction(controller.observeMyCreep)) {
+        controller.observeMyCreep(creep)
+      }
+
+      return rc === OK
     }
 
     return false
@@ -138,9 +144,6 @@ const roomActor =
       linkProcess.work(room)
     }
 
-    // creeps that has no controller assigned will go here
-    const unassignedCreeps = []
-
     const roomCreeps = room.getRoomControlledCreeps()
 
     if (roomCreeps.length > 0) {
@@ -156,10 +159,11 @@ const roomActor =
         }
       )
 
+      // loop 1 - pre-act
       for (const creep of roomCreeps) {
-        // code that migrate creeps into room of registration
+        // migrate creeps into room of registration
         if (creep.memory.crum !== creep.room.name) {
-          creep.memory.rcng = true
+          creep.__roomChange = true
 
           if (creep.getActiveBodyparts(MOVE) > 0) {
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
@@ -175,11 +179,9 @@ const roomActor =
           }
 
           continue
-        } else if (creep.memory.rcng) {
-          creep.memory.rcng = undefined
-          bootstrap.imitateMoveErase(creep)
         }
 
+        // do pass-by chores that consume something into creep
         const consumingRc = this.creepControllersControl(roomConsumingPassByControllers, room, creep)
         if (consumingRc !== OK) {
           if (energyHarvestController.id === creep.memory.ctrl ||
@@ -188,78 +190,98 @@ const roomActor =
             bootstrap.unassignCreep(creep)
           }
         }
+      }
+
+      // loop 2 - act and mark creeps that hold position
+      for (const creep of roomCreeps) {
+        if (creep.__roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          // flag if target should be carried to next loop
-          let keepAssignment = false
+          creep.__target = creep.target()
 
-          const target = creep.target()
+          if (creep.__target) {
+            if (creep.pos.inRangeTo(creep.__target, creep.memory.dact)) {
+              const keep = this.roomControllersAct(creep.__target, creep)
 
-          if (target) {
-            if (creep.pos.inRangeTo(target, creep.memory.dact)) {
-              keepAssignment = this.roomControllersAct(target, creep)
-              bootstrap.imitateMoveErase(creep)
-            } else {
-              if (creep.getActiveBodyparts(MOVE) === 0) {
-                keepAssignment = false
-              } else if (creep.fatigue > 0) {
-                keepAssignment = true
-                creep.fatigueWrapper()
+              if (keep) {
+                creep.__atPosition = true
               } else {
-                // STRATEGY creep movement, main CPU sink
-
-                // first move by cached path
-                let rc = creep.moveToWrapper(
-                  target,
-                  {
-                    noPathFinding: true
-                  }
-                )
-
-                // no movement, see if pathfinding is possible
-                if (rc === ERR_NOT_FOUND) {
-                  // percent
-                  const cpuUsed = bootstrap.hardCpuUsed(t0)
-                  if (cpuUsed <= room.__cpuLimit) {
-                    // STRATEGY tweak point for creep movement
-                    rc = creep.moveToWrapper(
-                      target,
-                      {
-                        costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
-                        maxRooms: 1,
-                        range: creep.memory.dact,
-                        reusePath: _.random(3, 5)
-                      }
-                    )
-                  } else {
-                    // so assignment is not dropped
-                    rc = OK
-                    creep.say('(P)')
-                    creep.fatigueWrapper()
-                  }
-                }
-
-                keepAssignment = rc === OK
-              } // end of "has MOVE" and "fatigue equals 0"
-            } // end of "not in range"
-          } // end of if target found
-
-          if (keepAssignment) {
-            this.roomControllersObserveOwn(creep)
-          } else {
-            bootstrap.unassignCreep(creep)
-            unassignedCreeps.push(creep)
+                creep.__target = undefined
+                bootstrap.unassignCreep(creep)
+              }
+            }
           }
-          // end of creep assigned
-        } else {
-          // not creep assigned
-          unassignedCreeps.push(creep)
         }
-      } // end of creeps loop
-    } // end of roomCreeps
+      }
 
-    if (unassignedCreeps.length > 0) {
-      this.roomControllersControl(room, unassignedCreeps)
+      // loop 3 - movement within room
+      for (const creep of roomCreeps) {
+        if (creep.__roomChange) continue
+        if (creep.__atPosition) continue
+        if (creep.__target === undefined) continue
+
+        // state - there is a target not in range
+
+        if (creep.getActiveBodyparts(MOVE) === 0) {
+          creep.__target = undefined
+          bootstrap.unassignCreep(creep)
+          continue
+        }
+
+        if (creep.fatigue > 0) {
+          creep.fatigueWrapper()
+          continue
+        }
+
+        // STRATEGY creep movement, main CPU sink
+
+        // first move by cached path
+        let rc = creep.moveToWrapper(
+          target,
+          {
+            noPathFinding: true,
+            reusePath: _.random(3, 5)
+          }
+        )
+
+        // no movement, see if pathfinding is possible by CPU usage
+        if (rc === ERR_NOT_FOUND) {
+          const cpuUsed = bootstrap.hardCpuUsed(t0)
+          if (cpuUsed <= room.__cpuLimit) {
+            // STRATEGY tweak point for creep movement
+            rc = creep.moveToWrapper(
+              target,
+              {
+                costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                maxRooms: 1,
+                range: creep.memory.dact,
+                reusePath: _.random(3, 5)
+              }
+            )
+          } else {
+            // keep assignment
+            rc = OK
+          }
+        }
+
+        if (rc === OK) {
+          this.roomControllersObserveOwn(creep)
+        } else {
+          creep.__target = undefined
+          bootstrap.unassignCreep(creep)
+        }
+      }
+
+      const unassignedCreeps = _.filter(
+        roomCreeps,
+        function (creep) {
+          return creep.__target === undefined
+        }
+      )
+
+      if (unassignedCreeps.length > 0) {
+        this.roomControllersControl(room, unassignedCreeps)
+      }
     }
 
     if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
