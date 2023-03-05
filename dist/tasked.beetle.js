@@ -185,6 +185,7 @@ beetle.creepAtDestination = function (creep) {
         }
 
         if (structure.structureType === STRUCTURE_RAMPART && !structure.isPublic) {
+          structure.__buildable = true
           target = structure
           break
         }
@@ -194,7 +195,7 @@ beetle.creepAtDestination = function (creep) {
           continue
         }
 
-        structure.__buildable = _.some(CONSTRUCTION_COST, _.matches(structure.structureType))
+        structure.__buildable = _.some(_.keys(CONSTRUCTION_COST), _.matches(structure.structureType))
 
         if (creep.__canMelee || (structure.__buildable && creep.__canDismantle)) {
           target = structure
