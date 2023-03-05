@@ -27,17 +27,12 @@ PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function (roomNa
   }
 
   const room = Game.rooms[roomName]
-
   if (room === undefined) return
 
-  for (const id in room.creeps) {
-    const creep = room.creeps[id]
-
-    if (creep.__atPosition) {
-      // https://github.com/screeps/engine/blob/78d980e50821ea9956d940408b733c44fc9d94ed/src/game/path-finder.js#L25
-      this._bits[creep.pos.x * 50 + creep.pos.y] = 255
-      room.visual.circle(creep.pos, { fill: '#fff' })
-    }
+  for (const block of room.blocked) {
+    // https://github.com/screeps/engine/blob/78d980e50821ea9956d940408b733c44fc9d94ed/src/game/path-finder.js#L25
+    this._bits[block.x * 50 + block.y] = 255
+    room.visual.circle(block.x, block.y, { fill: '#fff' })
   }
 }
 
