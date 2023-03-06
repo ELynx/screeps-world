@@ -13,7 +13,7 @@ const taskedSpawn = require('./tasked.spawn')
 const taskedStrelok = require('./tasked.strelok')
 
 // STRATEGY Priority for task execution.
-const automaticControllers = [
+const taskedAuto = [
   // generate spawn(s)
   taskedOutlast.id, // very tick-sensitive logic, run first
   taskedAggro.id, // generates aggro and breach
@@ -31,14 +31,14 @@ const automaticControllers = [
 const worldActor =
 {
   taskControllersControl: function () {
-    for (const id of automaticControllers) {
-      const automaticController = bootstrap.taskControllers[id]
+    for (const id of taskedAuto) {
+      const tasked = bootstrap.taskControllers[id]
 
-      if (automaticController === undefined) {
+      if (tasked === undefined) {
         continue
       }
 
-      automaticController.act()
+      tasked.act()
     }
   },
 
