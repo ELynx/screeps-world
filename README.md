@@ -17,6 +17,10 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
+Autobuild containers in remote mining rooms.
+
+Monitor invader power goal and prepare for them.
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -24,8 +28,6 @@ Movement and positioning:
 * Step away and uncrowd.
 
 * Strelok tries to attack unreachable sections.
-
-* Outlast migrate to flag.
 
 * Worker creeps avoid hostile areas.
 
@@ -63,8 +65,6 @@ Beetle with ATTACK instead of WORK:
 [Tower](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/towers/intents.js)
 
 ## Ideas
-Lodash `Chain`.
-
 Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
@@ -97,17 +97,13 @@ Room attack definition:
 
 * Claim on controller.
 
-Border control for creep movement in tasked.
+* n.b. Claim will not open attack if aggro is set. Look out for this if safe mode prevention is needed.
 
 Flag to turn verbose naming on and off.
-
-`upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
 
 Intent queue for withdraw and transfer.
 
 Account for tower spending energy, renew, etc. Basically, more intent wrappers.
-
-Monitor invader power goal and prepare for them.
 
 Monitor Source Keeper respawn.
 
