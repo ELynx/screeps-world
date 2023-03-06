@@ -63,6 +63,7 @@ linkProcess.work = function (room) {
     const destination = destinations[destinationIndex]
 
     source.transferEnergy(destination)
+    source.__noTake = true
 
     ++destinationIndex
     if (destinationIndex >= destinations.length) {
