@@ -149,9 +149,11 @@ const roomActor =
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10
 
-    if (processKey === 0) {
+    if (processKey === 0 || room.memory.threat) {
       spawnProcess.work(room)
-    } else if (processKey === 5) {
+    }
+
+    if (processKey === 5) {
       linkProcess.work(room)
     }
 
