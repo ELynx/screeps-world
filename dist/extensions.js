@@ -194,8 +194,10 @@ Room.prototype.getRoomControlledCreeps = function (withSpawning = undefined) {
     this.__roomCreepsAll = _.filter(
       Game.creeps,
       function (creep) {
+        const roomAssociation = creep.memory.frum || creep.memory.crum
+
         // check room
-        if (creep.memory.crum !== this.name) {
+        if (roomAssociation !== this.name) {
           return false
         }
 
