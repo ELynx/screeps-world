@@ -263,6 +263,15 @@ spawnProcess.myReserved = function (room, live) {
   this.plunders(room, live)
 }
 
+spawnProcess.sourceKeeper = function (room, live) {
+}
+
+spawnProcess.unowned = function (room, live) {
+  this.streloks(room, live)
+  this.restockers(room, live)
+  this.plunders(room, live)
+}
+
 spawnProcess.ally = function (room, live) {
   this.workers(room, live, 1)
 }
@@ -274,15 +283,6 @@ spawnProcess.neutral = function (room, live) {
 spawnProcess.hostile = function (room, live) {
 }
 
-spawnProcess.sourceKeeper = function (room, live) {
-}
-
-spawnProcess.unowned = function (room, live) {
-  this.streloks(room, live)
-  this.restockers(room, live)
-  this.plunders(room, live)
-}
-
 spawnProcess.work = function (room) {
   const live = _.countBy(room.getRoomOwnedCreeps(), 'memory.btyp')
 
@@ -290,16 +290,16 @@ spawnProcess.work = function (room) {
   if (room.my) this.my(room, live)
   // controller is own reserved
   else if (room.myReserved()) this.myReserved(room, live)
+  // room is source keeper room
+  else if (room.sourceKeeper()) this.sourceKeeper(room, live)
+  // room has no controller / controller is not owned
+  else if (room.unowned) this.unowned(room, live)
   // controller is ally or reserved by ally
   else if (room.ally) this.ally(room, live)
   // controller is neutral or reserved by neutral
   else if (room.neutral) this.neutral(room, live)
   // controller is hostile or reserved by hostile
   else if (room.hostile) this.hostile(room, live)
-  // room is source keeper room
-  else if (room.sourceKeeper()) this.sourceKeeper(room, live)
-  // room has no controller / controller is not owned
-  else if (room.unowned) this.unowned(room, live)
 }
 
 spawnProcess._registerBodyFunction = function (routineId) {
