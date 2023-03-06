@@ -33,12 +33,6 @@ repairController.actRange = 3
 
 repairController.oddOrEven = 1
 
-repairController.myReserved = true
-repairController.ally = true
-repairController.neutral = true
-repairController.sourceKeeper = true
-repairController.unowned = true
-
 repairController.extra = function (structure) {
   return structure.__targetHp
 }

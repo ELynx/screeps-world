@@ -6,10 +6,6 @@ const energyUnspecialistController = new Controller('energy.unspecialist')
 
 energyUnspecialistController.actRange = 1
 
-energyUnspecialistController.myReserved = true
-energyUnspecialistController.sourceKeeper = true
-energyUnspecialistController.unowned = true
-
 energyUnspecialistController.act = function (target, creep) {
   return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
 }

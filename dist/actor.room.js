@@ -28,7 +28,8 @@ const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
 // STRATEGY priority for creep assignment
-const automaticControllers = [
+
+const controllersMyAuto = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
@@ -44,8 +45,23 @@ const automaticControllers = [
   upgradeController.id
 ]
 
-const consumingPassByControllers = [
+const controllersMyConsuming = [
   grabController.id
+]
+
+const controllersRemoteHarvestAuto = [
+  repairController.id,
+  buildController.id,
+  energySpecialistController.id,
+  energyUnspecialistController.id
+]
+
+const controllersHelpActive = [
+  energyTakeController.id,
+  energyRestockController.id,
+  rampupController.id,
+  repairController.id,
+  buildController.id
 ]
 
 Creep.prototype.target = function () {
@@ -54,9 +70,28 @@ Creep.prototype.target = function () {
 
 const roomActor =
 {
-  roomControllersPrepare: function (room) {
-    for (const id in bootstrap.roomControllersPrepare) {
-      bootstrap.roomControllersPrepare[id].roomPrepare(room)
+  roomControllersFind: function (room) {
+    if (room.my) {
+      return [controllersMyAuto, controllersMyConsuming]
+    }
+
+    if (room.myReserved() || room.sourceKeeper() || room.unowned) {
+      return [controllersRemoteHarvestAuto, []]
+    }
+
+    if (room.ally || room.neutral) {
+      return [controllersHelpActive, []]
+    }
+
+    return [[], []]
+  },
+
+  roomControllersPrepare: function (controllers, room) {
+    for (const id of controllers) {
+      const controller = bootstrap.roomControllers[id]
+      if (controller) {
+        controller.roomPrepare(room)
+      }
     }
   },
 
@@ -82,16 +117,12 @@ const roomActor =
     return false
   },
 
-  roomControllersControl: function (room, creeps) {
-    for (const id of automaticControllers) {
+  roomControllersControl: function (controllers, room, creeps) {
+    for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
         console.log('Unknown controller [' + id + ']')
-        continue
-      }
-
-      if (!controller.compatible(room)) {
         continue
       }
 
@@ -142,6 +173,13 @@ const roomActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
+    const [roomControllers, creepControllers] = this.roomControllersFind(room)
+
+    if (roomControllers.length === 0 && creepControllers.length === 0) {
+      console.log('No controllers found for room [' + room.name + ']')
+      return
+    }
+
     secutiryProcess.work(room)
     roomInfoProcess.work(room)
     towerProcess.work(room)
@@ -161,16 +199,8 @@ const roomActor =
 
     if (roomCreeps.length > 0) {
       // clean up controllers
-      this.roomControllersPrepare(room)
-
-      // filter per creep controllers once
-      const roomConsumingPassByControllers = _.filter(
-        consumingPassByControllers,
-        function (controllerId) {
-          const controller = bootstrap.roomControllers[controllerId]
-          return controller.compatible(room)
-        }
-      )
+      this.roomControllersPrepare(roomControllers, room)
+      this.roomControllersPrepare(creepControllers, room)
 
       // loop 1 - pre-act
       for (const creep of roomCreeps) {
@@ -195,7 +225,7 @@ const roomActor =
         }
 
         // do pass-by chores that consume something into creep
-        const consumingRc = this.creepControllersControl(roomConsumingPassByControllers, room, creep)
+        const consumingRc = this.creepControllersControl(creepControllers, room, creep)
         if (consumingRc !== OK) {
           if (energyHarvestController.id === creep.memory.ctrl ||
               energyTakeController.id === creep.memory.ctrl ||
@@ -259,10 +289,9 @@ const roomActor =
           }
         )
 
-        // no movement, see if pathfinding is possible by CPU usage
+        // no movement, see if pathfinding is possible and within CPU
         if (rc === ERR_NOT_FOUND && this.canBeReached(creep.__target, creep.memory.dact)) {
-          const cpuUsed = bootstrap.hardCpuUsed(t0)
-          if (cpuUsed <= room.__cpuLimit) {
+          if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
             // STRATEGY tweak point for creep movement
             rc = creep.moveToWrapper(
               creep.__target,
@@ -295,7 +324,7 @@ const roomActor =
       )
 
       if (unassignedCreeps.length > 0) {
-        this.roomControllersControl(room, unassignedCreeps)
+        this.roomControllersControl(roomControllers, room, unassignedCreeps)
       }
     }
 

@@ -36,27 +36,6 @@ function Controller (id) {
     **/
   this.oddOrEven = undefined
 
-  // flags to set where controller is used
-  this.my = true
-  this.myReserved = false
-  this.ally = false
-  this.neutral = false
-  this.hostile = false
-  this.sourceKeeper = false
-  this.unowned = false
-
-  this.compatible = function (room) {
-    if (this.my && room.my) return true
-    if (this.myReserved && room.myReserved()) return true
-    if (this.ally && room.ally) return true
-    if (this.neutral && room.neutral) return true
-    if (this.hostile && room.hostile) return true
-    if (this.sourceKeeper && room.sourceKeeper()) return true
-    if (this.unowned && room.unowned) return true
-
-    return false
-  }
-
   /**
     Cache of target IDs that already have creep assigned.
     **/

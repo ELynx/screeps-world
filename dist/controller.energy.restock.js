@@ -10,9 +10,6 @@ const TowerRestockCritical = 0.25
 
 energyRestockController.actRange = 1
 
-energyRestockController.ally = true
-energyRestockController.neutral = true
-
 energyRestockController.roomPrepare = function (room) {
   this._roomPrepare(room)
   this._prepareExcludedTargets(room)

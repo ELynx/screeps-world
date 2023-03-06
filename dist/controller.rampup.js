@@ -6,9 +6,6 @@ const rampupController = new Controller('rampup')
 
 rampupController.actRange = 3
 
-rampupController.ally = true
-rampupController.neutral = true
-
 // STRATEGY ramp up newly built fortifications; for rampts - survive 3 x decay periods (300 ticks)
 const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1
 

@@ -201,6 +201,8 @@ roomInfoProcess._wallLevel = function (room) {
 
 // STRATEGY wall build-up, basis levels
 roomInfoProcess.wallLevel = function (room) {
+  if (!room.my) return 0
+
   const TargetBarrierHp = [
     0,
     5,
