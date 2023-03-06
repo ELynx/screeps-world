@@ -47,9 +47,12 @@ spawn.dismiss = function (model) {
 
   // sanitize deleted flags
   if (model.memory && model.memory.flag) {
-    const flag = Game.flags[model.memory.flag]
-    if (flag === undefined) {
-      return true
+    // special mark of flagless creeps
+    if (model.memory.flag.indexOf('_x_') !== -1) {
+      const flag = Game.flags[model.memory.flag]
+      if (flag === undefined) {
+        return true
+      }
     }
   }
 
