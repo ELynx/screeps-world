@@ -73,7 +73,7 @@ spawnProcess.streloks = function (room, live) {
 
     this.addToQueue(
       room.name,
-      queue.FROM_CLOSEST_ROOM,
+      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
       'strelok',
       'strelok',
       {
@@ -222,7 +222,10 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 }
 
 spawnProcess.plunders = function (room, live) {
-  const want = this._hasAndPlanned(room, live, 'restocker')
+  const plundersNeeded = this._hasAndPlanned(room, live, 'restocker')
+  const plundersSupported = room.memory.slvl || 0
+
+  const want = Math.min(plundersNeeded, plundersSupported)
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'plunder')
