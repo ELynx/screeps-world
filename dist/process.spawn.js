@@ -76,17 +76,18 @@ spawnProcess.restockers = function (room, live) {
   }
 
   let restockersNeeded
+  let restockersSupported
 
   if (room.my) {
     const workNeededPerSource = room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
     const restockersNeededPerSource = Math.ceil(workNeededPerSource / workInRestocker)
 
     restockersNeeded = sources * restockersNeededPerSource
+    restockersSupported = room.memory.slvl
   } else {
     restockersNeeded = sources
+    restockersSupported = sources
   }
-
-  const restockersSupported = room.memory.slvl
 
   const want = Math.min(restockersNeeded, restockersSupported)
 
@@ -226,7 +227,6 @@ spawnProcess.my = function (room, live) {
 
 spawnProcess.myReserved = function (room, live) {
   this.restockers(room, live)
-  this.workers(room, live, 1)
   this.plunders(room, live)
 }
 
@@ -246,7 +246,6 @@ spawnProcess.sourceKeeper = function (room, live) {
 
 spawnProcess.unowned = function (room, live) {
   this.restockers(room, live)
-  this.workers(room, live, 1)
   this.plunders(room, live)
 }
 
