@@ -101,7 +101,7 @@ energyTakeController.targets = function (room) {
         return isTakeable(structure)
       } else if (structure.structureType === STRUCTURE_LINK) {
         // STRATEGY do not steal from source link
-        return structure.__noTake ? false : isTakeable(structure)
+        return structure.isSource() ? false : isTakeable(structure)
       }
 
       return false
