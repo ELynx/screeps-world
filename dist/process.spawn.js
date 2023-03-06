@@ -208,7 +208,7 @@ spawnProcess.my = function (room, live) {
 
 spawnProcess.myReserved = function (room, live) {
   this.restockers(room, live)
-  this.workers(room, live, 2)
+  this.workers(room, live, 1)
   this.plunders(room, live)
 }
 
@@ -228,7 +228,7 @@ spawnProcess.sourceKeeper = function (room, live) {
 
 spawnProcess.unowned = function (room, live) {
   this.restockers(room, live)
-  this.workers(room, live, 2)
+  this.workers(room, live, 1)
   this.plunders(room, live)
 }
 
