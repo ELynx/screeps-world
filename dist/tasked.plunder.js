@@ -182,10 +182,6 @@ plunder.flagPrepare = function (flag) {
     if (flag.room.breached() === false) {
       return this.FLAG_IGNORE
     }
-
-    if (flag.room.myReserved()) {
-      return this.FLAG_SPAWN
-    }
   }
 
   if (this.roomBoring[flag.pos.roomName]) {
