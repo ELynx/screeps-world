@@ -9,6 +9,7 @@ if (UPGRADE_CONTROLLER_POWER !== 1) {
 // made up value that is used as boundary for "limitless" operations
 const MadeUpLargeNumber = 1000000
 
+// TODO boost
 const intent = {
   getIntended: function (something, key, tickValue) {
     if (something.__intents) {
@@ -568,7 +569,7 @@ const intent = {
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on creep [' + creep.name +
-                  '] with code ' + intentRc + ' where expected code was ' + rc)
+                  '] with code [' + intentRc + '] where expected code was [' + rc + ']')
 
       this.restoreIntents(creep, backupCreep)
       this.restoreIntents(creep.room, backupRoom)
@@ -614,7 +615,7 @@ const intent = {
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on spawn [' + spawn.name +
-                  '] with code ' + intentRc + ' where expected code was [' + rc + ']')
+                  '] with code [' + intentRc + '] where expected code was [' + rc + ']')
 
       this.restoreIntents(spawn, backupSpawn)
       this.restoreIntents(spawn.room, backupRoom)

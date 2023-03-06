@@ -9,31 +9,29 @@ const repairController = new Controller('repair')
 const TargetRoadHpMultiplier = [
   0.0,
   0.16,
-  0.33
-]
-
-const TargetStructureHpMultiplier = [
-  0.75, // repair buildings in rooms that are just attached
+  0.33,
+  0.5,
+  0.66,
+  0.75,
   0.8,
   0.85,
   0.9
 ]
 
-/**
-Get value from array with index capped at length.
-**/
+const TargetStructureHpMultiplier = [
+  0.75,
+  0.8,
+  0.85,
+  0.9
+]
+
 const fromArray = function (from, index) {
-  return from[index >= from.length ? from.length - 1 : index]
+  return from[Math.min(index, from.length - 1)]
 }
 
 repairController.actRange = 3
 
 repairController.oddOrEven = 1
-
-repairController.ally = true
-repairController.neutral = repairController.ally
-repairController.unowned = repairController.ally
-repairController.sourceKeeper = repairController.unowned
 
 repairController.extra = function (structure) {
   return structure.__targetHp
@@ -54,55 +52,61 @@ repairController.act = function (target, creep) {
     onSpotMultiplier = 1.5
   }
 
-  return this.wrapIntent(creep, 'repair', target, creep.memory.xtra * onSpotMultiplier)
+  return this.wrapIntent(creep, 'repair', target, Math.round(creep.memory.xtra * onSpotMultiplier))
 }
 
 repairController.targets = function (room) {
   const barrHp = room.memory.wlvl * 1000
-
-  // STRATEGY in unowned rooms fix roads 1 step up
-  const roadMult = fromArray(TargetRoadHpMultiplier, room.level() + (room.my ? 0 : 1))
-  const otherMult = fromArray(TargetStructureHpMultiplier, room.level())
-
   // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)
   const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500)
 
-  return room.find(
+  // STRATEGY in not controlled rooms do minimal upkeep
+  const level = room.my ? room.level() : 1
+  const roadMult = fromArray(TargetRoadHpMultiplier, level)
+  const otherMult = fromArray(TargetStructureHpMultiplier, level)
+
+  const structuresWithHits = room.find(
     FIND_STRUCTURES,
     {
       filter: function (structure) {
-        if (!structure.hits || structure.hits >= structure.hitsMax) return false
-
-        if (!structure.isActiveSimple) return false
-
-        if (structure.structureType === STRUCTURE_WALL) {
-          if (structure.hits < barrHp) {
-            structure.__targetHp = barrHp
-            return true
-          }
-        } else if (structure.structureType === STRUCTURE_RAMPART) {
-          // notice, barrHp check, rampHp set
-          if (structure.hits < barrHp) {
-            structure.__targetHp = rampHp
-            return true
-          }
-        } else if (structure.structureType === STRUCTURE_ROAD) {
-          const hp = Math.ceil(structure.hitsMax * roadMult)
-          if (structure.hits < hp) {
-            structure.__targetHp = hp
-            return true
-          }
-        } else {
-          const hp = Math.ceil(structure.hitsMax * otherMult)
-          if (structure.hits < hp) {
-            // STRATEGY some histeresis, repair to top
-            structure.__targetHp = structure.hitsMax
-            return true
-          }
-        }
-
-        return false
+        return structure.hits &&
+               structure.hitsMax &&
+               structure.isActiveSimple &&
+               structure.hits < structure.hitsMax
       }
+    }
+  )
+
+  return _.filter(
+    structuresWithHits,
+    function (structure) {
+      if (structure.structureType === STRUCTURE_WALL) {
+        if (structure.hits < barrHp) {
+          structure.__targetHp = barrHp
+          return true
+        }
+      } else if (structure.structureType === STRUCTURE_RAMPART) {
+        // notice, barrHp check, rampHp set
+        if (structure.hits < barrHp) {
+          structure.__targetHp = rampHp
+          return true
+        }
+      } else if (structure.structureType === STRUCTURE_ROAD) {
+        const targetHp = Math.ceil(structure.hitsMax * roadMult)
+        if (structure.hits < targetHp) {
+          structure.__targetHp = targetHp
+          return true
+        }
+      } else {
+        const targetHp = Math.ceil(structure.hitsMax * otherMult)
+        if (structure.hits < targetHp) {
+          // STRATEGY some histeresis, repair to top
+          structure.__targetHp = structure.hitsMax
+          return true
+        }
+      }
+
+      return false
     }
   )
 }

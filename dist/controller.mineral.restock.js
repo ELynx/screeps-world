@@ -8,11 +8,6 @@ const mineralRestockController = new Controller('mineral.restock')
 
 mineralRestockController.actRange = 1
 
-mineralRestockController.ally = true
-mineralRestockController.neutral = mineralRestockController.ally
-mineralRestockController.unowned = mineralRestockController.ally
-mineralRestockController.sourceKeeper = mineralRestockController.unowned
-
 mineralRestockController.act = function (withStore, creep) {
   for (const resourceType in creep.store) {
     const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
@@ -34,8 +29,8 @@ mineralRestockController._checkStore = function (structure) {
   return false
 }
 
+// STRATEGY mineral fill order
 mineralRestockController.targets = function (room) {
-  // STRATEGY what to fill first
   if (this._checkStore(room.terminal)) {
     return [room.terminal]
   }

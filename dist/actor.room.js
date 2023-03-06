@@ -24,27 +24,52 @@ const mineralHarvestController = require('./controller.mineral.harvest')
 const mineralRestockController = require('./controller.mineral.restock')
 const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
-const ttlController = require('./controller.ttl')
+const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
 // STRATEGY priority for creep assignment
-const automaticControllers = [
+
+// all controllers that want to fill in creep storage
+const controllersFreeCapacity = [
+  energyHarvestController.id,
+  energySpecialistController.id,
+  energyTakeController.id,
+  grabController.id,
+  mineralHarvestController.id
+]
+
+const controllersMyAuto = [
   downgradeController.id, // always on top
-  ttlController.id, // catch recyclees
-  rampupController.id, // build up the ramps and walls to decent level right up
+  unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.id, // catch anyone with mineral only
+  mineralRestockController.id, // catch anyone with mineral only or plunder
   energySpecialistController.id, // catch restockers to
   energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
   energyRestockController.id,
+  rampupController.id,
   repairController.id,
   buildController.id,
   upgradeController.id
 ]
 
-const consumingPassByControllers = [
+const controllersRemoteHarvestAuto = [
+  repairController.id,
+  buildController.id,
+  energySpecialistController.id,
+  energyUnspecialistController.id
+]
+
+const controllersHelpAuto = [
+  energyTakeController.id,
+  energyRestockController.id,
+  rampupController.id,
+  repairController.id,
+  buildController.id
+]
+
+const controllersConsuming = [
   grabController.id
 ]
 
@@ -54,65 +79,65 @@ Creep.prototype.target = function () {
 
 const roomActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
+  roomControllersFind: function (room) {
+    if (room.my) {
+      return [controllersMyAuto, controllersConsuming]
+    }
+
+    if (room.myReserved() || room.sourceKeeper() || room.unowned) {
+      return [controllersRemoteHarvestAuto, controllersConsuming]
+    }
+
+    if (room.ally || room.neutral) {
+      return [controllersHelpAuto, controllersConsuming]
+    }
+
+    return [[], []]
+  },
+
+  roomControllersPrepare: function (controllers, room) {
+    for (const id of controllers) {
+      const controller = bootstrap.roomControllers[id]
+      if (controller && _.isFunction(controller.roomPrepare)) {
+        controller.roomPrepare(room)
+      }
     }
   },
 
-  /**
-    Prepare controllers for next room.
-    @param {Room} room.
-    **/
-  roomControllersPrepare: function (room) {
-    for (const id in bootstrap.roomControllersPrepare) {
-      bootstrap.roomControllersPrepare[id].roomPrepare(room)
-    }
-  },
-
-  /**
-    Find controller and let it observe a creep.
-    @param {Creep} creep.
-    **/
-  roomControllersObserveOwn: function (creep) {
-    const controller = bootstrap.roomControllersObserveOwn[creep.memory.ctrl]
-    if (controller) {
+  _roomControllerObserveOwn: function (controller, creep) {
+    if (_.isFunction(controller.observeMyCreep)) {
       controller.observeMyCreep(creep)
     }
   },
 
-  /**
-    Find a controller, execute it's act.
-    @param {Object} target object.
-    @param {Creep} creep.
-    @return True if creep was acted upon.
-    **/
+  roomControllersObserveOwn: function (creep) {
+    const controller = bootstrap.roomControllers[creep.memory.ctrl]
+    if (controller) {
+      this._roomControllerObserveOwn(controller, creep)
+    }
+  },
+
   roomControllersAct: function (target, creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
-      return controller.act(target, creep) === OK
+      const rc = controller.act(target, creep)
+
+      if (rc >= OK) {
+        this._roomControllerObserveOwn(controller, creep)
+      }
+
+      return rc === OK
     }
 
     return false
   },
 
-  /**
-    Let room controllers do theit jobs.
-    @param {Room} room.
-    @param {array<Creep>} creeps.
-    **/
-  roomControllersControl: function (room, creeps) {
-    for (const index in automaticControllers) {
-      const id = automaticControllers[index]
+  roomControllersControl: function (controllers, room, creeps) {
+    for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
-        this.debugLine(room, 'Unknown controller [' + id + ']')
-        continue
-      }
-
-      if (!controller.compatible(room)) {
-        this.debugLine(room, 'Skipping incompatible controller [' + id + ']')
+        console.log('Unknown controller [' + id + ']')
         continue
       }
 
@@ -120,26 +145,27 @@ const roomActor =
 
       // if all creeps had been taken
       if (creeps.length === 0) {
-        this.debugLine(room, 'All creeps assigned after controller [' + id + ']')
         return
-      } else {
-        this.debugLine(room, 'Creeps left after controller [' + id + ']: ' + creeps.length)
       }
     }
   },
 
-  creepControllersControl: function (controllers, room, creep) {
-    for (const index in controllers) {
-      const id = controllers[index]
+  consumingControllersControl: function (controllers, room, creep) {
+    for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
       if (controller === undefined) {
-        this.debugLine(room, 'Unknown controller [' + id + ']')
+        console.log('Unknown controller [' + id + ']')
         continue
       }
 
       if (controller.filterCreep(creep)) {
         const rc = controller.act(room, creep)
+
+        if (rc >= OK) {
+          this._roomControllerObserveOwn(controller, creep)
+        }
+
         if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
             rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
@@ -151,184 +177,176 @@ const roomActor =
     return OK
   },
 
-  /**
-    @param {Room} room
-    **/
   act: function (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
+
+    const [roomControllers, consumingControllers] = this.roomControllersFind(room)
+
+    if (roomControllers.length === 0 && consumingControllers.length === 0) {
+      console.log('No controllers found for room [' + room.name + ']')
+      return
+    }
 
     secutiryProcess.work(room)
     roomInfoProcess.work(room)
     towerProcess.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
-    const processKey = (room.memory.intl + Game.time) % 10
+    const processKey = (room.memory.intl + Game.time) % 12
 
-    if (processKey === 0) {
+    if (processKey === 0 ||
+        processKey === 6 ||
+        room.memory.threat) {
       spawnProcess.work(room)
-    } else if (processKey === 5) {
-      linkProcess.work(room)
     }
 
-    // creeps that has no controller assigned will go here
-    const unassignedCreeps = []
+    if (processKey === 3) {
+      linkProcess.work(room)
+    }
 
     const roomCreeps = room.getRoomControlledCreeps()
 
     if (roomCreeps.length > 0) {
       // clean up controllers
-      this.roomControllersPrepare(room)
+      this.roomControllersPrepare(roomControllers, room)
+      this.roomControllersPrepare(consumingControllers, room)
 
-      // filter per creep controllers once
-      const roomConsumingPassByControllers = _.filter(
-        consumingPassByControllers,
-        function (controllerId) {
-          const controller = bootstrap.roomControllers[controllerId]
-          return controller.compatible(room)
-        }
-      )
+      // loop 1 - pre-act
+      for (const creep of roomCreeps) {
+        // migrate creeps into room of registration
+        if (creep.memory.crum !== creep.room.name) {
+          creep.__roomChange = true
 
-      // do some statistics
-      let spawning = 0
-      let assigned = 0
-      let working = 0
-      let resting = 0
-      let moving = 0
-
-      for (let i = 0; i < roomCreeps.length; ++i) {
-        const creep = roomCreeps[i]
-
-        // spawning creep can do nothing
-        if (creep.spawning) {
-          ++spawning
-          continue
-        }
-
-        // code that migrate creeps into room of registration
-        if (creep.memory.crum !== creep.room.name || creep.memory.rcng) {
-          // to take off any work from previous room
-          bootstrap.unassignCreep(creep)
-
-          // flag to handle border transition
-          creep.memory.rcng = true
-
-          if (creep.getActiveBodyparts(MOVE) > 0 && creep.fatigue === 0) {
-            // get off border area
+          if (creep.getActiveBodyparts(MOVE) > 0) {
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
 
-            if (creep.pos.inRangeTo(posInDestRoom, rangeInDestRoom)) {
-              // drop and forget the flag
-              // not continue, can be used
-              creep.memory.rcng = undefined
-            } else {
-              creep.moveToWrapper(posInDestRoom, { reusePath: 50, range: rangeInDestRoom })
-              ++moving
-              continue // to next creep
-            }
-          } else {
-            continue // to the next creep
+            creep.moveToWrapper(
+              posInDestRoom,
+              {
+                range: rangeInDestRoom,
+                reusePath: _.random(3, 5)
+              }
+            )
           }
-        } // end of subroutine of room change
 
-        const consumingRc = this.creepControllersControl(roomConsumingPassByControllers, room, creep)
+          continue
+        }
+
+        // do pass-by chores that consume something into creep
+        const consumingRc = this.consumingControllersControl(consumingControllers, room, creep)
         if (consumingRc !== OK) {
-          if (energyHarvestController.id === creep.memory.ctrl ||
-              energyTakeController.id === creep.memory.ctrl ||
-              mineralHarvestController.id === creep.memory.ctrl) {
+          if (_.some(controllersFreeCapacity, _.matches(creep.memory.ctrl))) {
             bootstrap.unassignCreep(creep)
           }
         }
+      }
+
+      // loop 2 - act and mark creeps that hold position
+      for (const creep of roomCreeps) {
+        if (creep.__roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          // flag if target should be carried to next loop
-          let keepAssignment = false
+          creep.__target = creep.target()
 
-          const target = creep.target()
+          if (creep.__target) {
+            if (creep.pos.inRangeTo(creep.__target, creep.memory.dact)) {
+              const keep = this.roomControllersAct(creep.__target, creep)
 
-          if (target) {
-            if (creep.pos.inRangeTo(target, creep.memory.dact)) {
-              keepAssignment = this.roomControllersAct(target, creep)
-              working = working + keepAssignment
-            } else {
-              if (creep.getActiveBodyparts(MOVE) === 0) {
-                keepAssignment = false
-              } else if (creep.fatigue > 0) {
-                keepAssignment = true
-                ++resting
+              if (keep) {
+                creep.__atTarget = true
+                creep.blockPosition()
               } else {
-                // STRATEGY creep movement, main CPU sink
-
-                // first move by cached path
-                let rc = creep.moveToWrapper(target, { noPathFinding: true })
-
-                // no movement, see if pathfinding is possible
-                if (rc === ERR_NOT_FOUND) {
-                  // percent
-                  const cpuUsed = bootstrap.hardCpuUsed(t0)
-                  if (cpuUsed <= room.memory.cpul) {
-                    // STRATEGY tweak point for creep movement
-                    rc = creep.moveToWrapper(
-                      target,
-                      {
-                        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-                        maxRooms: 1,
-                        range: creep.memory.dact
-                      }
-                    )
-                  } else {
-                    // so assignment is not dropped
-                    rc = OK
-                    this.debugLine(room, 'Creep ' + creep.name + ' stalls')
-                    creep.say('(P)')
-                  }
-                }
-
-                keepAssignment = rc === OK
-                moving = moving + keepAssignment
-              } // end of "has MOVE" and "fatigue equals 0"
-            } // end of "not in range"
-          } // end of if target found
-
-          if (keepAssignment) {
-            this.roomControllersObserveOwn(creep)
-            ++assigned
-          } else {
-            bootstrap.unassignCreep(creep)
-            unassignedCreeps.push(creep)
+                creep.__target = undefined
+                bootstrap.unassignCreep(creep)
+              }
+            }
           }
-          // end of creep assigned
-        } else {
-          // not creep assigned
-          unassignedCreeps.push(creep)
         }
-      } // end of creeps loop
+      }
 
-      // log statistics
-      this.debugLine(room, 'Busy creeps ' + assigned)
-      this.debugLine(room, '-> spawning ' + spawning)
-      this.debugLine(room, '-> working  ' + working)
-      this.debugLine(room, '-> resting  ' + resting)
-      this.debugLine(room, '-> moving   ' + moving)
-      this.debugLine(room, 'Free creeps ' + unassignedCreeps.length)
-    } // end of roomCreeps
+      // loop 3 - movement within room
+      for (const creep of roomCreeps) {
+        if (creep.__roomChange) continue
+        if (creep.__target === undefined) continue
+        if (creep.__atTarget) continue
 
-    if (unassignedCreeps.length > 0) {
-      this.roomControllersControl(room, unassignedCreeps)
+        // state - there is a target not in range
+
+        if (creep.getActiveBodyparts(MOVE) === 0) {
+          creep.blockPosition()
+          creep.__target = undefined
+          bootstrap.unassignCreep(creep)
+          continue
+        }
+
+        if (creep.fatigue > 0) {
+          creep.fatigueWrapper()
+          continue
+        }
+
+        // STRATEGY creep movement, main CPU sink
+
+        // first move by cached path
+        let rc = creep.moveToWrapper(
+          creep.__target,
+          {
+            noPathFinding: true,
+            reusePath: _.random(3, 5)
+          }
+        )
+
+        // no movement, see if pathfinding is possible and within CPU
+        if (rc === ERR_NOT_FOUND) {
+          if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+            rc = creep.moveToWrapper(
+              creep.__target,
+              {
+                costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                maxRooms: 1,
+                range: creep.memory.dact,
+                reusePath: _.random(3, 5)
+              }
+            )
+          } else {
+            // keep assignment
+            rc = OK
+          }
+        }
+
+        if (rc === OK) {
+          this.roomControllersObserveOwn(creep)
+        } else {
+          creep.__target = undefined
+          bootstrap.unassignCreep(creep)
+        }
+      }
+
+      const unassignedCreeps = _.filter(
+        roomCreeps,
+        function (creep) {
+          return creep.__target === undefined
+        }
+      )
+
+      if (unassignedCreeps.length > 0) {
+        this.roomControllersControl(roomControllers, room, unassignedCreeps)
+      }
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
       autobuildProcess.work(room)
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room.memory.cpul) {
+    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
       terminalProcess.work(room)
     }
 
-    const usedPercent = bootstrap.hardCpuUsed(t0)
-    this.debugLine(room, 'HCPU: ' + usedPercent + '% out of assigned ' + room.memory.cpul + '% on room actor')
-    room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
+    if (Game.flags.dashboard) {
+      const usedPercent = bootstrap.hardCpuUsed(t0)
+      room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
+    }
   } // end of act method
 }
 

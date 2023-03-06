@@ -6,9 +6,6 @@ const rampupController = new Controller('rampup')
 
 rampupController.actRange = 3
 
-rampupController.ally = true
-rampupController.neutral = rampupController.ally
-
 // STRATEGY ramp up newly built fortifications; for rampts - survive 3 x decay periods (300 ticks)
 const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1
 
@@ -36,11 +33,7 @@ rampupController.targets = function (room) {
 }
 
 rampupController.filterCreep = function (creep) {
-  if (creep.memory.rstk === true) {
-    return false
-  }
-
-  return this._isWorkAble(creep)
+  return this._isNotRestocker(creep) && this._isWorkAble(creep)
 }
 
 rampupController.register()

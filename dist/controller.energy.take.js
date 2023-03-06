@@ -1,15 +1,12 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energyTakeController = new Controller('energy.take')
 
 energyTakeController.actRange = 1
-
-energyTakeController.ally = true
-energyTakeController.neutral = energyTakeController.ally
-energyTakeController.unowned = energyTakeController.ally
-energyTakeController.sourceKeeper = energyTakeController.unowned
 
 energyTakeController.wantToKeep = function (structure) {
   const room = structure.room
@@ -26,10 +23,10 @@ energyTakeController.wantToKeep = function (structure) {
 }
 
 energyTakeController.act = function (structure, creep) {
-  const canGive = structure.store.getUsedCapacity(RESOURCE_ENERGY)
+  const canGive = intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY)
   const wantKeep = this.wantToKeep(structure)
   const wantGive = canGive - wantKeep
-  const canTake = creep.store.getFreeCapacity(RESOURCE_ENERGY)
+  const canTake = intentSolver.getFreeCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantGive, canTake)
 
@@ -46,8 +43,7 @@ energyTakeController.validateTarget = function (allTargets, target, creep) {
 
   let othersWant = 0
   const others = this._allAssignedTo(target)
-  for (let i = 0; i < others.length; ++i) {
-    const other = others[i]
+  for (const other of others) {
     othersWant += other.store.getFreeCapacity(RESOURCE_ENERGY)
   }
 
@@ -76,7 +72,7 @@ energyTakeController.targets = function (room) {
     function (structure) {
       // type is checked externally
       const toKeep = this.wantToKeep(structure)
-      if (structure.store[RESOURCE_ENERGY] <= toKeep) {
+      if (intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) <= toKeep) {
         return false
       }
 
@@ -116,13 +112,8 @@ energyTakeController.targets = function (room) {
 }
 
 energyTakeController.filterCreep = function (creep) {
-  // not restocker
-  if (creep.memory.rstk === true) {
-    return false
-  }
-
   // STRATEGY take with empty only, reduce runs to containers
-  return this._hasCM(creep) && this._isEmpty(creep)
+  return this._isNotRestocker(creep) && this._hasCM(creep) && this._isEmpty(creep)
 }
 
 energyTakeController.register()

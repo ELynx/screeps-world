@@ -12,12 +12,90 @@ Creep.prototype.allyOrNeutral = function () {
   return this.ally || this.neutral
 }
 
+Creep.prototype.rememberPosition = function () {
+  this.memory._pos =
+  {
+    from:
+    {
+      x: this.pos.x,
+      y: this.pos.y,
+      room: this.pos.roomName
+    },
+    time: Game.time,
+    room: this.room.name
+  }
+}
+
+Creep.prototype.forgetPosition = function () {
+  this.memory._pos = undefined
+}
+
+Creep.prototype.moved = function () {
+  // quick reference
+  const p = this.memory._pos
+
+  if (p === undefined) return undefined
+
+  if (Game.time > p.time + 1) {
+    this.forgetPosition()
+    return undefined
+  }
+
+  if (this.room.name !== p.room) {
+    this.forgetPosition()
+    return undefined
+  }
+
+  return this.pos.x !== p.from.x || this.pos.y !== p.from.y || this.pos.roomName !== p.from.room
+}
+
+Creep.prototype._refreshMove = function () {
+  if (this.memory._move) {
+    this.memory._move.time = Game.time
+  }
+}
+
+Creep.prototype.fatigueWrapper = function () {
+  this._refreshMove()
+
+  if (this.memory._pos) {
+    this.memory._pos.time = Game.time
+  }
+
+  return OK
+}
+
 Creep.prototype.moveWrapper = function (direction) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  this.rememberPosition()
+
   return this.move(direction)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  if (this.moved()) {
+    this._refreshMove()
+  }
+
+  this.rememberPosition()
+
   return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
+}
+
+Creep.prototype.blockPosition = function () {
+  this.room.blocked.push(
+    {
+      x: this.pos.x,
+      y: this.pos.y
+    }
+  )
 }
 
 Flag.prototype.getValue = function () {
@@ -108,24 +186,15 @@ Room.prototype.level = function () {
   return this.__level
 }
 
-Room.prototype.roomDebug = function (what) {
-  if (this.__debugY === undefined) {
-    this.__debugY = 1.2
-  }
-
-  this.visual.text(what, 0, this.__debugY, { align: 'left', font: '0.6 Courier New' })
-  this.__debugY += 0.6
-}
-
-/**
-Get a list of creeps assigned to a room, cached
-**/
 Room.prototype.getRoomControlledCreeps = function () {
-  if (this.__roomCreeps === undefined) {
-    this.__roomCreeps = _.filter(
+  if (this.__roomCreepsControl === undefined) {
+    this.__roomCreepsControl = _.filter(
       Game.creeps,
       function (creep) {
-        // check room
+        if (creep.spawning) {
+          return false
+        }
+
         if (creep.memory.crum !== this.name) {
           return false
         }
@@ -142,7 +211,22 @@ Room.prototype.getRoomControlledCreeps = function () {
     )
   }
 
-  return this.__roomCreeps
+  return this.__roomCreepsControl
+}
+
+Room.prototype.getRoomOwnedCreeps = function () {
+  if (this.__roomCreepsOwned === undefined) {
+    this.__roomCreepsOwned = _.filter(
+      Game.creeps,
+      function (creep) {
+        const roomAssociation = creep.memory.frum || creep.memory.crum
+        return this.name === roomAssociation
+      },
+      this
+    )
+  }
+
+  return this.__roomCreepsOwned
 }
 
 Room.prototype.extendedOwnerUsername = function () {
@@ -156,8 +240,19 @@ Room.prototype.myOrMyReserved = function () {
   return Game.iff.ownUsername === username
 }
 
+Room.prototype.myReserved = function () {
+  if (this.my) return false
+
+  const username = this.extendedOwnerUsername()
+  return Game.iff.ownUsername === username
+}
+
 Room.prototype.myOrAlly = function () {
   return this.myOrMyReserved() || this.ally
+}
+
+Room.prototype.ownedOrReserved = function () {
+  return this.controller && (this.controller.owner || this.controller.reservation)
 }
 
 Room.prototype.sourceKeeper = function () {
@@ -179,17 +274,13 @@ Room.prototype.sourceKeeper = function () {
   return this.memory.srck
 }
 
-Room.prototype.ownedOrReserved = function () {
-  return this.controller && (this.controller.owner || this.controller.reservation)
-}
-
 Room.prototype.sourceEnergyCapacity = function () {
-  if (this.sourceKeeper()) {
-    return SOURCE_ENERGY_KEEPER_CAPACITY
-  }
-
   if (this.ownedOrReserved()) {
     return SOURCE_ENERGY_CAPACITY
+  }
+
+  if (this.sourceKeeper()) {
+    return SOURCE_ENERGY_KEEPER_CAPACITY
   }
 
   return SOURCE_ENERGY_NEUTRAL_CAPACITY
@@ -201,7 +292,7 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (this.__extendedAvailableEnergyCapacity) return this.__extendedAvailableEnergyCapacity
 
   // if there are no spawns in this room, nothing will help
-  if (!_.some(Game.spawns, _.matchesProperty('pos.roomName', this.name))) {
+  if (!_.some(this.spawns)) {
     this.__extendedAvailableEnergyCapacity = 0
     return this.__extendedAvailableEnergyCapacity
   }
@@ -233,8 +324,8 @@ RoomPosition.prototype.findInSquareArea = function (lookForType, squareStep, fil
   const [t, l, b, r] = this.squareArea(squareStep)
   const items = Game.rooms[this.roomName].lookForAtArea(lookForType, t, l, b, r, true)
 
-  for (const itemKey in items) {
-    const item = items[itemKey][lookForType]
+  for (const itemInfo of items) {
+    const item = itemInfo[lookForType]
 
     if (filterFunction) {
       if (filterFunction(item)) {
@@ -250,7 +341,7 @@ RoomPosition.prototype.findInSquareArea = function (lookForType, squareStep, fil
 
 RoomPosition.prototype.hasInSquareArea = function (lookForType, squareStep, filterFunction = undefined) {
   const id = this.findInSquareArea(lookForType, squareStep, filterFunction)
-  return !(id === undefined)
+  return id !== undefined
 }
 
 RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition) {
@@ -284,12 +375,11 @@ RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition
   const fromThis = aroundAsMap(this)
   const fromOther = aroundAsMap(otherRoomPosition)
 
-  const intersections = _.intersection(Object.keys(fromThis), Object.keys(fromOther))
+  const intersections = _.intersection(_.keys(fromThis), _.keys(fromOther))
 
   const result = []
-  for (const outerIndex in intersections) {
-    const innerIndex = intersections[outerIndex]
-    result.push(fromThis[innerIndex])
+  for (const intersection of intersections) {
+    result.push(fromThis[intersection])
   }
 
   return result
@@ -352,6 +442,14 @@ StructureContainer.prototype.isSource = function () {
   return result
 }
 
+StructureController.prototype.canActivateSafeMode = function () {
+  if (this.safeMode) return false
+  if (this.safeModeCooldown) return false
+  if (this.upgradeBlocked) return false
+
+  return this.safeModeAvailable > 0
+}
+
 StructureLink.prototype.isSource = function () {
   let result = this.getFromMemory(_isSourceKey_)
 
@@ -406,7 +504,7 @@ StructureTerminal.prototype.autoSell = function (order, keep = 0) {
 }
 
 const extensions = {
-  assingFlagShortcuts: function () {
+  shortcuts: function () {
     const cutShort = function (name) {
       const index = name.indexOf('_')
 
@@ -418,13 +516,45 @@ const extensions = {
       }
     }
 
+    Game.creepsById = { }
+    Game.spawnsById = { }
+    Game.storages = { }
+    Game.extractors = { }
+    Game.labs = { }
+    Game.terminals = { }
+    Game.factories = { }
+    Game.observers = { }
+    Game.powerSpawns = { }
+    Game.nukers = { }
+
+    for (const roomName in Game.rooms) {
+      const room = Game.rooms[roomName]
+
+      room.flags = { }
+      room.creeps = { }
+      room.spawns = { }
+      room.extensions = { }
+      room.towers = { }
+      room.links = { }
+      room.labs = { }
+
+      room.blocked = []
+    }
+
     for (const flagName in Game.flags) {
       const flag = Game.flags[flagName]
       flag.shortcut = cutShort(flag.name)
+
+      if (flag.room) {
+        flag.room.flags[flagName] = flag
+      }
     }
 
     for (const creepName in Game.creeps) {
       const creep = Game.creeps[creepName]
+
+      Game.creepsById[creep.id] = creep
+      creep.room.creeps[creep.id] = creep
 
       if (creep.memory.flag) {
         creep.flag = Game.flags[creep.memory.flag]
@@ -437,6 +567,56 @@ const extensions = {
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
     Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
+
+    for (const id in Game.structures) {
+      const structure = Game.structures[id]
+
+      switch (structure.structureType) {
+        case STRUCTURE_SPAWN:
+          Game.spawnsById[structure.id] = structure
+          structure.room.spawns[structure.id] = structure
+          break
+        case STRUCTURE_EXTENSION:
+          structure.room.extensions[structure.id] = structure
+          break
+        case STRUCTURE_TOWER:
+          structure.room.towers[structure.id] = structure
+          break
+        case STRUCTURE_STORAGE:
+          Game.storages[structure.id] = structure
+          break
+        case STRUCTURE_LINK:
+          structure.room.links[structure.id] = structure
+          break
+        case STRUCTURE_EXTRACTOR:
+          Game.extractors[structure.id] = structure
+          structure.room.extractor = structure
+          break
+        case STRUCTURE_LAB:
+          Game.labs[structure.id] = structure
+          structure.room.labs[structure.id] = structure
+          break
+        case STRUCTURE_TERMINAL:
+          Game.terminals[structure.id] = structure
+          break
+        case STRUCTURE_FACTORY:
+          Game.factories[structure.id] = structure
+          structure.room.factory = structure
+          break
+        case STRUCTURE_OBSERVER:
+          Game.observers[structure.id] = structure
+          structure.room.observer = structure
+          break
+        case STRUCTURE_POWER_SPAWN:
+          Game.powerSpawns[structure.id] = structure
+          structure.room.powerSpawn = structure
+          break
+        case STRUCTURE_NUKER:
+          Game.nukers[structure.id] = structure
+          structure.room.nuker = structure
+          break
+      }
+    }
   }
 }
 

@@ -12,16 +12,11 @@ const unspecialistId = 'energy.unspecialist'
 
 energySpecialistController.actRange = 1
 
-energySpecialistController.unowned = true
-energySpecialistController.sourceKeeper = energySpecialistController.unowned
-
-energySpecialistController.ignoreCreepsForTargeting = false
-
 energySpecialistController.restockTargets = function (room) {
   const unspecialist = bootstrap.roomControllers[unspecialistId]
 
   if (unspecialist === undefined) {
-    this.debugLine(room, 'Missing unspecialist')
+    console.log('Missing unspecialist')
     return []
   }
 
@@ -51,9 +46,7 @@ energySpecialistController.act = function (source, creep) {
       harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
     const restockTargets = this.restockTargets(creep.room)
-    for (let i = 0; i < restockTargets.length; ++i) {
-      const restockTarget = restockTargets[i]
-
+    for (const restockTarget of restockTargets) {
       if (creep.pos.isNearTo(restockTarget)) {
         const restockRc = this.restock(restockTarget, creep)
 
@@ -95,9 +88,8 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
   let otherRestockersWork = 0
 
   const others = this._allAssignedTo(target)
-  for (let i = 0; i < others.length; ++i) {
-    const other = others[i]
-    if (other.memory.rstk) {
+  for (const other of others) {
+    if (this._isRestocker(other)) {
       otherRestockersWork += _.countBy(other.body, 'type')[WORK] || 0
     }
   }
@@ -118,7 +110,7 @@ energySpecialistController.targets = function (room) {
 }
 
 energySpecialistController.filterCreep = function (creep) {
-  return creep.memory.rstk === true && this._isHarvestAble(creep)
+  return this._isRestocker(creep) && this._isHarvestAble(creep)
 }
 
 energySpecialistController.register()

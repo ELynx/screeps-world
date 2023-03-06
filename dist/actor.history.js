@@ -4,12 +4,6 @@ const bootstrap = require('./bootstrap')
 
 const historyActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
-    }
-  },
-
   clearCaches: function () {
     Game.__idCache = { }
     Game.__skipActors = { }
@@ -19,21 +13,16 @@ const historyActor =
   },
 
   getObjectById: function (room, id) {
-    // 2nd likely case, but direct cache is given
-    const structure = Game.structures[id]
-    if (structure) return structure
+    // most likely case, own creep
+    const ownCreep = Game.creepsById[id]
+    if (ownCreep) return ownCreep
+
+    const ownStructure = Game.structures[id]
+    if (ownStructure) return ownStructure
 
     // check self-filled cache
     const cached = Game.__idCache[id]
     if (cached) return cached
-
-    // 1st likely case, but search is needed
-    for (const creepName in Game.creeps) {
-      const creep = Game.creeps[creepName]
-      Game.__idCache[creep.id] = creep
-
-      if (creep.id === id) return creep
-    }
 
     const byId = Game.getObjectById(id)
     if (byId !== null) {
@@ -88,20 +77,15 @@ const historyActor =
     this._increaseSomeValue(something, 'sideHarmPower', amount)
   },
 
-  markNPCHostile: function (room, something, somethingUsername) {
-    const reputation = Game.iff.markNPCHostile(something)
-    this.debugLine(room, this.hmiName(something) + ' owned by NPC [' + somethingUsername + '] had reputation changed to ' + reputation)
-  },
-
   handle_EVENT_ATTACK: function (room, eventRecord) {
-    // skip objects that were already examined and found unworthy
-    if (Game.__skipActors[eventRecord.objectId]) return
-    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
-
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
     // SHORTCUT nuke is detected elsewhere
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
+
+    // skip objects that were already examined and found unworthy
+    if (Game.__skipActors[eventRecord.objectId]) return
+    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
     if (attacker === null) {
@@ -127,7 +111,7 @@ const historyActor =
       return
     }
 
-    let hostileAction = false
+    let hostileAction
     let targetUsername
     let targetMy
 
@@ -154,7 +138,7 @@ const historyActor =
     if (attackerUsername === targetUsername) return
 
     // fights between allies
-    if (attacker.ally && (!targetMy)) return
+    if (!targetMy && attacker.ally) return
 
     if (attacker.pc) {
       // STRATEGY PC reputation decrease per hostile action
@@ -163,9 +147,9 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to [' + reputation + ']')
     } else {
-      this.markNPCHostile(room, attacker, attackerUsername)
+      Game.iff.markNPCHostile(attacker)
     }
 
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
@@ -204,13 +188,13 @@ const historyActor =
     if (attackerUsername === roomUsername) return
 
     // fights between allies
-    if (attacker.ally && (!room.myOrMyReserved())) return
+    if (!room.myOrMyReserved() && attacker.ally) return
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      this.debugLine(room, this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to ' + reputation)
+      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to [' + reputation + ']')
     } else {
-      this.markNPCHostile(room, attacker, attackerUsername)
+      Game.iff.markNPCHostile(attacker)
     }
   },
 
@@ -257,9 +241,7 @@ const historyActor =
   processRoomLog: function (room) {
     const eventLog = room.getEventLog()
 
-    for (const index in eventLog) {
-      const eventRecord = eventLog[index]
-
+    for (const eventRecord of eventLog) {
       switch (eventRecord.event) {
         case EVENT_ATTACK:
           this.handle_EVENT_ATTACK(room, eventRecord)
@@ -289,36 +271,26 @@ const historyActor =
     this.processHealers()
   },
 
-  /**
-    Execute history logic.
-    **/
   act: function () {
-    // mark initial overall time
-    const t0 = Game.cpu.getUsed()
-
     this.clearCaches()
 
+    const dashboard = Game.flags.dashboard
+
     for (const roomName in Game.rooms) {
-      const t1 = Game.cpu.getUsed()
+      const t0 = Game.cpu.getUsed()
 
       const room = Game.rooms[roomName]
-      room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
 
       this.processRoomLog(room)
 
-      const usedRoomPercent = bootstrap.hardCpuUsed(t1)
-      this.debugLine(room, 'HCPU: ' + usedRoomPercent + '% on history actor / room')
-      room.visual.rect(0, 0.25, 5 * usedRoomPercent / 100, 0.25, { fill: '#f00' })
+      if (dashboard) {
+        const usedRoomPercent = bootstrap.hardCpuUsed(t0)
+        room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
+        room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
+      }
     }
 
     this.processPostLog()
-
-    const usedTotalPercent = bootstrap.hardCpuUsed(t0)
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      this.debugLine(room, 'HCPU: ' + usedTotalPercent + '% on history actor / total')
-      room.visual.rect(0, 0, 5 * usedTotalPercent / 100, 0.5, { fill: '#03f' })
-    }
   }
 }
 

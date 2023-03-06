@@ -47,9 +47,12 @@ spawn.dismiss = function (model) {
 
   // sanitize deleted flags
   if (model.memory && model.memory.flag) {
-    const flag = Game.flags[model.memory.flag]
-    if (flag === undefined) {
-      return true
+    // special mark of flagless creeps
+    if (model.memory.flag.indexOf('_x_') === -1) {
+      const flag = Game.flags[model.memory.flag]
+      if (flag === undefined) {
+        return true
+      }
     }
   }
 
@@ -59,7 +62,7 @@ spawn.dismiss = function (model) {
     const bodyCost = this._bodyCost(model.body)
 
     if (bodyCost > maxCost) {
-      console.log('spawn.dismiss found model [' + model.name + '] of body ' + model.body + ' and cost ' + bodyCost + ' with max capacity ' + maxCost)
+      console.log('spawn.dismiss found model [' + model.name + '] of body ' + model.body + ' and cost [' + bodyCost + '] with max capacity [' + maxCost + ']')
       return true
     }
   }
@@ -86,7 +89,7 @@ spawn._peekOrGet = function (queueCall) {
     }
   }
 
-  console.log('spawn._peekOrGet only cleanup duty on ' + Game.time)
+  console.log('spawn._peekOrGet only cleanup duty on [' + Game.time + ']')
 
   return undefined
 }
@@ -112,43 +115,30 @@ spawn.postpone = function () {
 }
 
 spawn._spawnsCanSpawn = function () {
-  if (Game.__spawnsCanSpawn) return Game.__spawnsCanSpawn
-
-  const spawns = _.filter(
+  return _.filter(
     Game.spawns,
     function (spawn) {
       const spawning = intent.getSpawnSpawning(spawn)
       return spawning === null && spawn.isActiveSimple
     }
   )
-
-  Game.__spawnsCanSpawn = spawns
-
-  return spawns
 }
 
 spawn._spawnsByLevel = function () {
-  if (Game.__spawnsByLevel) return Game.__spawnsByLevel
+  const spawns = this._spawnsCanSpawn()
 
-  const spawns = this._spawnsCanSpawn().slice(0)
   spawns.sort(
     function (spawn1, spawn2) {
       return spawn2.room.level() - spawn1.room.level()
     }
   )
 
-  Game.__spawnsByLevel = spawns
-
   return spawns
 }
 
 spawn._spawnsByDistance = function (roomName) {
-  if (Game.__spawnsByDistance) {
-    const cached = Game.__spawnsByDistance(roomName)
-    if (cached) return cached
-  }
+  const spawns = this._spawnsCanSpawn()
 
-  const spawns = this._spawnsCanSpawn().slice(0)
   spawns.sort(
     function (spawn1, spawn2) {
       const d1 = Game.map.getRoomLinearDistance(spawn1.room.name, roomName)
@@ -164,30 +154,17 @@ spawn._spawnsByDistance = function (roomName) {
     }
   )
 
-  if (Game.__spawnsByDistance === undefined) {
-    Game.__spawnsByDistance = { }
-  }
-
-  Game.__spawnsByDistance[roomName] = spawns
-
   return spawns
 }
 
-spawn._spawnsInRoom = function (roomName) {
-  if (Game.__spawnsInRoom) {
-    const cached = Game.__spawnsInRoom(roomName)
-    if (cached) return cached
-  }
-
-  const spawns = _.filter(this._spawnsCanSpawn(), _.matchesProperty('room.name', roomName))
-
-  if (Game.__spawnsInRoom === undefined) {
-    Game.__spawnsInRoom = { }
-  }
-
-  Game.__spawnsInRoom[roomName] = spawns
-
-  return spawns
+spawn._spawnsInRoom = function (room) {
+  return _.filter(
+    room.spawns,
+    function (spawn) {
+      const spawning = intent.getSpawnSpawning(spawn)
+      return spawning === null && spawn.isActiveSimple
+    }
+  )
 }
 
 spawn.makeBody = function (spawn, model) {
@@ -240,7 +217,14 @@ spawn.spawnNext = function () {
   } else if (nextModel.from === queue.FROM_STRONGEST_ROOM) {
     spawns = this._spawnsByLevel()
   } else {
-    spawns = _.shuffle(this._spawnsInRoom(nextModel.from))
+    // important check - can room spawn anything?
+    const room = Game.rooms[nextModel.from]
+    if (room && room.my && room.level() > 0) {
+      spawns = _.shuffle(this._spawnsInRoom(room))
+    } else {
+      // fall back to closest
+      spawns = this._spawnsByDistance(nextModel.to)
+    }
   }
 
   if (spawns.length === 0) return false
@@ -257,9 +241,7 @@ spawn.spawnNext = function () {
     }
   }
 
-  for (let i = 0; i < spawns.length; ++i) {
-    const spawn = spawns[i]
-
+  for (const spawn of spawns) {
     const body = this.makeBody(spawn, nextModel)
     if (body === undefined) {
       return this.spawnNextErrorHandler(spawn, nextModel, 1)
@@ -301,7 +283,7 @@ spawn.spawnNext = function () {
 
 spawn.act = function () {
   // STRATEGY spawn attempts per tick
-  let maxAttempts = Object.keys(Game.rooms) * 2
+  let maxAttempts = _.keys(Game.spawns).length
 
   while (this.spawnNext() && maxAttempts > 0) {
     --maxAttempts

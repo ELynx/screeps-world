@@ -12,9 +12,8 @@ roomInfoProcess._walkable = function (terrain, position) {
   }
 
   const atPosition = position.lookFor(LOOK_STRUCTURES)
-  for (const k in atPosition) {
-    const struct = atPosition[k]
-    if (struct.structureType === STRUCTURE_ROAD) {
+  for (const structure of atPosition) {
+    if (structure.structureType === STRUCTURE_ROAD) {
       return true
     }
   }
@@ -27,14 +26,10 @@ roomInfoProcess.harvestLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
 
   const positions = { }
-  for (let i = 0; i < sources.length; ++i) {
-    const source = sources[i]
-
+  for (const source of sources) {
     for (let dx = -1; dx <= 1; ++dx) {
       for (let dy = -1; dy <= 1; ++dy) {
-        if (dx === 0 && dy === 0) {
-          continue
-        }
+        if (dx === 0 && dy === 0) continue
 
         const x = source.pos.x + dx
         const y = source.pos.y + dy
@@ -59,11 +54,6 @@ roomInfoProcess.harvestLevel = function (room) {
   return walkable
 }
 
-/**
-Calculate room source level.
-@param {Room} room.
-@return Source level of room.
-**/
 roomInfoProcess.sourceLevel = function (room) {
   const allStructures = room.find(
     FIND_STRUCTURES,
@@ -96,8 +86,7 @@ roomInfoProcess.sourceLevel = function (room) {
 
   let hasExchange = false
   if (links.length > 1) {
-    for (let i = 0; i < links.length; ++i) {
-      const link = links[i]
+    for (const link of links) {
       if (!link.isSource()) {
         hasExchange = true
         break
@@ -111,8 +100,7 @@ roomInfoProcess.sourceLevel = function (room) {
 
   const consideredPositions = { }
 
-  for (const index in containers) {
-    const container = containers[index]
+  for (const container of containers) {
     const p = container.pos
     consideredPositions[(p.x + 1) + 100 * (p.y + 1)] = p
   }
@@ -120,8 +108,7 @@ roomInfoProcess.sourceLevel = function (room) {
   const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
 
-  for (let i = 0; i < links.length; ++i) {
-    const link = links[i]
+  for (const link of links) {
     if (link.isSource()) {
       let notFound = true
       for (let j = 0; j < sources.length && notFound; ++j) {
@@ -139,6 +126,7 @@ roomInfoProcess.sourceLevel = function (room) {
           notFound = false
         }
       }
+
       if (notFound === false) ++total
     }
   }
@@ -153,21 +141,19 @@ Calculate room mining level.
 **/
 roomInfoProcess.miningLevel = function (room) {
   if (room.my) {
-    if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][room.controller.level] < 1) return 0
-    if (room.storage === undefined && room.terrain === undefined) return 0
-  }
-
-  const extractors = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
+    if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
+    if (room.storage === undefined && room.terminal === undefined) return 0
+  } else {
+    const extractors = room.find(
+      FIND_STRUCTURES,
+      {
+        filter: function (structure) {
+          return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
+        }
       }
-    }
-  )
+    )
 
-  if (extractors.length === 0) {
-    return 0
+    if (extractors.length === 0) return 0
   }
 
   const minerals = room.find(
@@ -179,9 +165,7 @@ roomInfoProcess.miningLevel = function (room) {
     }
   )
 
-  if (minerals.length === 0) {
-    return 0
-  }
+  if (minerals.length === 0) return 0
 
   return 1
 }
@@ -202,8 +186,8 @@ roomInfoProcess._wallLevel = function (room) {
 
   // fill in array of wall hits
   const hits = []
-  for (let i = 0; i < walls.length; ++i) {
-    hits.push(Math.floor(walls[i].hits / 1000))
+  for (const wall of walls) {
+    hits.push(Math.floor(wall.hits / 1000))
   }
 
   hits.sort(
@@ -217,6 +201,8 @@ roomInfoProcess._wallLevel = function (room) {
 
 // STRATEGY wall build-up, basis levels
 roomInfoProcess.wallLevel = function (room) {
+  if (!room.my) return 0
+
   const TargetBarrierHp = [
     0,
     5,
@@ -258,7 +244,7 @@ roomInfoProcess.wallLevel = function (room) {
 }
 
 roomInfoProcess.work = function (room) {
-  this.debugHeader(room)
+  room.memory.nodeAccessed = Game.time
 
   const force = Game.flags.recount && Game.flags.recount.pos.roomName === room.name
 

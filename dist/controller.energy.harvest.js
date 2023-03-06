@@ -6,11 +6,6 @@ const energyHarvestController = new Controller('energy.harvest')
 
 energyHarvestController.actRange = 1
 
-energyHarvestController.unowned = true
-energyHarvestController.sourceKeeper = energyHarvestController.unowned
-
-energyHarvestController.ignoreCreepsForTargeting = false
-
 energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
@@ -21,7 +16,7 @@ energyHarvestController.targets = function (room) {
 }
 
 energyHarvestController.filterCreep = function (creep) {
-  return (creep.memory.rstk || false) === false && this._isHarvestAble(creep)
+  return this._isNotRestocker(creep) && this._isHarvestAble(creep)
 }
 
 energyHarvestController.register()

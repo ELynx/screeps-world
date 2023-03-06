@@ -6,30 +6,12 @@ const strelok = new Tasked('strelok')
 
 strelok.breachedExtraCreeps = 1
 
-strelok.cleanUpPatrolFlags = function () {
-  const flags = Game.flagsByShortcut[this.id] || []
-  for (const index in flags) {
-    const flag = flags[index]
-
-    if (flag.name === this.id + '_' + flag.pos.roomName) {
-      const room = flag.room
-      if (room && room.my) {
-        continue // to next flag
-      }
-
-      flag.remove()
-    }
-  }
-}
-
 strelok.prepare = function () {
   this.roomTargets = { }
   this.roomWounded = { }
   this.roomNoHurt = { }
 
   this.roomBoring = { }
-
-  this.cleanUpPatrolFlags()
 }
 
 strelok.creepPrepare = function (creep) {
@@ -65,7 +47,7 @@ strelok.creepAtDestination = function (creep) {
           // ignore everything without hit points
           if (!structure.hits) return false
 
-          // STRATEGY ingore resource management, even though it can be military
+          // STRATEGY ignore resource management, even though it can be military
           if (structure.structureType === STRUCTURE_CONTAINER ||
               structure.structureType === STRUCTURE_EXTRACTOR ||
               structure.structureType === STRUCTURE_FACTORY ||
@@ -94,8 +76,8 @@ strelok.creepAtDestination = function (creep) {
 
     let targets = targetCreeps.concat(targetStructures)
 
-    if (creep.room.__aggro && creep.room.__aggro.length > 0) {
-      targets = targets.concat(creep.room.__aggro)
+    if (creep.room.aggro().length > 0) {
+      targets = targets.concat(creep.room.aggro())
     }
 
     const wounded = _.filter(
@@ -226,15 +208,33 @@ strelok.creepAtDestination = function (creep) {
         }
 
         if (flee !== undefined) {
-          creep.moveToWrapper(fireTarget, { maxRooms: 1, range, flee })
+          creep.moveToWrapper(
+            fireTarget,
+            {
+              flee,
+              maxRooms: 1,
+              range,
+              reusePath: 0
+            }
+          )
         }
       } else {
         // STRATEGY follow creep tightly
-        const reuse = moveTarget.structureType ? 10 : 0
+        const reusePath = moveTarget.structureType ? _.random(3, 5) : 0
         // STRATEGY bump into structure
         const range = moveTarget.structureType ? 1 : 3
-        creep.moveToWrapper(moveTarget, { maxRooms: 1, reusePath: reuse, range })
+
+        creep.moveToWrapper(
+          moveTarget,
+          {
+            maxRooms: 1,
+            range,
+            reusePath
+          }
+        )
       }
+    } else {
+      creep.fatigueWrapper()
     }
     // end of if target
   } else {
@@ -285,23 +285,15 @@ strelok.creepRoomTravel = function (creep) {
 }
 
 strelok.flagPrepare = function (flag) {
-  if (flag.room && flag.room.my) {
-    const threat = flag.room.memory.threat || 0
-    if (threat <= 1) {
-      // keep flag but don't spawn
-      return this.FLAG_IGNORE
-    }
-  } else {
-    const want = flag.getValue()
+  const want = flag.getValue()
 
-    // automatically stop 1 target attacks
-    if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
-      return this.FLAG_REMOVE
-    }
+  // automatically stop 1 target attacks
+  if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
+    return this.FLAG_REMOVE
+  }
 
-    if (this.roomBoring[flag.pos.roomName]) {
-      return this.FLAG_IGNORE
-    }
+  if (this.roomBoring[flag.pos.roomName]) {
+    return this.FLAG_IGNORE
   }
 
   return this.FLAG_SPAWN

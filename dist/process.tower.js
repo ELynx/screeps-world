@@ -7,16 +7,7 @@ const towerProcess = new Process('tower')
 towerProcess.work = function (room) {
   if (!room.my) return
 
-  this.debugHeader(room)
-
-  const towers = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_TOWER && structure.isActiveSimple
-      }
-    }
-  )
+  const towers = _.filter(room.towers, _.property('isActiveSimple'))
 
   if (towers.length === 0) return
 
@@ -88,9 +79,7 @@ towerProcess.work = function (room) {
   )
 
   if (damagedCreeps.length > 0) {
-    for (let i = 0; i < towers.length; ++i) {
-      const tower = towers[i]
-
+    for (const tower of towers) {
       if (tower.__acted) continue
 
       const closestDamaged = tower.pos.findClosestByRange(damagedCreeps)

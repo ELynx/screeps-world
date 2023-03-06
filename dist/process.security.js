@@ -8,10 +8,18 @@ const secutiryProcess = new Process('security')
 
 const ThreatStep = 60
 
-secutiryProcess.work = function (room) {
-  if (!room.my) return
+secutiryProcess.roomCompatible = function (room) {
+  if (room.myOrMyReserved()) return true
+  if (room.sourceKeeper()) return true
+  if (room.unowned) return true
 
-  this.debugHeader(room)
+  return false
+}
+
+secutiryProcess.work = function (room) {
+  if (!this.roomCompatible(room)) return
+
+  room.memory.nodeAccessed = Game.time
 
   const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
@@ -49,22 +57,10 @@ secutiryProcess.work = function (room) {
       threatTimer = Game.time
     }
 
-    const ctrl = room.controller
+    if (hostilePCs.length > 0 && room.controller && room.controller.my && room.controller.canActivateSafeMode()) {
+      const flags = _.filter(room.flags, _.matchesProperty('shortcut', this.id))
 
-    if (hostilePCs.length > 0 &&
-        !ctrl.safeMode &&
-        !ctrl.safeModeCooldown &&
-        !ctrl.upgradeBlocked &&
-        ctrl.safeModeAvailable > 0) {
-      const flags = Game.flagsByShortcut[this.id] || []
-
-      for (const index in flags) {
-        const flag = flags[index]
-
-        if (flag.pos.roomName !== room.name) {
-          continue
-        }
-
+      for (const flag of flags) {
         const range = flag.getValue()
         if (range < 0) {
           flag.remove()
@@ -79,18 +75,17 @@ secutiryProcess.work = function (room) {
         )
 
         if (trigger) {
-          const rc = ctrl.activateSafeMode()
+          const rc = room.controller.activateSafeMode()
 
-          const notification = 'Room ' + room.name + ' requested safe mode [' + rc + ']'
+          const notification = 'Room [' + room.name + '] requested safe mode [' + rc + ']'
 
           console.log(notification)
           Game.notify(notification)
 
           break
         }
-      } // end of loop for all flags
+      }
     } // end of "if safe mode reqiest possible"
-    // end of "if hostile creeps exist"
   } else {
     if (threatTimer + ThreatStep < Game.time) {
       --threatLevel
@@ -103,22 +98,9 @@ secutiryProcess.work = function (room) {
   if (threatLevel > 0) {
     room.memory.threat = threatLevel
     room.memory._ttt = threatTimer
-
-    this.debugLine(room, 'Threat level ' + threatLevel)
   } else {
     room.memory.threat = undefined
     room.memory._ttt = undefined
-  }
-
-  const strelokPatrolName = 'strelok_' + room.name
-  const strelokPatrolFlag = Game.flags[strelokPatrolName]
-
-  if (strelokPatrolFlag === undefined) {
-    // STRATEGY room position 49, 49 is reserved for strelok patrol flag
-    const pos = new RoomPosition(49, 49, room.name)
-    pos.createFlagWithValue(strelokPatrolName, threatLevel)
-  } else if (threatWas !== room.memory.threat) {
-    strelokPatrolFlag.setValue(threatLevel)
   }
 }
 

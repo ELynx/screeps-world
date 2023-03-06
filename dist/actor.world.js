@@ -13,7 +13,7 @@ const taskedSpawn = require('./tasked.spawn')
 const taskedStrelok = require('./tasked.strelok')
 
 // STRATEGY Priority for task execution.
-const automaticControllers = [
+const taskedAuto = [
   // generate spawn(s)
   taskedOutlast.id, // very tick-sensitive logic, run first
   taskedAggro.id, // generates aggro and breach
@@ -30,43 +30,30 @@ const automaticControllers = [
 
 const worldActor =
 {
-  debugLine: function (room, what) {
-    if (Game.flags.verbose) {
-      room.roomDebug(what)
-    }
-  },
-
-  /**
-    Let task controllers do theit jobs.
-    **/
   taskControllersControl: function () {
-    for (const index in automaticControllers) {
-      const id = automaticControllers[index]
-      const automaticController = bootstrap.taskControllers[id]
+    for (const id of taskedAuto) {
+      const tasked = bootstrap.taskControllers[id]
 
-      if (automaticController === undefined) {
+      if (tasked === undefined) {
         continue
       }
 
-      automaticController.act()
+      tasked.act()
     }
   },
 
-  /**
-    Execute world level logic.
-    **/
   act: function () {
-    // mark initial time
     const t0 = Game.cpu.getUsed()
 
     this.taskControllersControl()
 
-    const usedPercent = bootstrap.hardCpuUsed(t0)
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
-      this.debugLine(room, 'HCPU: ' + usedPercent + '% on world actor')
-      room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
-      room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
+    if (Game.flags.dashboard) {
+      const usedPercent = bootstrap.hardCpuUsed(t0)
+      for (const roomName in Game.rooms) {
+        const room = Game.rooms[roomName]
+        room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
+        room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
+      }
     }
   } // end of act method
 }
