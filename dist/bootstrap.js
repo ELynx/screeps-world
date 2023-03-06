@@ -59,16 +59,6 @@ const bootstrap = {
   roomControllers: { },
 
   /**
-    Object holding references to room controllers that want to prepare for the room.
-    **/
-  roomControllersPrepare: { },
-
-  /**
-    Object holding references to room controllers that care for their creeps.
-    **/
-  roomControllersObserveOwn: { },
-
-  /**
     Object holding references to all registeded task controllers.
     **/
   taskControllers: { },
@@ -84,14 +74,6 @@ const bootstrap = {
     **/
   registerRoomController: function (controller) {
     this.roomControllers[controller.id] = controller
-
-    if (controller.roomPrepare) {
-      this.roomControllersPrepare[controller.id] = controller
-    }
-
-    if (controller.observeMyCreep) {
-      this.roomControllersObserveOwn[controller.id] = controller
-    }
   },
 
   /**

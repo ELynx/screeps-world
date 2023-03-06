@@ -45,10 +45,6 @@ const controllersMyAuto = [
   upgradeController.id
 ]
 
-const controllersMyConsuming = [
-  grabController.id
-]
-
 const controllersRemoteHarvestAuto = [
   repairController.id,
   buildController.id,
@@ -64,6 +60,10 @@ const controllersHelpActive = [
   buildController.id
 ]
 
+const controllersConsuming = [
+  grabController.id
+]
+
 Creep.prototype.target = function () {
   return bootstrap.getObjectById(this.memory.dest)
 }
@@ -72,15 +72,15 @@ const roomActor =
 {
   roomControllersFind: function (room) {
     if (room.my) {
-      return [controllersMyAuto, controllersMyConsuming]
+      return [controllersMyAuto, controllersConsuming]
     }
 
     if (room.myReserved() || room.sourceKeeper() || room.unowned) {
-      return [controllersRemoteHarvestAuto, []]
+      return [controllersRemoteHarvestAuto, controllersConsuming]
     }
 
     if (room.ally || room.neutral) {
-      return [controllersHelpActive, []]
+      return [controllersHelpActive, controllersConsuming]
     }
 
     return [[], []]
@@ -89,16 +89,22 @@ const roomActor =
   roomControllersPrepare: function (controllers, room) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
-      if (controller) {
+      if (controller && _.isFunction(controller.roomPrepare)) {
         controller.roomPrepare(room)
       }
     }
   },
 
-  roomControllersObserveOwn: function (creep) {
-    const controller = bootstrap.roomControllersObserveOwn[creep.memory.ctrl]
-    if (controller) {
+  _roomControllerObserveOwn: function (controller, creep) {
+    if (_.isFunction(controller.observeMyCreep)) {
       controller.observeMyCreep(creep)
+    }
+  },
+
+  roomControllersObserveOwn: function (creep) {
+    const controller = bootstrap.roomControllers[creep.memory.ctrl]
+    if (controller) {
+      this._roomControllerObserveOwn(controller, creep)
     }
   },
 
@@ -107,8 +113,8 @@ const roomActor =
     if (controller) {
       const rc = controller.act(target, creep)
 
-      if (rc >= OK && _.isFunction(controller.observeMyCreep)) {
-        controller.observeMyCreep(creep)
+      if (rc >= OK) {
+        this._roomControllerObserveOwn(controller, creep)
       }
 
       return rc === OK
@@ -146,6 +152,11 @@ const roomActor =
 
       if (controller.filterCreep(creep)) {
         const rc = controller.act(room, creep)
+
+        if (rc >= OK) {
+          this._roomControllerObserveOwn(controller, creep)
+        }
+
         // TODO this is specific to consuming controllers
         if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
