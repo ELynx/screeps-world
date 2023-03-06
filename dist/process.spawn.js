@@ -62,6 +62,29 @@ spawnProcess._canSpawn = function (room) {
   return room.extendedAvailableEnergyCapacity() > 0
 }
 
+spawnProcess.streloks = function (room, live) {
+  const threat = room.memory.threat || 0
+  if (threat <= bootstrap.ThreatLevelLow) return
+
+  const want = threat
+
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'strelok')
+
+    this.addToQueue(
+      room.name,
+      queue.FROM_CLOSEST_ROOM,
+      'strelok',
+      'strelok',
+      {
+        flag: 'strelok_x_' + room.name
+      },
+      want - now,
+      'normal'
+    )
+  }
+}
+
 spawnProcess.restockers = function (room, live) {
   const restockerBody = bodywork.restocker(room)
 
@@ -220,12 +243,14 @@ spawnProcess.plunders = function (room, live) {
 }
 
 spawnProcess.my = function (room, live) {
+  this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
   this.workers(room, live)
 }
 
 spawnProcess.myReserved = function (room, live) {
+  this.streloks(room, live)
   this.restockers(room, live)
   this.plunders(room, live)
 }
@@ -245,6 +270,7 @@ spawnProcess.sourceKeeper = function (room, live) {
 }
 
 spawnProcess.unowned = function (room, live) {
+  this.streloks(room, live)
   this.restockers(room, live)
   this.plunders(room, live)
 }
