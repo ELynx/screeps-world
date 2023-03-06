@@ -70,7 +70,29 @@ plunder.getSomeOwnRoomName = function (creep) {
   return undefined
 }
 
+plunder.findTarget = function (creep, targets) {
+  for (const target of targets) {
+    for (const resourceType in target.store) {
+      const stored = target.store.getUsedCapacity(resourceType)
+      target.__stored = (target.__stored || 0) + stored
+    }
+  }
+
+  targets.sort(
+    function (t1, t2) {
+      const s1 = t1.__stored || 0
+      const s2 = t2.__stored || 0
+
+      return s2 - s1
+    }
+  )
+
+  return targets[0]
+}
+
 plunder.moveAndLoad = function (creep, target) {
+  target.__stored = (target.__stored || 0) - creep.store.getFreeCapacity()
+
   if (creep.pos.isNearTo(target)) {
     const resourceTypes = _.shuffle(_.keys(target.store))
     for (const resourceType of resourceTypes) {
@@ -150,7 +172,7 @@ plunder.creepAtOtherRooms = function (creep) {
   }
 
   if (target === undefined) {
-    target = creep.pos.findClosestByRange(targets)
+    target = this.findTarget(creep, targets)
     creep.memory.dest = target.id
   }
 
