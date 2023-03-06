@@ -20,14 +20,23 @@ plunder.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
 }
 
+plunder.getTargetRoomName = function (creep) {
+  if (creep.memory.frum) return creep.memory.frum
+
+  const flagPos = creep.getFlagPos()
+  if (flagPos) return flagPos.roomName
+
+  return undefined
+}
+
 plunder.creepAtOwnRoom = function (creep) {
   // all control (was) done by room controller
   // see if it is time for next raid or end of career
 
   if (creep.store.getUsedCapacity() === 0) {
-    const whereFlag = creep.getFlagPos()
-    if (whereFlag) {
-      creep.setControlRoom(whereFlag.roomName)
+    const roomName = this.getTargetRoomName(creep)
+    if (roomName) {
+      creep.setControlRoom(roomName)
     } else {
       creep.unlive()
     }
