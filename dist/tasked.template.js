@@ -52,6 +52,10 @@ Creep.prototype.setControlRoom = function (crum) {
   this.memory.crum = crum
 }
 
+Creep.prototype.setFromRoom = function (frum) {
+  this.memory.frum = frum
+}
+
 Creep.prototype.getControlPos = function () {
   const crum = this.getControlRoom()
   const flagPos = this.getFlagPos()
@@ -158,15 +162,18 @@ Creep.prototype.unlive = function () {
 
   if (this.room.level() > 0) {
     this.setControlRoom(this.room.name)
+    this.setFromRoom(undefined)
     result = true
   } else if (this.memory.mrts) {
     this.setControlRoom(this.memory.mrts)
+    this.setFromRoom(undefined)
     result = true
   } else {
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
       if (room.level() > 0) {
         this.setControlRoom(room.name)
+        this.setFromRoom(undefined)
         result = true
         break
       }
