@@ -17,6 +17,11 @@ spawnProcess.makeKey = function (roomName, type) {
 spawnProcess._addToQueue = function (roomToName, roomFromName, type, body, memoryAddon, n, adderFunction) {
   const key = this.makeKey(roomToName, type)
 
+  if (n < 0) {
+    queue.erase(key)
+    return
+  }
+
   const memory =
     {
       crum: roomToName,
