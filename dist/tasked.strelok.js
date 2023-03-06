@@ -11,8 +11,9 @@ strelok.cleanUpPatrolFlags = function () {
   for (const flag of flags) {
     if (flag.name === this.id + '_' + flag.pos.roomName) {
       const room = flag.room
-      if (room && room.myOrMyReserved()) {
-        continue // to next flag
+      if (room) {
+        if (room.myOrMyReserved()) continue
+        if (room.unowned) continue
       }
 
       flag.remove()
