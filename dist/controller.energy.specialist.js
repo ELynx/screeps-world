@@ -12,10 +12,6 @@ const unspecialistId = 'energy.unspecialist'
 
 energySpecialistController.actRange = 1
 
-energySpecialistController.myReserved = true
-energySpecialistController.sourceKeeper = true
-energySpecialistController.unowned = true
-
 energySpecialistController.restockTargets = function (room) {
   const unspecialist = bootstrap.roomControllers[unspecialistId]
 
