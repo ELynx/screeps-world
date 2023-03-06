@@ -6,29 +6,12 @@ const strelok = new Tasked('strelok')
 
 strelok.breachedExtraCreeps = 1
 
-strelok.cleanUpPatrolFlags = function () {
-  const flags = Game.flagsByShortcut[this.id] || []
-  for (const flag of flags) {
-    if (flag.name === this.id + '_' + flag.pos.roomName) {
-      const room = flag.room
-      if (room) {
-        if (room.myOrMyReserved()) continue
-        if (room.unowned) continue
-      }
-
-      flag.remove()
-    }
-  }
-}
-
 strelok.prepare = function () {
   this.roomTargets = { }
   this.roomWounded = { }
   this.roomNoHurt = { }
 
   this.roomBoring = { }
-
-  this.cleanUpPatrolFlags()
 }
 
 strelok.creepPrepare = function (creep) {
@@ -302,23 +285,15 @@ strelok.creepRoomTravel = function (creep) {
 }
 
 strelok.flagPrepare = function (flag) {
-  if (flag.room && flag.room.my) {
-    const threat = flag.room.memory.threat || 0
-    if (threat <= 1) {
-      // keep flag but don't spawn
-      return this.FLAG_IGNORE
-    }
-  } else {
-    const want = flag.getValue()
+  const want = flag.getValue()
 
-    // automatically stop 1 target attacks
-    if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
-      return this.FLAG_REMOVE
-    }
+  // automatically stop 1 target attacks
+  if (want <= 1 && this.roomBoring[flag.pos.roomName]) {
+    return this.FLAG_REMOVE
+  }
 
-    if (this.roomBoring[flag.pos.roomName]) {
-      return this.FLAG_IGNORE
-    }
+  if (this.roomBoring[flag.pos.roomName]) {
+    return this.FLAG_IGNORE
   }
 
   return this.FLAG_SPAWN
