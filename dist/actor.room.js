@@ -300,7 +300,6 @@ const roomActor =
         // no movement, see if pathfinding is possible and within CPU
         if (rc === ERR_NOT_FOUND) {
           if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
-            // STRATEGY tweak point for creep movement
             rc = creep.moveToWrapper(
               creep.__target,
               {
