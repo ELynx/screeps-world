@@ -225,8 +225,10 @@ spawnProcess.unowned = function (room, live) {
 spawnProcess.work = function (room) {
   const live = _.countBy(room.getRoomControlledCreeps(true), 'memory.btyp')
 
-  // controller is my
+  // controller is `my`
   if (room.my) this.my(room, live)
+  // controller is own reserved
+  else if (room.myReserved()) this.unowned(room, live)
   // controller is ally or reserved by ally
   else if (room.ally) this.ally(room, live)
   // controller is neutral or reserved by neutral
@@ -235,7 +237,7 @@ spawnProcess.work = function (room) {
   else if (room.hostile) this.hostile(room, live)
   // room is source keeper room
   else if (room.sourceKeeper()) this.sourceKeeper(room, live)
-  // room has no controller / controller is not owned / controller is not reserved above EXCLUDING my
+  // room has no controller / controller is not owned
   else if (room.unowned) this.unowned(room, live)
 }
 
