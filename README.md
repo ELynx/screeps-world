@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Autobuild containers in remote mining rooms.
-
 Monitor invader power goal and prepare for them.
 
 Block positions that are targeted by room creeps:
