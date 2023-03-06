@@ -21,6 +21,12 @@ Autobuild containers in remote mining rooms.
 
 Monitor invader power goal and prepare for them.
 
+Block positions that are targeted by room creeps:
+
+* Check reach-ability before going to target.
+
+* Check reach-ability before assigning target.
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -79,7 +85,9 @@ TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 
 Fatigue based emergent road building. CostMatrix has ser-de.
 
-[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for byte 8 array support.
+[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for unsigned 8 byte array support.
+
+Take snapshot of buildings, use to re-build the room.
 
 Limit autobuild run to some N elements.
 
@@ -112,8 +120,6 @@ Spawn intent uber-wrapper:
 * Delayed call to spawn
 
 * Store all intended parameters for examination and modification.
-
-* Replace renew with recycle when spawn is called.
 
 * Cancel without energy loss.
 
