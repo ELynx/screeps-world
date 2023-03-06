@@ -443,12 +443,9 @@ autobuildProcess.work = function (room) {
     // once in 6 creep generations
     if (room.memory.abld === undefined ||
         room.memory.abld < Game.time - (6 * CREEP_LIFE_TIME)) {
-      executeAutoBuild = !(room.memory.abld === undefined)
+      executeAutoBuild = true
     }
   }
-
-  // let the flag clear
-  if (!room.my) return
 
   if (executeAutoBuild) {
     // offset regeneration time randomly so multiple rooms don't do it at same tick
