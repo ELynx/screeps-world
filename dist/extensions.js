@@ -238,6 +238,13 @@ Room.prototype.myOrMyReserved = function () {
   return Game.iff.ownUsername === username
 }
 
+Room.prototype.myReserved = function () {
+  if (this.my) return false
+
+  const username = this.extendedOwnerUsername()
+  return Game.iff.ownUsername === username
+}
+
 Room.prototype.myOrAlly = function () {
   return this.myOrMyReserved() || this.ally
 }

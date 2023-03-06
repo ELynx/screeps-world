@@ -46,6 +46,7 @@ function Controller (id) {
 
   this.compatible = function (room) {
     if (this.my && room.my) return true
+    if (this.unowned && room.myReserved()) return true
     if (this.ally && room.ally) return true
     if (this.neutral && room.neutral) return true
     if (this.hostile && room.hostile) return true
