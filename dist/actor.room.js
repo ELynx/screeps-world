@@ -32,7 +32,7 @@ const automaticControllers = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.id, // catch anyone with mineral only
+  mineralRestockController.id, // catch anyone with mineral only or plunder
   energySpecialistController.id, // catch restockers to
   energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
