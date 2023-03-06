@@ -197,10 +197,19 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   )
 }
 
+spawnProcess.plunders = function (room, live) {
+}
+
 spawnProcess.my = function (room, live) {
   this.restockers(room, live)
   this.miners(room, live)
   this.workers(room, live)
+}
+
+spawnProcess.myReserved = function (room, live) {
+  this.restockers(room, live)
+  this.workers(room, live, 2)
+  this.plunders(room, live)
 }
 
 spawnProcess.ally = function (room, live) {
@@ -220,6 +229,7 @@ spawnProcess.sourceKeeper = function (room, live) {
 spawnProcess.unowned = function (room, live) {
   this.restockers(room, live)
   this.workers(room, live, 2)
+  this.plunders(room, live)
 }
 
 spawnProcess.work = function (room) {
@@ -228,7 +238,7 @@ spawnProcess.work = function (room) {
   // controller is `my`
   if (room.my) this.my(room, live)
   // controller is own reserved
-  else if (room.myReserved()) this.unowned(room, live)
+  else if (room.myReserved()) this.myReserved(room, live)
   // controller is ally or reserved by ally
   else if (room.ally) this.ally(room, live)
   // controller is neutral or reserved by neutral
