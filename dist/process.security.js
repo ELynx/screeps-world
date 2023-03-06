@@ -25,6 +25,7 @@ secutiryProcess.work = function (room) {
   )
 
   const ctrl = room.controller
+
   if (hostileCreeps.length > 0) {
     const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
 
