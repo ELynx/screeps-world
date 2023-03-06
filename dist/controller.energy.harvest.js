@@ -6,8 +6,9 @@ const energyHarvestController = new Controller('energy.harvest')
 
 energyHarvestController.actRange = 1
 
-energyHarvestController.unowned = true
+energyHarvestController.myReserved = true
 energyHarvestController.sourceKeeper = true
+energyHarvestController.unowned = true
 
 energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)

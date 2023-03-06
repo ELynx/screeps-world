@@ -8,8 +8,15 @@ const secutiryProcess = new Process('security')
 
 const ThreatStep = 60
 
+secutiryProcess.roomCompatible = function (room) {
+  if (room.myOrMyReserved()) return true
+  if (room.unowned) return true
+
+  return false
+}
+
 secutiryProcess.work = function (room) {
-  if (!room.myOrMyReserved()) return
+  if (!this.roomCompatible(room)) return
 
   const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
@@ -24,8 +31,6 @@ secutiryProcess.work = function (room) {
     }
   )
 
-  const ctrl = room.controller
-
   if (hostileCreeps.length > 0) {
     const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
 
@@ -39,7 +44,7 @@ secutiryProcess.work = function (room) {
         }
 
         // STRATEGY low level rooms have no towers, increase threat
-        if (ctrl && (ctrl.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow)) {
+        if (room.controller && (room.controller.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow)) {
           ++threatLevel
         }
 
@@ -49,12 +54,7 @@ secutiryProcess.work = function (room) {
       threatTimer = Game.time
     }
 
-    if (hostilePCs.length > 0 &&
-        ctrl && ctrl.my &&
-        !ctrl.safeMode &&
-        !ctrl.safeModeCooldown &&
-        !ctrl.upgradeBlocked &&
-        ctrl.safeModeAvailable > 0) {
+    if (hostilePCs.length > 0 && room.controller && room.controller.my && room.controller.canActivateSafeMode()) {
       const flags = _.filter(room.flags, _.matchesProperty('shortcut', this.id))
 
       for (const flag of flags) {
@@ -72,7 +72,7 @@ secutiryProcess.work = function (room) {
         )
 
         if (trigger) {
-          const rc = ctrl.activateSafeMode()
+          const rc = room.controller.activateSafeMode()
 
           const notification = 'Room [' + room.name + '] requested safe mode [' + rc + ']'
 
@@ -81,9 +81,8 @@ secutiryProcess.work = function (room) {
 
           break
         }
-      } // end of loop for all flags
+      }
     } // end of "if safe mode reqiest possible"
-    // end of "if hostile creeps exist"
   } else {
     if (threatTimer + ThreatStep < Game.time) {
       --threatLevel

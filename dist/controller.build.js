@@ -10,10 +10,11 @@ buildController.actRange = 3
 
 buildController.oddOrEven = 0
 
+buildController.myReserved = true
 buildController.ally = true
 buildController.neutral = true
-buildController.unowned = true
 buildController.sourceKeeper = true
+buildController.unowned = true
 
 buildController.act = function (site, creep) {
   const rc = this.wrapIntent(creep, 'build', site)
