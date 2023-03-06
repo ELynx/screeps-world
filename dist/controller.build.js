@@ -31,7 +31,7 @@ buildController._sites = function (room) {
 
   // STRATEGY in own rooms remove foreigh construction sites
   // presume that by level 2 of controller this was executed sufficient number of times
-  if (room.my && room.controller.level < 2) {
+  if (room.my && room.controller && room.controller.level < 2) {
     let skipBeat = false
 
     for (const site of allSites) {
