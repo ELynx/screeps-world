@@ -440,6 +440,14 @@ StructureContainer.prototype.isSource = function () {
   return result
 }
 
+StructureController.prototype.canActivateSafeMode = function () {
+  if (this.safeMode) return false
+  if (this.safeModeCooldown) return false
+  if (this.upgradeBlocked) return false
+
+  return this.safeModeAvailable > 0
+}
+
 StructureLink.prototype.isSource = function () {
   let result = this.getFromMemory(_isSourceKey_)
 

@@ -38,6 +38,7 @@ function Controller (id) {
 
   // flags to set where controller is used
   this.my = true
+  this.myReserved = false
   this.ally = false
   this.neutral = false
   this.hostile = false
@@ -46,7 +47,7 @@ function Controller (id) {
 
   this.compatible = function (room) {
     if (this.my && room.my) return true
-    if (this.unowned && room.myReserved()) return true
+    if (this.myReserved && room.myReserved()) return true
     if (this.ally && room.ally) return true
     if (this.neutral && room.neutral) return true
     if (this.hostile && room.hostile) return true

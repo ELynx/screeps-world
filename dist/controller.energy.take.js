@@ -6,10 +6,11 @@ const energyTakeController = new Controller('energy.take')
 
 energyTakeController.actRange = 1
 
+energyTakeController.myReserved = true
 energyTakeController.ally = true
 energyTakeController.neutral = true
-energyTakeController.unowned = true
 energyTakeController.sourceKeeper = true
+energyTakeController.unowned = true
 
 energyTakeController.wantToKeep = function (structure) {
   const room = structure.room

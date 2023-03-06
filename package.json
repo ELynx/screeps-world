@@ -123,6 +123,7 @@
       "STRUCTURE_TOWER",
       "STRUCTURE_WALL",
       "StructureContainer",
+      "StructureController",
       "StructureLink",
       "StructureTerminal",
       "SYSTEM_USERNAME",
