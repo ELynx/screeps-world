@@ -186,18 +186,16 @@ Room.prototype.level = function () {
   return this.__level
 }
 
-/**
-Get a list of creeps assigned to a room, cached
-**/
-Room.prototype.getRoomControlledCreeps = function (withSpawning = undefined) {
-  if (this.__roomCreepsAll === undefined) {
-    this.__roomCreepsAll = _.filter(
+Room.prototype.getRoomControlledCreeps = function () {
+  if (this.__roomCreepsControl === undefined) {
+    this.__roomCreepsControl = _.filter(
       Game.creeps,
       function (creep) {
-        const roomAssociation = creep.memory.frum || creep.memory.crum
+        if (creep.spawning) {
+          return false
+        }
 
-        // check room
-        if (roomAssociation !== this.name) {
+        if (creep.memory.crum !== this.name) {
           return false
         }
 
@@ -213,20 +211,22 @@ Room.prototype.getRoomControlledCreeps = function (withSpawning = undefined) {
     )
   }
 
-  if (withSpawning) {
-    return this.__roomCreepsAll
-  }
+  return this.__roomCreepsControl
+}
 
-  if (this.__roomCreeps === undefined) {
-    this.__roomCreeps = _.filter(
-      this.__roomCreepsAll,
+Room.prototype.getRoomOwnedCreeps = function () {
+  if (this.__roomCreepsOwned === undefined) {
+    this.__roomCreepsOwned = _.filter(
+      Game.creeps,
       function (creep) {
-        return !creep.spawning
-      }
+        const roomAssociation = creep.memory.frum || creep.memory.crum
+        return this.name === roomAssociation
+      },
+      this
     )
   }
 
-  return this.__roomCreeps
+  return this.__roomCreepsOwned
 }
 
 Room.prototype.extendedOwnerUsername = function () {
