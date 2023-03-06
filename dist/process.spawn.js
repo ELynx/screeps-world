@@ -198,6 +198,24 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 }
 
 spawnProcess.plunders = function (room, live) {
+  const want = this._hasAndPlanned(room, live, 'restocker')
+
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'plunder')
+
+    this.addToQueue(
+      room.name,
+      queue.FROM_CLOSEST_ROOM,
+      'plunder',
+      'plunder',
+      {
+        frum: room.name,
+        flag: 'plunder_x_' + room.name
+      },
+      want - now,
+      'lowkey'
+    )
+  }
 }
 
 spawnProcess.my = function (room, live) {
