@@ -17,6 +17,11 @@ spawnProcess.makeKey = function (roomName, type) {
 spawnProcess._addToQueue = function (roomToName, roomFromName, type, body, memoryAddon, n, adderFunction) {
   const key = this.makeKey(roomToName, type)
 
+  if (n < 0) {
+    queue.erase(key)
+    return
+  }
+
   const memory =
     {
       crum: roomToName,
@@ -58,6 +63,33 @@ spawnProcess._hasAndPlanned = function (room, live, type) {
   return has + planned
 }
 
+spawnProcess._canSpawn = function (room) {
+  return room.extendedAvailableEnergyCapacity() > 0
+}
+
+spawnProcess.streloks = function (room, live) {
+  const threat = room.memory.threat || 0
+  if (threat <= bootstrap.ThreatLevelLow) return
+
+  const want = threat
+
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'strelok')
+
+    this.addToQueue(
+      room.name,
+      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+      'strelok',
+      'strelok',
+      {
+        flag: 'strelok_x_' + room.name
+      },
+      want - now,
+      'normal'
+    )
+  }
+}
+
 spawnProcess.restockers = function (room, live) {
   const restockerBody = bodywork.restocker(room)
 
@@ -72,32 +104,35 @@ spawnProcess.restockers = function (room, live) {
   }
 
   let restockersNeeded
+  let restockersSupported
 
   if (room.my) {
     const workNeededPerSource = room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
     const restockersNeededPerSource = Math.ceil(workNeededPerSource / workInRestocker)
 
     restockersNeeded = sources * restockersNeededPerSource
+    restockersSupported = room.memory.slvl
   } else {
     restockersNeeded = sources
+    restockersSupported = sources
   }
-
-  const restockersSupported = room.memory.slvl
 
   const want = Math.min(restockersNeeded, restockersSupported)
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'restocker')
+    const roomCanSpawn = this._canSpawn(room)
+
     this.addToQueue(
       room.name,
-      room.my ? room.name : queue.FROM_CLOSEST_ROOM,
+      roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
       'restocker',
-      room.my ? 'restocker' : restockerBody,
+      roomCanSpawn ? 'restocker' : restockerBody,
       {
         rstk: true
       },
       want - now,
-      'lowkey'
+      'normal'
     )
   }
 }
@@ -107,9 +142,10 @@ spawnProcess.miners = function (room, live) {
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'miner')
+
     this.addToQueue(
       room.name,
-      room.my ? room.name : queue.FROM_CLOSEST_ROOM,
+      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
       'miner',
       'miner',
       {
@@ -176,22 +212,64 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     wantWorkers = nowWorkers + 1
   }
 
-  const wantWorkersMin = limit ? 0 : 2
+  const wantWorkersMin = limit ? 0 : 3
   const wantWorkersMax = limit || 12
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
+  const roomCanSpawn = this._canSpawn(room)
+
   addWorker(
-    room.my ? room.name : queue.FROM_CLOSEST_ROOM,
-    room.my ? 'worker' : workerBody,
+    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    roomCanSpawn ? 'worker' : workerBody,
     want - nowWorkers,
     'normal'
   )
 }
 
+spawnProcess.plunders = function (room, live) {
+  const plundersNeeded = this._hasAndPlanned(room, live, 'restocker')
+  const plundersSupported = room.memory.slvl || 0
+
+  const want = Math.ceil(1.5 * Math.min(plundersNeeded, plundersSupported))
+
+  if (want > 0) {
+    const now = this._hasAndPlanned(room, live, 'plunder')
+
+    this.addToQueue(
+      room.name,
+      queue.FROM_CLOSEST_ROOM,
+      'plunder',
+      'plunder',
+      {
+        frum: room.name,
+        flag: 'plunder_x_' + room.name
+      },
+      want - now,
+      'lowkey'
+    )
+  }
+}
+
 spawnProcess.my = function (room, live) {
+  this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
   this.workers(room, live)
+}
+
+spawnProcess.myReserved = function (room, live) {
+  this.streloks(room, live)
+  this.restockers(room, live)
+  this.plunders(room, live)
+}
+
+spawnProcess.sourceKeeper = function (room, live) {
+}
+
+spawnProcess.unowned = function (room, live) {
+  this.streloks(room, live)
+  this.restockers(room, live)
+  this.plunders(room, live)
 }
 
 spawnProcess.ally = function (room, live) {
@@ -205,31 +283,23 @@ spawnProcess.neutral = function (room, live) {
 spawnProcess.hostile = function (room, live) {
 }
 
-spawnProcess.sourceKeeper = function (room, live) {
-}
-
-spawnProcess.unowned = function (room, live) {
-  this.workers(room, live, 2)
-  this.restockers(room, live)
-}
-
 spawnProcess.work = function (room) {
-  this.debugHeader(room)
+  const live = _.countBy(room.getRoomOwnedCreeps(), 'memory.btyp')
 
-  const live = _.countBy(room.getRoomControlledCreeps(), 'memory.btyp')
-
-  // controller is my
+  // controller is `my`
   if (room.my) this.my(room, live)
+  // controller is own reserved
+  else if (room.myReserved()) this.myReserved(room, live)
+  // room is source keeper room
+  else if (room.sourceKeeper()) this.sourceKeeper(room, live)
+  // room has no controller / controller is not owned
+  else if (room.unowned) this.unowned(room, live)
   // controller is ally or reserved by ally
   else if (room.ally) this.ally(room, live)
   // controller is neutral or reserved by neutral
   else if (room.neutral) this.neutral(room, live)
   // controller is hostile or reserved by hostile
   else if (room.hostile) this.hostile(room, live)
-  // room is source keeper room
-  else if (room.sourceKeeper()) this.sourceKeeper(room, live)
-  // room has no controller / controller is not owned / controller is not reserved above EXCLUDING my
-  else if (room.unowned) this.unowned(room, live)
 }
 
 spawnProcess._registerBodyFunction = function (routineId) {

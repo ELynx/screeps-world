@@ -29,7 +29,6 @@ const spawn = {
       const emptyStructure = this.makeEmptyStructure()
 
       console.log('Generating empty structure for spawn_v1')
-      console.log(JSON.stringify(emptyStructure))
 
       Memory.spawn_v1 = emptyStructure
     }
@@ -122,9 +121,7 @@ const spawn = {
 
   __count: function (target, id) {
     let withId = 0
-    for (let i = 0; i < target.length; ++i) {
-      const stored = target[i]
-
+    for (const stored of target) {
       if (stored.id === id) {
         ++withId
       }

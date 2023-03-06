@@ -20,14 +20,23 @@ plunder.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
 }
 
+plunder.getTargetRoomName = function (creep) {
+  if (creep.memory.frum) return creep.memory.frum
+
+  const flagPos = creep.getFlagPos()
+  if (flagPos) return flagPos.roomName
+
+  return undefined
+}
+
 plunder.creepAtOwnRoom = function (creep) {
   // all control (was) done by room controller
   // see if it is time for next raid or end of career
 
   if (creep.store.getUsedCapacity() === 0) {
-    const whereFlag = creep.getFlagPos()
-    if (whereFlag) {
-      creep.setControlRoom(whereFlag.roomName)
+    const roomName = this.getTargetRoomName(creep)
+    if (roomName) {
+      creep.setControlRoom(roomName)
     } else {
       creep.unlive()
     }
@@ -61,21 +70,42 @@ plunder.getSomeOwnRoomName = function (creep) {
   return undefined
 }
 
+plunder.findTarget = function (creep, targets) {
+  for (const target of targets) {
+    for (const resourceType in target.store) {
+      const stored = target.store.getUsedCapacity(resourceType)
+      target.__stored = (target.__stored || 0) + stored
+    }
+  }
+
+  targets.sort(
+    function (t1, t2) {
+      const s1 = t1.__stored || 0
+      const s2 = t2.__stored || 0
+
+      return s2 - s1
+    }
+  )
+
+  return targets[0]
+}
+
 plunder.moveAndLoad = function (creep, target) {
+  target.__stored = (target.__stored || 0) - creep.store.getFreeCapacity()
+
   if (creep.pos.isNearTo(target)) {
-    const resourceTypes = _.shuffle(Object.keys(target.store))
-    for (const index in resourceTypes) {
-      const resourceType = resourceTypes[index]
+    const resourceTypes = _.shuffle(_.keys(target.store))
+    for (const resourceType of resourceTypes) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc === OK) break
+      if (rc !== OK) break
     }
   } else {
     creep.moveToWrapper(
       target,
       {
         costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-        reusePath: 10,
-        range: 1
+        range: 1,
+        reusePath: _.random(3, 5)
       }
     )
   }
@@ -142,7 +172,7 @@ plunder.creepAtOtherRooms = function (creep) {
   }
 
   if (target === undefined) {
-    target = creep.pos.findClosestByRange(targets)
+    target = this.findTarget(creep, targets)
     creep.memory.dest = target.id
   }
 
@@ -180,7 +210,7 @@ plunder.creepRoomTravel = function (creep) {
 
 plunder.flagPrepare = function (flag) {
   if (flag.room) {
-    if (flag.room.__breached === false) {
+    if (flag.room.breached() === false) {
       return this.FLAG_IGNORE
     }
   }

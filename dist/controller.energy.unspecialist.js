@@ -6,11 +6,6 @@ const energyUnspecialistController = new Controller('energy.unspecialist')
 
 energyUnspecialistController.actRange = 1
 
-energyUnspecialistController.unowned = true
-energyUnspecialistController.sourceKeeper = energyUnspecialistController.unowned
-
-energyUnspecialistController.ignoreCreepsForTargeting = false
-
 energyUnspecialistController.act = function (target, creep) {
   return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
 }
@@ -32,7 +27,7 @@ energyUnspecialistController.targets = function (room) {
 }
 
 energyUnspecialistController.filterCreep = function (creep) {
-  return creep.memory.rstk === true && this._hasCM(creep) && this._hasEnergy(creep)
+  return this._isRestocker(creep) && this._hasCM(creep) && this._hasEnergy(creep)
 }
 
 energyUnspecialistController.register()

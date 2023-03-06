@@ -59,16 +59,6 @@ const bootstrap = {
   roomControllers: { },
 
   /**
-    Object holding references to room controllers that want to prepare for the room.
-    **/
-  roomControllersPrepare: { },
-
-  /**
-    Object holding references to room controllers that care for their creeps.
-    **/
-  roomControllersObserveOwn: { },
-
-  /**
     Object holding references to all registeded task controllers.
     **/
   taskControllers: { },
@@ -84,14 +74,6 @@ const bootstrap = {
     **/
   registerRoomController: function (controller) {
     this.roomControllers[controller.id] = controller
-
-    if (controller.roomPrepare) {
-      this.roomControllersPrepare[controller.id] = controller
-    }
-
-    if (controller.observeMyCreep) {
-      this.roomControllersObserveOwn[controller.id] = controller
-    }
   },
 
   /**
@@ -115,12 +97,12 @@ const bootstrap = {
   imitateMoveCreate: function (target, creep, path) {
     const pos = target.pos
     creep.memory._move =
-        {
-          dest: { x: pos.x, y: pos.y, room: pos.roomName },
-          time: Game.time,
-          path: Room.serializePath(path),
-          room: creep.room.name
-        }
+    {
+      dest: { x: pos.x, y: pos.y, room: pos.roomName },
+      time: Game.time,
+      path: Room.serializePath(path),
+      room: creep.room.name
+    }
   },
 
   imitateMoveErase: function (creep) {
@@ -181,9 +163,7 @@ const bootstrap = {
       let carry = 0
       let move = 0
 
-      for (const index in creep.body) {
-        const part = creep.body[index]
-
+      for (const part of creep.body) {
         if (part.type === MOVE) {
           if (part.hits > 0) {
             // TODO boost
@@ -204,33 +184,37 @@ const bootstrap = {
         carry = 0
       }
 
-      // to prevent MOVE only creeps from 0 costs
-      const weight = Math.max(1, nonMoveNonCarry + carry)
-
       creep.__movementCost = { }
 
       if (move > 0) {
-        creep.__movementCost.roadCost = Math.ceil(weight / move)
-        creep.__movementCost.plainCost = Math.ceil(2 * weight / move)
-        creep.__movementCost.swampCost = Math.ceil(5 * weight / move)
+        const weight = nonMoveNonCarry + carry
+        const factor = weight / move
+
+        creep.__movementCost.roadCost = Math.max(1, Math.ceil(factor))
+        creep.__movementCost.plainCost = Math.max(1, Math.ceil(2 * factor))
+        creep.__movementCost.swampCost = Math.max(1, Math.ceil(5 * factor))
+
+        creep.__movementCost.ignoreRoads = creep.__movementCost.roadCost === creep.__movementCost.plainCost
       } else {
-        creep.__movementCost.roadCost = weight
-        creep.__movementCost.plainCost = 2 * weight
-        creep.__movementCost.swampCost = 5 * weight
+        creep.__movementCost.roadCost = 1
+        creep.__movementCost.plainCost = 2
+        creep.__movementCost.swampCost = 5
+
+        creep.__movementCost.ignoreRoads = false
       }
     }
   },
 
   moveOptionsWrapper: function (creep, options) {
-    this._movementCost(creep)
+    if (options.plainCost && options.swampCost) {
+      return options
+    }
 
-    const plainCost = (creep.__movementCost ? creep.__movementCost.plainCost : undefined) || 1
-    const swampCost = (creep.__movementCost ? creep.__movementCost.swampCost : undefined) || 5
+    this._movementCost(creep)
 
     _.defaults(
       options,
-      { plainCost },
-      { swampCost }
+      creep.__movementCost
     )
 
     return options

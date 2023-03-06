@@ -17,19 +17,35 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
+Monitor invader power goal and prepare for them.
+
+Block positions that are targeted by room creeps:
+
+* Check reach-ability before going to target.
+
+* Check reach-ability before assigning target.
+
+Spawn blocked in one room starves other rooms.
+
 Movement and positioning:
 
 * Step away and uncrowd.
 
 * Strelok tries to attack unreachable sections.
 
-* Outlast migrate to flag.
-
 * Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
 
 Cluster restock.
+
+Beetle with ATTACK instead of WORK:
+
+* Melee around as Strelok.
+
+* Check pipeline for `attack` and `dismantle`.
+
+* Melee creeps in front.
 
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
@@ -53,8 +69,6 @@ Cluster restock.
 [Tower](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/towers/intents.js)
 
 ## Ideas
-Lodash `Chain`.
-
 Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
@@ -69,7 +83,9 @@ TIP OF THE DAY: You can output HTML content to the console, like links to rooms.
 
 Fatigue based emergent road building. CostMatrix has ser-de.
 
-[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for byte 8 array support.
+[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for unsigned 8 byte array support.
+
+Take snapshot of buildings, use to re-build the room.
 
 Limit autobuild run to some N elements.
 
@@ -77,19 +93,25 @@ Send resources away instead of selling out on panic.
 
 Sell off commodities.
 
-Room attack definition: drop aggro, drop streloks, claim and plunders.
+Room attack definition:
 
-Border control for creep movement in tasked.
+* Breached only Streloks on towers and spawns.
+
+* Outlasts.
+
+* Plunders on major structures.
+
+* Claim on controller.
+
+* n.b. Claim will not open attack if aggro is set. Look out for this if safe mode prevention is needed.
 
 Flag to turn verbose naming on and off.
-
-`upgradeController` is not in 1st pipeline, can be called in parallel with repair or build.
 
 Intent queue for withdraw and transfer.
 
 Account for tower spending energy, renew, etc. Basically, more intent wrappers.
 
-Monitor invader power goal and prepare for them.
+Monitor Source Keeper respawn.
 
 Spawn intent uber-wrapper:
 
@@ -97,6 +119,8 @@ Spawn intent uber-wrapper:
 
 * Store all intended parameters for examination and modification.
 
-* Replace renew with recycle when spawn is called.
-
 * Cancel without energy loss.
+
+Tasked subspecies.
+
+Instead of healing by towers spawn healers.

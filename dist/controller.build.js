@@ -10,11 +10,6 @@ buildController.actRange = 3
 
 buildController.oddOrEven = 0
 
-buildController.ally = true
-buildController.neutral = buildController.ally
-buildController.unowned = buildController.ally
-buildController.sourceKeeper = buildController.unowned
-
 buildController.act = function (site, creep) {
   const rc = this.wrapIntent(creep, 'build', site)
 
@@ -35,12 +30,11 @@ buildController._sites = function (room) {
   if (allSites.length === 0) return []
 
   // STRATEGY in own rooms remove foreigh construction sites
-  if (room.my) {
+  // presume that by level 2 of controller this was executed sufficient number of times
+  if (room.my && room.controller && room.controller.level < 2) {
     let skipBeat = false
 
-    for (let i = 0; i < allSites.length; ++i) {
-      const site = allSites[i]
-
+    for (const site of allSites) {
       if (Game.iff.ownUsername && Game.iff.ownUsername !== site.owner.username) {
         site.remove()
         skipBeat = true

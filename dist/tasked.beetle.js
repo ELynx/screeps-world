@@ -20,6 +20,8 @@ beetle.wipeBreach = function (creep) {
 
 beetle.creepPrepare = function (creep) {
   creep.__canWithdraw = creep.getActiveBodyparts(CARRY) > 0
+  creep.__canMelee = creep.getActiveBodyparts(ATTACK) > 0
+  creep.__canDismantle = creep.getActiveBodyparts(WORK) > 0
 }
 
 beetle.creepAtDestination = function (creep) {
@@ -52,8 +54,8 @@ beetle.creepAtDestination = function (creep) {
 
   let targetPos
 
-  if (creep.room.__aggro && creep.room.__aggro.length > 0) {
-    targetPos = creep.pos.findClosestByRange(creep.room.__aggro).pos
+  if (creep.room.aggro().length > 0) {
+    targetPos = creep.pos.findClosestByRange(creep.room.aggro()).pos
   } else if (creep.pos.inRangeTo(controlPos, BreachCompleteDistance)) {
     // after arriving on the spot, start running like headless chicken
     // biased to center, as needed
@@ -171,26 +173,32 @@ beetle.creepAtDestination = function (creep) {
         true // as array
       )
 
-      for (const itemKey in around) {
-        const item = around[itemKey]
-        const struct = item.structure
+      for (const itemInfo of around) {
+        const structure = itemInfo.structure
 
-        if (item.x !== next.x || item.y !== next.y) {
+        if (itemInfo.x !== next.x || itemInfo.y !== next.y) {
           continue
         }
 
-        if (struct.hits === undefined) {
+        if (structure.hits === undefined) {
           continue
         }
 
-        if (struct.structureType === STRUCTURE_RAMPART && !struct.isPublic) {
-          target = struct
+        if (structure.structureType === STRUCTURE_RAMPART && !structure.isPublic) {
+          structure.__buildable = true
+          target = structure
           break
         }
 
-        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, _.matches(struct.structureType))
-        if (obstacle) {
-          target = struct
+        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, _.matches(structure.structureType))
+        if (!obstacle) {
+          continue
+        }
+
+        structure.__buildable = _.some(_.keys(CONSTRUCTION_COST), _.matches(structure.structureType))
+
+        if (creep.__canMelee || (structure.__buildable && creep.__canDismantle)) {
+          target = structure
         }
       }
 
@@ -202,15 +210,22 @@ beetle.creepAtDestination = function (creep) {
 
     let rc
     if (target) {
-      rc = creep.dismantle(target)
+      if (creep.__canMelee) {
+        const rc1 = creep.attack(target)
+        if (rc1 !== OK) rc = rc1
+      }
+
+      if (target.__buildable && creep.__canDismantle) {
+        const rc2 = creep.dismantle(target)
+        if (rc2 !== OK) rc = rc2
+      }
+
       // coordinate effort - ask nearbys to attack
       if (rc === OK) {
         creep.room.visual.circle(target.pos, { fill: '#f00' })
         if (target.__aggro === undefined) {
           target.__aggro = true
-          if (creep.room.__aggro) {
-            creep.room.__aggro.push(target)
-          }
+          creep.room.addAggro([target])
         }
       }
     } else {
@@ -233,7 +248,7 @@ beetle.creepAtDestination = function (creep) {
 }
 
 beetle.flagPrepare = function (flag) {
-  if (flag.room && flag.room.__breached) {
+  if (flag.room && flag.room.breached()) {
     return this.FLAG_IGNORE
   }
 
@@ -271,10 +286,10 @@ beetle.makeBody = function (room) {
   const a = new Array(pairs)
   a.fill(MOVE)
 
+  // one spot for withdraw
   const b = new Array(pairs - 1)
   b.fill(WORK)
 
-  // one spot for withdraw
   const body = a.concat([CARRY]).concat(b)
 
   this.__bodyCache[elvl] = body

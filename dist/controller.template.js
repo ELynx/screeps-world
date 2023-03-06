@@ -4,7 +4,6 @@ const profiler = require('./screeps-profiler')
 
 const bootstrap = require('./bootstrap')
 
-const makeDebuggable = require('./routine.debuggable')
 const mapUtils = require('./routine.map')
 const intentSolver = require('./routine.intent')
 
@@ -22,8 +21,6 @@ function Controller (id) {
     **/
   this.id = id
 
-  makeDebuggable(this, 'Controller')
-
   /**
     Range at which `act` can be used.
     **/
@@ -35,33 +32,9 @@ function Controller (id) {
   this.extra = undefined
 
   /**
-    Flag to check reach-ability of target for creeps during targeting.
-    **/
-  this.ignoreCreepsForTargeting = true
-
-  /**
     Flag to execute target search with interleave.
     **/
   this.oddOrEven = undefined
-
-  // flags to set where controller is used
-  this.my = true
-  this.ally = false
-  this.neutral = false
-  this.hostile = false
-  this.sourceKeeper = false
-  this.unowned = false
-
-  this.compatible = function (room) {
-    if (room.my) return this.my
-    if (room.ally) return this.ally
-    if (room.neutral) return this.neutral
-    if (room.hostile) return this.hostile
-    if (room.sourceKeeper()) return this.sourceKeeper
-    if (room.unowned) return this.unowned
-
-    return false
-  }
 
   /**
     Cache of target IDs that already have creep assigned.
@@ -221,6 +194,22 @@ function Controller (id) {
     return this._hasWCM(creep) && this._isEmpty(creep)
   }
 
+  this._isRestocker = function (creep) {
+    return creep.memory.rstk || false
+  }
+
+  this._isNotRestocker = function (creep) {
+    return !this._isRestocker(creep)
+  }
+
+  this._isMiner = function (creep) {
+    return creep.memory.minr || false
+  }
+
+  this._isRecyclee = function (creep) {
+    return creep.memory.rccl || false
+  }
+
   /**
     Creep that has energy and can perform general work
     @param {Creep} creep to look at.
@@ -272,9 +261,6 @@ function Controller (id) {
   this.assignCreeps = function (room, roomCreeps) {
     const allTargets = this._findTargets(room)
 
-    this.debugLine(room, 'Targets checked ' + allTargets.length)
-    this.debugLine(room, 'Creeps checked  ' + roomCreeps.length)
-
     let remainingTargets = allTargets.slice(0)
     let unassignedCreeps = []
 
@@ -310,9 +296,7 @@ function Controller (id) {
       let target
       let path
 
-      for (let j = 0; j < targets.length; ++j) {
-        const currentTarget = targets[j]
-
+      for (const currentTarget of targets) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
@@ -330,8 +314,7 @@ function Controller (id) {
             bootstrap.moveOptionsWrapper(
               creep,
               {
-                costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
-                ignoreCreeps: this.ignoreCreepsForTargeting,
+                costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
                 maxRooms: 1,
                 range: this.actRange
               }
@@ -378,8 +361,6 @@ function Controller (id) {
       }
     } // end of creeps loop
 
-    this.debugLine(room, 'Creeps assigned ' + (roomCreeps.length - unassignedCreeps.length))
-
     return unassignedCreeps
   }
 
@@ -389,49 +370,41 @@ function Controller (id) {
     @param {array<Creeps>} roomCreeps to control.
     **/
   this.control = function (room, roomCreeps) {
-    this.debugHeader(room)
-
     if (!this.targets) {
-      this.debugLine('Controller missing targets method!')
+      console.log('Controller ' + this.id + 'missing targets method')
       return roomCreeps
     }
 
     if (this.oddOrEven) {
       if ((room.memory.intl + Game.time) % 2 !== this.oddOrEven) {
-        this.debugLine(room, 'Fast exit, oddOrEven check')
         return roomCreeps
       }
     }
 
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
-        this.debugLine(room, 'Fast exit, no creeps with default parameters')
         return roomCreeps
       }
     }
 
     if (this._findTargets(room).length === 0) {
-      this.debugLine(room, 'Fast exit, no targets')
       return roomCreeps
     }
 
     let creepMatch = []
     const creepSkip = []
 
-    for (let i = 0; i < roomCreeps.length; ++i) {
-      if (this.filterCreep(roomCreeps[i])) {
-        creepMatch.push(roomCreeps[i])
+    for (const creep of roomCreeps) {
+      if (this.filterCreep(creep)) {
+        creepMatch.push(creep)
       } else {
-        creepSkip.push(roomCreeps[i])
+        creepSkip.push(creep)
       }
     }
 
     if (creepMatch.length === 0) {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
-        this.debugLine(room, 'No creeps with default parameters found')
-      } else {
-        this.debugLine(room, 'No creeps found')
       }
 
       return roomCreeps
@@ -445,7 +418,6 @@ function Controller (id) {
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
-        this.debugLine(room, 'All creeps with default parameters used')
       }
 
       return creepSkip
@@ -456,16 +428,12 @@ function Controller (id) {
     return intentSolver.wrapCreepIntent(creep, intentName, arg0, arg1, arg2)
   }
 
-  this.registerInProfiler = function () {
-    profiler.registerObject(this, this.id)
-  }
-
   /**
     Register into bootstrap.
     **/
   this.register = function () {
     bootstrap.registerRoomController(this)
-    this.registerInProfiler()
+    profiler.registerObject(this, this.id)
   }
 };
 

@@ -20,13 +20,13 @@ const bodywork = {
     @return {Array} body.
     **/
   worker: function (room) {
-    // cannot produce creeps -> no level regulation
-    if (!room.my) {
+    const energy = room.extendedAvailableEnergyCapacity()
+
+    // call for new or foreign room
+    if (energy === 0) {
       // 750  100   100   100   50     50     50     50    50    50    50    50    50
       return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
-
-    const energy = room.extendedAvailableEnergyCapacity()
 
     if (energy < 500) {
       // 250  100   50     50    50
@@ -38,8 +38,13 @@ const bodywork = {
       return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
-    // 750  100   100   100   50     50     50     50    50    50    50    50    50
-    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    if (energy < 1500) {
+      // 750  100   100   100   50     50     50     50    50    50    50    50    50
+      return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
+
+    // 1500 100   100   100   100   100   100   50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50    50    50
+    return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   },
 
   /**
@@ -50,27 +55,31 @@ const bodywork = {
   restocker: function (room) {
     // cannot produce creeps -> no level regulation
     if (!room.my) {
-      const sourceEnergyCapacity = room.sourceEnergyCapacity()
-      const targetTime = Math.max(1, ENERGY_REGEN_TIME - 50) // suppose 50 is spent on travel
-      const targetWork = Math.ceil(sourceEnergyCapacity / targetTime / HARVEST_POWER)
+      if (room.ownedOrReserved()) {
+        // target is 3000 / 250 / 2 = 6 WORK body parts
+        // 1000 100   100   100   100   100   100   50     50    50    50    50    50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      }
 
-      const work = Math.min(targetWork, 24)
-      const carry = 1
-      const move = work + carry
+      if (room.sourceKeeper()) {
+        // target is 4000 / 250 / 2 = 8 WORK body parts
+        // 1300 100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50
+        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      }
 
-      const a = new Array(work)
-      a.fill(WORK)
-
-      const b = new Array(carry)
-      b.fill(CARRY)
-
-      const c = new Array(move)
-      c.fill(MOVE)
-
-      return a.concat(b).concat(c)
+      // target is 1500 / 250 / 2 = 3 WORK body parts
+      // 550  100   100   100   50     50    50    50    50
+      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
+
+    // call for new room
+    if (energy === 0) {
+      // target is 3000 / 300 / 2 = 5 WORK body parts
+      // 850  100   100   100   100   100   50     50    50    50    50    50    50
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
 
     if (energy < 550) {
       // 250  100   50     50    50
@@ -99,6 +108,16 @@ const bodywork = {
     @return {Array} body.
     **/
   miner: function (room) {
+    if (!room.my) {
+    // if decision is ever made to mide outside, it must be done with superior machines
+    // 3400
+      return [
+        // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
+        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
+        // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    }
+
     const energy = room.extendedAvailableEnergyCapacity()
 
     if (energy < 550) {
@@ -125,21 +144,17 @@ const bodywork = {
     if (energy < 3400) {
       // 1700
       return [
-      // 100   100   100   100   100   100   100   100   100   100
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-        // 50     50
-        CARRY, CARRY,
-        // 50    50    50    50    50    50    50    50    50    50    50    50
+        // 100 100  100   100   100   100   100   100   100   100   50     50
+        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY,
+        // 50 50    50    50    50    50    50    50    50    50    50    50
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     }
 
     // 3400
     return [
-    // 100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100
-      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-      // 50     50     50     50
-      CARRY, CARRY, CARRY, CARRY,
-      // 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
+      // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
+      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
+      // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
       MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   }
 }
