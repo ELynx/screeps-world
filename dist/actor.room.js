@@ -9,7 +9,7 @@ const linkProcess = require('./process.link')
 const roomInfoProcess = require('./process.roominfo')
 const secutiryProcess = require('./process.security')
 const spawnProcess = require('./process.spawn')
-// const terminalProcess = require('./process.terminal')
+const terminalProcess = require('./process.terminal')
 const towerProcess = require('./process.tower')
 
 const buildController = require('./controller.build')
@@ -153,7 +153,7 @@ const roomActor =
       spawnProcess.work(room)
     }
 
-    if (processKey === 5) {
+    if (processKey === 3 || processKey === 6) {
       linkProcess.work(room)
     }
 
@@ -303,9 +303,9 @@ const roomActor =
       autobuildProcess.work(room)
     }
 
-    // if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
-    //   terminalProcess.work(room)
-    // }
+    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+      terminalProcess.work(room)
+    }
 
     if (Game.flags.dashboard) {
       const usedPercent = bootstrap.hardCpuUsed(t0)
