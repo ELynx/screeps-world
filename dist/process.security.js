@@ -9,7 +9,7 @@ const secutiryProcess = new Process('security')
 const ThreatStep = 60
 
 secutiryProcess.work = function (room) {
-  if (!room.my) return
+  if (!room.myOrMyReserved()) return
 
   const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
@@ -24,6 +24,7 @@ secutiryProcess.work = function (room) {
     }
   )
 
+  const ctrl = room.controller
   if (hostileCreeps.length > 0) {
     const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
 
@@ -37,7 +38,7 @@ secutiryProcess.work = function (room) {
         }
 
         // STRATEGY low level rooms have no towers, increase threat
-        if (room.controller && (room.controller.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow)) {
+        if (ctrl && (ctrl.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow)) {
           ++threatLevel
         }
 
@@ -47,9 +48,8 @@ secutiryProcess.work = function (room) {
       threatTimer = Game.time
     }
 
-    const ctrl = room.controller
-
     if (hostilePCs.length > 0 &&
+        ctrl && ctrl.my &&
         !ctrl.safeMode &&
         !ctrl.safeModeCooldown &&
         !ctrl.upgradeBlocked &&
