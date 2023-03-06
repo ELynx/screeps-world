@@ -10,6 +10,7 @@ const ThreatStep = 60
 
 secutiryProcess.roomCompatible = function (room) {
   if (room.myOrMyReserved()) return true
+  if (room.sourceKeeper()) return true
   if (room.unowned) return true
 
   return false
