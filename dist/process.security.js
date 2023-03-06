@@ -18,6 +18,8 @@ secutiryProcess.roomCompatible = function (room) {
 secutiryProcess.work = function (room) {
   if (!this.roomCompatible(room)) return
 
+  room.memory.nodeAccessed = Game.time
+
   const threatWas = room.memory.threat
   let threatLevel = threatWas || 0
   let threatTimer = room.memory._ttt || (Game.time - ThreatStep)
@@ -98,17 +100,6 @@ secutiryProcess.work = function (room) {
   } else {
     room.memory.threat = undefined
     room.memory._ttt = undefined
-  }
-
-  const strelokPatrolName = 'strelok_' + room.name
-  const strelokPatrolFlag = Game.flags[strelokPatrolName]
-
-  if (strelokPatrolFlag === undefined) {
-    // STRATEGY room position 49, 49 is reserved for strelok patrol flag
-    const pos = new RoomPosition(49, 49, room.name)
-    pos.createFlagWithValue(strelokPatrolName, threatLevel)
-  } else if (threatWas !== room.memory.threat) {
-    strelokPatrolFlag.setValue(threatLevel)
   }
 }
 
