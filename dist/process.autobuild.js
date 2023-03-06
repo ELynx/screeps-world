@@ -332,6 +332,14 @@ autobuildProcess.sourceContainer = function (room) {
   } // end of have containers in general
 }
 
+// STRATEGY what not to cover
+const NotCover = [
+  STRUCTURE_CONTAINER,
+  STRUCTURE_EXTENSION,
+  STRUCTURE_LAB,
+  STRUCTURE_LINK
+]
+
 autobuildProcess.coverRamparts = function (room) {
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][level] || 0
@@ -366,6 +374,7 @@ autobuildProcess.coverRamparts = function (room) {
       let onlyRoad = true
       let hasWall = false
       let hasRamp = false
+      let noCover = false
 
       for (const structure of atXY) {
         if (structure.structureType !== STRUCTURE_ROAD) {
@@ -381,9 +390,14 @@ autobuildProcess.coverRamparts = function (room) {
           hasRamp = true
           break
         }
+
+        if (_.some(NotCover, _.matches(structure.structureType))) {
+          noCover = true
+          break
+        }
       }
 
-      if (onlyRoad || hasRamp || hasWall) continue // to next y
+      if (onlyRoad || hasRamp || hasWall || noCover) continue // to next y
 
       // terrain is not natural wall
       // there are no construction sites
@@ -426,8 +440,7 @@ autobuildProcess.actualWork = function (room) {
   this.extractor(room)
   this.sourceLink(room)
   this.sourceContainer(room)
-  // TODO rethink
-  // this.coverRamparts(room)
+  this.coverRamparts(room)
 }
 
 autobuildProcess.work = function (room) {
