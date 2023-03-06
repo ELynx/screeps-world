@@ -1,5 +1,7 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energyTakeController = new Controller('energy.take')
@@ -21,10 +23,10 @@ energyTakeController.wantToKeep = function (structure) {
 }
 
 energyTakeController.act = function (structure, creep) {
-  const canGive = structure.store.getUsedCapacity(RESOURCE_ENERGY)
+  const canGive = intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY)
   const wantKeep = this.wantToKeep(structure)
   const wantGive = canGive - wantKeep
-  const canTake = creep.store.getFreeCapacity(RESOURCE_ENERGY)
+  const canTake = intentSolver.getFreeCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantGive, canTake)
 
@@ -70,7 +72,7 @@ energyTakeController.targets = function (room) {
     function (structure) {
       // type is checked externally
       const toKeep = this.wantToKeep(structure)
-      if (structure.store[RESOURCE_ENERGY] <= toKeep) {
+      if (intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) <= toKeep) {
         return false
       }
 
@@ -99,7 +101,7 @@ energyTakeController.targets = function (room) {
         return isTakeable(structure)
       } else if (structure.structureType === STRUCTURE_LINK) {
         // STRATEGY do not steal from source link
-        return structure.isSource() ? false : isTakeable(structure)
+        return structure.__noTake ? false : isTakeable(structure)
       }
 
       return false
