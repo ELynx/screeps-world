@@ -8,6 +8,10 @@ const grabController = new Controller('grab')
 
 grabController.actRange = 1
 
+grabController.myReserved = true
+grabController.sourceKeeper = true
+grabController.unowned = true
+
 grabController.roomPrepare = function (room) {
   this._roomPrepare(room)
 
