@@ -47,7 +47,7 @@ strelok.creepAtDestination = function (creep) {
           // ignore everything without hit points
           if (!structure.hits) return false
 
-          // STRATEGY ingore resource management, even though it can be military
+          // STRATEGY ignore resource management, even though it can be military
           if (structure.structureType === STRUCTURE_CONTAINER ||
               structure.structureType === STRUCTURE_EXTRACTOR ||
               structure.structureType === STRUCTURE_FACTORY ||
