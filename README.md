@@ -17,7 +17,7 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Monitor invader power goal and prepare for them.
+[Monitor invader power goal and prepare for them.](https://github.com/screeps/backend-local/blob/81cbe7884afed23f3e1deaa3dcc77411fcbd697b/lib/cronjobs.js#L433)
 
 Block positions that are targeted by room creeps:
 
@@ -29,7 +29,7 @@ Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
 
-* Step away and uncrowd.
+* Step away.
 
 * Strelok tries to attack unreachable sections.
 
