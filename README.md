@@ -47,6 +47,8 @@ Beetle with ATTACK instead of WORK:
 
 * Melee creeps in front.
 
+Defend from Invader Core.
+
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
