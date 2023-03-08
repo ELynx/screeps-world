@@ -78,22 +78,19 @@ spawnProcess.streloks = function (room, live) {
   if (threat <= bootstrap.ThreatLevelLow) return
 
   const want = threat
+  const now = this._hasAndPlanned(room, live, 'strelok')
 
-  if (want > 0) {
-    const now = this._hasAndPlanned(room, live, 'strelok')
-
-    this.addToQueue(
-      room.name,
-      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
-      'strelok',
-      'strelok',
-      {
-        flag: 'strelok_x_' + room.name
-      },
-      want - now,
-      'normal'
-    )
-  }
+  this.addToQueue(
+    room.name,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    'strelok',
+    'strelok',
+    {
+      flag: 'strelok_x_' + room.name
+    },
+    want - now,
+    'normal'
+  )
 }
 
 spawnProcess.restockers = function (room, live) {
@@ -124,43 +121,38 @@ spawnProcess.restockers = function (room, live) {
   }
 
   const want = Math.min(restockersNeeded, restockersSupported)
+  const now = this._hasAndPlanned(room, live, 'restocker')
 
-  if (want > 0) {
-    const now = this._hasAndPlanned(room, live, 'restocker')
-    const roomCanSpawn = this._canSpawn(room)
+  const roomCanSpawn = this._canSpawn(room)
 
-    this.addToQueue(
-      room.name,
-      roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
-      'restocker',
-      roomCanSpawn ? 'restocker' : restockerBody,
-      {
-        rstk: true
-      },
-      want - now,
-      'normal'
-    )
-  }
+  this.addToQueue(
+    room.name,
+    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    'restocker',
+    roomCanSpawn ? 'restocker' : restockerBody,
+    {
+      rstk: true
+    },
+    want - now,
+    'normal'
+  )
 }
 
 spawnProcess.miners = function (room, live) {
   const want = room.memory.mlvl
+  const now = this._hasAndPlanned(room, live, 'miner')
 
-  if (want > 0) {
-    const now = this._hasAndPlanned(room, live, 'miner')
-
-    this.addToQueue(
-      room.name,
-      this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
-      'miner',
-      'miner',
-      {
-        minr: true
-      },
-      want - now,
-      'lowkey'
-    )
-  }
+  this.addToQueue(
+    room.name,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    'miner',
+    'miner',
+    {
+      minr: true
+    },
+    want - now,
+    'lowkey'
+  )
 }
 
 spawnProcess.workers = function (room, live, limit = undefined) {
@@ -237,23 +229,20 @@ spawnProcess.plunders = function (room, live) {
   const plundersSupported = room.memory.slvl || 0
 
   const want = Math.min(plundersNeeded, plundersSupported)
+  const now = this._hasAndPlanned(room, live, 'plunder')
 
-  if (want > 0) {
-    const now = this._hasAndPlanned(room, live, 'plunder')
-
-    this.addToQueue(
-      room.name,
-      queue.FROM_CLOSEST_ROOM,
-      'plunder',
-      'plunder',
-      {
-        frum: room.name,
-        flag: 'plunder_x_' + room.name
-      },
-      want - now,
-      'lowkey'
-    )
-  }
+  this.addToQueue(
+    room.name,
+    queue.FROM_CLOSEST_ROOM,
+    'plunder',
+    'plunder',
+    {
+      frum: room.name,
+      flag: 'plunder_x_' + room.name
+    },
+    want - now,
+    'lowkey'
+  )
 }
 
 spawnProcess.my = function (room, live) {
