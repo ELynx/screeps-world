@@ -320,7 +320,10 @@ const roomActor =
         }
 
         if (rc === OK) {
-          creep.blockStop()
+          // block range 1 long term target spots
+          if (creep.__target.structureType === undefined) {
+            creep.blockStop()
+          }
           this.roomControllersObserveOwn(creep)
         } else {
           stroke = 'purple'
