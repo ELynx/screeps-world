@@ -84,6 +84,13 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
     return this.fatigueWrapper()
   }
 
+  // quick cheap check that is in real code buried quite deep
+  if (options.noPathFinding === true) {
+    if (this.memory._move === undefined) {
+      return ERR_NOT_FOUND
+    }
+  }
+
   if (this.moved()) {
     this._refreshMove()
   }
