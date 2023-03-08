@@ -103,10 +103,19 @@ const bootstrap = {
       path: Room.serializePath(path),
       room: creep.room.name
     }
+
+    const stop = _.last(path)
+    creep.memory._stop =
+    {
+      stop: { x: stop.x, y: stop.y, room: stop.roomName },
+      time: Game.time,
+      room: creep.room.name
+    }
   },
 
   imitateMoveErase: function (creep) {
     creep.memory._move = undefined
+    creep.memory._stop = undefined
   },
 
   // empty string used to allow use as key
