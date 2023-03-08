@@ -331,7 +331,7 @@ const roomActor =
           bootstrap.unassignCreep(creep)
         }
 
-        room.visual.circle(creep.pos.x, creep.pos.y, {fill: 'transparent', radius: 0.55, stroke})
+        room.visual.circle(creep.pos.x, creep.pos.y, { fill: 'transparent', radius: 0.55, stroke })
       }
 
       const unassignedCreeps = _.filter(
