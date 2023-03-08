@@ -322,7 +322,7 @@ function Controller (id) {
           )
 
           if (solution.length > 0) {
-            const last = solution[solution.length - 1]
+            const last = _.last(solution)
             const found = currentTarget.pos.inRangeTo(last.x, last.y, this.actRange)
             if (found) {
               target = currentTarget
