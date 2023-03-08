@@ -200,14 +200,14 @@ const bootstrap = {
         const factor = weight / move
 
         creep.__movementCost.roadCost = Math.max(1, Math.ceil(factor))
-        creep.__movementCost.plainCost = Math.max(1, Math.ceil(2 * factor))
-        creep.__movementCost.swampCost = Math.max(1, Math.ceil(5 * factor))
+        creep.__movementCost.plainCost = Math.max(1, Math.ceil(1.99 * factor))
+        creep.__movementCost.swampCost = Math.max(1, Math.ceil(9.99 * factor))
 
-        creep.__movementCost.ignoreRoads = creep.__movementCost.roadCost === creep.__movementCost.plainCost
+        creep.__movementCost.ignoreRoads = creep.__movementCost.plainCost === creep.__movementCost.swampCost
       } else {
         creep.__movementCost.roadCost = 1
         creep.__movementCost.plainCost = 2
-        creep.__movementCost.swampCost = 5
+        creep.__movementCost.swampCost = 10
 
         creep.__movementCost.ignoreRoads = false
       }
