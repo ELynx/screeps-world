@@ -230,7 +230,7 @@ spawnProcess.plunders = function (room, live) {
   const plundersNeeded = this._hasAndPlanned(room, live, 'restocker')
   const plundersSupported = room.memory.slvl || 0
 
-  const want = Math.ceil(1.5 * Math.min(plundersNeeded, plundersSupported))
+  const want = Math.min(plundersNeeded, plundersSupported)
 
   if (want > 0) {
     const now = this._hasAndPlanned(room, live, 'plunder')
