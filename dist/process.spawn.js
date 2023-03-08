@@ -17,11 +17,6 @@ spawnProcess.makeKey = function (roomName, type) {
 spawnProcess._addToQueue = function (roomToName, roomFromName, type, body, memoryAddon, n, adderFunction) {
   const key = this.makeKey(roomToName, type)
 
-  if (n < 0) {
-    queue.erase(key)
-    return
-  }
-
   const memory =
     {
       crum: roomToName,
@@ -44,8 +39,19 @@ spawnProcess._addToQueue = function (roomToName, roomFromName, type, body, memor
   )
 }
 
+spawnProcess._eraseFromQueue = function (roomToName, type) {
+  const key = this.makeKey(roomToName, type)
+  queue.erase(key)
+}
+
 spawnProcess.addToQueue = function (roomToName, roomFromName, type, body, memory, n, priority) {
-  if (n <= 0) return
+  if (n < 0) {
+    this._eraseFromQueue(roomToName, type)
+  }
+
+  if (n <= 0) {
+    return
+  }
 
   if (priority === 'urgent') {
     this._addToQueue(roomToName, roomFromName, type, body, memory, n, _.bind(queue.addUrgent, queue))
