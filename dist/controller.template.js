@@ -315,6 +315,7 @@ function Controller (id) {
               creep,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                ignoreCreeps: true,
                 maxRooms: 1,
                 range: this.actRange
               }
