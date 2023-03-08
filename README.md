@@ -31,18 +31,6 @@ Movement and positioning:
 
 Don't send military to enemy safe mode rooms.
 
-Cluster restock.
-
-Beetle with ATTACK instead of WORK:
-
-* Melee around as Strelok.
-
-* Check pipeline for `attack` and `dismantle`.
-
-* Melee creeps in front.
-
-Defend from Invader Core.
-
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
@@ -105,8 +93,6 @@ Flag to turn verbose naming on and off.
 
 Intent queue for withdraw and transfer.
 
-Account for tower spending energy, renew, etc. Basically, more intent wrappers.
-
 Monitor Source Keeper respawn.
 
 Spawn intent uber-wrapper:
@@ -117,8 +103,6 @@ Spawn intent uber-wrapper:
 
 * Cancel without energy loss.
 
-Tasked subspecies.
-
 Instead of healing by towers spawn healers.
 
 Containers next to Controller to decrease walking to upgrade:
@@ -126,3 +110,7 @@ Containers next to Controller to decrease walking to upgrade:
 * Grab from Links and Containers inside act.
 
 Do not overfill Labs and Factory to prevent process pollution.
+
+Defend from Invader Core.
+
+Cluster restock.
