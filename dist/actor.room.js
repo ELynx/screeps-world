@@ -316,6 +316,7 @@ const roomActor =
         }
 
         if (rc === OK) {
+          creep.blockStop()
           this.roomControllersObserveOwn(creep)
         } else {
           creep.__target = undefined
