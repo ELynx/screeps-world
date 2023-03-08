@@ -288,6 +288,8 @@ const roomActor =
 
         // STRATEGY creep movement, main CPU sink
 
+        let stroke = 'green'
+
         // first move by cached path
         let rc = creep.moveToWrapper(
           creep.__target,
@@ -300,6 +302,7 @@ const roomActor =
         // no movement, see if pathfinding is possible and within CPU
         if (rc === ERR_NOT_FOUND) {
           if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+            stroke = 'yellow'
             rc = creep.moveToWrapper(
               creep.__target,
               {
@@ -311,6 +314,7 @@ const roomActor =
             )
           } else {
             // keep assignment
+            stroke = 'red'
             rc = OK
           }
         }
@@ -319,9 +323,12 @@ const roomActor =
           creep.blockStop()
           this.roomControllersObserveOwn(creep)
         } else {
+          stroke = 'purple'
           creep.__target = undefined
           bootstrap.unassignCreep(creep)
         }
+
+        room.visual.circle(creep.pos.x, creep.pos.y, {fill: 'transparent', radius: 0.55, stroke})
       }
 
       const unassignedCreeps = _.filter(
