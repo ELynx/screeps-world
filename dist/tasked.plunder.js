@@ -256,8 +256,13 @@ plunder.makeBody = function (room) {
     return this.makeCM(12)
   }
 
-  // 2000
-  return this.makeCM(20)
+  if (energy < 2500) {
+    // 2000
+    return this.makeCM(20)
+  }
+
+  // 2500
+  return this.makeCM(25)
 }
 
 plunder.register()
