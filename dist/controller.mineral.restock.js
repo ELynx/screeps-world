@@ -43,12 +43,8 @@ mineralRestockController.targets = function (room) {
 }
 
 mineralRestockController.filterCreep = function (creep) {
-  // STRATEGY has non-energy resouces, can walk
-  if (this._hasCM(creep)) {
-    return (!this._isEmpty(creep)) && (creep.shortcut === 'plunder' || !this._hasEnergy(creep))
-  }
-
-  return false
+  // STRATEGY can move, has non-energy resouces
+  return this._hasCM(creep) && !this._isEmpty(creep) && !this._hasEnergy(creep)
 }
 
 mineralRestockController.register()
