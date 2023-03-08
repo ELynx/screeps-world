@@ -337,7 +337,15 @@ const roomActor =
       const unassignedCreeps = _.filter(
         roomCreeps,
         function (creep) {
-          return creep.__target === undefined
+          if (creep.__target) return false
+
+          // TODO this is important optimization poorly done
+          // idea - do not search for work (incl. target and path finding) for plunders that emptied cargo
+          if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
+            return false
+          }
+
+          return true
         }
       )
 
