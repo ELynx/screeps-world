@@ -19,12 +19,6 @@ Proprietary and confidential.
 ## TODO
 [Monitor invader power goal and prepare for them.](https://github.com/screeps/backend-local/blob/81cbe7884afed23f3e1deaa3dcc77411fcbd697b/lib/cronjobs.js#L433)
 
-Block positions that are targeted by room creeps:
-
-* Check reach-ability before going to target.
-
-* Check reach-ability before assigning target.
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -126,3 +120,5 @@ Spawn intent uber-wrapper:
 Tasked subspecies.
 
 Instead of healing by towers spawn healers.
+
+Containers next to Controller to decrease walking to upgrade.
