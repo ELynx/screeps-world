@@ -222,27 +222,42 @@ plunder.flagPrepare = function (flag) {
   return this._flagCountBasic(flag, 100)
 }
 
+plunder.makeCM = function (carry, move = carry) {
+  const a = new Array(carry)
+  a.fill(CARRY)
+
+  const b = new Array(move)
+  b.fill(MOVE)
+
+  return a.concat(b)
+}
+
 plunder.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
 
-  if (energy < 300) {
-    // 100  50     50
-    return [CARRY, MOVE]
-  }
-
   if (energy < 400) {
-    // 300  50     50     50     50    50    50
-    return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+    // 300
+    return this.makeCM(3)
   }
 
-  if (energy < 1000) {
+  if (energy < 800) {
     // capacity 200, steal complete full built extension
-    // 400  50     50     50     50     50    50    50    50
-    return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+    // 400
+    return this.makeCM(4)
   }
 
-  // 1000 50     50     50     50     50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50
-  return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  if (energy < 1200) {
+    // 800
+    return this.makeCM(8)
+  }
+
+  if (energy < 2000) {
+    // 1200
+    return this.makeCM(12)
+  }
+
+  // 2000
+  return this.makeCM(20)
 }
 
 plunder.register()
