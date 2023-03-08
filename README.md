@@ -121,4 +121,8 @@ Tasked subspecies.
 
 Instead of healing by towers spawn healers.
 
-Containers next to Controller to decrease walking to upgrade.
+Containers next to Controller to decrease walking to upgrade:
+
+* Grab from Links and Containers inside act.
+
+Do not overfill Labs and Factory to prevent process pollution.
