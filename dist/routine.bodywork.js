@@ -42,17 +42,21 @@ const bodywork = {
     }
 
     if (energy < 750) {
+      // 500
       return this.makeWCM(2, 2)
     }
 
     if (energy < 1500) {
+      // 750
       return this.makeWCM(3, 3)
     }
 
     if (energy < 3000) {
+      // 1500
       return this.makeWCM(6, 6)
     }
 
+    // 3000 / 48 parts
     return this.makeWCM(12, 12)
   },
 
@@ -80,8 +84,8 @@ const bodywork = {
 
     // call for new room
     if (energy === 0) {
-      // target is 3000 / 300 / 2 = 5 WORK body parts
-      // 850
+      // TODO 2nd room is possible at 800, this will lock out reinforcements
+      // full scale machine
       return this.makeWCM(5, 1)
     }
 
@@ -91,15 +95,18 @@ const bodywork = {
     }
 
     if (energy < 800) {
+      // 550
       return this.makeWCM(3, 1)
     }
 
     if (energy < 850) {
       // special case, limp a bit when loaded
+      // 800
       return this.makeWCM(5, 1, 5)
     }
 
     // target is 3000 / 300 / 2 = 5 WORK body parts
+    // 850
     return this.makeWCM(5, 1)
   },
 
@@ -118,22 +125,27 @@ const bodywork = {
     }
 
     if (energy < 800) {
+      // 550
       return this.makeWCM(3, 1)
     }
 
     if (energy < 850) {
       // special case, limp a bit when loaded
+      // 800
       return this.makeWCM(5, 1, 5)
     }
 
     if (energy < 1700) {
+      // 850
       return this.makeWCM(5, 1)
     }
 
     if (energy < 3400) {
+      // 1700
       return this.makeWCM(10, 2)
     }
 
+    // 3400
     return this.makeWCM(20, 4)
   }
 }
