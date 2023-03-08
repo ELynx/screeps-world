@@ -212,10 +212,7 @@ const bootstrap = {
 
     this._movementCost(creep)
 
-    _.defaults(
-      options,
-      creep.__movementCost
-    )
+    _.defaults(options, creep.__movementCost)
 
     return options
   },
