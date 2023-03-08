@@ -14,6 +14,7 @@ const towerProcess = require('./process.tower')
 
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
+const dumpController = require('./controller.dump')
 const energyHarvestController = require('./controller.energy.harvest')
 const energyRestockController = require('./controller.energy.restock')
 const energySpecialistController = require('./controller.energy.specialist')
@@ -51,7 +52,8 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.id
+  upgradeController.id,
+  dumpController.id
 ]
 
 const controllersRemoteHarvestAuto = [
