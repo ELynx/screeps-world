@@ -14,62 +14,66 @@ CLAIM           600
 **/
 
 const bodywork = {
-  /**
-    BODY Universal worker.
-    @param {Room} to what.
-    @return {Array} body.
-    **/
+  makeWCM: function (work, carry, move = work + carry) {
+    const a = new Array(work)
+    a.fill(WORK)
+
+    const b = new Array(carry)
+    b.fill(CARRY)
+
+    const c = new Array(move)
+    c.fill(MOVE)
+
+    return a.concat(b).concat(c)
+  },
+
   worker: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
 
     // call for new or foreign room
     if (energy === 0) {
-      // 750  100   100   100   50     50     50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      // 750
+      return this.makeWCM(3, 3)
     }
 
     if (energy < 500) {
-      // 250  100   50     50    50
-      return [WORK, CARRY, MOVE, MOVE]
+      // 250
+      return this.makeWCM(1, 1)
     }
 
     if (energy < 750) {
-      // 500  100   100   50     50     50    50    50    50
-      return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(2, 2)
     }
 
     if (energy < 1500) {
-      // 750  100   100   100   50     50     50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(3, 3)
     }
 
-    // 1500 100   100   100   100   100   100   50     50     50     50     50     50     50    50    50    50    50    50    50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    if (energy < 3000) {
+      return this.makeWCM(6, 6)
+    }
+
+    return this.makeWCM(12, 12)
   },
 
-  /**
-    BODY Restocker.
-    @param {Room} to what.
-    @return {Array} body.
-    **/
   restocker: function (room) {
     // cannot produce creeps -> no level regulation
     if (!room.my) {
       if (room.ownedOrReserved()) {
         // target is 3000 / 250 / 2 = 6 WORK body parts
-        // 1000 100   100   100   100   100   100   50     50    50    50    50    50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+        // 1000
+        return this.makeWCM(6, 1)
       }
 
       if (room.sourceKeeper()) {
         // target is 4000 / 250 / 2 = 8 WORK body parts
-        // 1300 100   100   100   100   100   100   100   100   50     50    50    50    50    50    50    50    50    50
-        return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+        // 1300
+        return this.makeWCM(8, 1)
       }
 
       // target is 1500 / 250 / 2 = 3 WORK body parts
-      // 550  100   100   100   50     50    50    50    50
-      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
+      // 550
+      return this.makeWCM(3, 1)
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
@@ -77,85 +81,60 @@ const bodywork = {
     // call for new room
     if (energy === 0) {
       // target is 3000 / 300 / 2 = 5 WORK body parts
-      // 850  100   100   100   100   100   50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      // 850
+      return this.makeWCM(5, 1)
     }
 
     if (energy < 550) {
-      // 250  100   50     50    50
-      return [WORK, CARRY, MOVE, MOVE]
+      // 250
+      return this.makeWCM(1, 1)
     }
 
     if (energy < 800) {
-      // 550  100   100   100   50     50    50    50    50
-      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(3, 1)
     }
 
     if (energy < 850) {
       // special case, limp a bit when loaded
-      // 800  100   100   100   100   100   50     50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(5, 1, 5)
     }
 
     // target is 3000 / 300 / 2 = 5 WORK body parts
-    // 850  100   100   100   100   100   50     50    50    50    50    50    50
-    return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return this.makeWCM(5, 1)
   },
 
-  /**
-    BODY Miner.
-    @param {Room} to what.
-    @return {Array} body.
-    **/
   miner: function (room) {
     if (!room.my) {
-    // if decision is ever made to mide outside, it must be done with superior machines
-    // 3400
-      return [
-        // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
-        // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
-        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      // if decision is ever made to mide outside, it must be done with superior machines
+      // 3400
+      return this.makeWCM(20, 4)
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
 
     if (energy < 550) {
-      // 250  100   50     50    50
-      return [WORK, CARRY, MOVE, MOVE]
+      // 250
+      return this.makeWCM(1, 1)
     }
 
     if (energy < 800) {
-      // 550  100   100   100   50     50    50    50    50
-      return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(3, 1)
     }
 
     if (energy < 850) {
       // special case, limp a bit when loaded
-      // 800  100   100   100   100   100   50     50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(5, 1, 5)
     }
 
     if (energy < 1700) {
-      // 850  100   100   100   100   100   50     50    50    50    50    50    50
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(5, 1)
     }
 
     if (energy < 3400) {
-      // 1700
-      return [
-        // 100 100  100   100   100   100   100   100   100   100   50     50
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY,
-        // 50 50    50    50    50    50    50    50    50    50    50    50
-        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+      return this.makeWCM(10, 2)
     }
 
-    // 3400
-    return [
-      // 100 100  100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   100   50     50     50     50
-      WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY,
-      // 50 50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50    50
-      MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return this.makeWCM(20, 4)
   }
 }
 
