@@ -323,8 +323,8 @@ const roomActor =
         }
 
         if (rc === OK) {
-          // block range 1 long term target spots
-          if (creep.__target.structureType === undefined) {
+          // block range <= 1 long term target spots
+          if (creep.memory.dact <= 1 && creep.__target.structureType === undefined) {
             creep.blockStop()
           }
           this.roomControllersObserveOwn(creep)
