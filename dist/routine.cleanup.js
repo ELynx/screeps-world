@@ -8,6 +8,8 @@ const RoomNodeMaxAge = 60 * CREEP_LIFE_TIME // rouglhy 3 days
 const StructureNodeMaxAge = 3 * CREEP_LIFE_TIME
 
 const cleanup = {
+  once: true,
+
   memoryNodeNotAccessed: function (memoryNode, age) {
     if (memoryNode.nodeAccessed) {
       return memoryNode.nodeAccessed < (Game.time - age)
@@ -16,21 +18,8 @@ const cleanup = {
     return true
   },
 
-  cleanupMemory: function () {
-    for (const name in Memory.creeps) {
-      if (!Game.creeps[name]) {
-        delete Memory.creeps[name]
-      }
-    }
-
+  cleanupMemoryValues: function () {
     for (const name in Memory.rooms) {
-      if (!Game.rooms[name]) {
-        if (this.memoryNodeNotAccessed(Memory.rooms[name], RoomNodeMaxAge)) {
-          delete Memory.rooms[name]
-          continue
-        }
-      }
-
       Memory.rooms[name] = _.pick(
         Memory.rooms[name],
         [
@@ -51,11 +40,6 @@ const cleanup = {
     }
 
     for (const name in Memory.flags) {
-      if (!Game.flags[name]) {
-        delete Memory.flags[name]
-        continue
-      }
-
       Memory.flags[name] = _.pick(
         Memory.flags[name],
         [
@@ -69,19 +53,44 @@ const cleanup = {
 
     if (Memory.structures) {
       for (const id in Memory.structures) {
-        if (!Game.structures[id]) {
-          if (this.memoryNodeNotAccessed(Memory.structures[id], StructureNodeMaxAge)) {
-            delete Memory.structures[id]
-            continue
-          }
-        }
-
         Memory.structures[id] = _.pick(
           Memory.structures[id],
           [
             'isSource'
           ]
         )
+      }
+    }
+  },
+
+  cleanupMemory: function () {
+    for (const name in Memory.creeps) {
+      if (!Game.creeps[name]) {
+        delete Memory.creeps[name]
+      }
+    }
+
+    for (const name in Memory.rooms) {
+      if (!Game.rooms[name]) {
+        if (this.memoryNodeNotAccessed(Memory.rooms[name], RoomNodeMaxAge)) {
+          delete Memory.rooms[name]
+        }
+      }
+    }
+
+    for (const name in Memory.flags) {
+      if (!Game.flags[name]) {
+        delete Memory.flags[name]
+      }
+    }
+
+    if (Memory.structures) {
+      for (const id in Memory.structures) {
+        if (!Game.structures[id]) {
+          if (this.memoryNodeNotAccessed(Memory.structures[id], StructureNodeMaxAge)) {
+            delete Memory.structures[id]
+          }
+        }
       }
     }
   },
@@ -113,6 +122,11 @@ const cleanup = {
   },
 
   cleanup: function () {
+    if (this.once) {
+      this.once = false
+      this.cleanupMemoryValues()
+    }
+
     this.cleanupMemory()
     this.cleanupFlags()
   }
