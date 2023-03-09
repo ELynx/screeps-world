@@ -157,8 +157,6 @@ function Controller (id) {
     )
   }
 
-  this._usesDefaultFilter = undefined
-
   this._hasCM = function (creep) {
     return creep.getActiveBodyparts(CARRY) > 0 &&
            creep.getActiveBodyparts(MOVE) > 0
@@ -205,14 +203,13 @@ function Controller (id) {
     return creep.memory.rccl || false
   }
 
+  this._usesDefaultFilter = undefined
+
   /**
     Creep that has energy and can perform general work
-    @param {Creep} creep to look at.
-    @return If creep matches filter.
     **/
   this._defaultFilter = function (creep) {
     this._usesDefaultFilter = true
-
     return this._isWorkAble(creep)
   }
 
@@ -220,12 +217,9 @@ function Controller (id) {
 
   /**
     Default implementation.
-    @param {Creep} creep to look at.
-    @return If creep can be used.
     **/
   this.filterCreep = function (creep) {
     this._doesDefaultFilter = true
-
     return this._defaultFilter(creep)
   }
 
@@ -377,11 +371,7 @@ function Controller (id) {
       }
     }
 
-    if (this._findTargets(room).length === 0) {
-      return roomCreeps
-    }
-
-    let creepMatch = []
+    const creepMatch = []
     const creepSkip = []
 
     for (const creep of roomCreeps) {
@@ -400,11 +390,15 @@ function Controller (id) {
       return roomCreeps
     }
 
-    // remainder returned
-    creepMatch = this.assignCreeps(room, creepMatch)
+    if (this._findTargets(room).length === 0) {
+      return roomCreeps
+    }
 
-    if (creepMatch.length > 0) {
-      return creepSkip.concat(creepMatch)
+    // remainder returned
+    const creepsUnused = this.assignCreeps(room, creepMatch)
+
+    if (creepsUnused.length > 0) {
+      return creepSkip.concat(creepsUnused)
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
