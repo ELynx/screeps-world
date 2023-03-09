@@ -249,11 +249,13 @@ function Tasked (id) {
   this._coastToHalt = function (creep) {
     if (!creep.__canMove) {
       creep.fatigueWrapper()
+      creep.blockPosition()
       return
     }
 
     const pos = creep.getControlPos()
     if (creep.room.name !== pos.roomName) {
+      creep.blockPosition()
       return
     }
 
@@ -267,6 +269,8 @@ function Tasked (id) {
           reusePath: _.random(7, 11)
         }
       )
+    } else {
+      creep.blockPosition()
     }
   }
 
