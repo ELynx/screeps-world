@@ -152,9 +152,11 @@ const roomActor =
 
       // if all creeps had been taken
       if (creeps.length === 0) {
-        return
+        return []
       }
     }
+
+    return creeps
   },
 
   consumingControllersControl: function (controllers, room, creep) {
@@ -358,7 +360,10 @@ const roomActor =
       )
 
       if (unassignedCreeps.length > 0) {
-        this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        const standing = this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        for (const creep of standing) {
+          creep.blockPosition()
+        }
       }
     }
 
