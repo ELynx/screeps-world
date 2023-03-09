@@ -234,6 +234,7 @@ plunder.makeCM = function (carry, move = carry) {
 
 plunder.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
+  const sourceLevel = room.memory.slvl || 0
 
   if (energy < 400) {
     // 300
@@ -251,7 +252,7 @@ plunder.makeBody = function (room) {
     return this.makeCM(8)
   }
 
-  if (energy < 2000) {
+  if (energy < 2000 || sourceLevel < 3) {
     // 1200
     return this.makeCM(12)
   }

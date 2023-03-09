@@ -29,6 +29,7 @@ const bodywork = {
 
   worker: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
+    const sourceLevel = room.memory.slvl || 0
 
     // call for new or foreign room
     if (energy === 0) {
@@ -51,7 +52,7 @@ const bodywork = {
       return this.makeWCM(3, 3)
     }
 
-    if (energy < 3000) {
+    if (energy < 3000 || sourceLevel < 3) {
       // 1500
       return this.makeWCM(6, 6)
     }
@@ -118,6 +119,7 @@ const bodywork = {
     }
 
     const energy = room.extendedAvailableEnergyCapacity()
+    const sourceLevel = room.memory.slvl || 0
 
     if (energy < 550) {
       // 250
@@ -140,7 +142,7 @@ const bodywork = {
       return this.makeWCM(5, 1)
     }
 
-    if (energy < 3400) {
+    if (energy < 3400 || sourceLevel < 3) {
       // 1700
       return this.makeWCM(10, 2)
     }
