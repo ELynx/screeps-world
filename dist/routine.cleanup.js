@@ -27,14 +27,44 @@ const cleanup = {
       if (!Game.rooms[name]) {
         if (this.memoryNodeNotAccessed(Memory.rooms[name], RoomNodeMaxAge)) {
           delete Memory.rooms[name]
+          continue
         }
       }
+
+      Memory.rooms[name] = _.pick(
+        Memory.rooms[name],
+        [
+          '_ttt',
+          'abld',
+          'hlvl',
+          'intl',
+          'mlvl',
+          'nodeAccessed',
+          'slvl',
+          'srck',
+          'stre',
+          'threat',
+          'trme',
+          'wlvl'
+        ]
+      )
     }
 
     for (const name in Memory.flags) {
       if (!Game.flags[name]) {
         delete Memory.flags[name]
+        continue
       }
+
+      Memory.flags[name] = _.pick(
+        Memory.flags[name],
+        [
+          'aftr',
+          'arum',
+          'fcnt',
+          'hrum'
+        ]
+      )
     }
 
     if (Memory.structures) {
@@ -42,8 +72,16 @@ const cleanup = {
         if (!Game.structures[id]) {
           if (this.memoryNodeNotAccessed(Memory.structures[id], StructureNodeMaxAge)) {
             delete Memory.structures[id]
+            continue
           }
         }
+
+        Memory.structures[id] = _.pick(
+          Memory.structures[id],
+          [
+            'isSource'
+          ]
+        )
       }
     }
   },
