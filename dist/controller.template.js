@@ -32,11 +32,6 @@ function Controller (id) {
   this.extra = undefined
 
   /**
-    Flag to execute target search with interleave.
-    **/
-  this.oddOrEven = undefined
-
-  /**
     Cache of target IDs that already have creep assigned.
     **/
   this._excludedTargets = undefined
@@ -374,12 +369,6 @@ function Controller (id) {
     if (!this.targets) {
       console.log('Controller ' + this.id + 'missing targets method')
       return roomCreeps
-    }
-
-    if (this.oddOrEven) {
-      if ((room.memory.intl + Game.time) % 2 !== this.oddOrEven) {
-        return roomCreeps
-      }
     }
 
     if (this._usesDefaultFilter) {

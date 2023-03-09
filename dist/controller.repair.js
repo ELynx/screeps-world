@@ -31,8 +31,6 @@ const fromArray = function (from, index) {
 
 repairController.actRange = 3
 
-repairController.oddOrEven = 1
-
 repairController.extra = function (structure) {
   return structure.__targetHp
 }
