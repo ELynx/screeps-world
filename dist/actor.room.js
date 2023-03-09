@@ -83,17 +83,22 @@ const roomActor =
 {
   roomControllersFind: function (room) {
     if (room.my) {
+      // TODO unhack
+      room.__actType = 1
       return [controllersMyAuto, controllersConsuming]
     }
 
     if (room.myReserved() || room.sourceKeeper() || room.unowned) {
+      room.__actType = 2
       return [controllersRemoteHarvestAuto, controllersConsuming]
     }
 
     if (room.ally || room.neutral) {
+      room.__actType = 3
       return [controllersHelpAuto, controllersConsuming]
     }
 
+    room.__actType = 0
     return [[], []]
   },
 
