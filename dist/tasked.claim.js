@@ -85,6 +85,7 @@ claim.creepAtDestination = function (creep) {
         } else {
           sign = ''
           rc = creep.reserveController(controller)
+          if (rc === OK) creep.blockPosition()
         }
       }
 
