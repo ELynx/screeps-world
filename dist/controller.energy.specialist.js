@@ -48,7 +48,7 @@ energySpecialistController.act = function (source, creep) {
     const restockTargets = this.restockTargets(creep.room)
 
     // check if any of targets are in bad shape when harvesting in remote room
-    if (room.__actType === 2) {
+    if (creep.room.__actType === 2) {
       const hasLowHits = _.some(
         restockTargets,
         function (restockTarget) {
