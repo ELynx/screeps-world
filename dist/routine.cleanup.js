@@ -61,6 +61,8 @@ const cleanup = {
         )
       }
     }
+
+    console.log('Memory values sanitized')
   },
 
   cleanupMemory: function () {
