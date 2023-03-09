@@ -8,8 +8,6 @@ const buildController = new Controller('build')
 
 buildController.actRange = 3
 
-buildController.oddOrEven = 0
-
 buildController.act = function (site, creep) {
   const rc = this.wrapIntent(creep, 'build', site)
 
