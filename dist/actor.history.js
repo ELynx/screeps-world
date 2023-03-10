@@ -60,7 +60,7 @@ const historyActor =
     const cached = Game.__bootstrap_getObjectById[id]
     if (cached) return cached.energyCapacity !== undefined
 
-    var found = false
+    let found = false
 
     const sources = room.find(FIND_SOURCES)
     for (const source of sources) {
@@ -268,7 +268,7 @@ const historyActor =
     Game.__healers[healer.id] = healer
   },
 
-  handle_EVENT_HARVEST(room, eventRecord) {
+  handle_EVENT_HARVEST (room, eventRecord) {
     const harvestEnergy = this.isSource(room, eventRecord.data.targetId)
     if (harvestEnergy === false) return
 
