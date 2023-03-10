@@ -10,6 +10,7 @@ const historyActor =
     Game.__skipAttackTargets = { }
     Game.__skipHealTargets = { }
     Game.__healers = { }
+    Game.__notSources = { }
   },
 
   getObjectById: function (room, id) {
@@ -46,6 +47,35 @@ const historyActor =
 
     // as original API
     return null
+  },
+
+  // TODO this is Tool moshpit of bad coding
+  isSource: function (room, id) {
+    if (Game.__notSources[id]) return false
+
+    if (Game.__bootstrap_getObjectById === undefined) {
+      Game.__bootstrap_getObjectById = { }
+    }
+
+    const cached = Game.__bootstrap_getObjectById[id]
+    if (cached) return cached.energyCapacity !== undefined
+
+    var found = false
+
+    const sources = room.find(FIND_SOURCES)
+    for (const source of sources) {
+      Game.__bootstrap_getObjectById[source.id] = source
+
+      if (source.id === id) {
+        found = true
+      }
+    }
+
+    if (found === false) {
+      Game.__notSources[id] = true
+    }
+
+    return found
   },
 
   hmiName: function (something) {
@@ -238,6 +268,16 @@ const historyActor =
     Game.__healers[healer.id] = healer
   },
 
+  handle_EVENT_HARVEST(room, eventRecord) {
+    const harvestEnergy = this.isSource(room, eventRecord.data.targetId)
+    if (harvestEnergy === false) return
+
+    const currentValue = room.__energyHarvested || 0
+    const updatedValue = currentValue + eventRecord.data.amount
+
+    room.__energyHarvested = updatedValue
+  },
+
   processRoomLog: function (room) {
     const eventLog = room.getEventLog()
 
@@ -251,6 +291,9 @@ const historyActor =
           break
         case EVENT_HEAL:
           this.handle_EVENT_HEAL(room, eventRecord)
+          break
+        case EVENT_HARVEST:
+          this.handle_EVENT_HARVEST(room, eventRecord)
           break
       }
     }
