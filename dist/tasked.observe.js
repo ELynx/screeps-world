@@ -19,7 +19,7 @@ observe.creepAtDestination = function (creep) {
       }
     )
   } else {
-    creep.blockPosition()
+    creep.rememberPosition()
   }
 }
 
