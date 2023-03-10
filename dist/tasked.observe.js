@@ -18,8 +18,6 @@ observe.creepAtDestination = function (creep) {
         reusePath: _.random(7, 11)
       }
     )
-  } else {
-    creep.rememberPosition()
   }
 }
 
