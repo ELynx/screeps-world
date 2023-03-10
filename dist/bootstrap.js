@@ -5,6 +5,10 @@ const bootstrap = {
   ThreatLevelMedium: 3,
   ThreatLevelMax: 5,
 
+  RoomActTypeMy: 1,
+  RoomActTypeRemoteHarvest: 2,
+  RoomActTypeHelp: 3,
+
   // intent is valid, but next such action will exhause both intended and intendee
   WANR_BOTH_EXHAUSED: 3, // sum of two exhausted below
   // intent is valid, but next such action will exhaust intended
