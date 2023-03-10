@@ -17,8 +17,6 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-[Monitor invader power goal and prepare for them.](https://github.com/screeps/backend-local/blob/81cbe7884afed23f3e1deaa3dcc77411fcbd697b/lib/cronjobs.js#L433)
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -62,8 +60,6 @@ Some material on autobases:
 * [Kasami Bot](https://github.com/kasami/kasamibot)
 
 * [Screeps Script](https://github.com/slothsoft/screeps-script)
-
-TIP OF THE DAY: You can output HTML content to the console, like links to rooms. `<a href="url">link text</a>` -> `https://screeps.com/a/url`
 
 Fatigue based emergent road building. CostMatrix has ser-de.
 
