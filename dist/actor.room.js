@@ -316,7 +316,7 @@ const roomActor =
               creep.__target,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
-                ignoreCreeps: true,
+                ignoreCreeps: false,
                 maxRooms: 1,
                 range: creep.memory.dact,
                 reusePath: _.random(3, 5)
