@@ -10,7 +10,6 @@ const historyActor =
     Game.__skipAttackTargets = { }
     Game.__skipHealTargets = { }
     Game.__healers = { }
-    Game.__notSources = { }
   },
 
   getObjectById: function (room, id) {
