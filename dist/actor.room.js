@@ -206,7 +206,7 @@ const roomActor =
 
     if (processKey === 0 ||
         processKey === 6 ||
-        room.memory.threat) {
+        room.__threatEscalated) {
       spawnProcess.work(room)
     }
 
