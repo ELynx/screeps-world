@@ -1,34 +1,9 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
+const mineralRestockController = require('controller.mineral.restock')
 
-const Controller = require('./controller.template')
-
-// TODO un-copy-paste
-const dumpController = new Controller('dump')
-
-dumpController.actRange = 1
-
-dumpController.act = function (withStore, creep) {
-  for (const resourceType in creep.store) {
-    const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
-    if (rc !== OK) {
-      return rc
-    }
-  }
-
-  // if here then all transfers were OK
-  // thus do not keep at target
-  return bootstrap.WARN_INTENDEE_EXHAUSTED
-}
-
-dumpController._checkStore = function (structure) {
-  if (structure && structure.isActiveSimple) {
-    return structure.store.getFreeCapacity() > 0
-  }
-
-  return false
-}
+const dumpController = _.assign({}, mineralRestockController)
+dumpController.id = 'dump'
 
 dumpController.targets = function (room) {
   if (this._checkStore(room.storage)) {
