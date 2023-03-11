@@ -361,8 +361,7 @@ const roomActor =
         function (creep) {
           if (creep.__target) return false
 
-          // TODO this is important optimization poorly done
-          // idea - do not search for work (incl. target and path finding) for plunders that emptied cargo
+          // plunders with empty cargo will be taken away
           if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
             return false
           }
