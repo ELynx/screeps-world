@@ -48,7 +48,7 @@ buildController._sites = function (room) {
 
   if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
     // STRATEGY in "public" rooms build only own construction sites
-    usedSites =_.filter(allSites, _.matchesProperty('owner.username', Game.iff.ownUsername))
+    usedSites = _.filter(allSites, _.matchesProperty('owner.username', Game.iff.ownUsername))
   }
 
   if (room.__actType === bootstrap.RoomActTypeHelp) {
