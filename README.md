@@ -110,3 +110,5 @@ Do not overfill Labs and Factory to prevent process pollution.
 Defend from Invader Core.
 
 Cluster restock.
+
+Global Control farm rooms.
