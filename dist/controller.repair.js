@@ -58,10 +58,9 @@ repairController.targets = function (room) {
   // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)
   const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500)
 
-  // STRATEGY in not controlled rooms do minimal upkeep
-  const level = room.my ? room.level() : 1
-  const roadMult = fromArray(TargetRoadHpMultiplier, level)
-  const otherMult = fromArray(TargetStructureHpMultiplier, level)
+  // STRATEGY in not controlled rooms do only minimal upkeep
+  const roadMult = fromArray(TargetRoadHpMultiplier, room.level())
+  const otherMult = fromArray(TargetStructureHpMultiplier, room.my ? room.level() : 1)
 
   const structuresWithHits = room.find(
     FIND_STRUCTURES,
@@ -98,6 +97,11 @@ repairController.targets = function (room) {
       } else {
         const targetHp = Math.ceil(structure.hitsMax * otherMult)
         if (structure.hits < targetHp) {
+          // TODO repair non-source when they are added to logic
+          if (structure.structureType === STRUCTURE_CONTAINER) {
+            if (!structure.isSource()) return false
+          }
+
           // STRATEGY some histeresis, repair to top
           structure.__targetHp = structure.hitsMax
           return true
