@@ -27,19 +27,37 @@ buildController._sites = function (room) {
   const allSites = room.find(FIND_CONSTRUCTION_SITES)
   if (allSites.length === 0) return []
 
-  // STRATEGY in own rooms remove foreigh construction sites
-  // presume that by level 2 of controller this was executed sufficient number of times
-  if (room.my && room.controller && room.controller.level < 2) {
-    let skipBeat = false
+  let usedSites
 
-    for (const site of allSites) {
-      if (Game.iff.ownUsername && Game.iff.ownUsername !== site.owner.username) {
-        site.remove()
-        skipBeat = true
+  if (room.__actType === bootstrap.RoomActTypeMy) {
+    if (room.controller && room.controller.level < 2 && Game.iff.ownUsername) {
+      for (const site of allSites) {
+        // STRATEGY in own rooms remove foreigh construction sites
+        if (site.owner.username !== Game.iff.ownUsername) {
+          site.remove()
+          continue
+        }
+
+        usedSites.push(site)
       }
+    } else {
+      // should be filtered by level 2
+      usedSites = allSites
     }
+  }
 
-    if (skipBeat) return []
+  if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+    // STRATEGY in "public" rooms build only own construction sites
+    usedSites =_.filter(allSites, _.matchesProperty('owner.username', Game.iff.ownUsername))
+  }
+
+  if (room.__actType === bootstrap.RoomActTypeHelp) {
+    const owner = room.extendedOwnerUsername()
+    usedSites = _.filter(allSites, _.matchesProperty('owner.username', owner))
+  }
+
+  if (usedSites === undefined) {
+    return []
   }
 
   const spawns = _.filter(
