@@ -89,8 +89,10 @@ claim.creepAtDestination = function (creep) {
       }
 
       if (controller.sign) {
-        if (controller.sign.text !== sign || controller.sign.username !== creep.owner.username) {
-          creep.signController(controller, sign)
+        if (controller.sign.username !== SYSTEM_USERNAME) {
+          if (controller.sign.text !== sign || controller.sign.username !== creep.owner.username) {
+            creep.signController(controller, sign)
+          }
         }
       } else if (sign.length > 0) {
         creep.signController(controller, sign)
