@@ -43,7 +43,7 @@ const controllersMyAuto = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.id, // catch anyone with mineral only or plunder
+  mineralRestockController.full.id, // catch anyone with mineral only
   energySpecialistController.id, // catch restockers to
   energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
@@ -53,7 +53,7 @@ const controllersMyAuto = [
   repairController.id,
   buildController.id,
   upgradeController.id,
-  dumpController.id
+  mineralRestockController.dump.id
 ]
 
 const controllersRemoteHarvestAuto = [

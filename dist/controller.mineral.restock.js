@@ -47,6 +47,28 @@ mineralRestockController.filterCreep = function (creep) {
   return this._hasCM(creep) && !this._isEmpty(creep) && !this._hasEnergy(creep)
 }
 
-mineralRestockController.register()
+// before profiler wrap
+const mineralDumpController = _.assign({}, mineralRestockController)
 
-module.exports = mineralRestockController
+mineralDumpController.id = 'mineral.dump'
+
+mineralDumpController.targets = function (room) {
+  if (this._checkStore(room.storage)) {
+    return [room.storage]
+  }
+
+  return []
+}
+
+mineralDumpController.filterCreep = function (creep) {
+  return creep.shortcut === 'plunder' && this._hasCM(creep) && !this._isEmpty(creep)
+}
+
+mineralRestockController.register()
+mineralDumpController.register()
+
+module.exports =
+{
+  full: mineralRestockController,
+  dump: mineralDumpController
+}
