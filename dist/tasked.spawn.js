@@ -63,7 +63,13 @@ spawn.dismiss = function (model) {
 
     if (bodyCost > maxCost) {
       console.log('spawn.dismiss found model [' + model.name + '] of body ' + model.body + ' and cost [' + bodyCost + '] with max capacity [' + maxCost + ']')
-      return true
+
+      if (model.memory && model.memory.btyp) {
+        console.log('spawn.dismiss uses btyp [' + model.memory.btyp + '] as backup')
+        model.body = model.memory.btyp
+      } else {
+        return true
+      }
     }
   }
 
