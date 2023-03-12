@@ -46,6 +46,20 @@ energySpecialistController.act = function (source, creep) {
       harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
     const restockTargets = this.restockTargets(creep.room)
+
+    // check if any of targets are in bad shape when harvesting in remote room
+    if (creep.room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+      const hasLowHits = _.some(
+        restockTargets,
+        function (restockTarget) {
+          return restockTarget.hits < 0.5 * restockTarget.hitsMax
+        }
+      )
+
+      // quit the loop and give repair controller a chance
+      if (hasLowHits) return harvestRc
+    }
+
     for (const restockTarget of restockTargets) {
       if (creep.pos.isNearTo(restockTarget)) {
         const restockRc = this.restock(restockTarget, creep)

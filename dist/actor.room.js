@@ -42,7 +42,7 @@ const controllersMyAuto = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.id, // catch anyone with mineral only or plunder
+  mineralRestockController.full.id, // catch anyone with mineral only
   energySpecialistController.id, // catch restockers to
   energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
@@ -51,7 +51,8 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.id
+  upgradeController.id,
+  mineralRestockController.dump.id
 ]
 
 const controllersRemoteHarvestAuto = [
@@ -80,19 +81,35 @@ Creep.prototype.target = function () {
 const roomActor =
 {
   roomControllersFind: function (room) {
-    if (room.my) {
+    if (room.__actType === bootstrap.RoomActTypeMy) {
       return [controllersMyAuto, controllersConsuming]
     }
 
-    if (room.myReserved() || room.sourceKeeper() || room.unowned) {
+    if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
       return [controllersRemoteHarvestAuto, controllersConsuming]
     }
 
-    if (room.ally || room.neutral) {
+    if (room.__actType === bootstrap.RoomActTypeHelp) {
       return [controllersHelpAuto, controllersConsuming]
     }
 
     return [[], []]
+  },
+
+  roomActType: function (room) {
+    if (room.my) {
+      return bootstrap.RoomActTypeMy
+    }
+
+    if (room.myReserved() || room.sourceKeeper() || room.unowned) {
+      return bootstrap.RoomActTypeRemoteHarvest
+    }
+
+    if (room.ally || room.neutral) {
+      return bootstrap.RoomActTypeHelp
+    }
+
+    return 0
   },
 
   roomControllersPrepare: function (controllers, room) {
@@ -145,9 +162,11 @@ const roomActor =
 
       // if all creeps had been taken
       if (creeps.length === 0) {
-        return
+        return []
       }
     }
+
+    return creeps
   },
 
   consumingControllersControl: function (controllers, room, creep) {
@@ -181,6 +200,7 @@ const roomActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
+    room.__actType = this.roomActType(room)
     const [roomControllers, consumingControllers] = this.roomControllersFind(room)
 
     if (roomControllers.length === 0 && consumingControllers.length === 0) {
@@ -197,7 +217,7 @@ const roomActor =
 
     if (processKey === 0 ||
         processKey === 6 ||
-        room.memory.threat) {
+        room.__threatEscalated) {
       spawnProcess.work(room)
     }
 
@@ -288,6 +308,8 @@ const roomActor =
 
         // STRATEGY creep movement, main CPU sink
 
+        let stroke = 'green'
+
         // first move by cached path
         let rc = creep.moveToWrapper(
           creep.__target,
@@ -300,10 +322,12 @@ const roomActor =
         // no movement, see if pathfinding is possible and within CPU
         if (rc === ERR_NOT_FOUND) {
           if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+            stroke = 'yellow'
             rc = creep.moveToWrapper(
               creep.__target,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                ignoreCreeps: false, // if original path has to be re-made, be aware
                 maxRooms: 1,
                 range: creep.memory.dact,
                 reusePath: _.random(3, 5)
@@ -311,27 +335,45 @@ const roomActor =
             )
           } else {
             // keep assignment
+            stroke = 'red'
             rc = OK
           }
         }
 
         if (rc === OK) {
+          // block range <= 1 long term target spots
+          if (creep.memory.dact <= 1 && creep.__target.structureType === undefined) {
+            creep.blockStop()
+          }
           this.roomControllersObserveOwn(creep)
         } else {
+          stroke = 'purple'
           creep.__target = undefined
           bootstrap.unassignCreep(creep)
         }
+
+        room.visual.circle(creep.pos.x, creep.pos.y, { fill: 'transparent', radius: 0.55, stroke })
       }
 
       const unassignedCreeps = _.filter(
         roomCreeps,
         function (creep) {
-          return creep.__target === undefined
+          if (creep.__target) return false
+
+          // plunders with empty cargo will be taken away
+          if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
+            return false
+          }
+
+          return true
         }
       )
 
       if (unassignedCreeps.length > 0) {
-        this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        const standing = this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        for (const creep of standing) {
+          creep.blockPosition()
+        }
       }
     }
 

@@ -17,35 +17,17 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
-Monitor invader power goal and prepare for them.
-
-Block positions that are targeted by room creeps:
-
-* Check reach-ability before going to target.
-
-* Check reach-ability before assigning target.
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
 
-* Step away and uncrowd.
+* Step away.
 
 * Strelok tries to attack unreachable sections.
 
 * Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
-
-Cluster restock.
-
-Beetle with ATTACK instead of WORK:
-
-* Melee around as Strelok.
-
-* Check pipeline for `attack` and `dismantle`.
-
-* Melee creeps in front.
 
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
@@ -79,8 +61,6 @@ Some material on autobases:
 
 * [Screeps Script](https://github.com/slothsoft/screeps-script)
 
-TIP OF THE DAY: You can output HTML content to the console, like links to rooms. `<a href="url">link text</a>` -> `https://screeps.com/a/url`
-
 Fatigue based emergent road building. CostMatrix has ser-de.
 
 [SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for unsigned 8 byte array support.
@@ -109,8 +89,6 @@ Flag to turn verbose naming on and off.
 
 Intent queue for withdraw and transfer.
 
-Account for tower spending energy, renew, etc. Basically, more intent wrappers.
-
 Monitor Source Keeper respawn.
 
 Spawn intent uber-wrapper:
@@ -121,6 +99,16 @@ Spawn intent uber-wrapper:
 
 * Cancel without energy loss.
 
-Tasked subspecies.
-
 Instead of healing by towers spawn healers.
+
+Containers next to Controller to decrease walking to upgrade:
+
+* Grab from Links and Containers inside act.
+
+Do not overfill Labs and Factory to prevent process pollution.
+
+Defend from Invader Core.
+
+Cluster restock.
+
+Global Control farm rooms.

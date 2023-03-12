@@ -33,7 +33,7 @@ rampupController.targets = function (room) {
 }
 
 rampupController.filterCreep = function (creep) {
-  return this._isNotRestocker(creep) && this._isWorkAble(creep)
+  return this._isNotRestocker(creep) && this._defaultFilter(creep)
 }
 
 rampupController.register()

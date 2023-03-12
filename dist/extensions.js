@@ -53,6 +53,10 @@ Creep.prototype._refreshMove = function () {
   if (this.memory._move) {
     this.memory._move.time = Game.time
   }
+
+  if (this.memory._stop) {
+    this.memory._stop.time = Game.time
+  }
 }
 
 Creep.prototype.fatigueWrapper = function () {
@@ -80,6 +84,13 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
     return this.fatigueWrapper()
   }
 
+  // quick cheap check that is in real code buried quite deep
+  if (options.noPathFinding === true) {
+    if (this.memory._move === undefined) {
+      return ERR_NOT_FOUND
+    }
+  }
+
   if (this.moved()) {
     this._refreshMove()
   }
@@ -96,6 +107,17 @@ Creep.prototype.blockPosition = function () {
       y: this.pos.y
     }
   )
+}
+
+Creep.prototype.blockStop = function () {
+  if (this.memory._stop) {
+    this.room.blocked.push(
+      {
+        x: this.memory._stop.stop.x,
+        y: this.memory._stop.stop.y
+      }
+    )
+  }
 }
 
 Flag.prototype.getValue = function () {
