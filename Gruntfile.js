@@ -8,7 +8,7 @@ module.exports = function (grunt) {
     branch: envVars.PUSH_BRANCH
   }
 
-  if (envVars.PUSH_PTR) {
+  if (envVars.PUSH_PTR === 'true') {
     options.ptr = true
   }
 
