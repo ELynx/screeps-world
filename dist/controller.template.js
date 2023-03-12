@@ -32,11 +32,6 @@ function Controller (id) {
   this.extra = undefined
 
   /**
-    Flag to execute target search with interleave.
-    **/
-  this.oddOrEven = undefined
-
-  /**
     Cache of target IDs that already have creep assigned.
     **/
   this._excludedTargets = undefined
@@ -162,8 +157,6 @@ function Controller (id) {
     )
   }
 
-  this._usesDefaultFilter = undefined
-
   this._hasCM = function (creep) {
     return creep.getActiveBodyparts(CARRY) > 0 &&
            creep.getActiveBodyparts(MOVE) > 0
@@ -210,14 +203,13 @@ function Controller (id) {
     return creep.memory.rccl || false
   }
 
+  this._usesDefaultFilter = undefined
+
   /**
     Creep that has energy and can perform general work
-    @param {Creep} creep to look at.
-    @return If creep matches filter.
     **/
   this._defaultFilter = function (creep) {
     this._usesDefaultFilter = true
-
     return this._isWorkAble(creep)
   }
 
@@ -225,12 +217,9 @@ function Controller (id) {
 
   /**
     Default implementation.
-    @param {Creep} creep to look at.
-    @return If creep can be used.
     **/
   this.filterCreep = function (creep) {
     this._doesDefaultFilter = true
-
     return this._defaultFilter(creep)
   }
 
@@ -315,6 +304,7 @@ function Controller (id) {
               creep,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                ignoreCreeps: true,
                 maxRooms: 1,
                 range: this.actRange
               }
@@ -322,7 +312,7 @@ function Controller (id) {
           )
 
           if (solution.length > 0) {
-            const last = solution[solution.length - 1]
+            const last = _.last(solution)
             const found = currentTarget.pos.inRangeTo(last.x, last.y, this.actRange)
             if (found) {
               target = currentTarget
@@ -375,23 +365,13 @@ function Controller (id) {
       return roomCreeps
     }
 
-    if (this.oddOrEven) {
-      if ((room.memory.intl + Game.time) % 2 !== this.oddOrEven) {
-        return roomCreeps
-      }
-    }
-
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
         return roomCreeps
       }
     }
 
-    if (this._findTargets(room).length === 0) {
-      return roomCreeps
-    }
-
-    let creepMatch = []
+    const creepMatch = []
     const creepSkip = []
 
     for (const creep of roomCreeps) {
@@ -410,11 +390,15 @@ function Controller (id) {
       return roomCreeps
     }
 
-    // remainder returned
-    creepMatch = this.assignCreeps(room, creepMatch)
+    if (this._findTargets(room).length === 0) {
+      return roomCreeps
+    }
 
-    if (creepMatch.length > 0) {
-      return creepSkip.concat(creepMatch)
+    // remainder returned
+    const creepsUnused = this.assignCreeps(room, creepMatch)
+
+    if (creepsUnused.length > 0) {
+      return creepSkip.concat(creepsUnused)
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
@@ -433,7 +417,10 @@ function Controller (id) {
     **/
   this.register = function () {
     bootstrap.registerRoomController(this)
-    profiler.registerObject(this, this.id)
+
+    if (Game.flags.profiler && Game.flags.profiler.pos) {
+      profiler.registerObject(this, this.id)
+    }
   }
 };
 

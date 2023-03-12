@@ -5,6 +5,10 @@ const bootstrap = {
   ThreatLevelMedium: 3,
   ThreatLevelMax: 5,
 
+  RoomActTypeMy: 1,
+  RoomActTypeRemoteHarvest: 2,
+  RoomActTypeHelp: 3,
+
   // intent is valid, but next such action will exhause both intended and intendee
   WANR_BOTH_EXHAUSED: 3, // sum of two exhausted below
   // intent is valid, but next such action will exhaust intended
@@ -103,10 +107,19 @@ const bootstrap = {
       path: Room.serializePath(path),
       room: creep.room.name
     }
+
+    const stop = _.last(path)
+    creep.memory._stop =
+    {
+      stop: { x: stop.x, y: stop.y, room: stop.roomName },
+      time: Game.time,
+      room: creep.room.name
+    }
   },
 
   imitateMoveErase: function (creep) {
     creep.memory._move = undefined
+    creep.memory._stop = undefined
   },
 
   // empty string used to allow use as key
@@ -191,14 +204,14 @@ const bootstrap = {
         const factor = weight / move
 
         creep.__movementCost.roadCost = Math.max(1, Math.ceil(factor))
-        creep.__movementCost.plainCost = Math.max(1, Math.ceil(2 * factor))
-        creep.__movementCost.swampCost = Math.max(1, Math.ceil(5 * factor))
+        creep.__movementCost.plainCost = Math.max(1, Math.ceil(1.99 * factor))
+        creep.__movementCost.swampCost = Math.max(1, Math.ceil(9.99 * factor))
 
-        creep.__movementCost.ignoreRoads = creep.__movementCost.roadCost === creep.__movementCost.plainCost
+        creep.__movementCost.ignoreRoads = creep.__movementCost.plainCost === creep.__movementCost.swampCost
       } else {
         creep.__movementCost.roadCost = 1
         creep.__movementCost.plainCost = 2
-        creep.__movementCost.swampCost = 5
+        creep.__movementCost.swampCost = 10
 
         creep.__movementCost.ignoreRoads = false
       }
@@ -212,10 +225,7 @@ const bootstrap = {
 
     this._movementCost(creep)
 
-    _.defaults(
-      options,
-      creep.__movementCost
-    )
+    _.defaults(options, creep.__movementCost)
 
     return options
   },

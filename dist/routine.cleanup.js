@@ -8,12 +8,61 @@ const RoomNodeMaxAge = 60 * CREEP_LIFE_TIME // rouglhy 3 days
 const StructureNodeMaxAge = 3 * CREEP_LIFE_TIME
 
 const cleanup = {
+  once: true,
+
   memoryNodeNotAccessed: function (memoryNode, age) {
     if (memoryNode.nodeAccessed) {
       return memoryNode.nodeAccessed < (Game.time - age)
     }
 
     return true
+  },
+
+  cleanupMemoryValues: function () {
+    for (const name in Memory.rooms) {
+      Memory.rooms[name] = _.pick(
+        Memory.rooms[name],
+        [
+          '_ttt',
+          'abld',
+          'hlvl',
+          'intl',
+          'mlvl',
+          'nodeAccessed',
+          'slvl',
+          'srck',
+          'stre',
+          'threat',
+          'trme',
+          'wlvl'
+        ]
+      )
+    }
+
+    for (const name in Memory.flags) {
+      Memory.flags[name] = _.pick(
+        Memory.flags[name],
+        [
+          'aftr',
+          'arum',
+          'fcnt',
+          'hrum'
+        ]
+      )
+    }
+
+    if (Memory.structures) {
+      for (const id in Memory.structures) {
+        Memory.structures[id] = _.pick(
+          Memory.structures[id],
+          [
+            'isSource'
+          ]
+        )
+      }
+    }
+
+    console.log('Memory values sanitized')
   },
 
   cleanupMemory: function () {
@@ -75,6 +124,11 @@ const cleanup = {
   },
 
   cleanup: function () {
+    if (this.once) {
+      this.once = false
+      this.cleanupMemoryValues()
+    }
+
     this.cleanupMemory()
     this.cleanupFlags()
   }

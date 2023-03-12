@@ -5,7 +5,7 @@ const bootstrap = require('./bootstrap')
 const historyActor =
 {
   clearCaches: function () {
-    Game.__idCache = { }
+    Game.__historyActor_getObjectById = { }
     Game.__skipActors = { }
     Game.__skipAttackTargets = { }
     Game.__skipHealTargets = { }
@@ -21,26 +21,26 @@ const historyActor =
     if (ownStructure) return ownStructure
 
     // check self-filled cache
-    const cached = Game.__idCache[id]
+    const cached = Game.__historyActor_getObjectById[id]
     if (cached) return cached
 
     const byId = Game.getObjectById(id)
     if (byId !== null) {
-      Game.__idCache[id] = byId
+      Game.__historyActor_getObjectById[id] = byId
       return byId
     }
 
     const tombstones = room.find(FIND_TOMBSTONES)
     const byTombstone = _.find(tombstones, _.matchesProperty('creep.id', id))
     if (byTombstone !== undefined) {
-      Game.__idCache[id] = byTombstone.creep
+      Game.__historyActor_getObjectById[id] = byTombstone.creep
       return byTombstone.creep
     }
 
     const ruins = room.find(FIND_RUINS)
     const byRuin = _.find(ruins, _.matchesProperty('structure.id', id))
     if (byRuin !== undefined) {
-      Game.__idCache[id] = byRuin.structure
+      Game.__historyActor_getObjectById[id] = byRuin.structure
       return byRuin.structure
     }
 
