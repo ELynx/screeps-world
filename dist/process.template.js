@@ -11,7 +11,10 @@ function Process (id) {
 
   this._register = function () {
     bootstrap.registerProcessController(this)
-    profiler.registerObject(this, this.id)
+
+    if (Game.flags.profiler && Game.flags.profiler.pos) {
+      profiler.registerObject(this, this.id)
+    }
   }
 
   this.register = function () {
