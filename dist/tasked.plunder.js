@@ -103,7 +103,6 @@ plunder.moveAndLoad = function (creep, target) {
     creep.moveToWrapper(
       target,
       {
-        costCallback: mapUtils.costCallback_costMatrixWithUnwalkableBorders,
         range: 1,
         reusePath: _.random(3, 5)
       }
