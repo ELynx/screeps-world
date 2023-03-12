@@ -85,7 +85,6 @@ const bodywork = {
 
     // call for new room
     if (energy === 0) {
-      // TODO 2nd room is possible at 800, this will lock out reinforcements
       // full scale machine
       return this.makeWCM(5, 1)
     }
