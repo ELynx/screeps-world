@@ -31,6 +31,8 @@ buildController._sites = function (room) {
 
   if (room.__actType === bootstrap.RoomActTypeMy) {
     if (room.controller && room.controller.level < 2 && Game.iff.ownUsername) {
+      usedSites = []
+
       for (const site of allSites) {
         // STRATEGY in own rooms remove foreigh construction sites
         if (site.owner.username !== Game.iff.ownUsername) {
