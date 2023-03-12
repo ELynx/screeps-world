@@ -1,7 +1,6 @@
 'use strict'
 
 const spawn = require('./routine.spawn')
-const mapUtils = require('./routine.map')
 
 const Tasked = require('./tasked.template')
 
