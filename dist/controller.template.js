@@ -417,7 +417,10 @@ function Controller (id) {
     **/
   this.register = function () {
     bootstrap.registerRoomController(this)
-    profiler.registerObject(this, this.id)
+
+    if (Game.flags.profiler && Game.flags.profiler.pos) {
+      profiler.registerObject(this, this.id)
+    }
   }
 };
 

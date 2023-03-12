@@ -422,7 +422,9 @@ function Tasked (id) {
       spawn.registerBodyFunction(this.id, _.bind(this.makeBody, this))
     }
 
-    profiler.registerObject(this, this.id)
+    if (Game.flags.profiler && Game.flags.profiler.pos) {
+      profiler.registerObject(this, this.id)
+    }
   }
 };
 
