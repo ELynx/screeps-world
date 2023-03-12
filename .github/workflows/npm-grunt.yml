@@ -9,6 +9,11 @@ on:
         required: true
         default: "default"
         type: string
+      ptr:
+        description: "Send to Public Test Realm"
+        required: true
+        default: false
+        type: boolean
       bundle:
         description: "Bundle files all together"
         required: true
@@ -33,6 +38,7 @@ jobs:
           PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
+          PUSH_PTR: ${{ inputs.ptr }}
           PUSH_WHAT: "dist/*.js"
         run: |
           npm install
@@ -46,6 +52,7 @@ jobs:
           PUSH_EMAIL: ${{ secrets.PUSH_EMAIL }}
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
+          PUSH_PTR: ${{ inputs.ptr }}
           PUSH_WHAT: "out/main.js"
         run: |
           npm install

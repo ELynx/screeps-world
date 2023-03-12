@@ -11,7 +11,8 @@ module.exports = function (grunt) {
             {
               email: envVars.PUSH_EMAIL,
               token: envVars.PUSH_TOKEN,
-              branch: envVars.PUSH_BRANCH
+              branch: envVars.PUSH_BRANCH,
+              ptr: envVars.PUSH_PTR
             },
           dist:
             {
