@@ -235,21 +235,15 @@ function Controller (id) {
     return this._manhattanDistanceCost(creep, target)
   }
 
-  this._creepToTargetAscendingSortFunction = function (creep, t1, t2) {
-    const cost1 = this.creepToTargetCost(creep, t1)
-    const cost2 = this.creepToTargetCost(creep, t2)
-
-    return cost1 - cost2
-  }
-
   this._creepToTargetsAscendingSort = function (creep, targets) {
+    for (const target of targets) {
+      target.__tmp_cost = this.creepToTargetCost(creep, target)
+    }
+
     targets.sort(
-      _.bind(
-        function (t1, t2) {
-          return this._creepToTargetAscendingSortFunction(creep, t1, t2)
-        },
-        this
-      )
+      function (t1, t2) {
+        return t1.__tmp_cost - t2.__tmp_cost
+      }
     )
   }
 
