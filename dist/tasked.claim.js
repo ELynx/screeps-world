@@ -104,6 +104,14 @@ claim.creepAtDestination = function (creep) {
         } else {
           sign = ''
           rc = creep.reserveController(controller)
+
+          // 50% around 15 rolls, 99% around 63 rolls
+          if (_.random(1, 20) === 20) {
+            const structures = creep.room.find(FIND_STRUCTURES)
+            if (_.some(structures, _.matchesProperty('structureType', STRUCTURE_INVADER_CORE))) {
+              this.callRoomService(creep.room)
+            }
+          }
         }
       }
 
