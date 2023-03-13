@@ -21,6 +21,21 @@ claim._roomCheck = function (room) {
   return true
 }
 
+claim.callRoomService = function (room) {
+  // to avoid several calls per tick
+  if (room.__claim_serviced) return
+  room.__claim_serviced = true
+
+  const flagName = 'strelok_' + room.name
+
+  const flag = Game.flags[flagName]
+  if (flag) return
+
+  // STRATEGY room service flag position
+  const position = new RoomPosition(49, 49, room.name)
+  position.createFlagWithValue(flagName, 1)
+}
+
 claim.creepAtDestination = function (creep) {
   const controller = creep.room.controller
   if (!controller) {
@@ -64,6 +79,10 @@ claim.creepAtDestination = function (creep) {
       } else if (controller.reservation && controller.reservation.username !== creep.owner.username) {
         sign = ''
         rc = creep.attackController(controller)
+
+        if (controller.reservation.username === 'Invader') {
+          this.callRoomService(creep.room)
+        }
       } else {
         let doClaim = false
 
