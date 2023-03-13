@@ -223,23 +223,34 @@ function Controller (id) {
     return this._defaultFilter(creep)
   }
 
-  this._manhattanDistanceCost = function (target, creep) {
-    return target.pos.manhattanDistance(creep.pos)
+  this._manhattanDistanceCost = function (creep, target) {
+    return creep.pos.manhattanDistance(target.pos)
   }
 
   /**
     COST of creep working on target.
     Lower is better, higher is worse.
     **/
-  this.creepToTargetCost = function (target, creep) {
-    return this._manhattanDistanceCost(target, creep)
+  this.creepToTargetCost = function (creep, target) {
+    return this._manhattanDistanceCost(creep, target)
   }
 
-  this._targetToCreepSort = function (creep, t1, t2) {
-    const cost1 = this.creepToTargetCost(t1, creep)
-    const cost2 = this.creepToTargetCost(t2, creep)
+  this._creepToTargetAscendingSortFunction = function (creep, t1, t2) {
+    const cost1 = this.creepToTargetCost(creep, t1)
+    const cost2 = this.creepToTargetCost(creep, t2)
 
     return cost1 - cost2
+  }
+
+  this._creepToTargetsAscendingSort = function (creep, targets) {
+    targets.sort(
+      _.bind(
+        function (t1, t2) {
+          return this._creepToTargetAscendingSortFunction(creep, t1, t2)
+        },
+        this
+      )
+    )
   }
 
   /**
@@ -273,14 +284,7 @@ function Controller (id) {
       const targets = remainingTargets.slice(0)
 
       // sort targets in order of increased effort
-      targets.sort(
-        _.bind(
-          function (t1, t2) {
-            return this._targetToCreepSort(creep, t1, t2)
-          },
-          this
-        )
-      )
+      this._creepToTargetsAscendingSort(creep, targets)
 
       let target
       let path
