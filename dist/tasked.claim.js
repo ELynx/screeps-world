@@ -160,6 +160,18 @@ claim.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
+claim.makeClaimM = function (claim, move) {
+  const a = new Array(move - 1)
+  a.fill(MOVE)
+
+  const b = new Array(claim)
+  b.fill(CLAIM)
+
+  const c = [MOVE]
+
+  return a.concat(b).concat(c)
+}
+
 claim.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
 
@@ -168,21 +180,21 @@ claim.makeBody = function (room) {
   if (energy < 850) {
     // on swamp move 1 unit per 2 ticks
     // move up front to allow crawl even damaged
-    // 750  50    50    600    50
-    return [MOVE, MOVE, CLAIM, MOVE]
+    // 750
+    return this.makeClaimM(1, 3)
   }
 
   if (energy < 1700) {
     // on swamp move 1 unit per 1 tick
     // move up front to allow crawl even damaged
-    // 850  50    50    50    50    600    50
-    return [MOVE, MOVE, MOVE, MOVE, CLAIM, MOVE]
+    // 850
+    return this.makeClaimM(1, 5)
   }
 
   // on swamp move 1 unit per 1 tick
   // move up front to allow crawl even damaged
-  // 1700 50    50    50    50    50    50    50    50    50    600    600    50
-  return [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM, CLAIM, MOVE]
+  // 1700
+  return this.makeClaimM(2, 10)
 }
 
 claim.register()
