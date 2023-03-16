@@ -63,10 +63,6 @@ Some material on autobases:
 
 Fatigue based emergent road building. CostMatrix has ser-de.
 
-[SnappyJS](https://github.com/zhipeng-jia/snappyjs) compression library with support for unsigned 8 byte array support.
-
-Take snapshot of buildings, use to re-build the room.
-
 Limit autobuild run to some N elements.
 
 Send resources away instead of selling out on panic.
