@@ -21,7 +21,7 @@ const StructureTypeToIndex = {
   [STRUCTURE_WALL]: 14
 }
 
-IndexTpStructureType =
+IndexToStructureType =
 [
   'NoStructureAtIndexZero',
   STRUCTURE_EXTENSION,
@@ -39,6 +39,29 @@ IndexTpStructureType =
   STRUCTURE_TOWER,
   STRUCTURE_WALL
 ]
+
+Structure.prototype.takePhoto = function () {
+  const index = StructureTypeToIndex[this.structureType]
+  if (index === undefined) return undefined
+
+  const x = this.pos.x
+  const y = this.pos.y
+
+  // hello packrat
+  const code = (index << 12) | (x << 6) | y
+
+  return String.fromCharCode(code)
+}
+
+Room.prototype.fromPhoto = function (code) {
+  const index = (code & 0b1111000000000000) >> 12
+  const structureType = IndexToStructureType[index]
+
+  const xxxxx = (code & 0b0000111111000000) >> 6
+  const yyyyyy = code & 0b0000000000111111
+
+  return [ new RoomPosition(xxxxx, yyyyyy, this.name), structureType ]
+}
 
 autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction) {
   // cheap call
@@ -157,7 +180,35 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   return rc
 }
 
+autobuildProcess.takePhoto = function (room) {
+  const allStructures = room.find(FIND_STRUCTURES)
+
+  let photo = ''
+  for (const structure of allStructures) {
+    const c = structure.takePhoto()
+
+    if (c === undefined) continue
+
+    photo += c
+  }
+
+  console.log(photo)
+
+  room.memory.photo = photo
+  room.memory.nodeAccessed = Game.time
+}
+
 autobuildProcess.photoBuild = function (room) {
+  const photo = room.memory.photo
+  if (photo === undefined) return
+
+  for (var i = 0; i < photo.length; ++i) {
+    const c = photo.charCodeAt(i)
+
+    const [position, structureType] = room.fromPhoto(c)
+
+    this.tryPlan(room, position, structureType)
+  }
 }
 
 autobuildProcess.wallsAroundController = function (room) {
