@@ -60,7 +60,7 @@ Room.prototype.fromPhoto = function (code) {
   const xxxxx = (code & 0b0000111111000000) >> 6
   const yyyyyy = code & 0b0000000000111111
 
-  return [ new RoomPosition(xxxxx, yyyyyy, this.name), structureType ]
+  return [new RoomPosition(xxxxx, yyyyyy, this.name), structureType]
 }
 
 autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction) {
@@ -202,7 +202,7 @@ autobuildProcess.photoBuild = function (room) {
   const photo = room.memory.photo
   if (photo === undefined) return
 
-  for (var i = 0; i < photo.length; ++i) {
+  for (let i = 0; i < photo.length; ++i) {
     const c = photo.charCodeAt(i)
 
     const [position, structureType] = room.fromPhoto(c)
