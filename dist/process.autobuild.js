@@ -55,10 +55,10 @@ Structure.prototype.takePhoto = function () {
 
 Room.prototype.fromPhoto = function (code) {
   const index = (code & 0b1111000000000000) >> 12
-  const structureType = IndexToStructureType[index]
-
   const xxxxx = (code & 0b0000111111000000) >> 6
   const yyyyyy = code & 0b0000000000111111
+
+  const structureType = IndexToStructureType[index]
 
   return [new RoomPosition(xxxxx, yyyyyy, this.name), structureType]
 }
