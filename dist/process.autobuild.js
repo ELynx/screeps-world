@@ -121,6 +121,29 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   return rc
 }
 
+autobuildProcess.wallsAroundController = function (room) {
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
+  if (canHave === 0) return
+
+  const terrain = room.getTerrain()
+
+  for (let dx = -1; dx <= 1; ++dx) {
+    for (let dy = -1; dy <= 1; ++dy) {
+      if (dx === 0 && dy === 0) continue
+
+      const x = room.controller.pos.x + dx
+      const y = room.controller.pos.y + dy
+
+      const terrainValue = terrain.get(x, y)
+
+      if (terrainValue === TERRAIN_MASK_WALL) continue
+
+      this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
+    }
+  }
+}
+
 autobuildProcess.extractor = function (room) {
   if (room.extractor) return
 
@@ -408,29 +431,6 @@ autobuildProcess.coverRamparts = function (room) {
       const pos = new RoomPosition(parseInt(kx), parseInt(ky), room.name)
       const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART)
       this.logConstructionSite(room, pos, STRUCTURE_RAMPART, rc)
-    }
-  }
-}
-
-autobuildProcess.wallsAroundController = function (room) {
-  const level = room.controller ? room.controller.level : 0
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
-  if (canHave === 0) return
-
-  const terrain = room.getTerrain()
-
-  for (let dx = -1; dx <= 1; ++dx) {
-    for (let dy = -1; dy <= 1; ++dy) {
-      if (dx === 0 && dy === 0) continue
-
-      const x = room.controller.pos.x + dx
-      const y = room.controller.pos.y + dy
-
-      const terrainValue = terrain.get(x, y)
-
-      if (terrainValue === TERRAIN_MASK_WALL) continue
-
-      this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
     }
   }
 }
