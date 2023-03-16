@@ -21,7 +21,7 @@ const StructureTypeToIndex = {
   [STRUCTURE_WALL]: 14
 }
 
-IndexToStructureType =
+const IndexToStructureType =
 [
   'NoStructureAtIndexZero',
   STRUCTURE_EXTENSION,
