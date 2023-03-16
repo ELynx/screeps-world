@@ -29,6 +29,7 @@ const cleanup = {
           'intl',
           'mlvl',
           'nodeAccessed',
+          'photo',
           'slvl',
           'srck',
           'stre',
@@ -103,10 +104,11 @@ const cleanup = {
     const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
 
     for (const flagName in Game.flags) {
-      if (flagName === 'profiler') continue
-      if (flagName === 'recount') continue
       if (flagName === 'autobuild') continue
       if (flagName === 'dashboard') continue
+      if (flagName === 'photo') continue
+      if (flagName === 'profiler') continue
+      if (flagName === 'recount') continue
 
       const controllerFound = _.some(
         flagKeys,
