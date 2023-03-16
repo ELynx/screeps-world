@@ -121,6 +121,9 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   return rc
 }
 
+autobuildProcess.photoBuild = function (room) {
+}
+
 autobuildProcess.wallsAroundController = function (room) {
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
@@ -436,6 +439,7 @@ autobuildProcess.coverRamparts = function (room) {
 }
 
 autobuildProcess.actualWork = function (room) {
+  this.photoBuild(room)
   this.wallsAroundController(room)
   this.extractor(room)
   this.sourceLink(room)
