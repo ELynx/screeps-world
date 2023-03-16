@@ -4,6 +4,42 @@ const Process = require('./process.template')
 
 const autobuildProcess = new Process('autobuild')
 
+const StructureTypeToIndex = {
+  [STRUCTURE_EXTENSION]: 1,
+  [STRUCTURE_FACTORY]: 2,
+  [STRUCTURE_LAB]: 3,
+  [STRUCTURE_LINK]: 4,
+  [STRUCTURE_NUKER]: 5,
+  [STRUCTURE_OBSERVER]: 6,
+  [STRUCTURE_POWER_SPAWN]: 7,
+  [STRUCTURE_RAMPART]: 8,
+  [STRUCTURE_ROAD]: 9,
+  [STRUCTURE_SPAWN]: 10,
+  [STRUCTURE_STORAGE]: 11,
+  [STRUCTURE_TERMINAL]: 12,
+  [STRUCTURE_TOWER]: 13,
+  [STRUCTURE_WALL]: 14
+}
+
+IndexTpStructureType =
+[
+  'NoStructureAtIndexZero',
+  STRUCTURE_EXTENSION,
+  STRUCTURE_FACTORY,
+  STRUCTURE_LAB,
+  STRUCTURE_LINK,
+  STRUCTURE_NUKER,
+  STRUCTURE_OBSERVER,
+  STRUCTURE_POWER_SPAWN,
+  STRUCTURE_RAMPART,
+  STRUCTURE_ROAD,
+  STRUCTURE_SPAWN,
+  STRUCTURE_STORAGE,
+  STRUCTURE_TERMINAL,
+  STRUCTURE_TOWER,
+  STRUCTURE_WALL
+]
+
 autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction) {
   // cheap call
   const terrain = room.getTerrain()
