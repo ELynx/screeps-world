@@ -44,9 +44,13 @@ claim.creepAtDestination = function (creep) {
   }
 
   // resistance detector
-  if (creep.hits < creep.hitsMax && !creep.room.myOrMyReserved()) {
-    this._onProblemDetected(creep)
-    return
+  if (creep.hits < creep.hitsMax) {
+    if (creep.room.myOrMyReserved()) {
+      this.callRoomService(creep.room)
+    } else {
+      this._onProblemDetected(creep)
+      return
+    }
   }
 
   // blocked path detector
@@ -136,7 +140,7 @@ claim.creepAtDestination = function (creep) {
       )
       rc = OK // keep walking
     }
-  } // end of harmable controller
+  } // end of actable controller
 
   if (rc === ERR_INVALID_TARGET ||
       rc === ERR_FULL ||
