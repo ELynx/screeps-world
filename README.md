@@ -61,9 +61,7 @@ Some material on autobases:
 
 * [Screeps Script](https://github.com/slothsoft/screeps-script)
 
-Fatigue based emergent road building. CostMatrix has ser-de.
-
-Limit autobuild run to some N elements.
+Fatigue based emergent road building.
 
 Send resources away instead of selling out on panic.
 
@@ -84,8 +82,6 @@ Room attack definition:
 Flag to turn verbose naming on and off.
 
 Intent queue for withdraw and transfer.
-
-Monitor Source Keeper respawn.
 
 Spawn intent uber-wrapper:
 
