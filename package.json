@@ -126,6 +126,8 @@
       "StructureController",
       "StructureLink",
       "StructureTerminal",
+      "StructureSpawn",
+      "StructureExtension",
       "SYSTEM_USERNAME",
       "TERRAIN_MASK_WALL",
       "TOP",
