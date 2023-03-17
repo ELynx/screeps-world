@@ -5,25 +5,28 @@ const Process = require('./process.template')
 const autobuildProcess = new Process('autobuild')
 
 const StructureTypeToIndex = {
-  [STRUCTURE_EXTENSION]: 1,
-  [STRUCTURE_FACTORY]: 2,
-  [STRUCTURE_LAB]: 3,
-  [STRUCTURE_LINK]: 4,
-  [STRUCTURE_NUKER]: 5,
-  [STRUCTURE_OBSERVER]: 6,
-  [STRUCTURE_POWER_SPAWN]: 7,
-  [STRUCTURE_RAMPART]: 8,
-  [STRUCTURE_ROAD]: 9,
-  [STRUCTURE_SPAWN]: 10,
-  [STRUCTURE_STORAGE]: 11,
-  [STRUCTURE_TERMINAL]: 12,
-  [STRUCTURE_TOWER]: 13,
-  [STRUCTURE_WALL]: 14
+  [STRUCTURE_WALL]:        0,
+  [STRUCTURE_CONTAINER]:   1,
+  [STRUCTURE_EXTENSION]:   2,
+  [STRUCTURE_FACTORY]:     3,
+  [STRUCTURE_LAB]:         4,
+  [STRUCTURE_LINK]:        5,
+  [STRUCTURE_NUKER]:       6,
+  [STRUCTURE_OBSERVER]:    7,
+  [STRUCTURE_POWER_SPAWN]: 8,
+  [STRUCTURE_RAMPART]:     9,
+  [STRUCTURE_ROAD]:        10,
+  [STRUCTURE_SPAWN]:       11,
+  [STRUCTURE_STORAGE]:     12,
+  // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
+  [STRUCTURE_TERMINAL]:    14,
+  [STRUCTURE_TOWER]:       15
 }
 
 const IndexToStructureType =
 [
-  'NoStructureAtIndexZero',
+  STRUCTURE_WALL,
+  STRUCTURE_CONTAINER,
   STRUCTURE_EXTENSION,
   STRUCTURE_FACTORY,
   STRUCTURE_LAB,
@@ -35,9 +38,9 @@ const IndexToStructureType =
   STRUCTURE_ROAD,
   STRUCTURE_SPAWN,
   STRUCTURE_STORAGE,
+  undefined, // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
   STRUCTURE_TERMINAL,
   STRUCTURE_TOWER,
-  STRUCTURE_WALL
 ]
 
 Structure.prototype.takePhoto = function () {
@@ -47,7 +50,7 @@ Structure.prototype.takePhoto = function () {
   const x = this.pos.x
   const y = this.pos.y
 
-  // hello packrat
+  // idea taken from screeps packrat
   const code = (index << 12) | (x << 6) | y
 
   return String.fromCharCode(code)
@@ -161,15 +164,31 @@ autobuildProcess.logConstructionSite = function (room, posOrRoomObject, structur
 }
 
 autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
-  const sites = room.lookForAt(LOOK_CONSTRUCTION_SITES, posOrRoomObject)
-  if (sites.length > 0) {
-    return ERR_FULL
+  const level = room.controller ? room.controller.level : 0
+  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
+  if (canHave === 0) return ERR_RCL_NOT_ENOUGH
+
+  const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
+  const kx = String(pos.x)
+  const ky = String(pos.y)
+
+  const csAtY = room.__autobuild_constructionSites[ky]
+  if (csAtY) {
+    const csAtXY = csAtY[kx]
+    if (csAtXY) {
+      return ERR_BUSY
+    }
   }
 
-  const structs = room.lookForAt(LOOK_STRUCTURES, posOrRoomObject)
-  for (const struct of structs) {
-    if (struct.structureType === structureType) {
-      return ERR_FULL
+  const atY = room.__autobuild_structures[ky]
+  if (atY) {
+    const atXY = atY[kx]
+    if (atXY) {
+      for (const structure of atXY) {
+        if (structure.structureType === structureType) {
+          return OK
+        }
+      }
     }
   }
 
@@ -202,10 +221,13 @@ autobuildProcess.photoBuild = function (room) {
   const photo = room.memory.photo
   if (photo === undefined) return
 
+  room.memory.nodeAccessed = Game.time
+
   for (let i = 0; i < photo.length; ++i) {
     const c = photo.charCodeAt(i)
-
     const [position, structureType] = room.fromPhoto(c)
+
+    if (structureType === undefined) continue
 
     this.tryPlan(room, position, structureType)
   }
@@ -461,13 +483,11 @@ autobuildProcess.coverRamparts = function (room) {
   // this function has potential to create a lot of sites
   // as such, unfiy look for sites and locations here, not in generic planner
   const terrain = room.getTerrain()
-  const constructionSites = room.lookForAtArea(LOOK_CONSTRUCTION_SITES, 0, 0, 49, 49)
-  const structures = room.lookForAtArea(LOOK_STRUCTURES, 0, 0, 49, 49)
 
   // since call is TOP, LEFT, result is Y, then X...
-  for (const ky in structures) {
-    const atY = structures[ky]
-    const csAtY = constructionSites[ky]
+  for (const ky in room.__autobuild_structures) {
+    const atY = room.__autobuild_structures[ky]
+    const csAtY = room.__autobuild_constructionSites[ky]
 
     for (const kx in atY) {
       // no ramparts on walls
@@ -526,6 +546,9 @@ autobuildProcess.coverRamparts = function (room) {
 }
 
 autobuildProcess.actualWork = function (room) {
+  room.__autobuild_structures = room.lookForAtArea(LOOK_STRUCTURES, 0, 0, 49, 49)
+  room.__autobuild_constructionSites = room.lookForAtArea(LOOK_CONSTRUCTION_SITES, 0, 0, 49, 49)
+
   this.photoBuild(room)
   this.wallsAroundController(room)
   this.extractor(room)
