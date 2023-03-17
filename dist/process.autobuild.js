@@ -5,22 +5,22 @@ const Process = require('./process.template')
 const autobuildProcess = new Process('autobuild')
 
 const StructureTypeToIndex = {
-  [STRUCTURE_WALL]:        0,
-  [STRUCTURE_CONTAINER]:   1,
-  [STRUCTURE_EXTENSION]:   2,
-  [STRUCTURE_FACTORY]:     3,
-  [STRUCTURE_LAB]:         4,
-  [STRUCTURE_LINK]:        5,
-  [STRUCTURE_NUKER]:       6,
-  [STRUCTURE_OBSERVER]:    7,
+  [STRUCTURE_WALL]: 0,
+  [STRUCTURE_CONTAINER]: 1,
+  [STRUCTURE_EXTENSION]: 2,
+  [STRUCTURE_FACTORY]: 3,
+  [STRUCTURE_LAB]: 4,
+  [STRUCTURE_LINK]: 5,
+  [STRUCTURE_NUKER]: 6,
+  [STRUCTURE_OBSERVER]: 7,
   [STRUCTURE_POWER_SPAWN]: 8,
-  [STRUCTURE_RAMPART]:     9,
-  [STRUCTURE_ROAD]:        10,
-  [STRUCTURE_SPAWN]:       11,
-  [STRUCTURE_STORAGE]:     12,
+  [STRUCTURE_RAMPART]: 9,
+  [STRUCTURE_ROAD]: 10,
+  [STRUCTURE_SPAWN]: 11,
+  [STRUCTURE_STORAGE]: 12,
   // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
-  [STRUCTURE_TERMINAL]:    14,
-  [STRUCTURE_TOWER]:       15
+  [STRUCTURE_TERMINAL]: 14,
+  [STRUCTURE_TOWER]: 15
 }
 
 const IndexToStructureType =
@@ -40,7 +40,7 @@ const IndexToStructureType =
   STRUCTURE_STORAGE,
   undefined, // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
   STRUCTURE_TERMINAL,
-  STRUCTURE_TOWER,
+  STRUCTURE_TOWER
 ]
 
 Structure.prototype.takePhoto = function () {
