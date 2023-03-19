@@ -4,12 +4,12 @@ const intentSolver = require('./routine.intent')
 
 const noDemand =
 {
-  priority: 90
+  priority: 99
 }
 
 const noSupply =
 {
-  priority: 90
+  priority: 99
 }
 
 const simpleDemand = function (something, type, priority) {
