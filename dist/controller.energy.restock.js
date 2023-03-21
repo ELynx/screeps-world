@@ -65,9 +65,9 @@ energyRestockController.targets = function (room) {
     allStructures,
     function (structure) {
       if (structure.structureType === STRUCTURE_TERMINAL) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.trme || 0)
+        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.trme || 0)
       } else if (structure.structureType === STRUCTURE_STORAGE) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.stre || 0)
+        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.stre || 0)
       }
 
       return false

@@ -96,6 +96,15 @@ const bootstrap = {
     this.processControllers[processController.id] = processController
   },
 
+  makeItStop: function (creep, stop) {
+    creep.memory._stop =
+    {
+      stop: { x: stop.x, y: stop.y, room: stop.roomName },
+      time: Game.time,
+      room: creep.room.name
+    }
+  },
+
   // imitate _move cahce
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
   imitateMoveCreate: function (target, creep, path) {
@@ -109,12 +118,7 @@ const bootstrap = {
     }
 
     const stop = _.last(path)
-    creep.memory._stop =
-    {
-      stop: { x: stop.x, y: stop.y, room: stop.roomName },
-      time: Game.time,
-      room: creep.room.name
-    }
+    this.makeItStop(creep, stop)
   },
 
   imitateMoveErase: function (creep) {

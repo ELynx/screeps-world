@@ -165,7 +165,7 @@ autobuildProcess.logConstructionSite = function (room, posOrRoomObject, structur
 
 autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   const level = room.controller ? room.controller.level : 0
-  const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
+  const canHave = CONTROLLER_STRUCTURES[structureType][level] || 0
   if (canHave === 0) return ERR_RCL_NOT_ENOUGH
 
   const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
