@@ -109,7 +109,7 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
 
       this.memory._move.path = Room.serializePath(this.memory._move.path)
 
-      if (last) {
+      if (stop) {
         bootstrap.makeItStop(this, stop)
       }
     }
