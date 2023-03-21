@@ -27,8 +27,6 @@ const repairController = require('./controller.repair')
 const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
-// STRATEGY priority for creep assignment
-
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
   energyHarvestController.id,
@@ -37,6 +35,20 @@ const controllersFreeCapacity = [
   grabController.id,
   mineralHarvestController.id
 ]
+
+// all controllers that will keep creep in place for more than one tick
+const controllersBlockStop = [
+  buildController.id,
+  downgradeController.id,
+  energyHarvestController.id,
+  energySpecialistController.id,
+  mineralHarvestController.id,
+  rampupController.id,
+  repairController.id,
+  upgradeController.id
+]
+
+// STRATEGY priority for creep assignment
 
 const controllersMyAuto = [
   downgradeController.id, // always on top
@@ -342,8 +354,7 @@ const roomActor =
         }
 
         if (rc === OK) {
-          // block range <= 1 long term target spots
-          if (creep.memory.dact <= 1 && creep.__target.structureType === undefined) {
+          if (_.some(controllersBlockStop, _.matches(creep.memory.ctrl))) {
             creep.blockStop()
           }
           this.roomControllersObserveOwn(creep)
