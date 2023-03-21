@@ -330,6 +330,7 @@ const roomActor =
                 ignoreCreeps: false, // if original path has to be re-made, be aware
                 maxRooms: 1,
                 range: creep.memory.dact,
+                rememberStop: true,
                 reusePath: _.random(3, 5)
               }
             )
