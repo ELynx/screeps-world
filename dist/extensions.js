@@ -97,7 +97,25 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
 
   this.rememberPosition()
 
-  return this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
+  if (options.rememberStop === true) {
+    options.serializeMemory = false
+  }
+
+  const rc = this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
+
+  if (options.rememberStop === true) {
+    if (this.memory._move && _.isArray(this.memory._move.path)) {
+      const stop = _.last(this.memory._move.path)
+
+      this.memory._move.path = Room.serializePath(this.memory._move.path)
+
+      if (stop) {
+        bootstrap.makeItStop(this, stop)
+      }
+    }
+  }
+
+  return rc
 }
 
 Creep.prototype.blockPosition = function () {
