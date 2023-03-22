@@ -4,12 +4,12 @@ const intentSolver = require('./routine.intent')
 
 const noDemand =
 {
-  priority: 99
+  priority: null
 }
 
 const noSupply =
 {
-  priority: 99
+  priority: null
 }
 
 const simpleDemand = function (something, type, priority) {
@@ -87,7 +87,7 @@ Object.defineProperty(
   {
     get: function () {
       if (this.isSource()) {
-        return simpleDemand(this, RESOURCE_ENERGY, 0)
+        return simpleDemand(this, RESOURCE_ENERGY, 1)
       } else {
         return noDemand
       }
@@ -102,7 +102,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return universalStoreSupply(this, 65)
+      return universalStoreSupply(this, 50)
     },
     configurable: true,
     enumerable: true
@@ -114,7 +114,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return simpleDemand(this, RESOURCE_ENERGY, 51)
+      return simpleDemand(this, RESOURCE_ENERGY, 11)
     },
     configurable: true,
     enumerable: true
@@ -145,7 +145,7 @@ Object.defineProperty(
       if (this.isSource()) {
         return noSupply
       } else {
-        return simpleSupply(this, RESOURCE_ENERGY, 64)
+        return simpleSupply(this, RESOURCE_ENERGY, 40)
       }
     },
     configurable: true,
@@ -158,7 +158,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return simpleDemand(this, RESOURCE_ENERGY, 50)
+      return simpleDemand(this, RESOURCE_ENERGY, 10)
     },
     configurable: true,
     enumerable: true
