@@ -21,9 +21,9 @@ mineralRestockController.act = function (withStore, creep) {
   return bootstrap.WARN_INTENDEE_EXHAUSTED
 }
 
-mineralRestockController._checkStore = function (structure) {
+mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
   if (structure && structure.isActiveSimple) {
-    return structure.store.getFreeCapacity() > 0
+    return structure.store.getFreeCapacity() > freeCapacity
   }
 
   return false
@@ -31,7 +31,7 @@ mineralRestockController._checkStore = function (structure) {
 
 // STRATEGY mineral fill order
 mineralRestockController.targets = function (room) {
-  if (this._checkStore(room.terminal)) {
+  if (this._checkStore(room.terminal, 1000)) {
     return [room.terminal]
   }
 
