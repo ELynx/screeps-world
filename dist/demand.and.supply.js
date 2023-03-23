@@ -11,14 +11,7 @@ const noDemand =
   }
 }
 
-const noSupply =
-{
-  priority: null,
-
-  amount: function () {
-    return 0
-  }
-}
+const noSupply = noDemand
 
 const simpleDemand = function (something, type, priority) {
   const amount = intentSolver.getFreeCapacity(something, type)
@@ -118,11 +111,16 @@ Object.defineProperty(
   'demand_restocker',
   {
     get: function () {
+      if (this.__demand_cache_x) return this.__demand_cache_x
+      if (this.__demand_cache) return this.__demand_cache
+
       if (this.isSource()) {
-        return simpleDemand(this, RESOURCE_ENERGY, 11)
-      } else {
-        return noDemand
+        this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 11)
+        return this.__demand_cache
       }
+
+      this.__demand_cache_x = noDemand
+      return this.__demand_cache_x
     },
     configurable: true,
     enumerable: true
@@ -134,7 +132,10 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return simpleSupply(this, RESOURCE_ENERGY, 11)
+      if (this.__supply_cache) return this.__supply_cache
+
+      this.__supply_cache = simpleSupply(this, RESOURCE_ENERGY, 11)
+      return this.__supply_cache
     },
     configurable: true,
     enumerable: true
@@ -146,7 +147,10 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return simpleDemand(this, RESOURCE_ENERGY, 11)
+      if (this.__demand_cache) return this.__demand_cache
+
+      this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 11)
+      return this.__demand_cache
     },
     configurable: true,
     enumerable: true
@@ -158,11 +162,16 @@ Object.defineProperty(
   'demand_restocker',
   {
     get: function () {
+      if (this.__demand_cache_x) return this.__demand_cache_x
+      if (this.__demand_cache) return this.__demand_cache
+
       if (this.isSource()) {
-        return simpleDemand(this, RESOURCE_ENERGY, 10)
-      } else {
-        return noDemand
+        this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 10)
+        return this.__demand_cache
       }
+
+      this.__demand_cache_x = noDemand
+      return this.__demand_cache_x
     },
     configurable: true,
     enumerable: true
@@ -174,11 +183,16 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      if (this.isSource()) {
-        return noSupply
-      } else {
-        return simpleSupply(this, RESOURCE_ENERGY, 10)
+      if (this.__supply_cache_x) return this.__supply_cache_x
+      if (this.__supply_cache) return this.__supply_cache
+
+      if (!this.isSource()) {
+        this.__supply_cache = simpleSupply(this, RESOURCE_ENERGY, 10)
+        return this.__supply_cache
       }
+
+      this.__supply_cache_x = noSupply
+      return this.__supply_cache_x
     },
     configurable: true,
     enumerable: true
@@ -190,7 +204,10 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return simpleDemand(this, RESOURCE_ENERGY, 10)
+      if (this.__demand_cache) return this.__demand_cache
+
+      this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 10)
+      return this.__demand_cache
     },
     configurable: true,
     enumerable: true
@@ -202,7 +219,10 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return universalStorageDemand(this, 0, 52)
+      if (this.__demand_cache) return this.__demand_cache
+
+      this.__demand_cache = universalStorageDemand(this, 0, 52)
+      return this.__demand_cache
     },
     configurable: true,
     enumerable: true
@@ -214,8 +234,11 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
+      if (this.__supply_cache) return this.__supply_cache
+
       const toKeep = this.room.stre || 0
-      return supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
+      this.__supply_cache = supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
+      return this.__supply_cache
     },
     configurable: true,
     enumerable: true
@@ -227,7 +250,10 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return universalStorageDemand(this, 300, 51)
+      if (this.__demand_cache) return this.__demand_cache
+
+      this.__demand_cache = universalStorageDemand(this, 300, 51)
+      return this.__demand_cache
     },
     configurable: true,
     enumerable: true
@@ -239,8 +265,11 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
+      if (this.__supply_cache) return this.__supply_cache
+
       const toKeep = this.room.trme || 0
-      return supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
+      this.__supply_cache = supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
+      return this.__supply_cache
     },
     configurable: true,
     enumerable: true
@@ -253,8 +282,13 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
+      if (this.__demand_cache) return this.__demand_cache
+
       const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
-      if (free <= 50) return noDemand
+      if (free <= 50) {
+        this.__demand_cache = noDemand
+        return this.__demand_cache
+      }
 
       let priority
       if (free > 0.75 * TOWER_CAPACITY) {
@@ -263,7 +297,7 @@ Object.defineProperty(
         priority = 10
       }
 
-      const demand =
+      this.__demand_cache =
       {
         priority,
 
@@ -275,7 +309,7 @@ Object.defineProperty(
         }
       }
 
-      return demand
+      return this.__demand_cache
     },
     configurable: true,
     enumerable: true
