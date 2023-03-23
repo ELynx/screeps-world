@@ -9,7 +9,7 @@ const energyTakeController = new Controller('energy.take')
 energyTakeController.actRange = 1
 
 energyTakeController.act = function (structure, creep) {
-  const wantGive = structure.supply[RESOURCE_ENERGY]
+  const wantGive = structure.supply[RESOURCE_ENERGY] || 0
   const canTake = intentSolver.getFreeCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantGive, canTake)
