@@ -14,7 +14,7 @@ energyTakeController.act = function (structure, creep) {
 
   const howMuch = Math.min(wantGive, canTake)
 
-  if (howMuch < 0) {
+  if (howMuch <= 0) {
     return ERR_NOT_ENOUGH_RESOURCES
   }
 
@@ -58,17 +58,14 @@ energyTakeController.targets = function (room) {
     )
 
     if (ramparts.length > 0) {
-      const isTakeable = _.bind(
-        function (structure) {
-          return !_.some(
-            ramparts,
-            function (ramp) {
-              return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
-            }
-          )
-        },
-        this
-      )
+      const isTakeable = function (structure) {
+        return !_.some(
+          ramparts,
+          function (ramp) {
+            return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
+          }
+        )
+      }
 
       withEnergySupply = _.filter(withEnergySupply, isTakeable)
     }
