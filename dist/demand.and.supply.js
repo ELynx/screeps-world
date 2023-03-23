@@ -4,12 +4,20 @@ const intentSolver = require('./routine.intent')
 
 const noDemand =
 {
-  priority: null
+  priority: null,
+
+  amount: function () {
+    return 0
+  }
 }
 
 const noSupply =
 {
-  priority: null
+  priority: null,
+
+  amount: function () {
+    return 0
+  }
 }
 
 const simpleDemand = function (something, type, priority) {
@@ -22,7 +30,14 @@ const simpleDemand = function (something, type, priority) {
   const demand =
   {
     priority,
-    [type]: amount
+
+    __type: type,
+    __amount: amount,
+
+    amount: function (type) {
+      if (this.__type === type) return this.__amount
+      return 0
+    }
   }
 
   return demand
@@ -38,16 +53,44 @@ const supplyWithReserve = function (something, type, reserve, priority) {
   const supply =
   {
     priority,
-    [type]: (amount - reserve)
+
+    __type: type,
+    __amount: (amount - reserve),
+
+    amount: function (type) {
+      if (this.__type === type) return this.__amount
+      return 0
+    }
   }
+
+  return supply
 }
 
 const simpleSupply = function (something, type, priority) {
   return supplyWithReserve(something, type, 0, priority)
 }
 
-function UniversalStorageDemand (howMuchEnergyToKeep, priority) {
+const universalStorageDemand = function (something, energyReserve, priority) {
+  const supply =
+  {
+    priority,
 
+    __something: something,
+    __energyReserve: energyReserve,
+
+    amount: function (type) {
+      const free = intentSolver.getFreeCapacity(this.__something, type)
+
+      if (RESOURCE_ENERGY === type) return free
+
+      const want = free - this.__energyReserve
+      if (want <= 0) return 0
+
+      return want
+    }
+  }
+
+  return supply
 }
 
 Object.defineProperty(
@@ -223,7 +266,13 @@ Object.defineProperty(
       const demand =
       {
         priority,
-        [RESOURCE_ENERGY]: free
+
+        __amount: free,
+
+        amount: function (type) {
+          if (RESOURCE_ENERGY === type) return this.__amount
+          return 0
+        }
       }
 
       return demand
