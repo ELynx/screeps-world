@@ -19,7 +19,7 @@ mineralRestockController.act = function (structure, creep) {
 
     const howMuch = (canGive > wantTake) ? (canGive - wantTake) : undefined
 
-    const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType, howMuch)
+    const rc = this.wrapIntent(creep, 'transfer', structure, resourceType, howMuch)
     if (rc !== OK) {
       return rc
     }
@@ -32,7 +32,7 @@ mineralRestockController.act = function (structure, creep) {
 
 mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
   if (structure && structure.isActiveSimple) {
-    return structure.store.getFreeCapacity() > freeCapacity
+    return intentSolver.getFreeCapacity(structure) > freeCapacity
   }
 
   return false
