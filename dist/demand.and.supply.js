@@ -28,20 +28,26 @@ const simpleDemand = function (something, type, priority) {
   return demand
 }
 
-const simpleSupply = function (something, type, priority) {
+const supplyWithReserve = function (something, type, reserve, priority) {
   const amount = intentSolver.getUsedCapacity(something, type)
 
-  if (amount <= 0) {
+  if (amount <= reserve) {
     return noSupply
   }
 
   const supply =
   {
     priority,
-    [type]: amount
+    [type]: (amount - reserve)
   }
+}
 
-  return supply
+const simpleSupply = function (something, type, priority) {
+  return supplyWithReserve(something, type, 0, priority)
+}
+
+function UniversalStorageDemand (howMuchEnergyToKeep, priority) {
+
 }
 
 Object.defineProperty(
@@ -142,6 +148,56 @@ Object.defineProperty(
   {
     get: function () {
       return simpleDemand(this, RESOURCE_ENERGY, 10)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructureStorage.prototype,
+  'demand',
+  {
+    get: function () {
+      return noDemand
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructureStorage.prototype,
+  'supply',
+  {
+    get: function () {
+      const toKeep = this.room.stre || 0
+      return supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructureTerminal.prototype,
+  'demand',
+  {
+    get: function () {
+      return noDemand
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructureTerminal.prototype,
+  'supply',
+  {
+    get: function () {
+      const toKeep = this.room.trme || 0
+      return supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
     },
     configurable: true,
     enumerable: true
