@@ -202,7 +202,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return noDemand
+      return universalStorageDemand(this, 0, 52)
     },
     configurable: true,
     enumerable: true
@@ -227,7 +227,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return noDemand
+      return universalStorageDemand(this, 300, 51)
     },
     configurable: true,
     enumerable: true
