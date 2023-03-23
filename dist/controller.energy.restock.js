@@ -38,7 +38,7 @@ energyRestockController.targets = function (room) {
       return structure.demand.priority !== null && structure.demand[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
     }
   )
-  
+
   if (withEnergyDemand.length === 0) return []
 
   withEnergyDemand.sort(
