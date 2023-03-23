@@ -33,8 +33,12 @@ plunder.creepAtOwnRoom = function (creep) {
   // see if it is time for next raid or end of career
 
   if (creep.store.getUsedCapacity() === 0) {
+    const leftAt = creep.memory._rtt || Game.time
+    const backTrip = Game.time - leftAt
+    const roundTrip = Math.floor(2.2 * backTrip)
+
     const roomName = this.getTargetRoomName(creep)
-    if (roomName) {
+    if (roomName && creep.ticksToLive >= roundTrip) {
       creep.setControlRoom(roomName)
     } else {
       creep.unlive()
@@ -160,6 +164,7 @@ plunder.creepAtOtherRooms = function (creep) {
 
   if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
     creep.setControlRoom(this.getSomeOwnRoomName(creep))
+    creep.memory._rtt = Game.time
     return
   }
 
