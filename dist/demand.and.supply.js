@@ -148,13 +148,14 @@ Object.defineProperty(
   }
 )
 
+// STRATEGY restock priorities
 Object.defineProperty(
   StructureTower.prototype,
   'demand',
   {
     get: function () {
       const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
-      if (free <= 0) return noDemand
+      if (free <= 50) return noDemand
 
       let priority
       if (free > 0.75 * TOWER_CAPACITY) {
