@@ -44,23 +44,6 @@ const simpleSupply = function (something, type, priority) {
   return supply
 }
 
-const universalStoreSupply = function (something, priority) {
-  const supply =
-  {
-    priority
-  }
-
-  const resourceTypes = _.keys(something.store)
-  for (const resourceType of resourceTypes) {
-    const amount = intentSolver.getUsedCapacity(something, resourceType)
-    if (amount > 0) {
-      supply[resourceType] = amount
-    }
-  }
-
-  return supply
-}
-
 Object.defineProperty(
   Structure.prototype,
   'demand',
@@ -87,7 +70,7 @@ Object.defineProperty(
   {
     get: function () {
       if (this.isSource()) {
-        return simpleDemand(this, RESOURCE_ENERGY, 1)
+        return simpleDemand(this, RESOURCE_ENERGY, 11)
       } else {
         return noDemand
       }
@@ -102,7 +85,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return universalStoreSupply(this, 50)
+      return simpleSupply(this, RESOURCE_ENERGY, 11)
     },
     configurable: true,
     enumerable: true
@@ -127,7 +110,7 @@ Object.defineProperty(
   {
     get: function () {
       if (this.isSource()) {
-        return simpleDemand(this, RESOURCE_ENERGY, 0)
+        return simpleDemand(this, RESOURCE_ENERGY, 10)
       } else {
         return noDemand
       }
@@ -145,7 +128,7 @@ Object.defineProperty(
       if (this.isSource()) {
         return noSupply
       } else {
-        return simpleSupply(this, RESOURCE_ENERGY, 40)
+        return simpleSupply(this, RESOURCE_ENERGY, 10)
       }
     },
     configurable: true,
