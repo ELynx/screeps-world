@@ -12,18 +12,18 @@ energyUnspecialistController.act = function (target, creep) {
 
 energyUnspecialistController.targets = function (room) {
   const allStructures = room.find(FIND_STRUCTURES)
-  const restockTargets = _.filter(
+  const withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      if (structure.demand_restocker !== undefined && structure.isActiveSimple) {
-        return structure.demand_restocker.priority !== null && structure.demand_restocker[RESOURCE_ENERGY] > 0
+      if (structure.demand_restocker !== undefined) {
+        return structure.demand_restocker.priority !== null && structure.demand_restocker[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
       }
 
       return false
     }
   )
 
-  restockTargets.sort(
+  withEnergyDemand.sort(
     function (t1, t2) {
       const priority1 = t1.demand_restocker.priority
       const priority2 = t2.demand_restocker.priority
@@ -32,7 +32,7 @@ energyUnspecialistController.targets = function (room) {
     }
   )
 
-  return restockTargets
+  return withEnergyDemand
 }
 
 energyUnspecialistController.filterCreep = function (creep) {
