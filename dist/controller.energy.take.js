@@ -9,7 +9,7 @@ const energyTakeController = new Controller('energy.take')
 energyTakeController.actRange = 1
 
 energyTakeController.act = function (structure, creep) {
-  const wantGive = structure.supply[RESOURCE_ENERGY] || 0
+  const wantGive = structure.supply.amount(RESOURCE_ENERGY)
   const canTake = intentSolver.getFreeCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantGive, canTake)
@@ -22,7 +22,7 @@ energyTakeController.act = function (structure, creep) {
 }
 
 energyTakeController.validateTarget = function (allTargets, target, creep) {
-  const wantGive = target.supply[RESOURCE_ENERGY]
+  const wantGive = target.supply.amount(RESOURCE_ENERGY)
 
   let othersWant = 0
   const others = this._allAssignedTo(target)
@@ -43,7 +43,7 @@ energyTakeController.targets = function (room) {
   let withEnergySupply = _.filter(
     allStructures,
     function (structure) {
-      return structure.supply.priority !== null && structure.supply[RESOURCE_ENERGY] > 0
+      return structure.supply.priority !== null && structure.supply.amount(RESOURCE_ENERGY) > 0
     }
   )
 

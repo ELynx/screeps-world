@@ -11,7 +11,7 @@ mineralRestockController.actRange = 1
 
 mineralRestockController.act = function (structure, creep) {
   for (const resourceType in creep.store) {
-    const wantTake = structure.demand[resourceType] || 0
+    const wantTake = structure.demand.amount(resourceType)
     if (wantTake <= 0) continue
 
     const canGive = intentSolver.getUsedCapacity(creep, resourceType)
@@ -30,9 +30,9 @@ mineralRestockController.act = function (structure, creep) {
   return bootstrap.WARN_INTENDEE_EXHAUSTED
 }
 
-mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
-  if (structure && structure.isActiveSimple) {
-    return intentSolver.getFreeCapacity(structure) > freeCapacity
+mineralRestockController._checkStore = function (structure) {
+  if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
+    return structure.demand.amount(RESOURCE_POWER) > 0
   }
 
   return false
@@ -40,7 +40,7 @@ mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
 
 // STRATEGY mineral fill order
 mineralRestockController.targets = function (room) {
-  if (this._checkStore(room.terminal, 1000)) {
+  if (this._checkStore(room.terminal)) {
     return [room.terminal]
   }
 
