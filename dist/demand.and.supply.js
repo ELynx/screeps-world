@@ -147,3 +147,31 @@ Object.defineProperty(
     enumerable: true
   }
 )
+
+Object.defineProperty(
+  StructureTower.prototype,
+  'demand',
+  {
+    get: function () {
+      const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
+      if (free <= 0) return noDemand
+
+      let priority
+      if (free > 0.75 * TOWER_CAPACITY) {
+        priority = 5
+      } else {
+        priority = 10
+      }
+
+      const demand =
+      {
+        priority,
+        [RESOURCE_ENERGY]: free
+      }
+
+      return demand
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
