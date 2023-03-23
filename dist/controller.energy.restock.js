@@ -18,7 +18,7 @@ energyRestockController.observeMyCreep = function (creep) {
 }
 
 energyRestockController.act = function (target, creep) {
-  const wantTake = target.demand[RESOURCE_ENERGY] || 0
+  const wantTake = target.demand.amount(RESOURCE_ENERGY)
   const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantTake, canGive)
@@ -35,7 +35,7 @@ energyRestockController.targets = function (room) {
   const withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      return structure.demand.priority !== null && structure.demand[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
+      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
     }
   )
 

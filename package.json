@@ -92,6 +92,7 @@
       "REPAIR_COST",
       "REPAIR_POWER",
       "RESOURCE_ENERGY",
+      "RESOURCE_POWER",
       "RESOURCES_ALL",
       "RIGHT",
       "Room",

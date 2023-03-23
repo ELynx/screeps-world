@@ -16,7 +16,7 @@ energyUnspecialistController.targets = function (room) {
     allStructures,
     function (structure) {
       if (structure.demand_restocker !== undefined) {
-        return structure.demand_restocker.priority !== null && structure.demand_restocker[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
+        return structure.demand_restocker.priority !== null && structure.demand_restocker.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
       }
 
       return false
