@@ -446,7 +446,14 @@ RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
 }
 
 RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
-  return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y)
+  // with a twist
+  const dx =  Math.abs(this.x - otherRoomPosition.x)
+  const dy = Math.abs(this.y - otherRoomPosition.y)
+
+  // in screeps geometry center and adjacent positions are reachable
+  if (dx <= 1 && dy <= 1) return 1
+
+  return dx + dy
 }
 
 Structure.prototype.isActiveSimple = true
