@@ -1,5 +1,7 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energyRestockController = new Controller('energy.restock')
@@ -16,7 +18,7 @@ energyRestockController.observeMyCreep = function (creep) {
 }
 
 energyRestockController.act = function (target, creep) {
-  const wantTake = structure.demand[RESOURCE_ENERGY]
+  const wantTake = target.demand[RESOURCE_ENERGY]
   const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantTake, canGive)
@@ -33,7 +35,7 @@ energyRestockController.targets = function (room) {
   const withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      structure.demand.priority !== null && structure.demand[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
+      return structure.demand.priority !== null && structure.demand[RESOURCE_ENERGY] > 0 && structure.isActiveSimple
     }
   )
   
