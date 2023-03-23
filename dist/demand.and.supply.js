@@ -112,15 +112,17 @@ Object.defineProperty(
   {
     get: function () {
       if (this.__demand_cache_x) return this.__demand_cache_x
-      if (this.__demand_cache) return this.__demand_cache
 
-      if (this.isSource()) {
-        this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 11)
-        return this.__demand_cache
+      if (!this.isSource()) {
+        this.__demand_cache_x = noDemand
+        return this.__demand_cache_x
       }
 
-      this.__demand_cache_x = noDemand
-      return this.__demand_cache_x
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(simpleDemand, this, RESOURCE_ENERGY, 11)
+      )
     },
     configurable: true,
     enumerable: true
