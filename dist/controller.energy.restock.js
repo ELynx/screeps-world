@@ -18,7 +18,7 @@ energyRestockController.observeMyCreep = function (creep) {
 }
 
 energyRestockController.act = function (target, creep) {
-  const wantTake = target.demand[RESOURCE_ENERGY]
+  const wantTake = target.demand[RESOURCE_ENERGY] || 0
   const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantTake, canGive)

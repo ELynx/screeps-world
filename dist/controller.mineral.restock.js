@@ -1,5 +1,6 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
 const bootstrap = require('./bootstrap')
 
 const Controller = require('./controller.template')
@@ -8,9 +9,17 @@ const mineralRestockController = new Controller('mineral.restock')
 
 mineralRestockController.actRange = 1
 
-mineralRestockController.act = function (withStore, creep) {
+mineralRestockController.act = function (structure, creep) {
   for (const resourceType in creep.store) {
-    const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
+    const wantTake = structure.demand[resourceType] || 0
+    if (wantTake <= 0) continue
+
+    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+    if (canGive <= 0) continue
+
+    const howMuch = (canGive > wantTake) ? (canGive - wantTake) : undefined
+
+    const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType, howMuch)
     if (rc !== OK) {
       return rc
     }
