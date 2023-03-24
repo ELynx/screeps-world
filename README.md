@@ -10,7 +10,7 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 ## Folders
-`.github` and `github_conf` - GitHub specific items, such as action definitions
+`.github` - GitHub Action definitions
 
 `dist` - deployment payload
 
