@@ -20,6 +20,8 @@ on:
         default: false
         type: boolean
 
+permissions: read-all
+
 jobs:
   push:
     runs-on: ubuntu-latest

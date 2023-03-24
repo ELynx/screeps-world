@@ -7,6 +7,8 @@ on:
   push:
   workflow_dispatch:
 
+permissions: read-all
+
 env:
   APPLY_FIXES: all
   APPLY_FIXES_EVENT: all
@@ -20,6 +22,7 @@ jobs:
   build:
     name: MegaLinter
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       # Git Checkout
       - name: Checkout Code
