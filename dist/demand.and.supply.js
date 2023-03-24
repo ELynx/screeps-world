@@ -13,8 +13,8 @@ const noDemand =
 
 const noSupply = noDemand
 
-const simpleDemand = function (something, type, priority) {
-  const amount = intentSolver.getFreeCapacity(something, type)
+const simpleDemand = function (type, priority) {
+  const amount = intentSolver.getFreeCapacity(this, type)
 
   if (amount <= 0) {
     return noDemand
@@ -36,8 +36,8 @@ const simpleDemand = function (something, type, priority) {
   return demand
 }
 
-const supplyWithReserve = function (something, type, reserve, priority) {
-  const amount = intentSolver.getUsedCapacity(something, type)
+const supplyWithReserve = function (type, reserve, priority) {
+  const amount = intentSolver.getUsedCapacity(this, type)
 
   if (amount <= reserve) {
     return noSupply
@@ -59,20 +59,20 @@ const supplyWithReserve = function (something, type, reserve, priority) {
   return supply
 }
 
-const simpleSupply = function (something, type, priority) {
-  return supplyWithReserve(something, type, 0, priority)
+const simpleSupply = function (type, priority) {
+  return supplyWithReserve(type, 0, priority)
 }
 
-const universalStorageDemand = function (something, energyReserve, priority) {
+const universalStorageDemand = function (energyReserve, priority) {
   const supply =
   {
     priority,
 
-    __something: something,
+    __withStorage: this,
     __energyReserve: energyReserve,
 
     amount: function (type) {
-      const free = intentSolver.getFreeCapacity(this.__something, type)
+      const free = intentSolver.getFreeCapacity(this.__withStorage, type)
 
       if (RESOURCE_ENERGY === type) return free
 
@@ -84,6 +84,35 @@ const universalStorageDemand = function (something, energyReserve, priority) {
   }
 
   return supply
+}
+
+// STRATEGY tower restock priorities
+const towerDemand = function () {
+  const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
+  if (free <= 50) {
+    return noDemand
+  }
+
+  let priority
+  if (free > 0.75 * TOWER_CAPACITY) {
+    priority = 5
+  } else {
+    priority = 10
+  }
+
+  const demand =
+  {
+    priority,
+
+    __amount: free,
+
+    amount: function (type) {
+      if (RESOURCE_ENERGY === type) return this.__amount
+      return 0
+    }
+  }
+
+  return demand
 }
 
 Object.defineProperty(
@@ -134,10 +163,11 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      if (this.__supply_cache) return this.__supply_cache
-
-      this.__supply_cache = simpleSupply(this, RESOURCE_ENERGY, 11)
-      return this.__supply_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__supply_cache',
+        _.bind(simpleSupply, this, RESOURCE_ENERGY, 11)
+      )
     },
     configurable: true,
     enumerable: true
@@ -149,10 +179,11 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      if (this.__demand_cache) return this.__demand_cache
-
-      this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 11)
-      return this.__demand_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(simpleDemand, this, RESOURCE_ENERGY, 11)
+      )
     },
     configurable: true,
     enumerable: true
@@ -165,15 +196,17 @@ Object.defineProperty(
   {
     get: function () {
       if (this.__demand_cache_x) return this.__demand_cache_x
-      if (this.__demand_cache) return this.__demand_cache
 
-      if (this.isSource()) {
-        this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 10)
-        return this.__demand_cache
+      if (!this.isSource()) {
+        this.__demand_cache_x = noDemand
+        return this.__demand_cache_x
       }
 
-      this.__demand_cache_x = noDemand
-      return this.__demand_cache_x
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(simpleDemand, this, RESOURCE_ENERGY, 10)
+      )
     },
     configurable: true,
     enumerable: true
@@ -186,15 +219,17 @@ Object.defineProperty(
   {
     get: function () {
       if (this.__supply_cache_x) return this.__supply_cache_x
-      if (this.__supply_cache) return this.__supply_cache
 
-      if (!this.isSource()) {
-        this.__supply_cache = simpleSupply(this, RESOURCE_ENERGY, 10)
-        return this.__supply_cache
+      if (this.isSource()) {
+        this.__supply_cache_x = noSupply
+        return this.__supply_cache_x
       }
 
-      this.__supply_cache_x = noSupply
-      return this.__supply_cache_x
+      return intentSolver.getWithIntentCache(
+        this,
+        '__supply_cache',
+        _.bind(simpleSupply, this, RESOURCE_ENERGY, 10)
+      )
     },
     configurable: true,
     enumerable: true
@@ -206,10 +241,11 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      if (this.__demand_cache) return this.__demand_cache
-
-      this.__demand_cache = simpleDemand(this, RESOURCE_ENERGY, 10)
-      return this.__demand_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(simpleDemand, this, RESOURCE_ENERGY, 10)
+      )
     },
     configurable: true,
     enumerable: true
@@ -221,10 +257,11 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      if (this.__demand_cache) return this.__demand_cache
-
-      this.__demand_cache = universalStorageDemand(this, 0, 52)
-      return this.__demand_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(universalStorageDemand, this, 0, 52)
+      )
     },
     configurable: true,
     enumerable: true
@@ -236,11 +273,11 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      if (this.__supply_cache) return this.__supply_cache
-
-      const toKeep = this.room.stre || 0
-      this.__supply_cache = supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
-      return this.__supply_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__supply_cache',
+        _.bind(supplyWithReserve, this, RESOURCE_ENERGY, (this.room.stre || 0), 11)
+      )
     },
     configurable: true,
     enumerable: true
@@ -252,10 +289,11 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      if (this.__demand_cache) return this.__demand_cache
-
-      this.__demand_cache = universalStorageDemand(this, 300, 51)
-      return this.__demand_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(universalStorageDemand, this, 300, 51)
+      )
     },
     configurable: true,
     enumerable: true
@@ -267,51 +305,27 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      if (this.__supply_cache) return this.__supply_cache
-
-      const toKeep = this.room.trme || 0
-      this.__supply_cache = supplyWithReserve(this, RESOURCE_ENERGY, toKeep, 11)
-      return this.__supply_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__supply_cache',
+        _.bind(supplyWithReserve, this, RESOURCE_ENERGY, (this.room.trme || 0), 11)
+      )
     },
     configurable: true,
     enumerable: true
   }
 )
 
-// STRATEGY restock priorities
 Object.defineProperty(
   StructureTower.prototype,
   'demand',
   {
     get: function () {
-      if (this.__demand_cache) return this.__demand_cache
-
-      const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
-      if (free <= 50) {
-        this.__demand_cache = noDemand
-        return this.__demand_cache
-      }
-
-      let priority
-      if (free > 0.75 * TOWER_CAPACITY) {
-        priority = 5
-      } else {
-        priority = 10
-      }
-
-      this.__demand_cache =
-      {
-        priority,
-
-        __amount: free,
-
-        amount: function (type) {
-          if (RESOURCE_ENERGY === type) return this.__amount
-          return 0
-        }
-      }
-
-      return this.__demand_cache
+      return intentSolver.getWithIntentCache(
+        this,
+        '__demand_cache',
+        _.bind(towerDemand, this)
+      )
     },
     configurable: true,
     enumerable: true
