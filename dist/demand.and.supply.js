@@ -13,8 +13,8 @@ const noDemand =
 
 const noSupply = noDemand
 
-const simpleDemand = function (type, priority) {
-  const amount = intentSolver.getFreeCapacity(this, type)
+const simpleDemand = function (something, type, priority) {
+  const amount = intentSolver.getFreeCapacity(something, type)
 
   if (amount <= 0) {
     return noDemand
@@ -36,8 +36,8 @@ const simpleDemand = function (type, priority) {
   return demand
 }
 
-const supplyWithReserve = function (type, reserve, priority) {
-  const amount = intentSolver.getUsedCapacity(this, type)
+const supplyWithReserve = function (something, type, reserve, priority) {
+  const amount = intentSolver.getUsedCapacity(something, type)
 
   if (amount <= reserve) {
     return noSupply
@@ -59,16 +59,16 @@ const supplyWithReserve = function (type, reserve, priority) {
   return supply
 }
 
-const simpleSupply = function (type, priority) {
-  return supplyWithReserve(type, 0, priority)
+const simpleSupply = function (something, type, priority) {
+  return supplyWithReserve(something, type, 0, priority)
 }
 
-const universalStorageDemand = function (energyReserve, priority) {
+const universalStorageDemand = function (withStorage, energyReserve, priority) {
   const supply =
   {
     priority,
 
-    __withStorage: this,
+    __withStorage: withStorage,
     __energyReserve: energyReserve,
 
     amount: function (type) {
@@ -87,8 +87,8 @@ const universalStorageDemand = function (energyReserve, priority) {
 }
 
 // STRATEGY tower restock priorities
-const towerDemand = function () {
-  const free = intentSolver.getFreeCapacity(this, RESOURCE_ENERGY)
+const towerDemand = function (tower) {
+  const free = intentSolver.getFreeCapacity(tower, RESOURCE_ENERGY)
   if (free <= 50) {
     return noDemand
   }
@@ -150,7 +150,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(simpleDemand, this, RESOURCE_ENERGY, 11)
+        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 11)
       )
     },
     configurable: true,
@@ -166,7 +166,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__supply_cache',
-        _.bind(simpleSupply, this, RESOURCE_ENERGY, 11)
+        _.bind(simpleSupply, null, this, RESOURCE_ENERGY, 11)
       )
     },
     configurable: true,
@@ -182,7 +182,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(simpleDemand, this, RESOURCE_ENERGY, 11)
+        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 11)
       )
     },
     configurable: true,
@@ -205,7 +205,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(simpleDemand, this, RESOURCE_ENERGY, 10)
+        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 10)
       )
     },
     configurable: true,
@@ -228,7 +228,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__supply_cache',
-        _.bind(simpleSupply, this, RESOURCE_ENERGY, 10)
+        _.bind(simpleSupply, null, this, RESOURCE_ENERGY, 10)
       )
     },
     configurable: true,
@@ -244,7 +244,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(simpleDemand, this, RESOURCE_ENERGY, 10)
+        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 10)
       )
     },
     configurable: true,
@@ -260,7 +260,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(universalStorageDemand, this, 0, 52)
+        _.bind(universalStorageDemand, null, this, 0, 52)
       )
     },
     configurable: true,
@@ -276,7 +276,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__supply_cache',
-        _.bind(supplyWithReserve, this, RESOURCE_ENERGY, (this.room.stre || 0), 11)
+        _.bind(supplyWithReserve, null, this, RESOURCE_ENERGY, (this.room.stre || 0), 11)
       )
     },
     configurable: true,
@@ -292,7 +292,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(universalStorageDemand, this, 300, 51)
+        _.bind(universalStorageDemand, null, this, 300, 51)
       )
     },
     configurable: true,
@@ -308,7 +308,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__supply_cache',
-        _.bind(supplyWithReserve, this, RESOURCE_ENERGY, (this.room.trme || 0), 11)
+        _.bind(supplyWithReserve, null, this, RESOURCE_ENERGY, (this.room.trme || 0), 11)
       )
     },
     configurable: true,
@@ -324,7 +324,7 @@ Object.defineProperty(
       return intentSolver.getWithIntentCache(
         this,
         '__demand_cache',
-        _.bind(towerDemand, this)
+        _.bind(towerDemand, null, this)
       )
     },
     configurable: true,
