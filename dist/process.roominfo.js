@@ -266,7 +266,6 @@ roomInfoProcess.work = function (room) {
   }
 
   // STRATEGY how much energy to keep in bigger structures by default
-  room.memory.trme = 300
   room.memory.stre = 10000
 
   // STRATEGY stored energy in store per threat level
