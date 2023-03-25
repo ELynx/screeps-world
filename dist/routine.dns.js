@@ -13,106 +13,139 @@ const noDemand =
 
 const noSupply = noDemand
 
-const simpleDemand = function (something, type, priority) {
-  const amount = intentSolver.getFreeCapacity(something, type)
-
-  if (amount <= 0) {
-    return noDemand
-  }
-
+const fixedDemand = function (__type, __amount, priority) {
   const demand =
   {
+    __type,
+    __amount,
     priority,
 
-    __type: type,
-    __amount: amount,
-
     amount: function (type) {
-      if (this.__type === type) return this.__amount
-      return 0
+      return this.__type === type ? this.__amount : 0
     }
   }
 
   return demand
 }
 
+const fixedSupply = fixedDemand
+
+const simpleDemand = function (something, type, priority) {
+  const freeForType = intentSolver.getFreeCapacity(something, type)
+
+  if (freeForType <= 0) return noDemand
+
+  return fixedDemand(type, freeForType, priority)
+}
+
 const supplyWithReserve = function (something, type, reserve, priority) {
-  const amount = intentSolver.getUsedCapacity(something, type)
+  const usedByType = intentSolver.getUsedCapacity(something, type)
 
-  if (amount <= reserve) {
-    return noSupply
-  }
+  if (usedByType <= reserve) return noSupply
 
-  const supply =
-  {
-    priority,
-
-    __type: type,
-    __amount: (amount - reserve),
-
-    amount: function (type) {
-      if (this.__type === type) return this.__amount
-      return 0
-    }
-  }
-
-  return supply
+  return fixedSupply(type, usedByType - reserve, priority)
 }
 
 const simpleSupply = function (something, type, priority) {
   return supplyWithReserve(something, type, 0, priority)
 }
 
-const universalStorageDemand = function (withStorage, energyReserve, priority) {
-  const supply =
-  {
-    priority,
-
-    __withStorage: withStorage,
-    __energyReserve: energyReserve,
-
-    amount: function (type) {
-      const free = intentSolver.getFreeCapacity(this.__withStorage, type)
-
-      if (RESOURCE_ENERGY === type) return free
-
-      const want = free - this.__energyReserve
-      if (want <= 0) return 0
-
-      return want
-    }
-  }
-
-  return supply
-}
-
-// STRATEGY tower restock priorities
-const towerDemand = function (tower) {
-  const free = intentSolver.getFreeCapacity(tower, RESOURCE_ENERGY)
-  if (free <= 50) {
-    return noDemand
-  }
-
-  let priority
-  if (free > 0.75 * TOWER_CAPACITY) {
-    priority = 5
-  } else {
-    priority = 10
-  }
-
+const storageDemand = function (__storage, priority) {
   const demand =
   {
+    __storage,
     priority,
 
-    __amount: free,
-
     amount: function (type) {
-      if (RESOURCE_ENERGY === type) return this.__amount
-      return 0
+      const freeForType = intentSolver.getFreeCapacity(this.__storage, type)
+
+      if (RESOURCE_ENERGY === type) return freeForType
+
+      const reserveForEnergy = this.__storage.room.memory.stre || 0
+      const freeForTypeNotEnergy = freeForType - reserveForEnergy
+      if (freeForTypeNotEnergy <= 0) return 0
+
+      return freeForTypeNotEnergy
     }
   }
 
   return demand
+}
+
+const storageSupply = function (storage, priority) {
+  const energyReserve = storage.room.memory.stre || 0
+  return supplyWithReserve(storage, RESOURCE_ENERGY, energyReserve, priority)
+}
+
+// STRATEGY terminal energy reserve for transfer of minerals
+const TerminalEnergyRatio = 0.1
+const TerminalMineralRatio = 1.0 - TerminalEnergyRatio
+
+const terminalDemand = function (__terminal, priority) {
+  const demand =
+  {
+    __terminal,
+    priority,
+
+    __amount_RESOURCE_ENERGY: function () {
+      const energyReserve = this.__terminal.room.memory.trme || 0
+
+      const usedByAll = intentSolver.getUsedCapacity(this.__terminal)
+      const usedByEnergy = intentSolver.getUsedCapacity(this.__terminal, RESOURCE_ENERGY)
+
+      const usedByNotEnergy = usedByAll - usedByEnergy      
+      const energyForTransfer = Math.floor(TerminalEnergyRatio * usedByNotEnergy)
+
+      const wantEnergy = energyReserve + energyForTransfer
+
+      const delta = wantEnergy - usedByEnergy
+      if (delta <= 0) return 0
+
+      return delta
+    },
+
+    __amount_OTHER: function () {
+      const energyReserve = this.__terminal.room.memory.trme || 0
+
+      const freeForAll = intentSolver.getFreeCapacity(this.__terminal)
+      const freeForMineral = Math.floor(TerminalMineralRatio * freeForAll)
+
+      const delta = freeForMineral - energyReserve
+      if (delta <= 0) return 0
+
+      return delta
+    },
+
+    amount: function (type) {
+      return RESOURCE_ENERGY === type ? this.__amount_RESOURCE_ENERGY() : this.__amount_OTHER()
+    }
+  }
+
+  return demand
+}
+
+const terminalSupply = function (terminal, priority) {
+  return noSupply
+}
+
+// STRATEGY tower restock priorities
+const towerDemand = function (tower, priorityLow, priorityMedium, priorityHigh) {
+  const amount = intentSolver.getFreeCapacity(tower, RESOURCE_ENERGY)
+
+  if (amount <= 0) {
+    return noDemand
+  }
+
+  let priority
+  if (amount <= 50) {
+    priority = priorityLow
+  } else if (amount <= Math.floor(0.75 * TOWER_CAPACITY)) {
+    priority = priorityMedium
+  } else {
+    priority = priorityHigh
+  }
+
+  return fixedDemand(RESOURCE_ENERGY, amount, priority)
 }
 
 Object.defineProperty(
