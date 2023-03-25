@@ -132,6 +132,7 @@
       "StructureTerminal",
       "StructureTower",
       "SYSTEM_USERNAME",
+      "TERMINAL_CAPACITY",
       "TERRAIN_MASK_WALL",
       "TOP_LEFT",
       "TOP_RIGHT",
