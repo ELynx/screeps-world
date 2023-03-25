@@ -32,17 +32,13 @@ const fixedSupply = fixedDemand
 
 const simpleDemand = function (something, type, priority) {
   const freeForType = intentSolver.getFreeCapacity(something, type)
-
   if (freeForType <= 0) return noDemand
-
   return fixedDemand(type, freeForType, priority)
 }
 
 const supplyWithReserve = function (something, type, reserve, priority) {
   const usedByType = intentSolver.getUsedCapacity(something, type)
-
   if (usedByType <= reserve) return noSupply
-
   return fixedSupply(type, usedByType - reserve, priority)
 }
 
@@ -64,7 +60,6 @@ const storageDemand = function (__storage, priority) {
       const reserveForEnergy = this.__storage.room.memory.stre || 0
       const freeForTypeNotEnergy = freeForType - reserveForEnergy
       if (freeForTypeNotEnergy <= 0) return 0
-
       return freeForTypeNotEnergy
     }
   }
@@ -79,7 +74,17 @@ const storageSupply = function (storage, priority) {
 
 // STRATEGY terminal energy reserve for transfer of minerals
 const TerminalEnergyRatio = 0.1
-const TerminalMineralRatio = 1.0 - TerminalEnergyRatio
+const TerminalMineralCapacity = Math.floor(TERMINAL_CAPACITY * (1.0 - TerminalEnergyRatio))
+
+const roundUpToNearestMultiple = function (value, roundTo) {
+  return Math.ceil(value / roundTo) * roundTo
+}
+
+const prognosisTerminalNeedEnergy = function (usedByNotEnergy) {
+  if (usedByNotEnergy <= 0) return 0
+  const prognosisUsedByNotEnergy = roundUpToNearestMultiple(usedByNotEnergy, 10000)
+  return Math.floor(prognosisUsedByNotEnergy * TerminalEnergyRatio)
+}
 
 const terminalDemand = function (__terminal, priority) {
   const demand =
@@ -87,45 +92,56 @@ const terminalDemand = function (__terminal, priority) {
     __terminal,
     priority,
 
-    __amount_RESOURCE_ENERGY: function () {
-      const energyReserve = this.__terminal.room.memory.trme || 0
+    amount: function (type) {
+      // sanity check before caclulations below
+      const freeCapacity = intentSolver.getFreeCapacity(this.__terminal)
+      if (freeCapacity <= 0) return 0
 
       const usedByAll = intentSolver.getUsedCapacity(this.__terminal)
       const usedByEnergy = intentSolver.getUsedCapacity(this.__terminal, RESOURCE_ENERGY)
+      const usedByNotEnergy = usedByAll - usedByEnergy
 
-      const usedByNotEnergy = usedByAll - usedByEnergy      
-      const energyForTransfer = Math.floor(TerminalEnergyRatio * usedByNotEnergy)
+      if (RESOURCE_ENERGY === type) {
+        const neededEnergy = prognosisTerminalNeedEnergy(usedByNotEnergy)
+        if (neededEnergy <= 0) return 0
+        return Math.min(neededEnergy, freeCapacity)
+      }
 
-      const wantEnergy = energyReserve + energyForTransfer
-
-      const delta = wantEnergy - usedByEnergy
-      if (delta <= 0) return 0
-
-      return delta
-    },
-
-    __amount_OTHER: function () {
-      const energyReserve = this.__terminal.room.memory.trme || 0
-
-      const freeForAll = intentSolver.getFreeCapacity(this.__terminal)
-      const freeForMineral = Math.floor(TerminalMineralRatio * freeForAll)
-
-      const delta = freeForMineral - energyReserve
-      if (delta <= 0) return 0
-
-      return delta
-    },
-
-    amount: function (type) {
-      return RESOURCE_ENERGY === type ? this.__amount_RESOURCE_ENERGY() : this.__amount_OTHER()
+      const freeForMineral = TerminalMineralCapacity - usedByNotEnergy
+      if (freeForMineral <= 0) return 0
+      return Math.min(freeForMineral, freeCapacity)
     }
   }
 
   return demand
 }
 
-const terminalSupply = function (terminal, priority) {
-  return noSupply
+const terminalSupply = function (__terminal, priority) {
+  const supply = {
+    __terminal,
+    priority,
+
+    amount: function (type) {
+      if (RESOURCE_ENERGY !== type) {
+        const usedByType = intentSolver.getUsedCapacity(this.__terminal, type)
+        if (usedByType <= 0) return 0
+        return usedByType
+      }
+
+      const usedByEnergy = intentSolver.getUsedCapacity(this.__terminal, RESOURCE_ENERGY)
+      if (usedByEnergy <= 0) return 0
+
+      const usedByAll = intentSolver.getUsedCapacity(this.__terminal)
+      const usedByNotEnergy = usedByAll - usedByEnergy
+      const neededEnergy = prognosisTerminalNeedEnergy(usedByNotEnergy)
+
+      const freeEnergy = usedByEnergy - neededEnergy
+      if (freeEnergy <= 0) return 0
+      return freeEnergy
+    }
+  }
+
+  return supply
 }
 
 // STRATEGY tower restock priorities
