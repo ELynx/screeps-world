@@ -153,7 +153,7 @@ const towerDemand = function (tower, priorityLow, priorityMedium, priorityHigh) 
   }
 
   let priority
-  if (amount <= 50) {
+  if (amount < CARRY_CAPACITY) {
     priority = priorityLow
   } else if (amount <= Math.floor(0.75 * TOWER_CAPACITY)) {
     priority = priorityMedium
@@ -163,6 +163,51 @@ const towerDemand = function (tower, priorityLow, priorityMedium, priorityHigh) 
 
   return fixedDemand(RESOURCE_ENERGY, amount, priority)
 }
+
+const getDemandFromIntent = function (something, tickFunction) {
+  return intentSolver.getDemand(something, tickFunction)
+}
+
+const getSupplyFromIntent = function (something, tickFunction) {
+  return intentSolver.getSupply(something, tickFunction)
+}
+
+const energyDemand = function (something, priority) {
+  const tickFunction = _.bind(simpleDemand, null, something, RESOURCE_ENERGY, priority)
+  return getDemandFromIntent(something, tickFunction)
+}
+
+const energyDemandSource = function (something, priority) {
+  if (something.__demand_cache_x) return something.__demand_cache_x
+
+  if (!something.isSource()) {
+    something.__demand_cache_x = noDemand
+    return something.__demand_cache_x
+  }
+
+  return energyDemand(something, priority)
+}
+
+const energySupply = function (something, priority) {
+  const tickFunction = _.bind(simpleSupply, null, something, RESOURCE_ENERGY, priority)
+  return getSupplyFromIntent(something, tickFunction)
+}
+
+const energySupplyNotSource = function (something, priority) {
+  if (something.__supply_cache_x) return something.__supply_cache_x
+
+  if (something.isSource()) {
+    something.__supply_cache_x = noSupply
+    return something.__supply_cache_x
+  }
+
+  return energySupply(something, priority)
+}
+
+const Rank1High = 5
+const Rank1Middle = 15
+const Rank1Low = 25
+const Rank2Middle = 75
 
 Object.defineProperty(
   Structure.prototype,
@@ -189,18 +234,7 @@ Object.defineProperty(
   'demand_restocker',
   {
     get: function () {
-      if (this.__demand_cache_x) return this.__demand_cache_x
-
-      if (!this.isSource()) {
-        this.__demand_cache_x = noDemand
-        return this.__demand_cache_x
-      }
-
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 11)
-      )
+      return energyDemandSource(this, Rank1Middle + 1)
     },
     configurable: true,
     enumerable: true
@@ -212,11 +246,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__supply_cache',
-        _.bind(simpleSupply, null, this, RESOURCE_ENERGY, 11)
-      )
+      return energySupply(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
@@ -228,11 +258,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 11)
-      )
+      return energyDemand(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
@@ -244,18 +270,7 @@ Object.defineProperty(
   'demand_restocker',
   {
     get: function () {
-      if (this.__demand_cache_x) return this.__demand_cache_x
-
-      if (!this.isSource()) {
-        this.__demand_cache_x = noDemand
-        return this.__demand_cache_x
-      }
-
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 10)
-      )
+      return energyDemandSource(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
@@ -267,18 +282,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      if (this.__supply_cache_x) return this.__supply_cache_x
-
-      if (this.isSource()) {
-        this.__supply_cache_x = noSupply
-        return this.__supply_cache_x
-      }
-
-      return intentSolver.getWithIntentCache(
-        this,
-        '__supply_cache',
-        _.bind(simpleSupply, null, this, RESOURCE_ENERGY, 10)
-      )
+      return energySupplyNotSource(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
@@ -290,11 +294,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(simpleDemand, null, this, RESOURCE_ENERGY, 10)
-      )
+      return energyDemand(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
@@ -306,11 +306,8 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(universalStorageDemand, null, this, 0, 52)
-      )
+      const tickFunction = _.bind(storageDemand, null, this, Rank2Middle + 1)
+      return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
     enumerable: true
@@ -322,11 +319,8 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__supply_cache',
-        _.bind(supplyWithReserve, null, this, RESOURCE_ENERGY, (this.room.stre || 0), 11)
-      )
+      const tickFunction = _.bind(storageSupply, null, this, Rank1Middle)
+      return getSupplyFromIntent(this, tickFunction)
     },
     configurable: true,
     enumerable: true
@@ -338,11 +332,8 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(universalStorageDemand, null, this, 300, 51)
-      )
+      const tickFunction = _.bind(terminalDemand, null, this, Rank2Middle)
+      return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
     enumerable: true
@@ -354,11 +345,8 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__supply_cache',
-        _.bind(supplyWithReserve, null, this, RESOURCE_ENERGY, (this.room.trme || 0), 11)
-      )
+      const tickFunction = _.bind(terminalSupply, null, this, Rank1Middle)
+      return getSupplyFromIntent(this, tickFunction)
     },
     configurable: true,
     enumerable: true
@@ -370,11 +358,8 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return intentSolver.getWithIntentCache(
-        this,
-        '__demand_cache',
-        _.bind(towerDemand, null, this)
-      )
+      const tickFunction = _.bind(towerDemand, null, this, Rank1Low, Rank1Middle, Rank1High)
+      return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
     enumerable: true
