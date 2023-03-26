@@ -262,7 +262,7 @@ Object.defineProperty(
       __amount: 0,
       priority: null,
 
-      amount: (type) => RESOURCE_ENERGY === type ? __amount : 0
+      amount: (type) => RESOURCE_ENERGY === type ? this.__amount : 0
     },
     writable: true,
     enumerable: false
