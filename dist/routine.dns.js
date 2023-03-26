@@ -93,7 +93,7 @@ const terminalDemand = function (__terminal, priority) {
     priority,
 
     amount: function (type) {
-      // sanity check before caclulations below
+      // sanity check before calculations below
       const freeCapacity = intentSolver.getFreeCapacity(this.__terminal)
       if (freeCapacity <= 0) return 0
 
