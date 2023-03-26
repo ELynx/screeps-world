@@ -6,7 +6,9 @@ const noDemand =
 {
   priority: null,
 
-  amount: () => 0
+  amount: function () {
+    return 0
+  }
 }
 
 const noSupply = noDemand
@@ -18,7 +20,9 @@ const fixedDemand = function (__type, __amount, priority) {
     __amount,
     priority,
 
-    amount: (type) => this.__type === type ? this.__amount : 0
+    amount: function (type) {
+      return this.__type === type ? this.__amount : 0
+    }
   }
 
   return demand
@@ -262,7 +266,9 @@ Object.defineProperty(
       __amount: 0,
       priority: null,
 
-      amount: (type) => RESOURCE_ENERGY === type ? this.__amount : 0
+      amount: function (type) {
+        return RESOURCE_ENERGY === type ? this.__amount : 0
+      }
     },
     writable: true,
     enumerable: false
