@@ -38,9 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: true
           DISABLE: COPYPASTE
-          DISABLE_LINTERS:
-            - SPELL_CSPELL
-            - REPOSITORY_SECRETLINT
+          DISABLE_LINTERS: SPELL_CSPELL REPOSITORY_SECRETLINT
           FILTER_REGEX_EXCLUDE: (dist\/screeps-profiler\.js|github_config\/.*)
 
       # Upload MegaLinter artifacts
