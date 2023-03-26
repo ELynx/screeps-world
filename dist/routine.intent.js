@@ -11,7 +11,7 @@ const MadeUpLargeNumber = 1000000
 
 // TODO boost
 const intent = {
-  getWithIntentCache: function (something, key, tickFunction) {
+  _getWithIntentCache: function (something, key, tickFunction) {
     if (something.__intents) {
       const cached = something.__intents[key]
       if (cached) return cached
@@ -533,6 +533,14 @@ const intent = {
     const value = something.store.getUsedCapacity()
 
     return this.getWithIntended(something, key, value)
+  },
+
+  getDemand: function (something, tickFunction) {
+    return this._getWithIntentCache(something, '__demand_cache', tickFunction)
+  },
+
+  getSupply: function (something, tickFunction) {
+    return this._getWithIntentCache(something, '__supply_cache', tickFunction)
   },
 
   getAmount: function (something) {
