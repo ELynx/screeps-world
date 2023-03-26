@@ -20,7 +20,7 @@ mineralHarvestController.act = function (extractor, creep) {
   // eslint-disable-next-line no-unreachable-loop
   for (const mineral of minerals) {
     const rc = this.wrapIntent(creep, 'harvest', mineral)
-    if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
+    if (rc === bootstrap.WARN_BOTH_EXHAUSED ||
         rc === bootstrap.WARN_INTENDED_EXHAUSTED ||
         rc === bootstrap.ERR_INTENDED_EXHAUSTED ||
         rc === ERR_NOT_ENOUGH_RESOURCES) {
