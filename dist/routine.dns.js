@@ -6,9 +6,7 @@ const noDemand =
 {
   priority: null,
 
-  amount: function () {
-    return 0
-  }
+  amount: () => 0
 }
 
 const noSupply = noDemand
@@ -20,9 +18,7 @@ const fixedDemand = function (__type, __amount, priority) {
     __amount,
     priority,
 
-    amount: function (type) {
-      return this.__type === type ? this.__amount : 0
-    }
+    amount: (type) => this.__type === type ? this.__amount : 0
   }
 
   return demand
@@ -253,12 +249,40 @@ Object.defineProperty(
   }
 )
 
+// StructureExtension.demand is executed overwhelmingly more often than the other non-const .demand
+// For this reason it is optimized for speed instead of structure
+
+// cache an object used by demand
+Object.defineProperty(
+  StructureExtension.prototype,
+  '__demand_cache_x',
+  {
+    value:
+    {
+      __amount: 0,
+      priority: null,
+
+      amount: (type) => RESOURCE_ENERGY === type ? __amount : 0
+    },
+    writable: true,
+    enumerable: false
+  }
+)
+
+// speed-calculate free space with intent, without long-haul cache getter
+const __FreeResourceEnergyKey = '__free_' + RESOURCE_ENERGY
 Object.defineProperty(
   StructureExtension.prototype,
   'demand',
   {
     get: function () {
-      return energyDemand(this, Rank1Middle)
+      const amount = (this.__intents ? this.__intents[__FreeResourceEnergyKey] : undefined) || this.store.getFreeCapacity(RESOURCE_ENERGY)
+      const greaterThanZero = amount > 0
+
+      this.__demand_cache_x.__amount = greaterThanZero ? amount : 0
+      this.__demand_cache_x.priority = greaterThanZero ? Rank1Middle : null
+
+      return this.__demand_cache_x
     },
     configurable: true,
     enumerable: true
