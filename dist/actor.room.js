@@ -197,7 +197,7 @@ const roomActor =
           this._roomControllerObserveOwn(controller, creep)
         }
 
-        if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
+        if (rc === bootstrap.WARN_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
             rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
           return rc
