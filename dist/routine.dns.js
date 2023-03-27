@@ -53,14 +53,18 @@ const storageDemand = function (__storage, priority) {
     priority,
 
     amount: function (type) {
-      const freeForType = intentSolver.getFreeCapacity(this.__storage, type)
+      const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
+      const neededEnergy = this.__storage.room.memory.stre || 0
+      const missingEnergy = Math.max(neededEnergy - usedByEnergy, 0)
 
-      if (RESOURCE_ENERGY === type) return freeForType
+      if (RESOURCE_ENERGY === type) {
+        return missingEnergy
+      }
 
-      const reserveForEnergy = this.__storage.room.memory.stre || 0
-      const freeForTypeNotEnergy = freeForType - reserveForEnergy
-      if (freeForTypeNotEnergy <= 0) return 0
-      return freeForTypeNotEnergy
+      const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
+      const freeForTypeAfterReserve = freeForTypeBeforeReserve - missingEnergy
+      if (freeForTypeAfterReserve <= 0) return 0
+      return freeForTypeAfterReserve
     }
   }
 
@@ -103,8 +107,10 @@ const terminalDemand = function (__terminal, priority) {
 
       if (RESOURCE_ENERGY === type) {
         const neededEnergy = prognosisTerminalNeedEnergy(usedByNotEnergy)
-        if (neededEnergy <= 0) return 0
-        return Math.min(neededEnergy, freeCapacity)
+        const missingEnergy = neededEnergy - usedByEnergy
+
+        if (missingEnergy <= 0) return 0
+        return Math.min(missingEnergy, freeCapacity)
       }
 
       const freeForMineral = TerminalMineralCapacity - usedByNotEnergy
