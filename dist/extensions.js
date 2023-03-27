@@ -273,13 +273,12 @@ Room.prototype.getRoomControlledCreeps = function () {
   return this.__roomCreepsControl
 }
 
-Room.prototype.getRoomOwnedCreeps = function () {
+Room.prototype.getViableRoomOwnedCreeps = function () {
   if (this.__roomCreepsOwned === undefined) {
     this.__roomCreepsOwned = _.filter(
       Game.creeps,
       function (creep) {
-        const roomAssociation = creep.memory.frum || creep.memory.crum
-        return this.name === roomAssociation
+        return creep.viable && (this.name === (creep.memory.frum || creep.memory.crum))
       },
       this
     )
