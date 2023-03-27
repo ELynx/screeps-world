@@ -54,6 +54,8 @@ const allTypesSupply = function (__something, priority) {
       return usedByType
     }
   }
+
+  return supply
 }
 
 const storageDemand = function (__storage, priority) {
