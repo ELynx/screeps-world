@@ -225,14 +225,13 @@ plunder.flagPrepare = function (flag) {
   return this._flagCountBasic(flag, 100)
 }
 
-plunder.makeCM = function (carry, move = carry) {
-  const a = new Array(carry)
-  a.fill(CARRY)
+plunder.makeCM = function (pairs) {
+  if (this.__bodyPrototype === undefined) {
+    this.__bodyPrototype = new Array(50).fill(null).map((unused, i) => i % 2 === 0 ? CARRY : MOVE)
+  }
 
-  const b = new Array(move)
-  b.fill(MOVE)
-
-  return a.concat(b)
+  if (pairs === 25) return this.__bodyPrototype
+  return this.__bodyPrototype.slice(0, 2 * pairs)
 }
 
 plunder.makeBody = function (room) {
