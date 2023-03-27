@@ -36,14 +36,10 @@ const simpleDemand = function (something, type, priority) {
   return fixedDemand(type, freeForType, priority)
 }
 
-const supplyWithReserve = function (something, type, reserve, priority) {
-  const usedByType = intentSolver.getUsedCapacity(something, type)
-  if (usedByType <= reserve) return noSupply
-  return fixedSupply(type, usedByType - reserve, priority)
-}
-
 const simpleSupply = function (something, type, priority) {
-  return supplyWithReserve(something, type, 0, priority)
+  const usedByType = intentSolver.getUsedCapacity(something, type)
+  if (usedByType <= 0) return noSupply
+  return fixedSupply(type, usedByType, priority)
 }
 
 const storageDemand = function (__storage, priority) {
@@ -71,9 +67,30 @@ const storageDemand = function (__storage, priority) {
   return demand
 }
 
-const storageSupply = function (storage, priority) {
-  const energyReserve = storage.room.memory.stre || 0
-  return supplyWithReserve(storage, RESOURCE_ENERGY, energyReserve, priority)
+const storageSupply = function (__storage, priority) {
+  const supply = {
+    __storage,
+    priority,
+
+    amount: function (type) {
+      if (RESOURCE_ENERGY !== type) {
+        const usedByType = intentSolver.getUsedCapacity(this.__storage, type)
+        if (usedByType <= 0) return 0
+        return usedByType
+      }
+
+      const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
+      if (usedByEnergy <= 0) return 0
+
+      const neededEnergy = this.__storage.room.memory.stre || 0
+
+      const freeEnergy = usedByEnergy - neededEnergy
+      if (freeEnergy <= 0) return 0
+      return freeEnergy
+    }
+  }
+
+  return supply
 }
 
 // STRATEGY terminal energy reserve for transfer of minerals
