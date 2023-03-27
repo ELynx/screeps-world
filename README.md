@@ -106,3 +106,7 @@ Global Control farm rooms.
 [Creep body part colors](https://github.com/screeps/renderer/blob/a94760f146afd2a299bd13342b83c596d3f10252/engine/src/lib/processors/creepBuildBody.js#L13)
 
 Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far traver!
+
+Mix in worker family bodies to allow useful functions up to the end.
+
+Standing on containers is best for spacial.
