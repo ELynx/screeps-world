@@ -37,6 +37,13 @@ towerProcess.work = function (room) {
     }
 
     if (harmful.length > 0) {
+      // reassign zeros
+      for (const x of harmful) {
+        x.sideHarm = x.sideHarm || 0
+        x.sideHarmPower = x.sideHarmPower || 0
+        x.directHarm = x.directHarm || 0
+      }        
+        
       // STRATEGY what targets to aim first
       harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
 
