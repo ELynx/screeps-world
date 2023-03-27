@@ -30,16 +30,30 @@ const fixedDemand = function (__type, __amount, priority) {
 
 const fixedSupply = fixedDemand
 
-const simpleDemand = function (something, type, priority) {
+const singleTypeDemand = function (something, type, priority) {
   const freeForType = intentSolver.getFreeCapacity(something, type)
   if (freeForType <= 0) return noDemand
   return fixedDemand(type, freeForType, priority)
 }
 
-const simpleSupply = function (something, type, priority) {
+const singleTypeSupply = function (something, type, priority) {
   const usedByType = intentSolver.getUsedCapacity(something, type)
   if (usedByType <= 0) return noSupply
   return fixedSupply(type, usedByType, priority)
+}
+
+const allTypesSupply = function (__something, priority) {
+  const supply =
+  {
+    __something,
+    priority,
+
+    amount: function (type) {
+      const usedByType = intentSolver.getUsedCapacity(this.__something, type)
+      if (usedByType <= 0) return 0
+      return usedByType
+    }
+  }
 }
 
 const storageDemand = function (__storage, priority) {
@@ -195,7 +209,7 @@ const getSupplyFromIntent = function (something, tickFunction) {
 }
 
 const energyDemand = function (something, priority) {
-  const tickFunction = _.bind(simpleDemand, null, something, RESOURCE_ENERGY, priority)
+  const tickFunction = _.bind(singleTypeDemand, null, something, RESOURCE_ENERGY, priority)
   return getDemandFromIntent(something, tickFunction)
 }
 
@@ -211,7 +225,7 @@ const energyDemandSource = function (something, priority) {
 }
 
 const energySupply = function (something, priority) {
-  const tickFunction = _.bind(simpleSupply, null, something, RESOURCE_ENERGY, priority)
+  const tickFunction = _.bind(singleTypeSupply, null, something, RESOURCE_ENERGY, priority)
   return getSupplyFromIntent(something, tickFunction)
 }
 
@@ -224,6 +238,11 @@ const energySupplyNotSource = function (something, priority) {
   }
 
   return energySupply(something, priority)
+}
+
+const allSupply = function (something, priority) {
+  const tickFunction = _.bind(allTypesSupply, null, something, priority)
+  return getSupplyFromIntent(something, tickFunction)
 }
 
 const Rank1High = 5
@@ -268,7 +287,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return energySupply(this, Rank1Middle)
+      return allSupply(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
