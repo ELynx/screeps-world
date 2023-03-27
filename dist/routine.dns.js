@@ -108,7 +108,6 @@ const terminalDemand = function (__terminal, priority) {
       if (RESOURCE_ENERGY === type) {
         const neededEnergy = prognosisTerminalNeedEnergy(usedByNotEnergy)
         const missingEnergy = neededEnergy - usedByEnergy
-
         if (missingEnergy <= 0) return 0
         return Math.min(missingEnergy, freeCapacity)
       }
