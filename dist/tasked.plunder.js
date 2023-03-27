@@ -33,12 +33,14 @@ plunder.creepAtOwnRoom = function (creep) {
   // see if it is time for next raid or end of career
 
   if (creep.store.getUsedCapacity() === 0) {
+    // assign custom ttl limit
     const leftAt = creep.memory._rtt || Game.time
     const backTrip = Game.time - leftAt
     const roundTrip = Math.floor(2.2 * backTrip)
+    creep.viable = roundTrip
 
     const roomName = this.getTargetRoomName(creep)
-    if (roomName && creep.ticksToLive >= roundTrip) {
+    if (roomName && creep.viable) {
       creep.setControlRoom(roomName)
     } else {
       creep.unlive()

@@ -2,6 +2,25 @@
 
 const bootstrap = require('./bootstrap')
 
+Object.defineProperty(
+  Creep.prototype,
+  'viable',
+  {
+    get: function () {
+      if (this.spawning) return true
+
+      const limit = this.__viable_limit || (this.body.length * CREEP_SPAWN_TIME)
+
+      return this.ticksToLive >= limit
+    },
+    set: function (value) {
+      this.__viable_limit = value
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
 // anything that get benefits
 Creep.prototype.myOrAlly = function () {
   return this.my || this.ally
