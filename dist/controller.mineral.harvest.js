@@ -38,6 +38,11 @@ mineralHarvestController.targets = function (room) {
     return []
   }
 
+  // don't mine in room with fight
+  if (room.__fight) {
+    return []
+  }
+
   // shortcut for `my`
   if (room.my) {
     if (room.extractor && room.extractor.isActiveSimple) {

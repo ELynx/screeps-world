@@ -153,6 +153,10 @@ const historyActor =
     }
 
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
+
+    if (attacker.room) {
+      attacker.room.__fight = true
+    }
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
