@@ -37,7 +37,11 @@ terminalProcess.work = function (room) {
 
   if (sellMineralType === undefined) return
 
-  const toKeep = noPanic ? MineralsToKeep : 0
+  let toKeep = noPanic ? MineralsToKeep : 0
+
+  // people seem to like H a lot
+  if (sellMineralType === RESOURCE_HYDROGEN) toKeep = 3 * toKeep
+
   const has = room.terminal.store[sellMineralType]
   if (has === undefined || has <= toKeep) return
 
