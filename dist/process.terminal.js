@@ -59,14 +59,10 @@ terminalProcess.work = function (room) {
     if (has > 5 * toKeep) {
       priceMark = 0.25
       range = 3 * MaxBuyRoomDistance
-    }
-
-    if (has > 3 * toKeep) {
+    } else if (has > 3 * toKeep) {
       priceMark = 0.5
       range = 2 * MaxBuyRoomDistance
-    }
-
-    if (has > 2 * toKeep) {
+    } else if (has > 2 * toKeep) {
       priceMark = 0.75
     }
   }
