@@ -9,9 +9,13 @@ const mineralRestockController = new Controller('mineral.restock')
 
 mineralRestockController.actRange = 1
 
+mineralRestockController._wantFunction = function (structure, resourceType) {
+  return structure.demand.amount(resourceType)
+}
+
 mineralRestockController.act = function (structure, creep) {
   for (const resourceType in creep.store) {
-    const wantTake = structure.demand.amount(resourceType)
+    const wantTake = this._wantFunction(structure, resourceType)
     if (wantTake <= 0) continue
 
     const canGive = intentSolver.getUsedCapacity(creep, resourceType)
@@ -60,6 +64,10 @@ mineralRestockController.filterCreep = function (creep) {
 const mineralDumpController = _.assign({}, mineralRestockController)
 
 mineralDumpController.id = 'mineral.dump'
+
+mineralDumpController._wantFunction = function (structure, resourceType) {
+  return intentSolver.getFreeCapacity(structure, resourceType)
+}
 
 mineralDumpController.targets = function (room) {
   if (this._checkStore(room.storage)) {
