@@ -12,17 +12,23 @@ const MadeUpLargeNumber = 1000000
 // TODO boost
 const intent = {
   _getWithIntentCache: function (something, key, tickFunction) {
-    if (something.__intents) {
-      const cached = something.__intents[key]
+    if (something.__intents_cache) {
+      const cached = something.__intents_cache[key]
       if (cached) return cached
     }
 
-    if (something.__intents === undefined) {
-      something.__intents = { }
+    if (something.__intents_cache === undefined) {
+      something.__intents_cache = { }
     }
 
-    something.__intents[key] = tickFunction()
-    return something.__intents[key]
+    const value = tickFunction()
+
+    something.__intents_cache[key] = value
+    return value
+  },
+
+  _clearIntentCache: function (something) {
+    something.__intents_cache = undefined
   },
 
   getIntended: function (something, key, tickValue) {
@@ -102,8 +108,8 @@ const intent = {
     this.addIntended(something, '__stored_total', amount)
     this.subIntended(something, '__free_' + type, amount)
     this.subIntended(something, '__free_total', amount)
-    this.setIntended(something, '__demand_cache', undefined)
-    this.setIntended(something, '__supply_cache', undefined)
+
+    this._clearIntentCache(something)
   },
 
   exchangeImpl: function (source, target, type, noLessThan, amount) {
