@@ -25,6 +25,8 @@ Movement and positioning:
 
 * Strelok tries to attack unreachable sections.
 
+* Plunder tries to plunder unreachable sections.
+
 * Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
