@@ -167,18 +167,19 @@ plunder.creepAtOtherRooms = function (creep) {
   if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
     creep.setControlRoom(this.getSomeOwnRoomName(creep))
     creep.memory._rtt = Game.time
+    creep.memory._plT = undefined
     return
   }
 
   let target
 
-  if (creep.memory.dest) {
-    target = _.find(targets, _.matchesProperty('id', creep.memory.dest))
+  if (creep.memory._plT) {
+    target = _.find(targets, _.matchesProperty('id', creep.memory._plT))
   }
 
   if (target === undefined) {
     target = this.findTarget(creep, targets)
-    creep.memory.dest = target.id
+    creep.memory._plT = target.id
   }
 
   this.moveAndLoad(creep, target)
