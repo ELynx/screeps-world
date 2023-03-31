@@ -82,7 +82,10 @@ plunder.getSomeOwnRoomName = function (creep) {
     const room = Game.rooms[roomName]
     if (!room.my) continue
 
-    const distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
+    let distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
+
+    if (room.storage && room.storage.store.getFreeCapacity() === 0) distance += 99
+
     if (distance < backupRoomDistance) {
       backupRoomName = room.name
       backupRoomDistance = distance
@@ -214,11 +217,13 @@ plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned rooms
   if (creep.room.my) {
     // test overflowing storage
-    if (creep.room.storage) {
-      if (creep.room.storage.store.getFreeCapacity() === 0) {
-        this._creepRoomTravel(creep)
-        return
-      }
+    if (creep.room.storage && creep.room.storage.store.getFreeCapacity() === 0) {
+      // forget
+      if (creep.memory.arum === creep.room.name) creep.memory.arum = undefined
+      if (creep.memory.hrum === creep.room.name) creep.memory.hrum = undefined
+
+      this._creepRoomTravel(creep)
+      return
     }
 
     const high = creep.room.terminal !== undefined || creep.room.storage !== undefined
