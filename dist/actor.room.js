@@ -386,6 +386,17 @@ const roomActor =
         for (const creep of standing) {
           creep.blockPosition()
         }
+
+        // move unassigned creeps off the border
+        // relevant for plunders
+        for (const creep of unassignedCreeps) {
+          const pos = creep.pos
+
+          if (pos.x === 0) creep.moveWrapper(RIGHT)
+          else if (pos.x === 49) creep.moveWrapper(LEFT)
+          else if (pos.y === 0) creep.moveWrapper(BOTTOM)
+          else if (pos.y === 49) creep.moveWrapper(TOP)
+        }
       }
     }
 
