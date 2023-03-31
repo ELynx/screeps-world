@@ -72,7 +72,22 @@ plunder.getSomeOwnRoomName = function (creep) {
     return creep.flag.memory.arum
   }
 
-  return undefined
+  // backup of backup, find any `own` room
+  let backupRoomName = undefined
+  let backupRoomDistance = Number.MAX_SAFE_INTEGER
+
+  for (const roomName in Game.rooms) {
+    const room = Game.rooms[roomName]
+    if (!room.my) continue
+
+    const distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
+    if (distance < backupRoomDistance) {
+      backupRoomName = room.name
+      backupRoomDistance = distance
+    }
+  }
+
+  return backupRoomName
 }
 
 plunder.findTarget = function (creep, targets) {
@@ -196,6 +211,14 @@ plunder.creepAtDestination = function (creep) {
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned rooms
   if (creep.room.my) {
+    // test overflowing storage
+    if (creep.room.storage) {
+      if (creep.room.storage.store.getFreeCapacity() === 0) {
+        this._creepRoomTravel(creep)
+        return
+      }
+    }
+
     const high = creep.room.terminal !== undefined || creep.room.storage !== undefined
 
     creep.memory.arum = creep.room.name
