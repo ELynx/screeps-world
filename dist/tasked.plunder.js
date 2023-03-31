@@ -34,10 +34,13 @@ plunder.creepAtOwnRoom = function (creep) {
   // all control (was) done by room controller
   // see if it is time for next raid or end of career
 
+  if (creep.memory._rt1 === undefined) creep.memory._rt1 = Game.time
+
   if (creep.store.getUsedCapacity() === 0) {
     // assign custom ttl limit
-    const leftAt = creep.memory._rtt || Game.time
-    const backTrip = Game.time - leftAt
+    const leftAt = creep.memory._rt0 || Game.time
+    const arrivedAt = creep.memory._rt1 || Game.time
+    const backTrip = arrivedAt - leftAt
     const roundTrip = Math.floor(2.2 * backTrip)
     creep.viable = roundTrip
 
@@ -186,7 +189,8 @@ plunder.creepAtOtherRooms = function (creep) {
 
   if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
     creep.setControlRoom(this.getSomeOwnRoomName(creep))
-    creep.memory._rtt = Game.time
+    creep.memory._rt0 = Game.time
+    creep.memory._rt1 = undefined
     creep.memory._plT = undefined
     return
   }
