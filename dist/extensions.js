@@ -258,8 +258,8 @@ Room.prototype.getRoomControlledCreeps = function () {
           return false
         }
 
-        // loaded plunder are given to controllers when they are in room
-        if (creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
+        // loaded plunder are given to controllers when they are in `own` rooms
+        if (this.my && creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
           return true
         }
 
