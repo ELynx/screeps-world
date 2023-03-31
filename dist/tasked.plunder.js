@@ -73,7 +73,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   }
 
   // backup of backup, find any `own` room
-  let backupRoomName = undefined
+  let backupRoomName
   let backupRoomDistance = Number.MAX_SAFE_INTEGER
 
   for (const roomName in Game.rooms) {
