@@ -17,8 +17,6 @@ plunder.prepare = function () {
 
 plunder.creepPrepare = function (creep) {
   this._flagCountCreep(creep)
-  // allow to fill senders
-  creep.memory.rstk = true
 }
 
 plunder.getTargetRoomName = function (creep) {
