@@ -21,7 +21,7 @@ mineralRestockController.act = function (structure, creep) {
     const canGive = intentSolver.getUsedCapacity(creep, resourceType)
     if (canGive <= 0) continue
 
-    const howMuch = (canGive > wantTake) ? (canGive - wantTake) : undefined
+    const howMuch = (canGive > wantTake) ? wantTake : undefined
 
     const rc = this.wrapIntent(creep, 'transfer', structure, resourceType, howMuch)
     if (rc !== OK) {
