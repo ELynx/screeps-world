@@ -197,7 +197,7 @@ const roomActor =
           this._roomControllerObserveOwn(controller, creep)
         }
 
-        if (rc === bootstrap.WANR_BOTH_EXHAUSED ||
+        if (rc === bootstrap.WARN_BOTH_EXHAUSED ||
             rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
             rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
           return rc
@@ -385,6 +385,17 @@ const roomActor =
         const standing = this.roomControllersControl(roomControllers, room, unassignedCreeps)
         for (const creep of standing) {
           creep.blockPosition()
+        }
+
+        // move unassigned creeps off the border
+        // relevant for plunders
+        for (const creep of unassignedCreeps) {
+          const pos = creep.pos
+
+          if (pos.x === 0) creep.moveWrapper(RIGHT)
+          else if (pos.x === 49) creep.moveWrapper(LEFT)
+          else if (pos.y === 0) creep.moveWrapper(BOTTOM)
+          else if (pos.y === 49) creep.moveWrapper(TOP)
         }
       }
     }

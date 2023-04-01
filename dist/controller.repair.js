@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Controller = require('./controller.template')
 
 const repairController = new Controller('repair')
@@ -97,9 +99,10 @@ repairController.targets = function (room) {
       } else {
         const targetHp = Math.ceil(structure.hitsMax * otherMult)
         if (structure.hits < targetHp) {
-          // TODO repair non-source when they are added to logic
           if (structure.structureType === STRUCTURE_CONTAINER) {
-            if (!structure.isSource()) return false
+            if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+              if (!structure.isSource()) return false
+            }
           }
 
           // STRATEGY some histeresis, repair to top

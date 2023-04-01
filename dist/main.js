@@ -6,6 +6,7 @@ const profiler = require('./screeps-profiler')
 
 const cleanup = require('./routine.cleanup')
 const extensions = require('./extensions')
+const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')

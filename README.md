@@ -10,7 +10,7 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 ## Folders
-`.github` and `github_conf` - GitHub specific items, such as action definitions
+`.github` - GitHub Action definitions
 
 `dist` - deployment payload
 
@@ -24,6 +24,8 @@ Movement and positioning:
 * Step away.
 
 * Strelok tries to attack unreachable sections.
+
+* Plunder tries to plunder unreachable sections.
 
 * Worker creeps avoid hostile areas.
 
@@ -102,3 +104,11 @@ Do not overfill Labs and Factory to prevent process pollution.
 Cluster restock.
 
 Global Control farm rooms.
+
+[Creep body part colors](https://github.com/screeps/renderer/blob/a94760f146afd2a299bd13342b83c596d3f10252/engine/src/lib/processors/creepBuildBody.js#L13)
+
+Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far traver!
+
+Mix in worker family bodies to allow useful functions up to the end.
+
+Standing on containers is best for spacial.

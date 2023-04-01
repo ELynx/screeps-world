@@ -1,12 +1,10 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energyRestockController = new Controller('energy.restock')
-
-// STRATEGY parameters for restocking
-const TowerRestockNormal = 0.9
-const TowerRestockCritical = 0.25
 
 energyRestockController.actRange = 1
 
@@ -20,59 +18,41 @@ energyRestockController.observeMyCreep = function (creep) {
 }
 
 energyRestockController.act = function (target, creep) {
-  return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
+  const wantTake = target.demand.amount(RESOURCE_ENERGY)
+  const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+
+  const howMuch = Math.min(wantTake, canGive)
+
+  if (howMuch <= 0) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
+
+  return this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY, howMuch)
 }
 
 energyRestockController.targets = function (room) {
-  const allStructures = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.store && structure.isActiveSimple
-      }
-    }
-  )
-  if (allStructures.length === 0) return []
-
-  const critical = _.filter(
+  const allStructures = room.find(FIND_STRUCTURES)
+  const withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      if (structure.structureType === STRUCTURE_TOWER) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockCritical * structure.store.getCapacity(RESOURCE_ENERGY)
-      }
-
-      return false
+      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
     }
   )
-  if (critical.length > 0) return critical
 
-  const normal = _.filter(
-    allStructures,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_SPAWN || structure.structureType === STRUCTURE_EXTENSION) {
-        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-      } else if (structure.structureType === STRUCTURE_TOWER) {
-        return structure.store.getUsedCapacity(RESOURCE_ENERGY) < TowerRestockNormal * structure.store.getCapacity(RESOURCE_ENERGY)
-      }
+  if (withEnergyDemand.length === 0) return []
 
-      return false
+  withEnergyDemand.sort(
+    function (t1, t2) {
+      const priority1 = t1.demand.priority
+      const priority2 = t2.demand.priority
+
+      return priority1 - priority2
     }
   )
-  if (normal.length > 0) return normal
 
-  // low
-  return _.filter(
-    allStructures,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_TERMINAL) {
-        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.trme || 0)
-      } else if (structure.structureType === STRUCTURE_STORAGE) {
-        return structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && structure.store.getUsedCapacity(RESOURCE_ENERGY) < (room.memory.stre || 0)
-      }
+  const priority = withEnergyDemand[0].demand.priority
 
-      return false
-    }
-  )
+  return _.takeWhile(withEnergyDemand, _.matchesProperty('demand.priority', priority))
 }
 
 energyRestockController.filterCreep = function (creep) {

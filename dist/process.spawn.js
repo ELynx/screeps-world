@@ -279,7 +279,7 @@ spawnProcess.hostile = function (room, live) {
 }
 
 spawnProcess.work = function (room) {
-  const live = _.countBy(room.getRoomOwnedCreeps(), 'memory.btyp')
+  const live = _.countBy(room.getViableRoomOwnedCreeps(), 'memory.btyp')
 
   // controller is `my`
   if (room.my) this.my(room, live)

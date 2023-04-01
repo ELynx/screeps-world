@@ -8,29 +8,13 @@ const energyTakeController = new Controller('energy.take')
 
 energyTakeController.actRange = 1
 
-energyTakeController.wantToKeep = function (structure) {
-  const room = structure.room
-
-  if (structure.structureType === STRUCTURE_TERMINAL) {
-    return room.memory.trme || 0
-  }
-
-  if (structure.structureType === STRUCTURE_STORAGE) {
-    return room.memory.stre || 0
-  }
-
-  return 0
-}
-
 energyTakeController.act = function (structure, creep) {
-  const canGive = intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY)
-  const wantKeep = this.wantToKeep(structure)
-  const wantGive = canGive - wantKeep
+  const wantGive = structure.supply.amount(RESOURCE_ENERGY)
   const canTake = intentSolver.getFreeCapacity(creep, RESOURCE_ENERGY)
 
   const howMuch = Math.min(wantGive, canTake)
 
-  if (howMuch < 0) {
+  if (howMuch <= 0) {
     return ERR_NOT_ENOUGH_RESOURCES
   }
 
@@ -38,17 +22,16 @@ energyTakeController.act = function (structure, creep) {
 }
 
 energyTakeController.validateTarget = function (allTargets, target, creep) {
-  const has = target.store[RESOURCE_ENERGY]
-  const toKeep = this.wantToKeep(target)
+  const wantGive = target.supply.amount(RESOURCE_ENERGY)
 
   let othersWant = 0
   const others = this._allAssignedTo(target)
   for (const other of others) {
-    othersWant += other.store.getFreeCapacity(RESOURCE_ENERGY)
+    othersWant += intentSolver.getFreeCapacity(other, RESOURCE_ENERGY)
   }
 
   // can fit one more draw
-  return has - toKeep - othersWant > 0
+  return wantGive > othersWant
 }
 
 energyTakeController.targets = function (room) {
@@ -57,26 +40,25 @@ energyTakeController.targets = function (room) {
   }
 
   const allStructures = room.find(FIND_STRUCTURES)
+  let withEnergySupply = _.filter(
+    allStructures,
+    function (structure) {
+      return structure.supply.priority !== null && structure.supply.amount(RESOURCE_ENERGY) > 0
+    }
+  )
 
-  let ramparts = []
+  if (withEnergySupply.length === 0) return []
+
   if (!room.my) {
-    ramparts = _.filter(
+    const ramparts = _.filter(
       allStructures,
       function (structure) {
         return structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
       }
     )
-  }
 
-  const isTakeable = _.bind(
-    function (structure) {
-      // type is checked externally
-      const toKeep = this.wantToKeep(structure)
-      if (intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) <= toKeep) {
-        return false
-      }
-
-      if (ramparts.length > 0) {
+    if (ramparts.length > 0) {
+      const isTakeable = function (structure) {
         return !_.some(
           ramparts,
           function (ramp) {
@@ -85,30 +67,20 @@ energyTakeController.targets = function (room) {
         )
       }
 
-      return true
-    },
-    this
-  )
+      withEnergySupply = _.filter(withEnergySupply, isTakeable)
+    }
+  }
 
-  const takeable = _.filter(
-    allStructures,
-    function (structure) {
-      // small checks are inside because they are executed on a lot of items
-      if (structure.structureType === STRUCTURE_CONTAINER ||
-          structure.structureType === STRUCTURE_STORAGE ||
-          // STRATEGY allow to take from terminal, maybe airdrop energy
-          structure.structureType === STRUCTURE_TERMINAL) {
-        return isTakeable(structure)
-      } else if (structure.structureType === STRUCTURE_LINK) {
-        // STRATEGY do not steal from source link
-        return structure.isSource() ? false : isTakeable(structure)
-      }
+  withEnergySupply.sort(
+    function (t1, t2) {
+      const priority1 = t1.supply.priority
+      const priority2 = t2.supply.priority
 
-      return false
+      return priority1 - priority2
     }
   )
 
-  return takeable
+  return withEnergySupply
 }
 
 energyTakeController.filterCreep = function (creep) {
