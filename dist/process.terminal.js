@@ -43,7 +43,7 @@ terminalProcess.work = function (room) {
   if (has === undefined || has <= toKeep) return
 
   let priceMark = 0.95
-  let range = MaxBuyRoomDistance
+  const range = MaxBuyRoomDistance
 
   // people seem to like H a lot, drive price up or stash
   if (sellMineralType === RESOURCE_HYDROGEN) {
