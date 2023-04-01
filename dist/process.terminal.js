@@ -54,19 +54,6 @@ terminalProcess.work = function (room) {
     }
   }
 
-  // sell it off
-  if (sellMineralType === RESOURCE_ZYNTHIUM) {
-    if (has > 5 * toKeep) {
-      priceMark = 0.25
-      range = 3 * MaxBuyRoomDistance
-    } else if (has > 3 * toKeep) {
-      priceMark = 0.5
-      range = 2 * MaxBuyRoomDistance
-    } else if (has > 2 * toKeep) {
-      priceMark = 0.75
-    }
-  }
-
   if (!Memory.prices) {
     Memory.prices = { }
   }
