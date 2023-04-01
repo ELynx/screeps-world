@@ -153,6 +153,10 @@ const historyActor =
     }
 
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
+
+    if (attacker.room) {
+      attacker.room.__fight = true
+    }
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
@@ -218,13 +222,18 @@ const historyActor =
       return
     }
 
-    const target = this.getObjectById(room, eventRecord.data.targetId)
-    if (target === null) {
-      // SHORTCUT skip unknown
-      Game.__skipActors[eventRecord.data.targetId] = true
-      Game.__skipAttackTargets[eventRecord.data.targetId] = true
-      Game.__skipHealTargets[eventRecord.data.targetId] = true
-      return
+    let target
+    if (eventRecord.data.targetId === eventRecord.objectId) {
+      target = healer
+    } else {
+      target = this.getObjectById(room, eventRecord.data.targetId)
+      if (target === null) {
+        // SHORTCUT skip unknown
+        Game.__skipActors[eventRecord.data.targetId] = true
+        Game.__skipAttackTargets[eventRecord.data.targetId] = true
+        Game.__skipHealTargets[eventRecord.data.targetId] = true
+        return
+      }
     }
 
     healer.__healedWhat = target

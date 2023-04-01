@@ -24,6 +24,8 @@ towerProcess.work = function (room) {
     let harmful = _.filter(
       hostileCreeps,
       function (creep) {
+        if (creep.ticksToLive <= 1) return false
+
         if (creep.directHarm || creep.sideHarm) return true
 
         // STRATEGY attack NPCs immediately, they have no complex tactics to reveal
@@ -37,6 +39,13 @@ towerProcess.work = function (room) {
     }
 
     if (harmful.length > 0) {
+      // assign zeros into empty slots
+      for (const x of harmful) {
+        x.sideHarm = x.sideHarm || 0
+        x.sideHarmPower = x.sideHarmPower || 0
+        x.directHarm = x.directHarm || 0
+      }
+
       // STRATEGY what targets to aim first
       harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
 

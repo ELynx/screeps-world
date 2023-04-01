@@ -1,5 +1,6 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
 const bootstrap = require('./bootstrap')
 
 const Controller = require('./controller.template')
@@ -8,9 +9,21 @@ const mineralRestockController = new Controller('mineral.restock')
 
 mineralRestockController.actRange = 1
 
-mineralRestockController.act = function (withStore, creep) {
+mineralRestockController._wantFunction = function (structure, resourceType) {
+  return structure.demand.amount(resourceType)
+}
+
+mineralRestockController.act = function (structure, creep) {
   for (const resourceType in creep.store) {
-    const rc = this.wrapIntent(creep, 'transfer', withStore, resourceType)
+    const wantTake = this._wantFunction(structure, resourceType)
+    if (wantTake <= 0) continue
+
+    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+    if (canGive <= 0) continue
+
+    const howMuch = (canGive > wantTake) ? wantTake : undefined
+
+    const rc = this.wrapIntent(creep, 'transfer', structure, resourceType, howMuch)
     if (rc !== OK) {
       return rc
     }
@@ -21,9 +34,9 @@ mineralRestockController.act = function (withStore, creep) {
   return bootstrap.WARN_INTENDEE_EXHAUSTED
 }
 
-mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
-  if (structure && structure.isActiveSimple) {
-    return structure.store.getFreeCapacity() > freeCapacity
+mineralRestockController._checkStore = function (structure) {
+  if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
+    return structure.demand.amount(RESOURCE_POWER) > 0
   }
 
   return false
@@ -31,7 +44,7 @@ mineralRestockController._checkStore = function (structure, freeCapacity = 0) {
 
 // STRATEGY mineral fill order
 mineralRestockController.targets = function (room) {
-  if (this._checkStore(room.terminal, 1000)) {
+  if (this._checkStore(room.terminal)) {
     return [room.terminal]
   }
 
@@ -51,6 +64,10 @@ mineralRestockController.filterCreep = function (creep) {
 const mineralDumpController = _.assign({}, mineralRestockController)
 
 mineralDumpController.id = 'mineral.dump'
+
+mineralDumpController._wantFunction = function (structure, resourceType) {
+  return intentSolver.getFreeCapacity(structure, resourceType)
+}
 
 mineralDumpController.targets = function (room) {
   if (this._checkStore(room.storage)) {

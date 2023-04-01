@@ -10,7 +10,7 @@ const bootstrap = {
   RoomActTypeHelp: 3,
 
   // intent is valid, but next such action will exhause both intended and intendee
-  WANR_BOTH_EXHAUSED: 3, // sum of two exhausted below
+  WARN_BOTH_EXHAUSED: 3, // sum of two exhausted below
   // intent is valid, but next such action will exhaust intended
   WARN_INTENDED_EXHAUSTED: 2,
   // intent is valid, but next such action will exhaust intendee

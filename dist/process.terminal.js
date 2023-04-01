@@ -37,9 +37,22 @@ terminalProcess.work = function (room) {
 
   if (sellMineralType === undefined) return
 
-  const toKeep = noPanic ? MineralsToKeep : 0
   const has = room.terminal.store[sellMineralType]
+  let toKeep = noPanic ? MineralsToKeep : 0
+
   if (has === undefined || has <= toKeep) return
+
+  let priceMark = 0.95
+  const range = MaxBuyRoomDistance
+
+  // people seem to like H a lot, drive price up or stash
+  if (sellMineralType === RESOURCE_HYDROGEN) {
+    priceMark = 1.05
+
+    if (has - toKeep > 1000) {
+      toKeep = has - 1000
+    }
+  }
 
   if (!Memory.prices) {
     Memory.prices = { }
@@ -62,13 +75,13 @@ terminalProcess.work = function (room) {
       if (roomFrom &&
           roomFrom.controller &&
           roomFrom.controller.owner &&
-          roomFrom.controller.owner.username === room.terminal.owner.username) { return false }
+          roomFrom.controller.owner.username === room.terminal.owner.username) return false
 
       // STRATEGY allowed price drop per sell of room resources
-      if (noPanic && (order.price < 0.95 * lastPrice)) { return false }
+      if (noPanic && (order.price < priceMark * lastPrice)) return false
 
       const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true)
-      if (noPanic && (dist > MaxBuyRoomDistance)) { return false }
+      if (noPanic && (dist > range)) return false
 
       return true
     }
@@ -97,7 +110,7 @@ terminalProcess.work = function (room) {
     if (roomFrom &&
         roomFrom.controller &&
         roomFrom.controller.owner &&
-        roomFrom.controller.owner.username === room.terminal.owner.username) { continue }
+        roomFrom.controller.owner.username === room.terminal.owner.username) continue
 
     if (order.price < smallestPrice) {
       smallestPrice = order.price

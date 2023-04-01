@@ -2,6 +2,25 @@
 
 const bootstrap = require('./bootstrap')
 
+Object.defineProperty(
+  Creep.prototype,
+  'viable',
+  {
+    get: function () {
+      if (this.spawning) return true
+
+      const limit = this.__viable_limit || (this.body.length * CREEP_SPAWN_TIME)
+
+      return this.ticksToLive >= limit
+    },
+    set: function (value) {
+      this.__viable_limit = value
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
 // anything that get benefits
 Creep.prototype.myOrAlly = function () {
   return this.my || this.ally
@@ -239,8 +258,8 @@ Room.prototype.getRoomControlledCreeps = function () {
           return false
         }
 
-        // loaded plunder are given to controllers when they are in room
-        if (creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
+        // loaded plunder are given to controllers when they are in `own` rooms
+        if (this.my && creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
           return true
         }
 
@@ -254,13 +273,12 @@ Room.prototype.getRoomControlledCreeps = function () {
   return this.__roomCreepsControl
 }
 
-Room.prototype.getRoomOwnedCreeps = function () {
+Room.prototype.getViableRoomOwnedCreeps = function () {
   if (this.__roomCreepsOwned === undefined) {
     this.__roomCreepsOwned = _.filter(
       Game.creeps,
       function (creep) {
-        const roomAssociation = creep.memory.frum || creep.memory.crum
-        return this.name === roomAssociation
+        return creep.viable && (this.name === (creep.memory.frum || creep.memory.crum))
       },
       this
     )
@@ -446,7 +464,14 @@ RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
 }
 
 RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
-  return Math.abs(this.x - otherRoomPosition.x) + Math.abs(this.y - otherRoomPosition.y)
+  // with a twist
+  const dx = Math.abs(this.x - otherRoomPosition.x)
+  const dy = Math.abs(this.y - otherRoomPosition.y)
+
+  // in screeps geometry center and adjacent positions are reachable
+  if (dx <= 1 && dy <= 1) return 1
+
+  return dx + dy
 }
 
 Structure.prototype.isActiveSimple = true

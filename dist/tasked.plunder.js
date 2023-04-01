@@ -32,13 +32,18 @@ plunder.creepAtOwnRoom = function (creep) {
   // all control (was) done by room controller
   // see if it is time for next raid or end of career
 
+  if (creep.memory._rt1 === undefined) creep.memory._rt1 = Game.time
+
   if (creep.store.getUsedCapacity() === 0) {
-    const leftAt = creep.memory._rtt || Game.time
-    const backTrip = Game.time - leftAt
+    // assign custom ttl limit
+    const leftAt = creep.memory._rt0 || Game.time
+    const arrivedAt = creep.memory._rt1 || Game.time
+    const backTrip = arrivedAt - leftAt
     const roundTrip = Math.floor(2.2 * backTrip)
+    creep.viable = roundTrip
 
     const roomName = this.getTargetRoomName(creep)
-    if (roomName && creep.ticksToLive >= roundTrip) {
+    if (roomName && creep.viable) {
       creep.setControlRoom(roomName)
     } else {
       creep.unlive()
@@ -70,7 +75,25 @@ plunder.getSomeOwnRoomName = function (creep) {
     return creep.flag.memory.arum
   }
 
-  return undefined
+  // backup of backup, find any `own` room
+  let backupRoomName
+  let backupRoomDistance = Number.MAX_SAFE_INTEGER
+
+  for (const roomName in Game.rooms) {
+    const room = Game.rooms[roomName]
+    if (!room.my) continue
+
+    let distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
+
+    if (room.storage && room.storage.store.getFreeCapacity() === 0) distance += 99
+
+    if (distance < backupRoomDistance) {
+      backupRoomName = room.name
+      backupRoomDistance = distance
+    }
+  }
+
+  return backupRoomName
 }
 
 plunder.findTarget = function (creep, targets) {
@@ -164,19 +187,21 @@ plunder.creepAtOtherRooms = function (creep) {
 
   if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
     creep.setControlRoom(this.getSomeOwnRoomName(creep))
-    creep.memory._rtt = Game.time
+    creep.memory._rt0 = Game.time
+    creep.memory._rt1 = undefined
+    creep.memory._plT = undefined
     return
   }
 
   let target
 
-  if (creep.memory.dest) {
-    target = _.find(targets, _.matchesProperty('id', creep.memory.dest))
+  if (creep.memory._plT) {
+    target = _.find(targets, _.matchesProperty('id', creep.memory._plT))
   }
 
   if (target === undefined) {
     target = this.findTarget(creep, targets)
-    creep.memory.dest = target.id
+    creep.memory._plT = target.id
   }
 
   this.moveAndLoad(creep, target)
@@ -193,6 +218,16 @@ plunder.creepAtDestination = function (creep) {
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned rooms
   if (creep.room.my) {
+    // test overflowing storage
+    if (creep.room.storage && creep.room.storage.store.getFreeCapacity() === 0) {
+      // forget
+      if (creep.memory.arum === creep.room.name) creep.memory.arum = undefined
+      if (creep.memory.hrum === creep.room.name) creep.memory.hrum = undefined
+
+      this._creepRoomTravel(creep)
+      return
+    }
+
     const high = creep.room.terminal !== undefined || creep.room.storage !== undefined
 
     creep.memory.arum = creep.room.name
@@ -225,14 +260,13 @@ plunder.flagPrepare = function (flag) {
   return this._flagCountBasic(flag, 100)
 }
 
-plunder.makeCM = function (carry, move = carry) {
-  const a = new Array(carry)
-  a.fill(CARRY)
+plunder.makeCM = function (pairs) {
+  if (this.__bodyPrototype === undefined) {
+    this.__bodyPrototype = new Array(50).fill(null).map((unused, i) => i % 2 === 0 ? CARRY : MOVE)
+  }
 
-  const b = new Array(move)
-  b.fill(MOVE)
-
-  return a.concat(b)
+  if (pairs === 25) return this.__bodyPrototype
+  return this.__bodyPrototype.slice(0, 2 * pairs)
 }
 
 plunder.makeBody = function (room) {

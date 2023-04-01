@@ -11,6 +11,11 @@ upgradeController.act = function (controller, creep) {
 }
 
 upgradeController.targets = function (room) {
+  // don't upgrade controller in room with active fight
+  if (room.__fight) {
+    return []
+  }
+
   return [room.controller]
 }
 
