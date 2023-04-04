@@ -44,6 +44,9 @@ const IndexToStructureType =
 ]
 
 Structure.prototype.takePhoto = function () {
+  // protection from area walls
+  if (this.hits === undefined || this.hitsMax === undefined) return undefined
+
   const index = StructureTypeToIndex[this.structureType]
   if (index === undefined) return undefined
 
