@@ -1,7 +1,5 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
 const historyActor =
 {
   clearCaches: function () {
