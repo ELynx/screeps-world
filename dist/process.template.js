@@ -1,6 +1,10 @@
 'use strict'
 
-const profiler = require('./screeps-profiler')
+let profiler
+
+if (Game.flags.profiler) {
+  profiler = require('./screeps-profiler')
+}
 
 const bootstrap = require('./bootstrap')
 
@@ -12,7 +16,7 @@ function Process (id) {
   this._register = function () {
     bootstrap.registerProcessController(this)
 
-    if (Game.flags.profiler && Game.flags.profiler.pos) {
+    if (profiler) {
       profiler.registerObject(this, this.id)
     }
   }

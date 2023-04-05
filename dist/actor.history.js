@@ -52,8 +52,11 @@ const historyActor =
     let result
 
     if (something.body) result = 'Creep [' + something.name + ']'
+    else if (something.className) result = 'PowerCreep [' + something.name + ']'
     else if (something.structureType) result = 'Structure [' + something.structureType + ']'
     else result = 'Unknown [' + something.id + ']'
+
+    if (something.owner) result += ' owned by [' + something.owner.username + ']'
 
     if (something.pos) result += ' at ' + something.pos
 
@@ -147,7 +150,7 @@ const historyActor =
       // Neutral (24) to Hostile (-1) in 9 actions
       // Neutral (0) to Hostile (-1) in 1 action
       const reputation = Game.iff.decreaseReputation(attackerUsername, 3)
-      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked, had owner reputation changed to [' + reputation + ']')
+      console.log(this.hmiName(attacker) + ' attacked, had owner reputation changed to [' + reputation + ']')
     } else {
       Game.iff.markNPCHostile(attacker)
     }
@@ -196,7 +199,7 @@ const historyActor =
 
     if (attacker.pc) {
       const reputation = Game.iff.makeHostile(attackerUsername)
-      console.log(this.hmiName(attacker) + ' owned by PC [' + attackerUsername + '] attacked controller, had owner reputation changed to [' + reputation + ']')
+      console.log(this.hmiName(attacker) + ' attacked controller, had owner reputation changed to [' + reputation + ']')
     } else {
       Game.iff.markNPCHostile(attacker)
     }
@@ -283,20 +286,9 @@ const historyActor =
   act: function () {
     this.clearCaches()
 
-    const dashboard = Game.flags.dashboard
-
     for (const roomName in Game.rooms) {
-      const t0 = Game.cpu.getUsed()
-
       const room = Game.rooms[roomName]
-
       this.processRoomLog(room)
-
-      if (dashboard) {
-        const usedRoomPercent = bootstrap.hardCpuUsed(t0)
-        room.visual.rect(0, 0, 5, 0.5, { fill: '#0f0' })
-        room.visual.rect(0, 0, 5 * usedRoomPercent / 100, 0.5, { fill: '#f00' })
-      }
     }
 
     this.processPostLog()
