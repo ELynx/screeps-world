@@ -16,6 +16,10 @@ upgradeController.targets = function (room) {
     return []
   }
 
+  if (room.controller.upgradeBlocked) {
+    return []
+  }
+
   return [room.controller]
 }
 
