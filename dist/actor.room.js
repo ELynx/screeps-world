@@ -407,11 +407,6 @@ const roomActor =
     if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
       terminalProcess.work(room)
     }
-
-    if (Game.flags.dashboard) {
-      const usedPercent = bootstrap.hardCpuUsed(t0)
-      room.visual.rect(5.5, 0.25, 5 * usedPercent / 100, 0.25, { fill: '#f00' })
-    }
   } // end of act method
 }
 

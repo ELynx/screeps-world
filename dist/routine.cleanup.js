@@ -104,7 +104,6 @@ const cleanup = {
 
     for (const flagName in Game.flags) {
       if (flagName === 'autobuild') continue
-      if (flagName === 'dashboard') continue
       if (flagName === 'photo') continue
       if (flagName === 'profiler') continue
       if (flagName === 'recount') continue

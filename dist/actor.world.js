@@ -33,28 +33,14 @@ const worldActor =
   taskControllersControl: function () {
     for (const id of taskedAuto) {
       const tasked = bootstrap.taskControllers[id]
-
-      if (tasked === undefined) {
-        continue
-      }
+      if (tasked === undefined) continue
 
       tasked.act()
     }
   },
 
   act: function () {
-    const t0 = Game.cpu.getUsed()
-
     this.taskControllersControl()
-
-    if (Game.flags.dashboard) {
-      const usedPercent = bootstrap.hardCpuUsed(t0)
-      for (const roomName in Game.rooms) {
-        const room = Game.rooms[roomName]
-        room.visual.rect(11, 0, 5, 0.5, { fill: '#0f0' })
-        room.visual.rect(11, 0, 5 * usedPercent / 100, 0.5, { fill: '#f00' })
-      }
-    }
   } // end of act method
 }
 
