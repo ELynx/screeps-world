@@ -11,7 +11,7 @@ upgradeController.act = function (controller, creep) {
 }
 
 upgradeController.validateTarget = function (allTargets, target, creep) {
-  // no imit below level 8
+  // no limit below level 8
   if (target.level < 8) {
     return true
   }
