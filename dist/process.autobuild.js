@@ -69,11 +69,9 @@ Room.prototype.fromPhoto = function (code) {
   return [new RoomPosition(xxxxx, yyyyyy, this.name), structureType]
 }
 
-autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction) {
+autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
   // cheap call
   const terrain = room.getTerrain()
-
-  const center = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
 
   // 5x5
   const weights = new Array(25)
@@ -158,20 +156,17 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
   return positions
 }
 
-autobuildProcess.logConstructionSite = function (posOrRoomObject, structureType, rc) {
-  const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
+autobuildProcess.logConstructionSite = function (pos, structureType, rc) {
   const message = 'Planned [' + structureType + '] at ' + pos + ' with result code [' + rc + ']'
-
   console.log(message)
   Game.notify(message, 30)
 }
 
-autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
+autobuildProcess.tryPlan = function (room, pos, structureType) {
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[structureType][level] || 0
   if (canHave === 0) return ERR_RCL_NOT_ENOUGH
 
-  const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
   const kx = String(pos.x)
   const ky = String(pos.y)
 
@@ -179,6 +174,11 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
   if (csAtY) {
     const csAtXY = csAtY[kx]
     if (csAtXY) {
+      for (const constructionSite of csAtXY) {
+        if (constructionSite.structureType === structureType) {
+          return OK
+        }
+      }
       return ERR_BUSY
     }
   }
@@ -195,9 +195,9 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
     }
   }
 
-  const rc = room.createConstructionSite(posOrRoomObject, structureType)
+  const rc = room.createConstructionSite(pos, structureType)
 
-  this.logConstructionSite(posOrRoomObject, structureType, rc)
+  this.logConstructionSite(pos, structureType, rc)
 
   return rc
 }
@@ -207,11 +207,10 @@ autobuildProcess.takePhoto = function (room) {
 
   let photo = ''
   for (const structure of allStructures) {
-    const c = structure.takePhoto()
+    const code = structure.takePhoto()
+    if (code === undefined) continue
 
-    if (c === undefined) continue
-
-    photo += c
+    photo += code
   }
 
   console.log(photo)
@@ -227,9 +226,8 @@ autobuildProcess.photoBuild = function (room) {
   room.memory.nodeAccessed = Game.time
 
   for (let i = 0; i < photo.length; ++i) {
-    const c = photo.charCodeAt(i)
-    const [position, structureType] = room.fromPhoto(c)
-
+    const code = photo.charCodeAt(i)
+    const [position, structureType] = room.fromPhoto(code)
     if (structureType === undefined) continue
 
     this.tryPlan(room, position, structureType)
@@ -242,13 +240,14 @@ autobuildProcess.wallsAroundController = function (room) {
   if (canHave === 0) return
 
   const terrain = room.getTerrain()
+  const center = room.controller.pos
 
   for (let dx = -1; dx <= 1; ++dx) {
     for (let dy = -1; dy <= 1; ++dy) {
       if (dx === 0 && dy === 0) continue
 
-      const x = room.controller.pos.x + dx
-      const y = room.controller.pos.y + dy
+      const x = center.x + dx
+      const y = center.y + dy
 
       const terrainValue = terrain.get(x, y)
 
@@ -266,7 +265,7 @@ autobuildProcess.extractor = function (room) {
   if (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][level] > 0) {
     const minerals = room.find(FIND_MINERALS)
     for (const mineral of minerals) {
-      this.tryPlan(room, mineral, STRUCTURE_EXTRACTOR)
+      this.tryPlan(room, mineral.pos, STRUCTURE_EXTRACTOR)
     }
   }
 }
@@ -292,17 +291,16 @@ autobuildProcess.weightAroundTheSource = function (x, y, dx, dy, terrainValue) {
 
   // going more to the center
   if (x < 25 && dx > 0) { result = result + 1 }
-
   if (x > 25 && dx < 0) { result = result + 1 }
-
   if (y < 25 && dy > 0) { result = result + 1 }
-
   if (y > 25 && dy < 0) { result = result + 1 }
 
   return result
 }
 
 autobuildProcess.weightSource = function (room, source) {
+  if (source.__autobuild_weight) return source.__autobuild_weight
+
   const terrain = room.getTerrain()
   const center = source.pos
 
@@ -320,11 +318,10 @@ autobuildProcess.weightSource = function (room, source) {
     }
   }
 
-  return result
-}
+  source.__autobuild_weight = result
 
-// STRATEGY how many target links to have (reserved) at any given time
-const TargetLinkReserve = 1
+  return source.__autobuild_weight
+}
 
 autobuildProcess.sourceLink = function (room) {
   const level = room.controller ? room.controller.level : 0
@@ -334,59 +331,61 @@ autobuildProcess.sourceLink = function (room) {
   const links = _.values(room.links)
   if (links.length >= canHave) return
 
-  // out of two, reserve one, otherwise links will wait for whole level to complete
-  const reserve = canHave <= 2 ? 1 : TargetLinkReserve
+  const sourceLinks = _.values(room.sourceLinks)
 
-  if (canHave > reserve) {
-    const linksCS = room.find(
-      FIND_CONSTRUCTION_SITES,
-      {
-        filter: { structureType: STRUCTURE_LINK }
-      }
+  // out of two, use one
+  if (canHave === 2 && sourceLinks.length === 1) return
+
+  const sources = room.find(FIND_SOURCES)
+
+  // well...
+  if (sources.length <= 0) return
+
+  // all source links are done
+  if (sourceLinks.length >= sources.length) return
+
+  const linksCS = room.find(
+    FIND_CONSTRUCTION_SITES,
+    {
+      filter: { structureType: STRUCTURE_LINK }
+    }
+  )
+
+  if (canHave <= links.length + linksCS.length) return
+
+  const sourcesToCover = canHave === 2 ? 1 : sources.length
+
+  // pick source with most access first
+  sources.sort(
+    _.bind(
+      function (s1, s2) {
+        const w1 = this.weightSource(room, s1)
+        const w2 = this.weightSource(room, s2)
+
+        return w2 - w1
+      },
+      this
     )
+  )
 
-    // if still have links to plan
-    if (canHave > links.length + linksCS.length) {
-      const sources = room.find(FIND_SOURCES)
+  const weightFunction = _.bind(this.weightAroundTheSource, this)
 
-      if (sources.length > 0) {
-        // pick source with most access first
-        sources.sort(
-          _.bind(
-            function (s1, s2) {
-              const w1 = this.weightSource(room, s1)
-              const w2 = this.weightSource(room, s2)
+  for (let i = 0; i < sources.length && i < sourcesToCover; ++i) {
+    const source = sources[i]
 
-              return w2 - w1
-            },
-            this
-          )
-        )
+    const positions = this.bestNeighbour(room, source.pos, weightFunction)
+    if (positions.length > 0) {
+      // to avoid re-positioning, always pick best
+      const position = positions[0]
 
-        const weightFunction = _.bind(this.weightAroundTheSource, this)
-
-        for (let i = 0; i < sources.length && i < canHave - reserve; ++i) {
-          const source = sources[i]
-
-          const positions = this.bestNeighbour(room, source, weightFunction)
-          if (positions.length > 0) {
-            // to avoid re-positioning, always pick best
-            const at = positions[0]
-
-            // only when not totally bad decision
-            if (at.weight > 0) {
-              // always think in line of "one souce - one link"
-              this.tryPlan(room, at, STRUCTURE_LINK)
-            }
-          }
-        } // end of sources
-      } // end of have sources
-    } // end of have links to build now
-  } // end of have links in general
+      // only when not totally bad decision
+      if (position.weight > 0) {
+        // always do "one souce - one link"
+        this.tryPlan(room, position, STRUCTURE_LINK)
+      }
+    }
+  }
 }
-
-// STRATEGY how many containers to have (reserved) at any given time
-const ContainerReserve = 0
 
 autobuildProcess.sourceContainer = function (room) {
   const level = room.controller ? room.controller.level : 0
