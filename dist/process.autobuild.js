@@ -502,16 +502,19 @@ autobuildProcess.coverRamparts = function (room) {
     const csAtY = room.__autobuild_constructionSites[ky]
 
     for (const kx in atY) {
-      // no ramparts on walls
-      if (terrain.get(parseInt(kx), parseInt(ky)) === TERRAIN_MASK_WALL) {
-        continue // to next y
-      }
-
       if (csAtY) {
         const csAtXY = csAtY[kx]
         if (csAtXY) {
           continue // to next y
         }
+      }
+
+      const x = parseInt(kx)
+      const y = parseInt(ky)
+
+      // no ramparts on walls
+      if (terrain.get(x, y) === TERRAIN_MASK_WALL) {
+        continue // to next y
       }
 
       const atXY = atY[kx]
@@ -550,7 +553,7 @@ autobuildProcess.coverRamparts = function (room) {
       // there is no ramp
       // this presumably can be covered
 
-      const pos = new RoomPosition(parseInt(kx), parseInt(ky), room.name)
+      const pos = new RoomPosition(x, y, room.name)
       const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART)
       this.logConstructionSite(pos, STRUCTURE_RAMPART, rc)
     }
