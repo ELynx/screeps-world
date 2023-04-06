@@ -66,7 +66,7 @@ Room.prototype.fromPhoto = function (code) {
 
   const structureType = IndexToStructureType[index]
 
-  return [{x: xxxxx, y: yyyyyy}, structureType]
+  return [{ x: xxxxx, y: yyyyyy }, structureType]
 }
 
 autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
@@ -141,7 +141,7 @@ autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
 
     positions.push(
       {
-        pos: {x, y},
+        pos: { x, y },
         weight: weights[index]
       }
     )
@@ -258,7 +258,7 @@ autobuildProcess.wallsAroundController = function (room) {
 
       if (terrainValue === TERRAIN_MASK_WALL) continue
 
-      this.tryPlan(room, {x, y}, STRUCTURE_WALL)
+      this.tryPlan(room, { x, y }, STRUCTURE_WALL)
     }
   }
 }
@@ -475,7 +475,7 @@ autobuildProcess.sourceContainer = function (room) {
         if (weight > 0) {
           positions.push(
             {
-              pos: {x, y},
+              pos: { x, y },
               weight
             }
           )
@@ -581,7 +581,7 @@ autobuildProcess.coverRamparts = function (room) {
         return
       }
 
-      this.logConstructionSite({x, y}, STRUCTURE_RAMPART, rc)
+      this.logConstructionSite({ x, y }, STRUCTURE_RAMPART, rc)
     }
   }
 }
