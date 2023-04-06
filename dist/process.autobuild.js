@@ -392,81 +392,91 @@ autobuildProcess.sourceContainer = function (room) {
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][level] || 0
   if (canHave === 0) return
 
-  if (canHave > ContainerReserve) {
-    const containers = room.find(
-      FIND_STRUCTURES,
-      {
-        filter: { structureType: STRUCTURE_CONTAINER }
+  const allContainers = room.find(
+    FIND_STRUCTURES,
+    {
+      filter: { structureType: STRUCTURE_CONTAINER }
+    }
+  )
+
+  if (allContainers.length >= canHave) return
+
+  const sources = room.find(FIND_SOURCES)
+
+  // well...
+  if (sources.length <= 0) return
+
+  const sourceContainers = _.filter(
+    allContainers,
+    function (structure) {
+      return structure.isSource()
+    }
+  )
+
+  // all source containers are done
+  if (sourceContainers.length >= sources.length) return
+
+  const containersCS = room.find(
+    FIND_CONSTRUCTION_SITES,
+    {
+      filter: { structureType: STRUCTURE_CONTAINER }
+    }
+  )
+
+  if (canHave <= allContainers.length + containersCS.length) return
+
+  // pick source with most access first
+  sources.sort(
+    _.bind(
+      function (s1, s2) {
+        const w1 = this.weightSource(room, s1)
+        const w2 = this.weightSource(room, s2)
+
+        return w2 - w1
+      },
+      this
+    )
+  )
+
+  const terrain = room.getTerrain()
+
+  for (const source of sources) {
+    const center = source.pos
+    const positions = []
+
+    for (let dx = -1; dx <= 1; ++dx) {
+      for (let dy = -1; dy <= 1; ++dy) {
+        if (dx === 0 && dy === 0) continue
+
+        const x = center.x + dx
+        const y = center.y + dy
+
+        const terrainValue = terrain.get(x, y)
+
+        const weight = this.weightAroundTheSource(x, y, dx, dy, terrainValue)
+        if (weight > 0) {
+          positions.push(
+            {
+              pos: new RoomPosition(x, y, room.name),
+              weight
+            }
+          )
+        }
+      }
+    }
+
+    positions.sort(
+      function (item1, item2) {
+        return item2.weight - item1.weight
       }
     )
 
-    const containersCS = room.find(
-      FIND_CONSTRUCTION_SITES,
-      {
-        filter: { structureType: STRUCTURE_CONTAINER }
-      }
-    )
-
-    // if still have containers to plan
-    if (canHave > containers.length + containersCS.length) {
-      const sources = room.find(FIND_SOURCES)
-
-      if (sources.length > 0) {
-        // pick source with most access first
-        sources.sort(
-          _.bind(
-            function (s1, s2) {
-              const w1 = this.weightSource(room, s1)
-              const w2 = this.weightSource(room, s2)
-
-              return w2 - w1
-            },
-            this
-          )
-        )
-
-        const terrain = room.getTerrain()
-
-        for (let i = 0; i < sources.length && i < canHave - ContainerReserve; ++i) {
-          const source = sources[i]
-
-          const positions = []
-          for (let dx = -1; dx <= 1; ++dx) {
-            for (let dy = -1; dy <= 1; ++dy) {
-              if (dx === 0 && dy === 0) continue
-
-              const x = source.pos.x + dx
-              const y = source.pos.y + dy
-
-              const terrainValue = terrain.get(x, y)
-
-              const weight = this.weightAroundTheSource(x, y, dx, dy, terrainValue)
-              if (weight > 0) {
-                positions.push(
-                  {
-                    pos: new RoomPosition(x, y, room.name),
-                    weight
-                  }
-                )
-              }
-            }
-          }
-
-          positions.sort(
-            function (item1, item2) {
-              return item2.weight - item1.weight
-            }
-          )
-
-          if (positions.length > 0) {
-            // to avoid re-positioning, always pick best
-            const at = positions[0]
-            this.tryPlan(room, at, STRUCTURE_CONTAINER)
-          }
-        } // end of sources
-      } // end of have sources
-    } // end of have containers to build now
-  } // end of have containers in general
+    if (positions.length > 0) {
+      // to avoid re-positioning, always pick best
+      const position = positions[0]
+      this.tryPlan(room, position, STRUCTURE_CONTAINER)
+    }
+  }
 }
 
 // STRATEGY what not to cover
