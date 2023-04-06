@@ -158,7 +158,7 @@ autobuildProcess.bestNeighbour = function (room, posOrRoomObject, weightFunction
   return positions
 }
 
-autobuildProcess.logConstructionSite = function (room, posOrRoomObject, structureType, rc) {
+autobuildProcess.logConstructionSite = function (posOrRoomObject, structureType, rc) {
   const pos = posOrRoomObject.pos ? posOrRoomObject.pos : posOrRoomObject
   const message = 'Planned [' + structureType + '] at ' + pos + ' with result code [' + rc + ']'
 
@@ -197,7 +197,7 @@ autobuildProcess.tryPlan = function (room, posOrRoomObject, structureType) {
 
   const rc = room.createConstructionSite(posOrRoomObject, structureType)
 
-  this.logConstructionSite(room, posOrRoomObject, structureType, rc)
+  this.logConstructionSite(posOrRoomObject, structureType, rc)
 
   return rc
 }
@@ -543,7 +543,7 @@ autobuildProcess.coverRamparts = function (room) {
 
       const pos = new RoomPosition(parseInt(kx), parseInt(ky), room.name)
       const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART)
-      this.logConstructionSite(room, pos, STRUCTURE_RAMPART, rc)
+      this.logConstructionSite(pos, STRUCTURE_RAMPART, rc)
     }
   }
 }
