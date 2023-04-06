@@ -340,7 +340,12 @@ autobuildProcess.sourceLink = function (room) {
   const links = _.values(room.links)
   if (links.length >= canHave) return
 
-  const sourceLinks = _.values(room.sourceLinks)
+  const sourceLinks = _.filter(
+    links,
+    function (structure) {
+      return structure.isSource()
+    }
+  )
 
   // out of two, use one
   if (canHave === 2 && sourceLinks.length === 1) return
