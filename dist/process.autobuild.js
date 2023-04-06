@@ -66,7 +66,7 @@ Room.prototype.fromPhoto = function (code) {
 
   const structureType = IndexToStructureType[index]
 
-  return [new RoomPosition(xxxxx, yyyyyy, this.name), structureType]
+  return [{x: xxxxx, y: yyyyyy}, structureType]
 }
 
 autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
@@ -141,7 +141,7 @@ autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
 
     positions.push(
       {
-        pos: new RoomPosition(x, y, room.name),
+        pos: {x, y},
         weight: weights[index]
       }
     )
@@ -157,7 +157,7 @@ autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
 }
 
 autobuildProcess.logConstructionSite = function (pos, structureType, rc) {
-  const message = 'Planned [' + structureType + '] at ' + pos + ' with result code [' + rc + ']'
+  const message = 'Planned [' + structureType + '] at [' + pos.x + ', ' + pos.y + '] with result code [' + rc + ']'
   console.log(message)
   Game.notify(message, 30)
 }
@@ -195,7 +195,7 @@ autobuildProcess.tryPlan = function (room, pos, structureType) {
     }
   }
 
-  const rc = room.createConstructionSite(pos, structureType)
+  const rc = room.createConstructionSite(pos.x, pos.y, structureType)
   if (rc === ERR_FULL) Game.__autobuild_cs_full = true
 
   this.logConstructionSite(pos, structureType, rc)
@@ -258,7 +258,7 @@ autobuildProcess.wallsAroundController = function (room) {
 
       if (terrainValue === TERRAIN_MASK_WALL) continue
 
-      this.tryPlan(room, new RoomPosition(x, y, room.name), STRUCTURE_WALL)
+      this.tryPlan(room, {x, y}, STRUCTURE_WALL)
     }
   }
 }
@@ -395,7 +395,7 @@ autobuildProcess.sourceLink = function (room) {
       // only when not totally bad decision
       if (position.weight > 0) {
         // always do "one souce - one link"
-        this.tryPlan(room, position, STRUCTURE_LINK)
+        this.tryPlan(room, position.pos, STRUCTURE_LINK)
 
         if (Game.__autobuild_cs_full) return
       }
@@ -475,7 +475,7 @@ autobuildProcess.sourceContainer = function (room) {
         if (weight > 0) {
           positions.push(
             {
-              pos: new RoomPosition(x, y, room.name),
+              pos: {x, y},
               weight
             }
           )
@@ -492,7 +492,7 @@ autobuildProcess.sourceContainer = function (room) {
     if (positions.length > 0) {
       // to avoid re-positioning, always pick best
       const position = positions[0]
-      this.tryPlan(room, position, STRUCTURE_CONTAINER)
+      this.tryPlan(room, position.pos, STRUCTURE_CONTAINER)
 
       if (Game.__autobuild_cs_full) return
     }
@@ -575,9 +575,7 @@ autobuildProcess.coverRamparts = function (room) {
       // there is no ramp
       // this presumably can be covered
 
-      const pos = new RoomPosition(x, y, room.name)
-
-      const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART)
+      const rc = room.createConstructionSite(x, y, STRUCTURE_RAMPART)
       if (rc === ERR_FULL) {
         Game.__autobuild_cs_full = true
         return
