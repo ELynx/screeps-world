@@ -196,6 +196,7 @@ autobuildProcess.tryPlan = function (room, pos, structureType) {
   }
 
   const rc = room.createConstructionSite(pos, structureType)
+  if (rc === ERR_FULL) Game.__autobuild_cs_full = true
 
   this.logConstructionSite(pos, structureType, rc)
 
@@ -231,10 +232,14 @@ autobuildProcess.photoBuild = function (room) {
     if (structureType === undefined) continue
 
     this.tryPlan(room, position, structureType)
+
+    if (Game.__autobuild_cs_full) return
   }
 }
 
 autobuildProcess.wallsAroundController = function (room) {
+  if (Game.__autobuild_cs_full) return
+
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_WALL][level] || 0
   if (canHave === 0) return
@@ -259,6 +264,8 @@ autobuildProcess.wallsAroundController = function (room) {
 }
 
 autobuildProcess.extractor = function (room) {
+  if (Game.__autobuild_cs_full) return
+
   if (room.extractor) return
 
   const level = room.controller ? room.controller.level : 0
@@ -324,6 +331,8 @@ autobuildProcess.weightSource = function (room, source) {
 }
 
 autobuildProcess.sourceLink = function (room) {
+  if (Game.__autobuild_cs_full) return
+
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_LINK][level] || 0
   if (canHave === 0) return
@@ -382,12 +391,16 @@ autobuildProcess.sourceLink = function (room) {
       if (position.weight > 0) {
         // always do "one souce - one link"
         this.tryPlan(room, position, STRUCTURE_LINK)
+
+        if (Game.__autobuild_cs_full) return
       }
     }
   }
 }
 
 autobuildProcess.sourceContainer = function (room) {
+  if (Game.__autobuild_cs_full) return
+
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][level] || 0
   if (canHave === 0) return
@@ -475,6 +488,8 @@ autobuildProcess.sourceContainer = function (room) {
       // to avoid re-positioning, always pick best
       const position = positions[0]
       this.tryPlan(room, position, STRUCTURE_CONTAINER)
+
+      if (Game.__autobuild_cs_full) return
     }
   }
 }
@@ -488,6 +503,8 @@ const NotCover = [
 ]
 
 autobuildProcess.coverRamparts = function (room) {
+  if (Game.__autobuild_cs_full) return
+
   const level = room.controller ? room.controller.level : 0
   const canHave = CONTROLLER_STRUCTURES[STRUCTURE_RAMPART][level] || 0
   if (canHave === 0) return
@@ -554,7 +571,13 @@ autobuildProcess.coverRamparts = function (room) {
       // this presumably can be covered
 
       const pos = new RoomPosition(x, y, room.name)
+
       const rc = room.createConstructionSite(pos, STRUCTURE_RAMPART)
+      if (rc === ERR_FULL) {
+        Game.__autobuild_cs_full = true
+        return
+      }
+
       this.logConstructionSite(pos, STRUCTURE_RAMPART, rc)
     }
   }
