@@ -581,7 +581,7 @@ autobuildProcess.coverRamparts = function (room) {
         return
       }
 
-      this.logConstructionSite(pos, STRUCTURE_RAMPART, rc)
+      this.logConstructionSite({x, y}, STRUCTURE_RAMPART, rc)
     }
   }
 }
