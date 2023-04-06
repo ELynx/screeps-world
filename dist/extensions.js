@@ -601,8 +601,6 @@ const extensions = {
       room.extensions = { }
       room.towers = { }
       room.links = { }
-      room.sourceLinks = { }
-      room.destinationLinks = { }
       room.labs = { }
 
       room.blocked = []
@@ -654,11 +652,6 @@ const extensions = {
           break
         case STRUCTURE_LINK:
           structure.room.links[structure.id] = structure
-          if (structure.isSource()) {
-            structure.room.sourceLinks[structure.id] = structure
-          } else {
-            structure.room.destinationLinks[structure.id] = structure
-          }
           break
         case STRUCTURE_EXTRACTOR:
           Game.extractors[structure.id] = structure
