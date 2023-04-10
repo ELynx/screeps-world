@@ -158,6 +158,9 @@ plunder.creepAtOtherRooms = function (creep) {
         // nuker is no-withdraw
         if (candiadate.structureType && candiadate.structureType === STRUCTURE_NUKER) return false
 
+        // spawn energy self-refill should be kept in check
+        if (candiadate.structureType && candiadate.structureType === STRUCTURE_SPAWN && candiadate.store[RESOURCE_ENERGY] < 10) return false
+
         let hasResources = false
         for (const resourceType in candiadate.store) {
           if (candiadate.store[resourceType] > 0) {
