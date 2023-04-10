@@ -189,8 +189,8 @@ beetle.creepAtDestination = function (creep) {
           break
         }
 
-        const obstacle = _.some(OBSTACLE_OBJECT_TYPES, _.matches(structure.structureType))
-        if (!obstacle) {
+        const aimAt = structure.__aggro || _.some(OBSTACLE_OBJECT_TYPES, _.matches(structure.structureType))
+        if (!aimAt) {
           continue
         }
 
