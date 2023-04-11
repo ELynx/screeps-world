@@ -33,25 +33,21 @@ if (Game.flags.profiler) {
 
 const loop = function () {
   iff.convenience()
-  Game.iff.setVerbose(true)
-
   cleanup.cleanup()
   extensions.shortcuts()
 
   historyActor.act()
 
   // prevent division by zero
-  const total = Math.max(1, _.keys(Game.creeps).length)
+  const totalCreepsCount = Math.max(1, _.keys(Game.creeps).length)
 
   const roomNames = _.shuffle(_.keys(Game.rooms))
   for (const roomName of roomNames) {
     const room = Game.rooms[roomName]
 
-    // STRATEGY CPU limit allocation for controlled vs other rooms
-    const r = _.keys(room.creeps).length * (room.my ? 3 : 2)
-    const t = total
+    const roomCreepsCount = _.keys(room.creeps).length
 
-    room.__cpuLimit = Math.ceil(100 * r / t)
+    room.__cpuLimit = Math.ceil(100 * roomCreepsCount / totalCreepsCount)
 
     if (room.my) {
       roomActor.act(room)
