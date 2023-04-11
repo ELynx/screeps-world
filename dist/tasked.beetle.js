@@ -172,6 +172,8 @@ beetle.creepAtDestination = function (creep) {
         true // as array
       )
 
+      const buildable = _.keys(CONSTRUCTION_COST)
+
       for (const itemInfo of around) {
         const structure = itemInfo.structure
 
@@ -194,7 +196,7 @@ beetle.creepAtDestination = function (creep) {
           continue
         }
 
-        structure.__buildable = _.some(_.keys(CONSTRUCTION_COST), _.matches(structure.structureType))
+        structure.__buildable = _.some(buildable, _.matches(structure.structureType))
 
         if (creep.__canMelee || (structure.__buildable && creep.__canDismantle)) {
           target = structure
