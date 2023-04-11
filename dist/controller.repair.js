@@ -64,6 +64,8 @@ repairController.targets = function (room) {
   const roadMult = fromArray(TargetRoadHpMultiplier, room.level())
   const otherMult = fromArray(TargetStructureHpMultiplier, room.my ? room.level() : 1)
 
+  const repairable = _.keys(CONSTRUCTION_COST)
+
   const structuresWithHits = room.find(
     FIND_STRUCTURES,
     {
@@ -71,7 +73,8 @@ repairController.targets = function (room) {
         return structure.hits &&
                structure.hitsMax &&
                structure.isActiveSimple &&
-               structure.hits < structure.hitsMax
+               structure.hits < structure.hitsMax &&
+               _.some(repairable, _.matches(structure.structureType))
       }
     }
   )
