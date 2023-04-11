@@ -19,8 +19,6 @@ const LowestAllyReputation = 25
 const DefaultReputation = 0
 const MinReputation = -1
 
-let verbose = false
-
 const usernameSafetyPrefix = 'user_'
 
 let ownUsername
@@ -106,9 +104,7 @@ const setPCReputation = function (username, value) {
   // save memory on strangers
   Memory.reputation[safeUsername] = (toSet === DefaultReputation) ? undefined : toSet
 
-  if (verbose) {
-    console.log('Reputation for [' + username + '] set to ' + toSet)
-  }
+  console.log('Reputation for [' + username + '] set to ' + toSet)
 
   return toSet
 }
@@ -118,10 +114,7 @@ const adjustPCReputation = function (username, amount) {
 
   // no automatic change to "enemy" status
   if (now < DefaultReputation) {
-    if (verbose) {
-      console.log('No change to enemy status for [' + username + ']')
-    }
-
+    console.log('No change to enemy status for [' + username + ']')
     return now
   }
 
@@ -129,10 +122,7 @@ const adjustPCReputation = function (username, amount) {
 
   // no automatic change to "ally" status
   if (now < LowestAllyReputation && toSet >= LowestAllyReputation) {
-    if (verbose) {
-      console.log('No change to neutral status for [' + username + ']')
-    }
-
+    console.log('No change to neutral status for [' + username + ']')
     toSet = LowestAllyReputation - 1
   }
 
@@ -483,10 +473,6 @@ module.exports = {
 
     Game.iff = {
       ownUsername,
-
-      setVerbose (newVerbose) {
-        verbose = newVerbose
-      },
 
       makeAlly (username) {
         return setPCReputation(username, MaxReputation)
