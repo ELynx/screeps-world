@@ -191,11 +191,11 @@ claim.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-claim.makeClaimM = function (claim_, move) {
+claim.makeClaimM = function (claim, move) {
   const a = new Array(move - 1)
   a.fill(MOVE)
 
-  const b = new Array(claim_)
+  const b = new Array(claim)
   b.fill(CLAIM)
 
   const c = [MOVE]
