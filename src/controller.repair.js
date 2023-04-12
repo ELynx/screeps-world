@@ -37,9 +37,9 @@ repairController.extra = function (structure) {
   return structure.__targetHp
 }
 
-repairController.roomPrepare = function () {
-  this._roomPrepare()
-  this._prepareExcludedTargets()
+repairController.roomPrepare = function (room) {
+  this._roomPrepare(room)
+  this._prepareExcludedTargets(room)
 }
 
 repairController.observeMyCreep = function (creep) {
