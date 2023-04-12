@@ -21,7 +21,7 @@ energyTakeController.act = function (structure, creep) {
   return this.wrapIntent(creep, 'withdraw', structure, RESOURCE_ENERGY, howMuch)
 }
 
-energyTakeController.validateTarget = function (target) {
+energyTakeController.validateTarget = function (allTargets, target, creep) {
   const wantGive = target.supply.amount(RESOURCE_ENERGY)
 
   let othersWant = 0
