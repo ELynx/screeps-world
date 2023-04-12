@@ -35,8 +35,8 @@ strelok.creepAtDestination = function (creep) {
 
     const targetCreeps = _.filter(
       creeps,
-      function (creep) {
-        return creep.hostile
+      function (someCreep) {
+        return someCreep.hostile
       }
     )
 
@@ -82,15 +82,15 @@ strelok.creepAtDestination = function (creep) {
 
     const wounded = _.filter(
       creeps,
-      function (creep) {
-        return creep.myOrAlly() && (creep.hits < creep.hitsMax)
+      function (someCreep) {
+        return someCreep.myOrAlly() && (someCreep.hits < someCreep.hitsMax)
       }
     )
 
     const noHurt = _.filter(
       creeps,
-      function (creep) {
-        return creep.allyOrNeutral()
+      function (someCreep) {
+        return someCreep.allyOrNeutral()
       }
     )
 

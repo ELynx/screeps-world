@@ -123,9 +123,9 @@ spawn.postpone = function () {
 spawn._spawnsCanSpawn = function () {
   return _.filter(
     Game.spawns,
-    function (spawn) {
-      const spawning = intent.getSpawnSpawning(spawn)
-      return spawning === null && spawn.isActiveSimple
+    function (someSpawn) {
+      const spawning = intent.getSpawnSpawning(someSpawn)
+      return spawning === null && someSpawn.isActiveSimple
     }
   )
 }
@@ -166,14 +166,14 @@ spawn._spawnsByDistance = function (roomName) {
 spawn._spawnsInRoom = function (room) {
   return _.filter(
     room.spawns,
-    function (spawn) {
-      const spawning = intent.getSpawnSpawning(spawn)
-      return spawning === null && spawn.isActiveSimple
+    function (someSpawn) {
+      const spawning = intent.getSpawnSpawning(someSpawn)
+      return spawning === null && someSpawn.isActiveSimple
     }
   )
 }
 
-spawn.makeBody = function (spawn, model) {
+spawn.makeBody = function (someSpawn, model) {
   if (_.isArray(model.body)) {
     return model.body
   }
@@ -182,17 +182,17 @@ spawn.makeBody = function (spawn, model) {
     const bodyFunction = queue.getBodyFunction(model.body)
     if (bodyFunction === undefined) return undefined
 
-    return bodyFunction(spawn.room)
+    return bodyFunction(someSpawn.room)
   }
 
   return undefined
 }
 
-spawn.spawnNextErrorHandler = function (spawn, model, index, rc = undefined) {
+spawn.spawnNextErrorHandler = function (someSpawn, model, index, rc = undefined) {
   let message =
         'spawn.spawnNext error condition [' + index +
         '] detected for [' + JSON.stringify(model) +
-        '] at room [' + spawn.room.name + '] spawn [' + spawn.name + ']'
+        '] at room [' + someSpawn.room.name + '] spawn [' + someSpawn.name + ']'
 
   if (rc) {
     message += ' with rc [' + rc + ']'
@@ -247,10 +247,10 @@ spawn.spawnNext = function () {
     }
   }
 
-  for (const spawn of spawns) {
-    const body = this.makeBody(spawn, nextModel)
+  for (const someSpawn of spawns) {
+    const body = this.makeBody(someSpawn, nextModel)
     if (body === undefined) {
-      return this.spawnNextErrorHandler(spawn, nextModel, 1)
+      return this.spawnNextErrorHandler(someSpawn, nextModel, 1)
     }
 
     if (body.length === 0) {
@@ -258,7 +258,7 @@ spawn.spawnNext = function () {
     }
 
     const actualRunRc = intent.wrapSpawnIntent(
-      spawn,
+      someSpawn,
       'spawnCreep',
       body,
       nextModel.name,
@@ -273,7 +273,7 @@ spawn.spawnNext = function () {
     }
 
     if (actualRunRc < OK) {
-      return this.spawnNextErrorHandler(spawn, nextModel, 2, actualRunRc)
+      return this.spawnNextErrorHandler(someSpawn, nextModel, 2, actualRunRc)
     }
 
     // remove the model
