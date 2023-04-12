@@ -48,7 +48,7 @@ function Controller (id) {
   /**
     Clear room target cache.
     **/
-  this._prepareExcludedTargets = function (room) {
+  this._prepareExcludedTargets = function () {
     this._creepPerTarget = true
     this._excludedTargets = []
   }
@@ -86,7 +86,7 @@ function Controller (id) {
     )
   }
 
-  this._roomPrepare = function (room) {
+  this._roomPrepare = function () {
     this.__targetCache = undefined
   }
 
@@ -94,8 +94,8 @@ function Controller (id) {
     Prepare for new room.
     @param {Room} room.
     **/
-  this.roomPrepare = function (room) {
-    this._roomPrepare(room)
+  this.roomPrepare = function () {
+    this._roomPrepare()
   }
 
   /**

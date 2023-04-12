@@ -8,9 +8,9 @@ const energyRestockController = new Controller('energy.restock')
 
 energyRestockController.actRange = 1
 
-energyRestockController.roomPrepare = function (room) {
-  this._roomPrepare(room)
-  this._prepareExcludedTargets(room)
+energyRestockController.roomPrepare = function () {
+  this._roomPrepare()
+  this._prepareExcludedTargets()
 }
 
 energyRestockController.observeMyCreep = function (creep) {

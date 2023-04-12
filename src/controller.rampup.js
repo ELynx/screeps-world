@@ -9,9 +9,9 @@ rampupController.actRange = 3
 // STRATEGY ramp up newly built fortifications; for rampts - survive 3 x decay periods (300 ticks)
 const RampupHits = 3 * RAMPART_DECAY_AMOUNT + 1
 
-rampupController.roomPrepare = function (room) {
-  this._roomPrepare(room)
-  this._prepareExcludedTargets(room)
+rampupController.roomPrepare = function () {
+  this._roomPrepare()
+  this._prepareExcludedTargets()
 }
 
 rampupController.observeMyCreep = function (creep) {
