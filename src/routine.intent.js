@@ -573,8 +573,8 @@ const intent = {
       return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
-    const creepIntent = creep[intentName]
-    if (creepIntent === undefined) {
+    const intent = creep[intentName]
+    if (intent === undefined) {
       console.log('Invalid intent [' + intentName + '] called for creep [' + creep.name + ']')
       return bootstrap.ERR_INVALID_INTENT_NAME
     }
@@ -595,7 +595,7 @@ const intent = {
       console.log('Unvalidated intent [' + intentName + '] called for creep [' + creep.name + ']')
     }
 
-    const intentRc = _.bind(creepIntent, creep)(arg0, arg1, arg2)
+    const intentRc = _.bind(intent, creep)(arg0, arg1, arg2)
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on creep [' + creep.name +
@@ -619,8 +619,8 @@ const intent = {
       return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
-    const spawnIntent = spawn[intentName]
-    if (spawnIntent === undefined) {
+    const intent = spawn[intentName]
+    if (intent === undefined) {
       console.log('Invalid intent [' + intentName + '] called for spawn [' + spawn.name + ']')
       return bootstrap.ERR_INVALID_INTENT_NAME
     }
@@ -641,7 +641,7 @@ const intent = {
       console.log('Unvalidated intent [' + intentName + '] called for spawn [' + spawn.name + ']')
     }
 
-    const intentRc = _.bind(spawnIntent, spawn)(arg0, arg1, arg2)
+    const intentRc = _.bind(intent, spawn)(arg0, arg1, arg2)
     if (intentRc !== OK) {
       console.log('Unforceen error occurred during intent call [' + intentName +
                   '] on spawn [' + spawn.name +
