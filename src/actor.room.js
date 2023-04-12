@@ -124,7 +124,7 @@ const roomActor =
     return 0
   },
 
-  roomControllersPrepare: function (controllers) {
+  roomControllersPrepare: function (controllers, room) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
       if (controller && _.isFunction(controller.roomPrepare)) {
@@ -241,8 +241,8 @@ const roomActor =
 
     if (roomCreeps.length > 0) {
       // clean up controllers
-      this.roomControllersPrepare(roomControllers)
-      this.roomControllersPrepare(consumingControllers)
+      this.roomControllersPrepare(roomControllers, room)
+      this.roomControllersPrepare(consumingControllers, room)
 
       // loop 1 - pre-act
       for (const creep of roomCreeps) {
