@@ -492,11 +492,11 @@ const intent = {
     return rc
   },
 
-  spawn_intent_renewCreep: function (spawn, creep) {
+  spawn_intent_renewCreep: function (_spawn, _creep) {
     return OK
   },
 
-  spawn_intent_recycleCreep: function (spawn, creep) {
+  spawn_intent_recycleCreep: function (_spawn, _creep) {
     return OK
   },
 
