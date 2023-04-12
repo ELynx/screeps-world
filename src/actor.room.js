@@ -128,7 +128,7 @@ const roomActor =
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
       if (controller && _.isFunction(controller.roomPrepare)) {
-        controller.roomPrepare()
+        controller.roomPrepare(room)
       }
     }
   },
