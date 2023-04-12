@@ -12,9 +12,7 @@ Proprietary and confidential.
 ## Folders
 `.github` - GitHub Action definitions
 
-`src` - source code
-
-`dist` - (extra) deployment payload
+`dist` - deployment payload
 
 `history` - historical data worth saving
 

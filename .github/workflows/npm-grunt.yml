@@ -41,7 +41,7 @@ jobs:
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
           PUSH_PTR: ${{ inputs.ptr }}
-          PUSH_WHAT: "src/*.js"
+          PUSH_WHAT: "dist/*.js"
         run: |
           npm install
           npm install grunt
@@ -55,11 +55,11 @@ jobs:
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
           PUSH_BRANCH: ${{ inputs.target_branch }}
           PUSH_PTR: ${{ inputs.ptr }}
-          PUSH_WHAT: "dist/main.js"
+          PUSH_WHAT: "out/main.js"
         run: |
           npm install
           npm install grunt
           npm install grunt-screeps
           npm install esbuild
-          ./node_modules/.bin/esbuild ./src/main.js --outdir=dist --minify --bundle --platform=node --target=node8.9.3
+          ./node_modules/.bin/esbuild ./dist/main.js --outdir=out --minify --bundle --platform=node --target=node8.9.3
           grunt screeps
