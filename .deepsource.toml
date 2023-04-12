@@ -1,5 +1,9 @@
 version = 1
 
+exclude_patterns = [
+  "src/screeps-profiler.js"
+]
+
 [[analyzers]]
 name = "javascript"
 
