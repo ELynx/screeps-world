@@ -10,7 +10,7 @@ upgradeController.act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller)
 }
 
-upgradeController.validateTarget = function (target) {
+upgradeController.validateTarget = function (allTargets, target, creep) {
   // no limit below level 8
   if (target.level < 8) {
     return true
