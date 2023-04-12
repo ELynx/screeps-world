@@ -96,7 +96,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   return backupRoomName
 }
 
-plunder.findTarget = function (creep, targets) {
+plunder.findTarget = function (_creep, targets) {
   for (const target of targets) {
     for (const resourceType in target.store) {
       const stored = target.store.getUsedCapacity(resourceType)
