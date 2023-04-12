@@ -111,4 +111,4 @@ Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at
 
 Mix in worker family bodies to allow useful functions up to the end.
 
-Standing on containers is best for spacial.
+Standing on containers is best for special harvest cases.
