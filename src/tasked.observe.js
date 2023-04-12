@@ -4,7 +4,7 @@ const Tasked = require('./tasked.template')
 
 const observe = new Tasked('observe')
 
-observe.spawnPriority = function (_flag) {
+observe.spawnPriority = function (flag) {
   return 'lowkey'
 }
 
@@ -26,7 +26,7 @@ observe.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-observe.makeBody = function (_spawn) {
+observe.makeBody = function (spawn) {
   return [MOVE]
 }
 

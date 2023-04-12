@@ -6,7 +6,7 @@ const Tasked = require('./tasked.template')
 
 const plunder = new Tasked('plunder')
 
-plunder.spawnStrategy = function (_flag) {
+plunder.spawnStrategy = function (flag) {
   return spawn.FROM_ANY_ROOM
 }
 
