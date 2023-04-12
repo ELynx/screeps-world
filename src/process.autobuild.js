@@ -531,8 +531,8 @@ autobuildProcess.coverRamparts = function (room) {
         }
       }
 
-      const x = parseInt(kx)
-      const y = parseInt(ky)
+      const x = parseInt(kx, 10)
+      const y = parseInt(ky, 10)
 
       // no ramparts on walls
       if (terrain.get(x, y) === TERRAIN_MASK_WALL) {
