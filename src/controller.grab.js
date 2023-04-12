@@ -8,8 +8,8 @@ const grabController = new Controller('grab')
 
 grabController.actRange = 1
 
-grabController.roomPrepare = function (room) {
-  this._roomPrepare(room)
+grabController.roomPrepare = function () {
+  this._roomPrepare()
 
   // cache of room coordinates where creeps can maybe reach something
   this.fastCheck = false

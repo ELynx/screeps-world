@@ -36,9 +36,9 @@ downgradeController.extra = function (controller) {
   return controller.__targetTicks
 }
 
-downgradeController.roomPrepare = function (room) {
-  this._roomPrepare(room)
-  this._prepareExcludedTargets(room)
+downgradeController.roomPrepare = function () {
+  this._roomPrepare()
+  this._prepareExcludedTargets()
 }
 
 downgradeController.observeMyCreep = function (creep) {
