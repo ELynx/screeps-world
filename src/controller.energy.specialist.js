@@ -93,7 +93,7 @@ energySpecialistController.act = function (source, creep) {
   return harvestRc
 }
 
-energySpecialistController.validateTarget = function (allTargets, target, creep) {
+energySpecialistController.validateTarget = function (target) {
   // if there is no one in the room, no collision
   if (target.room === undefined) {
     return true

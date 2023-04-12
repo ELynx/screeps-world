@@ -291,7 +291,7 @@ function Controller (id) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
         if (this.validateTarget) {
-          if (this.validateTarget(allTargets, currentTarget, creep) === false) {
+          if (this.validateTarget(currentTarget) === false) {
             continue
           }
         } // to next target
