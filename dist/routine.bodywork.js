@@ -157,11 +157,13 @@ const bodywork = {
 
     const energy = room.extendedAvailableEnergyCapacity()
 
-    if (energy < 9999999999999) {
+    if (energy < 2400) {
       return []
     }
 
-    return this.makeWCM(1, 2)
+    // 15 upgrades per tick, 150 capacity for 10 upgrades, no fatigue on plains when empty
+    // 2400
+    return this.makeWCM(15, 3, 15)
   }
 }
 
