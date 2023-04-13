@@ -6,6 +6,14 @@ const strelok = new Tasked('strelok')
 
 strelok.breachedExtraCreeps = 1
 
+strelok.bodyName = function (flag) {
+  // room service call
+  const pos = flag.pos
+  if (pos.x === 49 && pos.y === 49) return this.id + '_2'
+
+  return this.id
+}
+
 strelok.prepare = function () {
   this.roomTargets = { }
   this.roomWounded = { }
@@ -303,12 +311,12 @@ strelok.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
 
   if (energy < 500) {
-    // 200   50    150
+    // 200  50    150
     return [MOVE, RANGED_ATTACK]
   }
 
   if (energy < 700) {
-    // 500   50    50    150            250
+    // 500  50    50    150            250
     return [MOVE, MOVE, RANGED_ATTACK, HEAL]
   }
 
@@ -397,6 +405,22 @@ strelok.makeBody = function (room) {
   const body = a.concat(b).concat(c).concat(d).concat(e)
 
   this.__bodyCache[elvl] = body
+
+  return body
+}
+
+// room service, melee strelok...
+strelok.makeBody_2 = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
+  const pairs = Math.min(Math.floor(energy / 130), 25)
+
+  const a = new Array(pairs)
+  a.fill(MOVE)
+
+  const b = new Array(pairs)
+  b.fill(ATTACK)
+
+  const body = a.concat(b)
 
   return body
 }
