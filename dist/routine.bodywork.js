@@ -148,6 +148,20 @@ const bodywork = {
 
     // 3400
     return this.makeWCM(20, 4)
+  },
+
+  upgrader: function (room) {
+    if (!room.my) {
+      return []
+    }
+
+    const energy = room.extendedAvailableEnergyCapacity()
+
+    if (energy < 9999999999999) {
+      return []
+    }
+
+    return this.makeWCM(1, 2)
   }
 }
 
