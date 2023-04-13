@@ -47,7 +47,7 @@ secutiryProcess.work = function (room) {
         }
 
         // STRATEGY low level rooms have no towers, increase threat
-        if (room.controller && (room.controller.level < 3) && (threatLevel <= bootstrap.ThreatLevelLow)) {
+        if (room.my && (room.towers.length === 0) && (threatLevel <= bootstrap.ThreatLevelLow)) {
           ++threatLevel
         }
 
