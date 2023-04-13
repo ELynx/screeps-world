@@ -62,6 +62,13 @@ energySpecialistController.act = function (source, creep) {
 
     for (const restockTarget of restockTargets) {
       if (creep.pos.isNearTo(restockTarget)) {
+        if (restockTarget.structureType === STRUCTURE_CONTAINER) {
+          if (creep.pos.x !== restockTarget.pos.x || creep.pos.y !== restockTarget.pos.y) {
+            const direction = creep.pos.getDirectionTo(restockTarget)
+            creep.moveWrapper(direction)
+          }
+        }
+
         const restockRc = this.restock(restockTarget, creep)
 
         // on error, such as intended exhausted, check other target
