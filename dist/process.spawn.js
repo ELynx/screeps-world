@@ -206,7 +206,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   }
 
   const upgarders = this._hasAndPlanned(room, live, 'upgrader')
-  const lowerLimit = Math.max(1, 3 - upgarders)
+  const lowerLimit = Math.max(2, 3 - upgarders)
 
   const wantWorkersMin = limit ? 0 : lowerLimit
   const wantWorkersMax = limit || 12
