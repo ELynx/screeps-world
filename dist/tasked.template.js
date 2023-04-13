@@ -226,6 +226,10 @@ function Tasked (id) {
     return 'normal'
   }
 
+  this.bodyName = function (flag) {
+    return this.id
+  }
+
   this._creepRoomTravel = function (creep) {
     if (creep.room.level() > 0) {
       // remember unliving room
@@ -393,6 +397,7 @@ function Tasked (id) {
 
       const spawnFromStrategy = this.spawnFrom(flag)
       const spawnPriorityStrategy = this.spawnPriority(flag)
+      const bodyNameStrategy = this.bodyName(flag)
 
       let spawnCallback
 
@@ -409,7 +414,7 @@ function Tasked (id) {
 
       spawnCallback(
         flag.name, // id in queue
-        this.id, // body, string indicates to call body function
+        bodyNameStrategy, // body, string indicates to call body function
         flag.name, // name (prefix)
         creepMemory, // memory
         spawnFromStrategy, // from
@@ -424,6 +429,10 @@ function Tasked (id) {
 
     if (this.makeBody) {
       spawn.registerBodyFunction(this.id, _.bind(this.makeBody, this))
+    }
+
+    if (this.makeBody_2) {
+      spawn.registerBodyFunction(this.id + '_2', _.bind(this.makeBody_2, this))
     }
 
     if (profiler) {
