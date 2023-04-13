@@ -268,6 +268,16 @@ Room.prototype.getRoomControlledCreeps = function () {
       },
       this
     )
+
+    // so worker comes after upgrader
+    this.__roomCreepsControl.sort(
+      function (creep1, creep2) {
+        const btyp1 = creep1.memory.btyp || creep1.id
+        const btyp2 = creep2.memory.btyp || creep2.id
+
+        return btyp1.localeCompare(btyp2)
+      }
+    )
   }
 
   return this.__roomCreepsControl
