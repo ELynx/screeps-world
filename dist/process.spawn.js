@@ -173,32 +173,14 @@ spawnProcess.upgraders = function (room, live) {
 }
 
 spawnProcess.workers = function (room, live, limit = undefined) {
-  const addWorker = _.bind(
-    function (roomFromName, body, n, priority) {
-      this.addToQueue(
-        room.name,
-        roomFromName,
-        'worker',
-        body,
-        { },
-        n,
-        priority
-      )
-    },
-    this
-  )
-
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-
-  if (room.my && nowWorkers === 0) {
-    addWorker(queue.FROM_CLOSEST_ROOM, 'worker', 1, 'urgent')
-    addWorker(queue.FROM_CLOSEST_ROOM, 'worker', 1, 'normal')
-
-    return
-  }
 
   // in level 8 room single worker shoud be enough
   if (limit === undefined && room.level() === 8) {
+    // save CPU on calculations
+    if (nowWorkers > 0) return
+
+    // only want one
     limit = 1
   }
 
@@ -238,9 +220,12 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 
   const roomCanSpawn = this._canSpawn(room)
 
-  addWorker(
+  this.addToQueue(
+    room.name,
     roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    'worker',
     roomCanSpawn ? 'worker' : workerBody,
+    { },
     want - nowWorkers,
     'normal'
   )
