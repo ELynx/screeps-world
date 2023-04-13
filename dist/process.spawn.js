@@ -174,6 +174,7 @@ spawnProcess.upgraders = function (room, live) {
 
 spawnProcess.workers = function (room, live, limit = undefined) {
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
+  const nowUpgarders = this._hasAndPlanned(room, live, 'upgrader')
 
   const workerBody = bodywork.worker(room)
 
@@ -183,14 +184,15 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     let standalone = 0
     let supportedByRestockers = 0
 
-    const restockers = this._hasAndPlanned(room, live, 'restocker')
-    if (restockers !== 0) {
+    const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
+
+    if (nowRestockers !== 0) {
       const workInRestocker = _.countBy(bodywork.restocker(room))[WORK] || 0
       if (workInRestocker > 0) {
         const workInWorker = _.countBy(workerBody)[WORK] || 0
         if (workInWorker > 0) {
           // STRATEGY harvest to spend ratio
-          supportedByRestockers = Math.round(1.2 * HARVEST_POWER * restockers * workInRestocker / workInWorker)
+          supportedByRestockers = Math.round(1.2 * HARVEST_POWER * nowRestockers * workInRestocker / workInWorker)
         }
       }
     }
@@ -199,17 +201,15 @@ spawnProcess.workers = function (room, live, limit = undefined) {
       standalone = room.memory.hlvl
     }
 
-    wantWorkers = Math.max(standalone, supportedByRestockers)
+    wantWorkers = Math.max(standalone, supportedByRestockers) - nowUpgarders
   } else {
     // demand until limit is reached
     wantWorkers = nowWorkers + 1
   }
 
-  const upgarders = this._hasAndPlanned(room, live, 'upgrader')
-  const lowerLimit = Math.max(2, 3 - upgarders)
-
-  const wantWorkersMin = limit ? 0 : lowerLimit
+  const wantWorkersMin = limit ? 0 : (3 - nowUpgarders)
   const wantWorkersMax = limit || 12
+
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
   const roomCanSpawn = this._canSpawn(room)
