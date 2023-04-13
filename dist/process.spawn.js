@@ -156,6 +156,20 @@ spawnProcess.miners = function (room, live) {
 }
 
 spawnProcess.upgraders = function (room, live) {
+  const want = (room.level() === 8) ? 1 : 0
+  const now = this._hasAndPlanned(room, live, 'upgrader')
+
+  this.addToQueue(
+    room.name,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    'upgrader',
+    'upgrader',
+    {
+      upgr: true
+    },
+    want - now,
+    'lowkey'
+  )
 }
 
 spawnProcess.workers = function (room, live, limit = undefined) {
