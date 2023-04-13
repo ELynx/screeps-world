@@ -155,6 +155,9 @@ spawnProcess.miners = function (room, live) {
   )
 }
 
+spawnProcess.upgraders = function (room, live) {
+}
+
 spawnProcess.workers = function (room, live, limit = undefined) {
   const addWorker = _.bind(
     function (roomFromName, body, n, priority) {
@@ -180,11 +183,16 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     return
   }
 
+  // in level 8 room single worker shoud be enough
+  if (limit === undefined && room.level() === 8) {
+    limit = 1
+  }
+
   const workerBody = bodywork.worker(room)
 
   let wantWorkers
 
-  if (room.my) {
+  if (room.my && limit === undefined) {
     let standalone = 0
     let supportedByRestockers = 0
 
@@ -249,6 +257,7 @@ spawnProcess.my = function (room, live) {
   this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
+  this.upgraders(room, live)
   this.workers(room, live)
 }
 
@@ -308,6 +317,7 @@ spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('worker')
   this._registerBodyFunction('restocker')
   this._registerBodyFunction('miner')
+  this._registerBodyFunction('upgrader')
 }
 
 spawnProcess.register = function () {
