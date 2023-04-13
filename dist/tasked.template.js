@@ -390,14 +390,15 @@ function Tasked (id) {
         continue
       }
 
-      const creepMemory = {
-        crum: flag.pos.roomName,
-        flag: flag.name
-      }
-
       const spawnFromStrategy = this.spawnFrom(flag)
       const spawnPriorityStrategy = this.spawnPriority(flag)
       const bodyNameStrategy = this.bodyName(flag)
+
+      const creepMemory = {
+        btyp: bodyNameStrategy,
+        crum: flag.pos.roomName,
+        flag: flag.name
+      }
 
       let spawnCallback
 
