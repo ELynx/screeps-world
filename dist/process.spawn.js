@@ -175,15 +175,6 @@ spawnProcess.upgraders = function (room, live) {
 spawnProcess.workers = function (room, live, limit = undefined) {
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
 
-  // in level 8 room single worker shoud be enough
-  if (limit === undefined && room.level() === 8) {
-    // save CPU on calculations
-    if (nowWorkers > 0) return
-
-    // only want one
-    limit = 1
-  }
-
   const workerBody = bodywork.worker(room)
 
   let wantWorkers
@@ -214,7 +205,10 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     wantWorkers = nowWorkers + 1
   }
 
-  const wantWorkersMin = limit ? 0 : 3
+  const upgarders = this._hasAndPlanned(room, live, 'upgrader')
+  const lowerLimit = Math.max(1, 3 - upgarders)
+
+  const wantWorkersMin = limit ? 0 : lowerLimit
   const wantWorkersMax = limit || 12
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
