@@ -61,11 +61,11 @@ const controllersMyAuto = [
   energyUnspecialistController.id, // catch restockers from, if fell through
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
-  upgradeSpecialistController.id,
   energyRestockController.id,
   rampupController.id,
   repairController.id,
   buildController.id,
+  upgradeSpecialistController.id, // when all work is done, start with heawy upgrader
   upgradeController.id,
   mineralRestockController.dump.id
 ]
