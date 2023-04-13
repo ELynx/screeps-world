@@ -150,12 +150,19 @@ function Controller (id) {
     **/
   this.validateTarget = undefined
 
-  this._allAssignedTo = function (target) {
+  this._allAssignedTo = function (target, plus = undefined) {
     const roomCreeps = target.room.getRoomControlledCreeps()
     return _.filter(
       roomCreeps,
       function (creep) {
-        return creep.memory.ctrl === this.id && creep.memory.dest === target.id
+        // check target in general
+        if (target.id !== creep.memory.dest) return false
+        // check this controller
+        if (this.id === creep.memory.ctrl) return true
+        // check plus controller if given
+        if (plus !== undefined && plus === creep.memory.ctrl) return true
+
+        return false
       },
       this
     )
@@ -205,6 +212,10 @@ function Controller (id) {
 
   this._isRecyclee = function (creep) {
     return creep.memory.rccl || false
+  }
+
+  this._isUpgrader = function (creep) {
+    return creep.memory.upgr || false
   }
 
   this._usesDefaultFilter = undefined
