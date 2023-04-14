@@ -247,7 +247,7 @@ Room.prototype.level = function () {
 
 Room.prototype.getRoomControlledCreeps = function () {
   if (this.__roomCreepsControl === undefined) {
-    const toFilter = Game.creepsByCrum[this.name] || {}
+    const toFilter = Game.creepsByCrum[this.name] || { }
 
     this.__roomCreepsControl = _.filter(
       toFilter,
