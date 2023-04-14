@@ -591,8 +591,11 @@ const extensions = {
       }
     }
 
+    Game.__totalCreeps = 0
+
+    Game.__roomValues = []
+
     Game.creepsById = { }
-    Game.spawnsById = { }
     Game.storages = { }
     Game.extractors = { }
     Game.labs = { }
@@ -604,6 +607,10 @@ const extensions = {
 
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
+
+      Game.__roomValues.push(room)
+
+      room.__roomCreeps = 0
 
       room.flags = { }
       room.creeps = { }
@@ -626,10 +633,13 @@ const extensions = {
     }
 
     for (const creepName in Game.creeps) {
+      Game.__totalCreeps += 1
+
       const creep = Game.creeps[creepName]
 
       Game.creepsById[creep.id] = creep
       creep.room.creeps[creep.id] = creep
+      creep.room.__roomCreeps += 1
 
       if (creep.memory.flag) {
         creep.flag = Game.flags[creep.memory.flag]
@@ -648,7 +658,6 @@ const extensions = {
 
       switch (structure.structureType) {
         case STRUCTURE_SPAWN:
-          Game.spawnsById[structure.id] = structure
           structure.room.spawns[structure.id] = structure
           break
         case STRUCTURE_EXTENSION:

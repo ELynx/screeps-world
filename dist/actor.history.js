@@ -284,8 +284,7 @@ const historyActor =
   act: function () {
     this.clearCaches()
 
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
+    for (const room of Game.__roomValues) {
       this.processRoomLog(room)
     }
 
