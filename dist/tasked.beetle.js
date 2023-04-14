@@ -19,9 +19,9 @@ beetle.wipeBreach = function (creep) {
 }
 
 beetle.creepPrepare = function (creep) {
-  creep.__canWithdraw = creep.getActiveBodyparts(CARRY) > 0
+  creep.__canWithdraw = creep._carry_ > 0
   creep.__canMelee = creep.getActiveBodyparts(ATTACK) > 0
-  creep.__canDismantle = creep.getActiveBodyparts(WORK) > 0
+  creep.__canDismantle = creep._work_ > 0
 }
 
 beetle.creepAtDestination = function (creep) {

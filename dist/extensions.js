@@ -638,6 +638,10 @@ const extensions = {
       Game.__totalCreeps += 1
 
       const creep = Game.creeps[creepName]
+      // cache often made calls
+      creep._work_ = creep.getActiveBodyparts(WORK)
+      creep._carry_ = creep.getActiveBodyparts(CARRY)
+      creep._move_ = creep.getActiveBodyparts(MOVE)
 
       Game.creepsById[creep.id] = creep
       creep.room.creeps[creep.id] = creep
