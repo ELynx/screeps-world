@@ -35,7 +35,7 @@ energyTakeController.validateTarget = function (allTargets, target, creep) {
 }
 
 energyTakeController.targets = function (room) {
-  if (!room.my && room.controller && room.controller.safeMode) {
+  if (!room._my_ && room.controller && room.controller.safeMode) {
     return []
   }
 
@@ -49,7 +49,7 @@ energyTakeController.targets = function (room) {
 
   if (withEnergySupply.length === 0) return []
 
-  if (!room.my) {
+  if (!room._my_) {
     const ramparts = _.filter(
       allStructures,
       function (structure) {

@@ -112,7 +112,7 @@ const roomActor =
   },
 
   roomActType: function (room) {
-    if (room.my) {
+    if (room._my_) {
       return bootstrap.RoomActTypeMy
     }
 

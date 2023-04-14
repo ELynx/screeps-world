@@ -221,7 +221,7 @@ OwnedStructure.prototype.myOrAlly = function () {
 }
 
 Room.prototype.level = function () {
-  if (!this.my) return 0
+  if (!this._my_) return 0
 
   if (this.__level) return this.__level
 
@@ -259,7 +259,7 @@ Room.prototype.getRoomControlledCreeps = function () {
         }
 
         // loaded plunder are given to controllers when they are in `own` rooms
-        if (this.my && creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
+        if (this._my_ && creep.shortcut === 'plunder' && creep.store.getUsedCapacity() > 0) {
           return true
         }
 
@@ -302,14 +302,14 @@ Room.prototype.extendedOwnerUsername = function () {
 }
 
 Room.prototype.myOrMyReserved = function () {
-  if (this.my) return true
+  if (this._my_) return true
 
   const username = this.extendedOwnerUsername()
   return Game.iff.ownUsername === username
 }
 
 Room.prototype.myReserved = function () {
-  if (this.my) return false
+  if (this._my_) return false
 
   const username = this.extendedOwnerUsername()
   return Game.iff.ownUsername === username
@@ -355,7 +355,7 @@ Room.prototype.sourceEnergyCapacity = function () {
 }
 
 Room.prototype.extendedAvailableEnergyCapacity = function () {
-  if (!this.my) return 0
+  if (!this._my_) return 0
 
   if (this.__extendedAvailableEnergyCapacity) return this.__extendedAvailableEnergyCapacity
 
@@ -607,6 +607,8 @@ const extensions = {
 
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
+      // cachge property that is actually a function call
+      room._my_ = room.my
 
       Game.__roomValues.push(room)
 

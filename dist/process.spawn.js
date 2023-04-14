@@ -109,7 +109,7 @@ spawnProcess.restockers = function (room, live) {
   let restockersNeeded
   let restockersSupported
 
-  if (room.my) {
+  if (room._my_) {
     const workNeededPerSource = room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
     const restockersNeededPerSource = Math.ceil(workNeededPerSource / workInRestocker)
 
@@ -180,7 +180,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 
   let wantWorkers
 
-  if (room.my && limit === undefined) {
+  if (room._my_ && limit === undefined) {
     let standalone = 0
     let supportedByRestockers = 0
 
@@ -284,7 +284,7 @@ spawnProcess.work = function (room) {
   const live = _.countBy(room.getViableRoomOwnedCreeps(), 'memory.btyp')
 
   // controller is `my`
-  if (room.my) this.my(room, live)
+  if (room._my_) this.my(room, live)
   // controller is own reserved
   else if (room.myReserved()) this.myReserved(room, live)
   // room is source keeper room

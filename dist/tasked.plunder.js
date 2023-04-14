@@ -80,7 +80,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   let backupRoomDistance = Number.MAX_SAFE_INTEGER
 
   for (const room of Game.__roomValues) {
-    if (!room.my) continue
+    if (!room._my_) continue
 
     let distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
 
@@ -210,7 +210,7 @@ plunder.creepAtOtherRooms = function (creep) {
 }
 
 plunder.creepAtDestination = function (creep) {
-  if (creep.room.my) {
+  if (creep.room._my_) {
     this.creepAtOwnRoom(creep)
   } else {
     this.creepAtOtherRooms(creep)
@@ -219,7 +219,7 @@ plunder.creepAtDestination = function (creep) {
 
 plunder.creepRoomTravel = function (creep) {
   // keep track of closest owned rooms
-  if (creep.room.my) {
+  if (creep.room._my_) {
     // test overflowing storage
     if (creep.room.storage && creep.room.storage.store.getFreeCapacity() === 0) {
       // forget
