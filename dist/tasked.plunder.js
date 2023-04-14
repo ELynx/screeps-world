@@ -79,8 +79,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   let backupRoomName
   let backupRoomDistance = Number.MAX_SAFE_INTEGER
 
-  for (const roomName in Game.rooms) {
-    const room = Game.rooms[roomName]
+  for (const room of Game.__roomValues) {
     if (!room.my) continue
 
     let distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)

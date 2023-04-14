@@ -39,15 +39,11 @@ const loop = function () {
   historyActor.act()
 
   // prevent division by zero
-  const totalCreepsCount = Math.max(1, _.keys(Game.creeps).length)
+  const totalCreepsCount = Math.max(1, Game.__totalCreeps)
 
-  const roomNames = _.shuffle(_.keys(Game.rooms))
-  for (const roomName of roomNames) {
-    const room = Game.rooms[roomName]
-
-    const roomCreepsCount = _.keys(room.creeps).length
-
-    room.__cpuLimit = Math.ceil(100 * roomCreepsCount / totalCreepsCount)
+  const roomValues = _.shuffle(Game.__roomValues)
+  for (const room of roomValues) {
+    room.__cpuLimit = Math.ceil(100 * room.__roomCreeps / totalCreepsCount)
 
     if (room.my) {
       roomActor.act(room)

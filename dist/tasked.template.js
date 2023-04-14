@@ -173,8 +173,7 @@ Creep.prototype.unlive = function () {
     this.setFromRoom(undefined)
     result = true
   } else {
-    for (const roomName in Game.rooms) {
-      const room = Game.rooms[roomName]
+    for (const room of Game.__roomValues) {
       if (room.level() > 0) {
         this.setControlRoom(room.name)
         this.setFromRoom(undefined)
