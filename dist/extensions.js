@@ -653,12 +653,12 @@ const extensions = {
         creep.shortcut = '__no_flag__'
       }
 
-      creep.__crum__group__by__ = creep.memory.crum || '__no__crum__'
+      creep.__crum_group_by__ = creep.memory.crum || '__no_crum__'
     }
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
     Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
-    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__crum__group__by__'))
+    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__crum_group_by__'))
 
     for (const id in Game.structures) {
       const structure = Game.structures[id]
