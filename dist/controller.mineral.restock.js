@@ -61,7 +61,7 @@ mineralRestockController.filterCreep = function (creep) {
 }
 
 // before profiler wrap
-const mineralDumpController = _.assign({}, mineralRestockController)
+const mineralDumpController = _.assign({ }, mineralRestockController)
 
 mineralDumpController.id = 'mineral.dump'
 
