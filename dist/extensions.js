@@ -261,21 +261,34 @@ Room.prototype.getRoomControlledCreeps = function () {
           return true
         }
 
+        if (creep.memory.btyp === 'upgrader') {
+          this.__sort_upgrader__ = true
+        }
+
         // control non-tasked
         return creep.shortcut === '__no_flag__'
       },
       this
     )
 
-    // so worker comes after upgrader
-    this.__roomCreepsControl.sort(
-      function (creep1, creep2) {
-        const btyp1 = creep1.memory.btyp || creep1.id
-        const btyp2 = creep2.memory.btyp || creep2.id
-
-        return btyp1.localeCompare(btyp2)
+    // upgrader must come before workers
+    if (this.__sort_upgrader__ && this.__roomCreepsControl.length > 0) {
+      let upgraderAt
+      for (let i = 0; i < this.__roomCreepsControl.length; ++i) {
+        if (this.__roomCreepsControl[i].memory.btyp === 'upgrader') {
+          upgraderAt = i
+          break
+        }
       }
-    )
+
+      if (upgraderAt > 0) {
+        const atZero = this.__roomCreepsControl[0]
+        const upgrader = this.__roomCreepsControl[upgraderAt]
+
+        this.__roomCreepsControl[0] = upgrader
+        this.__roomCreepsControl[upgraderAt] = atZero
+      }
+    }
   }
 
   return this.__roomCreepsControl
