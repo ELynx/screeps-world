@@ -169,12 +169,11 @@ function Controller (id) {
   }
 
   this._hasCM = function (creep) {
-    return creep.getActiveBodyparts(CARRY) > 0 &&
-           creep.getActiveBodyparts(MOVE) > 0
+    return creep._carry_ > 0 && creep._move_ > 0
   }
 
   this._hasWCM = function (creep) {
-    return this._hasCM(creep) && creep.getActiveBodyparts(WORK) > 0
+    return creep._work_ > 0 && creep._carry_ > 0 && creep._move_ > 0
   }
 
   this._hasEnergy = function (creep) {

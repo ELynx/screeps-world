@@ -171,7 +171,7 @@ const intent = {
     }
     const remainingProgress = target.progressTotal - progress
 
-    const possibleProgress = creep.getActiveBodyparts(WORK) * BUILD_POWER
+    const possibleProgress = creep._work_ * BUILD_POWER
 
     const actualProgress = Math.min(energy, remainingProgress, possibleProgress)
 
@@ -223,7 +223,7 @@ const intent = {
       return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
-    const power = creep.getActiveBodyparts(WORK) * power1
+    const power = creep._work_ * power1
 
     const toBeHarvested = Math.min(amount, power)
 
@@ -305,7 +305,7 @@ const intent = {
     }
 
     // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/repair.js#L23
-    const repairPower = creep.getActiveBodyparts(WORK) * REPAIR_POWER
+    const repairPower = creep._work_ * REPAIR_POWER
     const repairEnergyRemaining = energy / REPAIR_COST
     const repairHitsMax = target.hitsMax - hits
     const repairEffect = Math.min(repairPower, repairEnergyRemaining, repairHitsMax)
@@ -359,7 +359,7 @@ const intent = {
       return bootstrap.ERR_INTENDED_EXHAUSTED
     }
 
-    const possibleUpgrades = creep.getActiveBodyparts(WORK)
+    const possibleUpgrades = creep._work_
 
     const actualUpgrades = Math.min(energy, remainingUpgrades, possibleUpgrades)
 
