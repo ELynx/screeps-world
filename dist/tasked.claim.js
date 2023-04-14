@@ -14,7 +14,7 @@ claim._onProblemDetected = function (creep) {
 }
 
 claim._roomCheck = function (room) {
-  if (room.my) return false
+  if (room._my_) return false
   if (room.ally) return false
   if (room.neutral) return false
 
@@ -93,7 +93,7 @@ claim.creepAtDestination = function (creep) {
         if (creep.memory.flag.indexOf('CLAIM') !== -1) {
           let myRooms = 0
           for (const someRoom of Game.__roomValues) {
-            if (someRoom.my) {
+            if (someRoom._my_) {
               ++myRooms
             }
           }

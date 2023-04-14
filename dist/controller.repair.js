@@ -62,7 +62,7 @@ repairController.targets = function (room) {
 
   // STRATEGY in not controlled rooms do only minimal upkeep
   const roadMult = fromArray(TargetRoadHpMultiplier, room.level())
-  const otherMult = fromArray(TargetStructureHpMultiplier, room.my ? room.level() : 1)
+  const otherMult = fromArray(TargetStructureHpMultiplier, room._my_ ? room.level() : 1)
 
   const repairable = _.keys(CONSTRUCTION_COST)
 

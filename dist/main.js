@@ -45,7 +45,7 @@ const loop = function () {
   for (const room of roomValues) {
     room.__cpuLimit = Math.ceil(100 * room.__roomCreeps / totalCreepsCount)
 
-    if (room.my) {
+    if (room._my_) {
       roomActor.act(room)
     } else {
       const actFlag = Game.flags['observe_act_' + room.name]

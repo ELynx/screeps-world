@@ -73,7 +73,7 @@ roomInfoProcess.sourceLevel = function (room) {
 
   let total = containers.length
 
-  if (!room.my) {
+  if (!room._my_) {
     return total
   }
 
@@ -140,7 +140,7 @@ Calculate room mining level.
 @return Mining level of room.
 **/
 roomInfoProcess.miningLevel = function (room) {
-  if (room.my) {
+  if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
     if (room.storage === undefined && room.terminal === undefined) return 0
   } else {
@@ -201,7 +201,7 @@ roomInfoProcess._wallLevel = function (room) {
 
 // STRATEGY wall build-up, basis levels
 roomInfoProcess.wallLevel = function (room) {
-  if (!room.my) return 0
+  if (!room._my_) return 0
 
   const TargetBarrierHp = [
     0,

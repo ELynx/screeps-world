@@ -225,7 +225,7 @@ spawn.spawnNext = function () {
   } else {
     // important check - can room spawn anything?
     const room = Game.rooms[nextModel.from]
-    if (room && room.my && room.level() > 0) {
+    if (room && room._my_ && room.level() > 0) {
       spawns = _.shuffle(this._spawnsInRoom(room))
     } else {
       // fall back to closest

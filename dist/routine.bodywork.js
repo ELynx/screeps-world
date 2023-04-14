@@ -63,7 +63,7 @@ const bodywork = {
 
   restocker: function (room) {
     // cannot produce creeps -> no level regulation
-    if (!room.my) {
+    if (!room._my_) {
       if (room.ownedOrReserved()) {
         // target is 3000 / 250 / 2 = 6 WORK body parts
         // 1000
@@ -111,7 +111,7 @@ const bodywork = {
   },
 
   miner: function (room) {
-    if (!room.my) {
+    if (!room._my_) {
       // if decision is ever made to mide outside, it must be done with superior machines
       // 3400
       return this.makeWCM(20, 4)
@@ -151,7 +151,7 @@ const bodywork = {
   },
 
   upgrader: function (room) {
-    if (!room.my) {
+    if (!room._my_) {
       return []
     }
 
