@@ -26,7 +26,6 @@ const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
 const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
-const upgradeSpecialistController = require('./controller.upgrade.specialist')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
@@ -46,8 +45,7 @@ const controllersBlockStop = [
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
-  upgradeController.id,
-  upgradeSpecialistController.id
+  upgradeController.id
 ]
 
 // STRATEGY priority for creep assignment
@@ -65,7 +63,6 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeSpecialistController.id, // when all work is done, start with heawy upgrader
   upgradeController.id,
   mineralRestockController.dump.id
 ]

@@ -155,26 +155,8 @@ spawnProcess.miners = function (room, live) {
   )
 }
 
-spawnProcess.upgraders = function (room, live) {
-  const want = (room.level() === 8) ? 1 : 0
-  const now = this._hasAndPlanned(room, live, 'upgrader')
-
-  this.addToQueue(
-    room.name,
-    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
-    'upgrader',
-    'upgrader',
-    {
-      upgr: true
-    },
-    want - now,
-    'lowkey'
-  )
-}
-
 spawnProcess.workers = function (room, live, limit = undefined) {
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-  const nowUpgarders = this._hasAndPlanned(room, live, 'upgrader')
 
   const workerBody = bodywork.worker(room)
 
@@ -201,13 +183,13 @@ spawnProcess.workers = function (room, live, limit = undefined) {
       standalone = room.memory.hlvl
     }
 
-    wantWorkers = Math.max(standalone, supportedByRestockers) - nowUpgarders
+    wantWorkers = Math.max(standalone, supportedByRestockers)
   } else {
     // demand until limit is reached
     wantWorkers = nowWorkers + 1
   }
 
-  const wantWorkersMin = limit ? 0 : (3 - nowUpgarders)
+  const wantWorkersMin = limit ? 0 : 3
   const wantWorkersMax = limit || 12
 
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
@@ -250,7 +232,6 @@ spawnProcess.my = function (room, live) {
   this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
-  this.upgraders(room, live)
   this.workers(room, live)
 }
 
@@ -310,7 +291,6 @@ spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('worker')
   this._registerBodyFunction('restocker')
   this._registerBodyFunction('miner')
-  this._registerBodyFunction('upgrader')
 }
 
 spawnProcess.register = function () {

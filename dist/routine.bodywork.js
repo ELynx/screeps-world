@@ -148,23 +148,6 @@ const bodywork = {
 
     // 3400
     return this.makeWCM(20, 4)
-  },
-
-  upgrader: function (room) {
-    if (!room._my_) {
-      return []
-    }
-
-    const energy = room.extendedAvailableEnergyCapacity()
-
-    if (energy < 2850) {
-      return []
-    }
-
-    // 15 -> 15 upgrades per tick
-    // 6 -> 20 ticks upgrade capacity
-    // 2850
-    return this.makeWCM(15, 6)
   }
 }
 
