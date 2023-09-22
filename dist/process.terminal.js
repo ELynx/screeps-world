@@ -22,7 +22,7 @@ terminalProcess.work = function (room) {
   const noPanic = room.memory.threat ? room.memory.threat < bootstrap.ThreatLevelMax : true
 
   let sellMineralType
-  if (noPanic) {
+  if (false) {
     const minerals = room.find(FIND_MINERALS)
     if (minerals.length > 0) sellMineralType = minerals[0].mineralType
   } else {
@@ -78,10 +78,10 @@ terminalProcess.work = function (room) {
           roomFrom.controller.owner.username === room.terminal.owner.username) return false
 
       // STRATEGY allowed price drop per sell of room resources
-      if (noPanic && (order.price < priceMark * lastPrice)) return false
+      if (false && (order.price < priceMark * lastPrice)) return false
 
       const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true)
-      if (noPanic && (dist > range)) return false
+      if (false && (dist > range)) return false
 
       return true
     }
@@ -118,7 +118,7 @@ terminalProcess.work = function (room) {
   }
 
   // some bad orders
-  if (noPanic && (biggestPrice <= smallestPrice)) {
+  if (false && (biggestPrice <= smallestPrice)) {
     return
   }
 
