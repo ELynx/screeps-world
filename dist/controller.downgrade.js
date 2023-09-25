@@ -53,6 +53,12 @@ downgradeController.act = function (controller, creep) {
 downgradeController.targets = function (room) {
   if (!room.controller.upgradeBlocked) {
     const level = room.controller.level
+
+    // level 1 controller is so easy to upgrade, just do it
+    if (level === 1) {
+      return [room.controller]
+    }
+
     if (room.controller.ticksToDowngrade < Tresholds[level]) {
       room.controller.__targetTicks = Targets[level]
       return [room.controller]
