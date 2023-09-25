@@ -176,24 +176,9 @@ const bootstrap = {
 
   _movementCost: function (creep) {
     if (creep.__movementCost === undefined) {
-      let nonMoveNonCarry = 0
-      let carry = 0
-      let move = 0
-
-      for (const part of creep.body) {
-        if (part.type === MOVE) {
-          if (part.hits > 0) {
-            // TODO boost
-            move += 2
-          } else {
-            ++nonMoveNonCarry
-          }
-        } else if (part.type === CARRY) {
-          ++carry
-        } else {
-          ++nonMoveNonCarry
-        }
-      }
+      const nonMoveNonCarry = creep._move_options__non_carry_non_move_
+      let carry = creep._move_options__carry_
+      const move = creep._move_options__move_
 
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
