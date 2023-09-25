@@ -144,7 +144,7 @@ const bootstrap = {
     Assign creep to a target with controller.
     @param {Controller} controller.
     @param {???} target.
-    @param {String} serialized path to solution.
+    @param {Path} targetSolution path to solution.
     @param {Creep} creep.
     @param {???} extra value stored in memory.
     **/
