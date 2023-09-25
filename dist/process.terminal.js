@@ -19,10 +19,13 @@ terminalProcess.work = function (room) {
   if (room.terminal.store[RESOURCE_ENERGY] < 2) return
 
   // SELL SELL SELL
-  const noPanic = room.memory.threat ? room.memory.threat < bootstrap.ThreatLevelMax : true
+  const threatTooHigh = room.memory.threat ? room.memory.threat >= bootstrap.ThreatLevelMax : false
+  const sellEverything = room.memory.sellEverything || Memory.sellEverything || false
+
+  const economics = !(threatTooHigh || sellEverything)
 
   let sellMineralType
-  if (noPanic) {
+  if (economics) {
     const minerals = room.find(FIND_MINERALS)
     if (minerals.length > 0) sellMineralType = minerals[0].mineralType
   } else {
@@ -38,7 +41,7 @@ terminalProcess.work = function (room) {
   if (sellMineralType === undefined) return
 
   const has = room.terminal.store[sellMineralType]
-  let toKeep = noPanic ? MineralsToKeep : 0
+  let toKeep = economics ? MineralsToKeep : 0
 
   if (has === undefined || has <= toKeep) return
 
@@ -78,10 +81,10 @@ terminalProcess.work = function (room) {
           roomFrom.controller.owner.username === room.terminal.owner.username) return false
 
       // STRATEGY allowed price drop per sell of room resources
-      if (noPanic && (order.price < priceMark * lastPrice)) return false
+      if (economics && (order.price < priceMark * lastPrice)) return false
 
       const dist = Game.map.getRoomLinearDistance(room.name, order.roomName, true)
-      if (noPanic && (dist > range)) return false
+      if (economics && (dist > range)) return false
 
       return true
     }
@@ -118,7 +121,7 @@ terminalProcess.work = function (room) {
   }
 
   // some bad orders
-  if (noPanic && (biggestPrice <= smallestPrice)) {
+  if (economics && (biggestPrice <= smallestPrice)) {
     return
   }
 
@@ -136,7 +139,7 @@ terminalProcess.work = function (room) {
     const rc = room.terminal.autoSell(goodBuyOrders[i], toKeep)
 
     if (rc === OK) {
-      if (noPanic) {
+      if (economics) {
         Memory.prices[goodBuyOrders[i].resourceType] = goodBuyOrders[i].price
       }
 
