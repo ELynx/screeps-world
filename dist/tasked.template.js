@@ -313,6 +313,7 @@ function Tasked (id) {
     const creeps = Game.creepsByShortcut[this.id] || []
 
     for (const creep of creeps) {
+      bootstrap._activeBodyParts(creep)
       creep.__canMove = creep._move_ > 0 && creep.fatigue === 0
 
       if (this.creepPrepare) {

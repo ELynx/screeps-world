@@ -579,6 +579,8 @@ const intent = {
       return bootstrap.ERR_INVALID_INTENT_NAME
     }
 
+    bootstrap._activeBodyParts(creep)
+
     let rc = OK
 
     const backupCreep = this.backupIntents(creep)
