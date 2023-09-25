@@ -167,10 +167,12 @@ function Controller (id) {
   }
 
   this._hasCM = function (creep) {
+    bootstrap._activeBodyParts(creep)
     return creep._carry_ > 0 && creep._move_ > 0
   }
 
   this._hasWCM = function (creep) {
+    bootstrap._activeBodyParts(creep)
     return creep._work_ > 0 && creep._carry_ > 0 && creep._move_ > 0
   }
 

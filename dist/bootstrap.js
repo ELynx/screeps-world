@@ -174,8 +174,46 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
+  _activeBodyParts: function (creep) {
+    if (creep._activeBodyParts__done_) return
+
+    // cache often made calls
+    creep._work_ = 0
+    creep._carry_ = 0
+    creep._move_ = 0
+    creep._move_options__non_carry_non_move_ = 0
+    creep._move_options__carry_ = 0
+    creep._move_options__move_ = 0
+
+    for (const part of creep.body) {
+      const active = part.hits > 0 ? 1 : 0
+
+      switch (part.type) {
+        case WORK:
+          creep._work_ += active
+          break
+        case CARRY:
+          creep._carry_ += active
+          creep._move_options__carry_ += 1
+          break
+        case MOVE:
+          creep._move_ += active
+          creep._move_options__move_ += active * 2 // TODO Boost
+          creep._move_options__non_carry_non_move_ += (1 - active)
+          break
+        default:
+          creep._move_options__non_carry_non_move_ += 1
+          break
+      }
+    }
+
+    creep._activeBodyParts__done_ = true
+  },
+
   _movementCost: function (creep) {
     if (creep.__movementCost === undefined) {
+      this._activeBodyParts(creep)
+
       const nonMoveNonCarry = creep._move_options__non_carry_non_move_
       let carry = creep._move_options__carry_
       const move = creep._move_options__move_

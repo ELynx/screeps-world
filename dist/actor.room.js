@@ -250,7 +250,7 @@ const roomActor =
         if (creep.memory.crum !== creep.room.name) {
           creep.__roomChange = true
 
-          if (creep._move_ > 0) {
+          if (creep._move_ > 0) { // TODO
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
             const rangeInDestRoom = posInDestRoom.offBorderDistance()
 
@@ -306,7 +306,7 @@ const roomActor =
 
         // state - there is a target not in range
 
-        if (creep._move_ === 0) {
+        if (creep._move_ === 0) { // TODO
           creep.blockPosition()
           creep.__target = undefined
           bootstrap.unassignCreep(creep)
