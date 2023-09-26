@@ -175,15 +175,15 @@ const bootstrap = {
   },
 
   _activeBodyParts: function (creep) {
-    if (creep._activeBodyParts__done_) return
+    if (creep.__activeBodyParts_done) return
 
     // cache often made calls
     creep._work_ = 0
     creep._carry_ = 0
     creep._move_ = 0
-    creep._move_options__non_carry_non_move_ = 0
-    creep._move_options__carry_ = 0
-    creep._move_options__move_ = 0
+    creep.__move_options_non_carry_non_move_ = 0
+    creep.__move_options_carry_ = 0
+    creep.__move_options_move_ = 0
 
     for (const part of creep.body) {
       const active = part.hits > 0 ? 1 : 0
@@ -194,35 +194,31 @@ const bootstrap = {
           break
         case CARRY:
           creep._carry_ += active
-          creep._move_options__carry_ += 1
+          creep.__move_options_carry_ += 1
           break
         case MOVE:
           creep._move_ += active
-          creep._move_options__move_ += active * 2 // TODO Boost
-          creep._move_options__non_carry_non_move_ += (1 - active)
+          creep.__move_options_move_ += active * 2 // TODO Boost
+          creep.__move_options_non_carry_non_move_ += (1 - active)
           break
         default:
-          creep._move_options__non_carry_non_move_ += 1
+          creep.__move_options_non_carry_non_move_ += 1
           break
       }
     }
 
-    creep._activeBodyParts__done_ = true
+    creep.__activeBodyParts_done = true
   },
 
   _movementCost: function (creep) {
     if (creep.__movementCost === undefined) {
       this._activeBodyParts(creep)
 
-      const nonMoveNonCarry = creep._move_options__non_carry_non_move_
-      let carry = creep._move_options__carry_
-      const move = creep._move_options__move_
-
+      const nonMoveNonCarry = creep.__move_options_non_carry_non_move_
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
-      if (creep.store.getUsedCapacity() === 0) {
-        carry = 0
-      }
+      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__move_options_carry_
+      const move = creep.__move_options_move_
 
       creep.__movementCost = { }
 
