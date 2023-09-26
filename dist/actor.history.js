@@ -156,7 +156,7 @@ const historyActor =
     this.increaseDirectHarm(attacker, eventRecord.data.damage)
 
     if (attacker.room) {
-      attacker.room.__fight = true
+      attacker.room._fight_ = true
     }
   },
 

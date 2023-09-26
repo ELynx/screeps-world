@@ -29,7 +29,7 @@ upgradeController.validateTarget = function (allTargets, target, creep) {
 
 upgradeController.targets = function (room) {
   // don't upgrade controller in room with active fight
-  if (room.__fight) {
+  if (room._fight_) {
     return []
   }
 

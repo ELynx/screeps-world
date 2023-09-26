@@ -39,7 +39,7 @@ mineralHarvestController.targets = function (room) {
   }
 
   // don't mine in room with fight
-  if (room.__fight) {
+  if (room._fight_) {
     return []
   }
 
