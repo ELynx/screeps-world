@@ -41,7 +41,7 @@ const worldActor =
 
   act: function () {
     this.taskControllersControl()
-  } // end of act method
+  }
 }
 
 module.exports = worldActor
