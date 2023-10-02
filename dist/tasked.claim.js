@@ -92,7 +92,7 @@ claim.creepAtDestination = function (creep) {
 
         if (creep.memory.flag.indexOf('CLAIM') !== -1) {
           let myRooms = 0
-          for (const someRoom of Game.__roomValues) {
+          for (const someRoom of Game.rooms_values) {
             if (someRoom._my_) {
               ++myRooms
             }

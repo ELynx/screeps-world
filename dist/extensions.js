@@ -9,12 +9,12 @@ Object.defineProperty(
     get: function () {
       if (this.spawning) return true
 
-      const limit = this.__viable_limit || (this.body.length * CREEP_SPAWN_TIME)
+      const limit = this.__viable_value || (this.body.length * CREEP_SPAWN_TIME)
 
       return this.ticksToLive >= limit
     },
     set: function (value) {
-      this.__viable_limit = value
+      this.__viable_value = value
     },
     configurable: true,
     enumerable: true
@@ -223,7 +223,7 @@ OwnedStructure.prototype.myOrAlly = function () {
 Room.prototype.level = function () {
   if (!this._my_) return 0
 
-  if (this.__level) return this.__level
+  if (this.__level_value) return this.__level_value
 
   const totalCapacity = this.energyCapacityAvailable
 
@@ -236,20 +236,20 @@ Room.prototype.level = function () {
     const maxTotalCapacity = canHaveSpawns * SPAWN_ENERGY_CAPACITY + canHaveExtensions * extensionCapacity
 
     if (totalCapacity >= maxTotalCapacity) {
-      this.__level = i
+      this.__level_value = i
     } else {
       break
     }
   }
 
-  return this.__level
+  return this.__level_value
 }
 
 Room.prototype.getRoomControlledCreeps = function () {
-  if (this.__roomCreepsControl === undefined) {
+  if (this.__getRoomControlledCreeps_creeps === undefined) {
     const toFilter = Game.creepsByCrum[this.name] || { }
 
-    this.__roomCreepsControl = _.filter(
+    this.__getRoomControlledCreeps_creeps = _.filter(
       toFilter,
       function (creep) {
         if (creep.spawning) {
@@ -268,12 +268,12 @@ Room.prototype.getRoomControlledCreeps = function () {
     )
   }
 
-  return this.__roomCreepsControl
+  return this.__getRoomControlledCreeps_creeps
 }
 
 Room.prototype.getViableRoomOwnedCreeps = function () {
-  if (this.__roomCreepsOwned === undefined) {
-    this.__roomCreepsOwned = _.filter(
+  if (this.__getViableRoomOwnedCreeps_creeps === undefined) {
+    this.__getViableRoomOwnedCreeps_creeps = _.filter(
       Game.creeps,
       function (creep) {
         return creep.viable && (this.name === (creep.memory.frum || creep.memory.crum))
@@ -282,7 +282,7 @@ Room.prototype.getViableRoomOwnedCreeps = function () {
     )
   }
 
-  return this.__roomCreepsOwned
+  return this.__getViableRoomOwnedCreeps_creeps
 }
 
 Room.prototype.extendedOwnerUsername = function () {
@@ -345,22 +345,22 @@ Room.prototype.sourceEnergyCapacity = function () {
 Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (!this._my_) return 0
 
-  if (this.__extendedAvailableEnergyCapacity) return this.__extendedAvailableEnergyCapacity
+  if (this.__extendedAvailableEnergyCapacity_value) return this.__extendedAvailableEnergyCapacity_value
 
   // if there are no spawns in this room, nothing will help
   if (!_.some(this.spawns)) {
-    this.__extendedAvailableEnergyCapacity = 0
-    return this.__extendedAvailableEnergyCapacity
+    this.__extendedAvailableEnergyCapacity_value = 0
+    return this.__extendedAvailableEnergyCapacity_value
   }
 
   // if there are no workers, only dribble will help
   if (!_.some(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))) {
-    this.__extendedAvailableEnergyCapacity = SPAWN_ENERGY_CAPACITY
-    return this.__extendedAvailableEnergyCapacity
+    this.__extendedAvailableEnergyCapacity_value = SPAWN_ENERGY_CAPACITY
+    return this.__extendedAvailableEnergyCapacity_value
   }
 
-  this.__extendedAvailableEnergyCapacity = this.energyCapacityAvailable
-  return this.__extendedAvailableEnergyCapacity
+  this.__extendedAvailableEnergyCapacity_value = this.energyCapacityAvailable
+  return this.__extendedAvailableEnergyCapacity_value
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
@@ -579,9 +579,9 @@ const extensions = {
       }
     }
 
-    Game.__totalCreeps = 0
+    Game.myCreepsCount = 0
 
-    Game.__roomValues = []
+    Game.rooms_values = []
 
     Game.creepsById = { }
     Game.storages = { }
@@ -598,9 +598,9 @@ const extensions = {
       // cachge property that is actually a function call
       room._my_ = room.my
 
-      Game.__roomValues.push(room)
+      Game.rooms_values.push(room)
 
-      room.__roomCreeps = 0
+      room.myCreepsCount = 0
 
       room.flags = { }
       room.creeps = { }
@@ -623,13 +623,13 @@ const extensions = {
     }
 
     for (const creepName in Game.creeps) {
-      Game.__totalCreeps += 1
+      Game.myCreepsCount += 1
 
       const creep = Game.creeps[creepName]
 
       Game.creepsById[creep.id] = creep
       creep.room.creeps[creep.id] = creep
-      creep.room.__roomCreeps += 1
+      creep.room.myCreepsCount += 1
 
       if (creep.memory.flag) {
         creep.flag = Game.flags[creep.memory.flag]
@@ -639,12 +639,12 @@ const extensions = {
         creep.shortcut = '__no_flag__'
       }
 
-      creep.__crum_group_by__ = creep.memory.crum || '__no_crum__'
+      creep.__extensions__crumGroupBy_value = creep.memory.crum || '__no_crum__'
     }
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
     Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
-    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__crum_group_by__'))
+    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__extensions__crumGroupBy_value'))
 
     for (const id in Game.structures) {
       const structure = Game.structures[id]
