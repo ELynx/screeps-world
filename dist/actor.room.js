@@ -333,7 +333,7 @@ const roomActor =
 
         // no movement, see if pathfinding is possible and within CPU
         if (rc === ERR_NOT_FOUND) {
-          if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+          if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
             stroke = 'yellow'
             rc = creep.moveToWrapper(
               creep.__roomActor_target,
@@ -400,11 +400,11 @@ const roomActor =
       }
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+    if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
       autobuildProcess.work(room)
     }
 
-    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
+    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
       terminalProcess.work(room)
     }
   } // end of act method
