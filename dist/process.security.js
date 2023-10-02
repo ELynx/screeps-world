@@ -51,7 +51,7 @@ secutiryProcess.work = function (room) {
           ++threatLevel
         }
 
-        room.__threatEscalated = true
+        room._threatEscalated_ = true
 
         console.log(room.name + ' threat escalated to ' + threatLevel)
       }
