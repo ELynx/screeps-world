@@ -67,12 +67,12 @@ towerProcess.work = function (room) {
       for (let i = 0; i < towers.length; ++i) {
         const tower = towers[i]
 
-        if (tower.__acted) continue
+        if (tower.__towerProcess_acted) continue
 
         const target = harmful[i]
 
         const rc = tower.attack(target)
-        if (rc === OK) tower.__acted = true
+        if (rc === OK) tower.__towerProcess_acted = true
       }
     }
   }
@@ -89,12 +89,12 @@ towerProcess.work = function (room) {
 
   if (damagedCreeps.length > 0) {
     for (const tower of towers) {
-      if (tower.__acted) continue
+      if (tower.__towerProcess_acted) continue
 
       const closestDamaged = tower.pos.findClosestByRange(damagedCreeps)
       if (closestDamaged) {
         const rc = tower.heal(closestDamaged)
-        if (rc === OK) tower.__acted = true
+        if (rc === OK) tower.__towerProcess_acted = true
       }
     }
   }
