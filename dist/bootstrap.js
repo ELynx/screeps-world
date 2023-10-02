@@ -174,8 +174,8 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
-  _activeBodyParts: function (creep) {
-    if (creep.__bootstrap__activeBodyParts_done) return
+  activeBodyParts: function (creep) {
+    if (creep.__bootstrap_activeBodyParts_done) return
 
     // cache often made calls
     creep._work_ = 0
@@ -183,9 +183,9 @@ const bootstrap = {
     creep._move_ = 0
 
     // cache for movement options, since this is same procedure
-    creep.__bootstrap__move_options_non_carry_non_move = 0
-    creep.__bootstrap__move_options_carry = 0
-    creep.__bootstrap__move_options_move = 0
+    creep.__bootstrap__movementCost_nonCarryNonMove = 0
+    creep.__bootstrap__movementCost_carry = 0
+    creep.__bootstrap__movementCost_move = 0
 
     for (const part of creep.body) {
       const active = part.hits > 0 ? 1 : 0
@@ -193,55 +193,55 @@ const bootstrap = {
       switch (part.type) {
         case WORK:
           creep._work_ += active
-          creep.__bootstrap__move_options_non_carry_non_move += 1
+          creep.__bootstrap__movementCost_nonCarryNonMove += 1
           break
         case CARRY:
           creep._carry_ += active
-          creep.__bootstrap__move_options_carry += 1
+          creep.__bootstrap__movementCost_carry += 1
           break
         case MOVE:
           creep._move_ += active
           // https://github.com/screeps/engine/blob/c765f04ddeb50b9edffb9796c4fcc63b304a2241/src/processor/intents/creeps/tick.js#L107C4-L107C4
           const boost = part.boost ? BOOSTS[MOVE][part.boost]['fatigue'] : 1
-          creep.__bootstrap__move_options_move += active * 2 * boost
-          creep.__bootstrap__move_options_non_carry_non_move += (1 - active)
+          creep.__bootstrap__movementCost_move += active * 2 * boost
+          creep.__bootstrap__movementCost_nonCarryNonMove += (1 - active)
           break
         default:
-          creep.__bootstrap__move_options_non_carry_non_move += 1
+          creep.__bootstrap__movementCost_nonCarryNonMove += 1
           break
       }
     }
 
-    creep.__bootstrap__activeBodyParts_done = true
+    creep.__bootstrap_activeBodyParts_done = true
   },
 
   _movementCost: function (creep) {
-    if (creep.__movementCost === undefined) {
-      this._activeBodyParts(creep)
+    if (creep.__bootstrap__movementCost_costs === undefined) {
+      this.activeBodyParts(creep)
 
-      const nonMoveNonCarry = creep.__bootstrap__move_options_non_carry_non_move
+      const nonMoveNonCarry = creep.__bootstrap__movementCost_nonCarryNonMove
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
-      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__move_options_carry
-      const move = creep.__bootstrap__move_options_move
+      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__movementCost_carry
+      const move = creep.__bootstrap__movementCost_move
 
-      creep.__movementCost = { }
+      creep.__bootstrap__movementCost_costs = { }
 
       if (move > 0) {
         const weight = nonMoveNonCarry + carry
         const factor = weight / move
 
-        creep.__movementCost.roadCost = Math.max(1, Math.ceil(factor))
-        creep.__movementCost.plainCost = Math.max(1, Math.ceil(1.99 * factor))
-        creep.__movementCost.swampCost = Math.max(1, Math.ceil(9.99 * factor))
+        creep.__bootstrap__movementCost_costs.roadCost = Math.max(1, Math.ceil(factor))
+        creep.__bootstrap__movementCost_costs.plainCost = Math.max(1, Math.ceil(1.99 * factor))
+        creep.__bootstrap__movementCost_costs.swampCost = Math.max(1, Math.ceil(9.99 * factor))
 
-        creep.__movementCost.ignoreRoads = creep.__movementCost.plainCost === creep.__movementCost.swampCost
+        creep.__bootstrap__movementCost_costs.ignoreRoads = creep.__bootstrap__movementCost_costs.plainCost === creep.__bootstrap__movementCost_costs.swampCost
       } else {
-        creep.__movementCost.roadCost = 1
-        creep.__movementCost.plainCost = 2
-        creep.__movementCost.swampCost = 10
+        creep.__bootstrap__movementCost_costs.roadCost = 1
+        creep.__bootstrap__movementCost_costs.plainCost = 2
+        creep.__bootstrap__movementCost_costs.swampCost = 10
 
-        creep.__movementCost.ignoreRoads = false
+        creep.__bootstrap__movementCost_costs.ignoreRoads = false
       }
     }
   },
@@ -253,7 +253,7 @@ const bootstrap = {
 
     this._movementCost(creep)
 
-    _.defaults(options, creep.__movementCost)
+    _.defaults(options, creep.__bootstrap__movementCost_costs)
 
     return options
   },
