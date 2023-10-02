@@ -248,7 +248,7 @@ const roomActor =
       for (const creep of roomCreeps) {
         // migrate creeps into room of registration
         if (creep.memory.crum !== creep.room.name) {
-          creep.__roomChange = true
+          creep.__roomActor_roomChange = true
 
           if (creep._move_ > 0) { // TODO
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
@@ -277,20 +277,20 @@ const roomActor =
 
       // loop 2 - act and mark creeps that hold position
       for (const creep of roomCreeps) {
-        if (creep.__roomChange) continue
+        if (creep.__roomActor_roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          creep.__target = creep.target()
+          creep.__roomActor_target = creep.target()
 
-          if (creep.__target) {
-            if (creep.pos.inRangeTo(creep.__target, creep.memory.dact)) {
-              const keep = this.roomControllersAct(creep.__target, creep)
+          if (creep.__roomActor_target) {
+            if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
+              const keep = this.roomControllersAct(creep.__roomActor_target, creep)
 
               if (keep) {
                 creep.__atTarget = true
                 creep.blockPosition()
               } else {
-                creep.__target = undefined
+                creep.__roomActor_target = undefined
                 bootstrap.unassignCreep(creep)
               }
             }
@@ -300,15 +300,15 @@ const roomActor =
 
       // loop 3 - movement within room
       for (const creep of roomCreeps) {
-        if (creep.__roomChange) continue
-        if (creep.__target === undefined) continue
+        if (creep.__roomActor_roomChange) continue
+        if (creep.__roomActor_target === undefined) continue
         if (creep.__atTarget) continue
 
         // state - there is a target not in range
 
         if (creep._move_ === 0) { // TODO
           creep.blockPosition()
-          creep.__target = undefined
+          creep.__roomActor_target = undefined
           bootstrap.unassignCreep(creep)
           continue
         }
@@ -324,7 +324,7 @@ const roomActor =
 
         // first move by cached path
         let rc = creep.moveToWrapper(
-          creep.__target,
+          creep.__roomActor_target,
           {
             noPathFinding: true,
             reusePath: _.random(3, 5)
@@ -336,7 +336,7 @@ const roomActor =
           if (bootstrap.hardCpuUsed(t0) <= room.__cpuLimit) {
             stroke = 'yellow'
             rc = creep.moveToWrapper(
-              creep.__target,
+              creep.__roomActor_target,
               {
                 costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
                 ignoreCreeps: false, // if original path has to be re-made, be aware
@@ -360,7 +360,7 @@ const roomActor =
           this.roomControllersObserveOwn(creep)
         } else {
           stroke = 'purple'
-          creep.__target = undefined
+          creep.__roomActor_target = undefined
           bootstrap.unassignCreep(creep)
         }
 
@@ -370,7 +370,7 @@ const roomActor =
       const unassignedCreeps = _.filter(
         roomCreeps,
         function (creep) {
-          if (creep.__target) return false
+          if (creep.__roomActor_target) return false
 
           // plunders with empty cargo will be taken away
           if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
