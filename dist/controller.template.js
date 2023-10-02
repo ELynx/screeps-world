@@ -12,11 +12,11 @@ const mapUtils = require('./routine.map')
 const intentSolver = require('./routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
-  this.__markDefaultFiltered = true
+  this.__controllerTemplate_markDefaultFiltered = true
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  return this.__markDefaultFiltered || false
+  return this.__controllerTemplate_markDefaultFiltered || false
 }
 
 function Controller (id) {

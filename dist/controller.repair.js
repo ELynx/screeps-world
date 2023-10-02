@@ -34,7 +34,7 @@ const fromArray = function (from, index) {
 repairController.actRange = 3
 
 repairController.extra = function (structure) {
-  return structure.__targetHp
+  return structure.__repairController_targetHp
 }
 
 repairController.roomPrepare = function (room) {
@@ -84,19 +84,19 @@ repairController.targets = function (room) {
     function (structure) {
       if (structure.structureType === STRUCTURE_WALL) {
         if (structure.hits < barrHp) {
-          structure.__targetHp = barrHp
+          structure.__repairController_targetHp = barrHp
           return true
         }
       } else if (structure.structureType === STRUCTURE_RAMPART) {
         // notice, barrHp check, rampHp set
         if (structure.hits < barrHp) {
-          structure.__targetHp = rampHp
+          structure.__repairController_targetHp = rampHp
           return true
         }
       } else if (structure.structureType === STRUCTURE_ROAD) {
         const targetHp = Math.ceil(structure.hitsMax * roadMult)
         if (structure.hits < targetHp) {
-          structure.__targetHp = targetHp
+          structure.__repairController_targetHp = targetHp
           return true
         }
       } else {
@@ -109,7 +109,7 @@ repairController.targets = function (room) {
           }
 
           // STRATEGY some histeresis, repair to top
-          structure.__targetHp = structure.hitsMax
+          structure.__repairController_targetHp = structure.hitsMax
           return true
         }
       }
