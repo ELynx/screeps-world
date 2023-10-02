@@ -43,7 +43,7 @@ const loop = function () {
 
   const roomValues = _.shuffle(Game.__roomValues)
   for (const room of roomValues) {
-    room.__cpuLimit = Math.ceil(100 * room.__roomCreeps / totalCreepsCount)
+    room._cpuLimit_ = Math.ceil(100 * room.__roomCreeps / totalCreepsCount)
 
     if (room._my_) {
       roomActor.act(room)
