@@ -175,15 +175,16 @@ const bootstrap = {
   },
 
   _activeBodyParts: function (creep) {
-    if (creep.__activeBodyParts_done) return
+    if (creep.__bootstrap__activeBodyParts_done) return
 
     // cache often made calls
     creep._work_ = 0
     creep._carry_ = 0
     creep._move_ = 0
-    creep.__move_options_non_carry_non_move_ = 0
-    creep.__move_options_carry_ = 0
-    creep.__move_options_move_ = 0
+    // cache for movement options, since this is same procedure
+    creep.__bootstrap__move_options_non_carry_non_move_ = 0
+    creep.__bootstrap__move_options_carry_ = 0
+    creep.__bootstrap__move_options_move_ = 0
 
     for (const part of creep.body) {
       const active = part.hits > 0 ? 1 : 0
@@ -194,31 +195,31 @@ const bootstrap = {
           break
         case CARRY:
           creep._carry_ += active
-          creep.__move_options_carry_ += 1
+          creep.__bootstrap__move_options_carry_ += 1
           break
         case MOVE:
           creep._move_ += active
-          creep.__move_options_move_ += active * 2 // TODO Boost
-          creep.__move_options_non_carry_non_move_ += (1 - active)
+          creep.__bootstrap__move_options_move_ += active * 2 // TODO Boost
+          creep.__bootstrap__move_options_non_carry_non_move_ += (1 - active)
           break
         default:
-          creep.__move_options_non_carry_non_move_ += 1
+          creep.__bootstrap__move_options_non_carry_non_move_ += 1
           break
       }
     }
 
-    creep.__activeBodyParts_done = true
+    creep.__bootstrap__activeBodyParts_done = true
   },
 
   _movementCost: function (creep) {
     if (creep.__movementCost === undefined) {
       this._activeBodyParts(creep)
 
-      const nonMoveNonCarry = creep.__move_options_non_carry_non_move_
+      const nonMoveNonCarry = creep.__bootstrap__move_options_non_carry_non_move_
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
-      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__move_options_carry_
-      const move = creep.__move_options_move_
+      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__move_options_carry_
+      const move = creep.__bootstrap__move_options_move_
 
       creep.__movementCost = { }
 
