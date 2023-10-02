@@ -21,18 +21,18 @@ PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function (roomNa
 
 const map = {
   costCallback_costMatrixForRoomActivity: function (roomName, costMatrix) {
-    if (Game.__roomActivityCostCallbackCache === undefined) {
-      Game.__roomActivityCostCallbackCache = { }
+    if (Game.__map__costCallback_costMatrixForRoomActivity_cache === undefined) {
+      Game.__map__costCallback_costMatrixForRoomActivity_cache = { }
     }
 
-    const cached = Game.__roomActivityCostCallbackCache[roomName]
+    const cached = Game.__map__costCallback_costMatrixForRoomActivity_cache[roomName]
     if (cached) {
       return cached
     }
 
     costMatrix.setStationaryCreepsUnwalkabke(roomName)
 
-    Game.__roomActivityCostCallbackCache[roomName] = costMatrix
+    Game.__map__costCallback_costMatrixForRoomActivity_cache[roomName] = costMatrix
 
     return costMatrix
   }
