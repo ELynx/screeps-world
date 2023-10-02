@@ -183,9 +183,9 @@ const bootstrap = {
     creep._move_ = 0
 
     // cache for movement options, since this is same procedure
-    creep.__bootstrap__move_options_non_carry_non_move_ = 0
-    creep.__bootstrap__move_options_carry_ = 0
-    creep.__bootstrap__move_options_move_ = 0
+    creep.__bootstrap__move_options_non_carry_non_move = 0
+    creep.__bootstrap__move_options_carry = 0
+    creep.__bootstrap__move_options_move = 0
 
     for (const part of creep.body) {
       const active = part.hits > 0 ? 1 : 0
@@ -193,21 +193,21 @@ const bootstrap = {
       switch (part.type) {
         case WORK:
           creep._work_ += active
-          creep.__bootstrap__move_options_non_carry_non_move_ += 1
+          creep.__bootstrap__move_options_non_carry_non_move += 1
           break
         case CARRY:
           creep._carry_ += active
-          creep.__bootstrap__move_options_carry_ += 1
+          creep.__bootstrap__move_options_carry += 1
           break
         case MOVE:
           creep._move_ += active
           // https://github.com/screeps/engine/blob/c765f04ddeb50b9edffb9796c4fcc63b304a2241/src/processor/intents/creeps/tick.js#L107C4-L107C4
           const boost = part.boost ? BOOSTS[MOVE][part.boost]['fatigue'] : 1
-          creep.__bootstrap__move_options_move_ += active * 2 * boost
-          creep.__bootstrap__move_options_non_carry_non_move_ += (1 - active)
+          creep.__bootstrap__move_options_move += active * 2 * boost
+          creep.__bootstrap__move_options_non_carry_non_move += (1 - active)
           break
         default:
-          creep.__bootstrap__move_options_non_carry_non_move_ += 1
+          creep.__bootstrap__move_options_non_carry_non_move += 1
           break
       }
     }
@@ -219,11 +219,11 @@ const bootstrap = {
     if (creep.__movementCost === undefined) {
       this._activeBodyParts(creep)
 
-      const nonMoveNonCarry = creep.__bootstrap__move_options_non_carry_non_move_
+      const nonMoveNonCarry = creep.__bootstrap__move_options_non_carry_non_move
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
-      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__move_options_carry_
-      const move = creep.__bootstrap__move_options_move_
+      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__move_options_carry
+      const move = creep.__bootstrap__move_options_move
 
       creep.__movementCost = { }
 
