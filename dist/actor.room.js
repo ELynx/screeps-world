@@ -287,7 +287,7 @@ const roomActor =
               const keep = this.roomControllersAct(creep.__roomActor_target, creep)
 
               if (keep) {
-                creep.__atTarget = true
+                creep.__roomActor_atTarget = true
                 creep.blockPosition()
               } else {
                 creep.__roomActor_target = undefined
@@ -302,7 +302,7 @@ const roomActor =
       for (const creep of roomCreeps) {
         if (creep.__roomActor_roomChange) continue
         if (creep.__roomActor_target === undefined) continue
-        if (creep.__atTarget) continue
+        if (creep.__roomActor_atTarget) continue
 
         // state - there is a target not in range
 
