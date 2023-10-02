@@ -32,15 +32,15 @@ const bootstrap = {
     const structure = Game.structures[id]
     if (structure) return structure
 
-    if (Game.__bootstrap_getObjectById === undefined) {
-      Game.__bootstrap_getObjectById = { }
+    if (Game.__bootstrap__getObjectById === undefined) {
+      Game.__bootstrap__getObjectById = { }
     }
 
-    const cached = Game.__bootstrap_getObjectById[id]
+    const cached = Game.__bootstrap__getObjectById[id]
     if (cached) return cached
 
     const found = Game.getObjectById(id)
-    Game.__bootstrap_getObjectById[id] = found
+    Game.__bootstrap__getObjectById[id] = found
 
     return found
   },

@@ -247,12 +247,12 @@ function Controller (id) {
 
   this._creepToTargetsAscendingSort = function (creep, targets) {
     for (const target of targets) {
-      target.__controllerTemplate__creepToTargetsAscendingSort_cost = this.creepToTargetCost(creep, target)
+      target.__controllerTemplate_cost = this.creepToTargetCost(creep, target)
     }
 
     targets.sort(
       function (t1, t2) {
-        return t1.__controllerTemplate__creepToTargetsAscendingSort_cost - t2.__controllerTemplate__creepToTargetsAscendingSort_cost
+        return t1.__controllerTemplate_cost - t2.__controllerTemplate_cost
       }
     )
   }
