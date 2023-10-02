@@ -87,7 +87,7 @@ function Controller (id) {
   }
 
   this._roomPrepare = function (room) {
-    this.__targetCache = undefined
+    this.__controllerTemplate_targetCache = undefined
   }
 
   /**
@@ -130,8 +130,8 @@ function Controller (id) {
     @return Possible targets.
     **/
   this._findTargets = function (room) {
-    if (this.__targetCache) {
-      return this.__targetCache
+    if (this.__controllerTemplate_targetCache) {
+      return this.__controllerTemplate_targetCache
     }
 
     let targets = this.targets(room)
@@ -140,7 +140,7 @@ function Controller (id) {
       targets = this._filterExcludedTargets(targets)
     }
 
-    this.__targetCache = targets
+    this.__controllerTemplate_targetCache = targets
 
     return targets
   }
@@ -247,12 +247,12 @@ function Controller (id) {
 
   this._creepToTargetsAscendingSort = function (creep, targets) {
     for (const target of targets) {
-      target.__tmp_cost = this.creepToTargetCost(creep, target)
+      target.__controllerTemplate__creepToTargetsAscendingSort_cost = this.creepToTargetCost(creep, target)
     }
 
     targets.sort(
       function (t1, t2) {
-        return t1.__tmp_cost - t2.__tmp_cost
+        return t1.__controllerTemplate__creepToTargetsAscendingSort_cost - t2.__controllerTemplate__creepToTargetsAscendingSort_cost
       }
     )
   }
