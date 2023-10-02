@@ -93,15 +93,15 @@ Creep.prototype.target = function () {
 const roomActor =
 {
   roomControllersFind: function (room) {
-    if (room.__actType === bootstrap.RoomActTypeMy) {
+    if (room._actType_ === bootstrap.RoomActTypeMy) {
       return [controllersMyAuto, controllersConsuming]
     }
 
-    if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+    if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
       return [controllersRemoteHarvestAuto, controllersConsuming]
     }
 
-    if (room.__actType === bootstrap.RoomActTypeHelp) {
+    if (room._actType_ === bootstrap.RoomActTypeHelp) {
       return [controllersHelpAuto, controllersConsuming]
     }
 
@@ -212,7 +212,7 @@ const roomActor =
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
-    room.__actType = this.roomActType(room)
+    room._actType_ = this.roomActType(room)
     const [roomControllers, consumingControllers] = this.roomControllersFind(room)
 
     if (roomControllers.length === 0 && consumingControllers.length === 0) {
