@@ -244,7 +244,10 @@ const intent = {
     }
 
     this.subIntended(target, key, toBeHarvested)
-    this.roomEnergyAcquired(creep, 'harvest', toBeHarvested)
+
+    if (what === RESOURCE_ENERGY) {
+      this.roomEnergyAcquired(creep, 'harvest', toBeHarvested)
+    }
 
     if (toBeHarvested >= amount) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
