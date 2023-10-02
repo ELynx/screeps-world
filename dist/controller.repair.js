@@ -103,7 +103,7 @@ repairController.targets = function (room) {
         const targetHp = Math.ceil(structure.hitsMax * otherMult)
         if (structure.hits < targetHp) {
           if (structure.structureType === STRUCTURE_CONTAINER) {
-            if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+            if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
               if (!structure.isSource()) return false
             }
           }

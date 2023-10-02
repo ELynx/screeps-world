@@ -29,7 +29,7 @@ buildController._sites = function (room) {
 
   let usedSites
 
-  if (room.__actType === bootstrap.RoomActTypeMy) {
+  if (room._actType_ === bootstrap.RoomActTypeMy) {
     if (room.controller && room.controller.level < 2 && Game.iff.ownUsername) {
       usedSites = []
 
@@ -48,12 +48,12 @@ buildController._sites = function (room) {
     }
   }
 
-  if (room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
+  if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
     // STRATEGY in "public" rooms build only own construction sites
     usedSites = _.filter(allSites, _.matchesProperty('owner.username', Game.iff.ownUsername))
   }
 
-  if (room.__actType === bootstrap.RoomActTypeHelp) {
+  if (room._actType_ === bootstrap.RoomActTypeHelp) {
     const owner = room.extendedOwnerUsername()
     usedSites = _.filter(allSites, _.matchesProperty('owner.username', owner))
   }
