@@ -237,12 +237,12 @@ const historyActor =
       }
     }
 
-    healer.__healedWhat = target
-    healer.__healedHowMuch = eventRecord.data.amount
+    healer.__historyActor_healedWhat = target
+    healer.__historyActor_healedHowMuch = eventRecord.data.amount
 
     // special case, if healed self then have some harm accounted for
     if (healer.id === target.id) {
-      this.increaseDirectHarm(healer, healer.__healedHowMuch)
+      this.increaseDirectHarm(healer, healer.__historyActor_healedHowMuch)
     }
 
     Game.__historyActor_healers[healer.id] = healer
@@ -270,9 +270,9 @@ const historyActor =
     for (const id in Game.__historyActor_healers) {
       const healer = Game.__historyActor_healers[id]
 
-      if (healer.__healedWhat.directHarm) {
-        this.increaseSideHarm(healer, healer.__healedWhat.directHarm)
-        this.increaseSideHarmPower(healer, healer.__healedHowMuch)
+      if (healer.__historyActor_healedWhat.directHarm) {
+        this.increaseSideHarm(healer, healer.__historyActor_healedWhat.directHarm)
+        this.increaseSideHarmPower(healer, healer.__historyActor_healedHowMuch)
       }
     }
   },
