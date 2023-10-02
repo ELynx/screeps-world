@@ -33,7 +33,7 @@ const Targets =
 downgradeController.actRange = 3
 
 downgradeController.extra = function (controller) {
-  return controller.__targetTicks
+  return controller.__downgradeController_targetTicks
 }
 
 downgradeController.roomPrepare = function (room) {
@@ -60,7 +60,7 @@ downgradeController.targets = function (room) {
     }
 
     if (room.controller.ticksToDowngrade < Tresholds[level]) {
-      room.controller.__targetTicks = Targets[level]
+      room.controller.__downgradeController_targetTicks = Targets[level]
       return [room.controller]
     }
   }
