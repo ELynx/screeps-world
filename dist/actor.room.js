@@ -229,7 +229,7 @@ const roomActor =
 
     if (processKey === 0 ||
         processKey === 6 ||
-        room.__threatEscalated) {
+        room._threatEscalated_) {
       spawnProcess.work(room)
     }
 
