@@ -201,7 +201,9 @@ const bootstrap = {
           break
         case MOVE:
           creep._move_ += active
-          creep.__bootstrap__move_options_move_ += active * 2 // TODO Boost
+          // https://github.com/screeps/engine/blob/c765f04ddeb50b9edffb9796c4fcc63b304a2241/src/processor/intents/creeps/tick.js#L107C4-L107C4
+          const boost = part.boost ? BOOSTS[MOVE][part.boost]['fatigue'] : 1
+          creep.__bootstrap__move_options_move_ += active * 2 * boost
           creep.__bootstrap__move_options_non_carry_non_move_ += (1 - active)
           break
         default:
