@@ -29,7 +29,7 @@ const __safe = function (username) {
 
 const prepareHostileNPCMemory = function () {
   // if defined, pull in full definition, otherwise empty
-  Game.__npcReputation = Memory.npcReputation || { }
+  Game.__iff__npcReputation_map = Memory.npcReputation || { }
 
   // release memory, only remember as needed
   Memory.npcReputation = undefined
@@ -145,13 +145,13 @@ const isPC = function (something) {
 }
 
 const __assignPCReputation = function (something, username) {
-  something.__reputation = getPCReputation(username)
+  something.__iff__reputation_value = getPCReputation(username)
 }
 
 const __assignNPCReputation = function (something, username) {
   const factionReputation = getNPCFactionReputation(username)
   // current, then memorized, then default
-  const somethingReputation = something.__reputation || Game.__npcReputation[something.id] || factionReputation
+  const somethingReputation = something.__iff__reputation_value || Game.__iff__npcReputation_map[something.id] || factionReputation
 
   // remember difference to next turn
   if (somethingReputation !== factionReputation) {
@@ -162,7 +162,7 @@ const __assignNPCReputation = function (something, username) {
     Memory.npcReputation[something.id] = somethingReputation
   }
 
-  something.__reputation = somethingReputation
+  something.__iff__reputation_value = somethingReputation
 }
 
 const _assignReputation = function (something, username) {
@@ -182,7 +182,7 @@ const isAlly = function (something) {
 
   _assignReputation(something, username)
 
-  return something.__reputation >= LowestAllyReputation
+  return something.__iff__reputation_value >= LowestAllyReputation
 }
 
 const isNeutral = function (something) {
@@ -194,8 +194,8 @@ const isNeutral = function (something) {
 
   _assignReputation(something, username)
 
-  return something.__reputation >= DefaultReputation &&
-         something.__reputation < LowestAllyReputation
+  return something.__iff__reputation_value >= DefaultReputation &&
+         something.__iff__reputation_value < LowestAllyReputation
 }
 
 const isHostile = function (something) {
@@ -207,7 +207,7 @@ const isHostile = function (something) {
 
   _assignReputation(something, username)
 
-  return something.__reputation < DefaultReputation
+  return something.__iff__reputation_value < DefaultReputation
 }
 
 Object.defineProperty(
@@ -495,8 +495,8 @@ module.exports = {
       },
 
       markNPCHostile (something) {
-        something.__reputation = MinReputation
-        return something.__reputation
+        something.__iff__reputation_value = MinReputation
+        return something.__iff__reputation_value
       },
 
       extendedOwnerUsername (something) {
