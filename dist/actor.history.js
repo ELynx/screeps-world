@@ -85,8 +85,8 @@ const historyActor =
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_NUKE) return
 
     // skip objects that were already examined and found unworthy
-    if (Game.__skipActors[eventRecord.objectId]) return
-    if (Game.__skipAttackTargets[eventRecord.data.targetId]) return
+    if (Game.__historyActor_skipActors[eventRecord.objectId]) return
+    if (Game.__historyActor_skipAttackTargets[eventRecord.data.targetId]) return
 
     const attacker = this.getObjectById(room, eventRecord.objectId)
     if (attacker === null) {
