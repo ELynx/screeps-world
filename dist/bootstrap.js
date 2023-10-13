@@ -202,7 +202,7 @@ const bootstrap = {
         case MOVE:
           creep._move_ += active
           // https://github.com/screeps/engine/blob/c765f04ddeb50b9edffb9796c4fcc63b304a2241/src/processor/intents/creeps/tick.js#L107C4-L107C4
-          creep.__bootstrap__movementCost_move += active * 2 * (part.boost ? BOOSTS[MOVE][part.boost]['fatigue'] : 1)
+          creep.__bootstrap__movementCost_move += active * 2 * (part.boost ? BOOSTS[MOVE][part.boost].fatigue : 1)
           creep.__bootstrap__movementCost_nonCarryNonMove += (1 - active)
           break
         default:
