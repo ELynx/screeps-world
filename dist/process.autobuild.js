@@ -156,8 +156,8 @@ autobuildProcess.bestNeighbour = function (room, center, weightFunction) {
   return positions
 }
 
-autobuildProcess.logConstructionSite = function (pos, structureType, rc) {
-  const message = 'Planned [' + structureType + '] at [' + pos.x + ', ' + pos.y + '] with result code [' + rc + ']'
+autobuildProcess.logConstructionSite = function (room, pos, structureType, rc) {
+  const message = '[' + room.name + '] Planned [' + structureType + '] at [' + pos.x + ', ' + pos.y + '] with result code [' + rc + ']'
   console.log(message)
   Game.notify(message, 30)
 }
@@ -198,7 +198,7 @@ autobuildProcess.tryPlan = function (room, pos, structureType) {
   const rc = room.createConstructionSite(pos.x, pos.y, structureType)
   if (rc === ERR_FULL) Game.__autobuild_cs_full = true
 
-  this.logConstructionSite(pos, structureType, rc)
+  this.logConstructionSite(room, pos, structureType, rc)
 
   return rc
 }
@@ -581,7 +581,7 @@ autobuildProcess.coverRamparts = function (room) {
         return
       }
 
-      this.logConstructionSite({ x, y }, STRUCTURE_RAMPART, rc)
+      this.logConstructionSite(room, { x, y }, STRUCTURE_RAMPART, rc)
     }
   }
 }
