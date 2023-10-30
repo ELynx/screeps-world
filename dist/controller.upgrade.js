@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Controller = require('./controller.template')
 
 const upgradeController = new Controller('upgrade')
@@ -21,7 +23,8 @@ upgradeController.validateTarget = function (allTargets, target, creep) {
   // accounting for specialist
   const others = this._allAssignedTo(target)
   for (const other of others) {
-    othersWork += _.countBy(other.body, 'type')[WORK] || 0
+    bootstrap.activeBodyParts(other)
+    othersWork += other._work_
   }
 
   return othersWork < CONTROLLER_MAX_UPGRADE_PER_TICK

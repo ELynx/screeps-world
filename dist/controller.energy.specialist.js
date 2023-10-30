@@ -111,7 +111,8 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
   const others = this._allAssignedTo(target)
   for (const other of others) {
     if (this._isRestocker(other)) {
-      otherRestockersWork += _.countBy(other.body, 'type')[WORK] || 0
+      bootstrap.activeBodyParts(other)
+      otherRestockersWork += other._work_
     }
   }
 
