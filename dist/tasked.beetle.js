@@ -36,7 +36,7 @@ beetle.creepAtDestination = function (creep) {
     }
   }
 
-  // every N ticks refresh situation
+  // every 10 ticks of stall refresh situation
   if (creep.memory._brT) {
     if (Game.time - creep.memory._brT > 10) {
       this.wipeBreach(creep)
