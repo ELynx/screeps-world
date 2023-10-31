@@ -34,7 +34,8 @@ towerProcess.work = function (room) {
     )
 
     // STRATEGY periodically attack at random
-    if (harmful.length === 0 && (room.intl % 10 === 0)) {
+    const pewpew = room.memory.intl + Game.time
+    if (harmful.length === 0 && (pewpew % 10 === 0)) {
       harmful = _.sample(hostileCreeps, towers.length)
     }
 
