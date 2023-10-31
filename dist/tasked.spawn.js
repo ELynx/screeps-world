@@ -173,13 +173,17 @@ spawn._spawnsInRoom = function (room) {
   )
 }
 
+spawn._getBodyFunction = function (bodyType) {
+  return queue.getBodyFunction(bodyType)
+}
+
 spawn.makeBody = function (spawn, model) {
   if (_.isArray(model.body)) {
     return model.body
   }
 
   if (_.isString(model.body)) {
-    const bodyFunction = queue.getBodyFunction(model.body)
+    const bodyFunction = this._getBodyFunction(model.body)
     if (bodyFunction === undefined) return undefined
 
     return bodyFunction(spawn.room)
