@@ -48,15 +48,6 @@ terminalProcess.work = function (room) {
   let priceMark = 0.95
   const range = MaxBuyRoomDistance
 
-  // people seem to like H a lot, drive price up or stash
-  if (sellMineralType === RESOURCE_HYDROGEN) {
-    priceMark = 1.05
-
-    if (has - toKeep > 1000) {
-      toKeep = has - 1000
-    }
-  }
-
   if (!Memory.prices) {
     Memory.prices = { }
   }
@@ -65,7 +56,7 @@ terminalProcess.work = function (room) {
 
   // get average order statistics
   const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: sellMineralType })
-  const allSellOrders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType })
+  const allSellOrders = economics ? Game.market.getAllOrders({ type: ORDER_SELL, resourceType: sellMineralType }) : []
 
   const goodBuyOrders = _.filter(allBuyOrders,
     function (order) {
