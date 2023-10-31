@@ -41,11 +41,11 @@ terminalProcess.work = function (room) {
   if (sellMineralType === undefined) return
 
   const has = room.terminal.store[sellMineralType]
-  let toKeep = economics ? MineralsToKeep : 0
+  const toKeep = economics ? MineralsToKeep : 0
 
   if (has === undefined || has <= toKeep) return
 
-  let priceMark = 0.95
+  const priceMark = 0.95
   const range = MaxBuyRoomDistance
 
   if (!Memory.prices) {
