@@ -181,6 +181,7 @@ const bootstrap = {
     creep._work_ = 0
     creep._carry_ = 0
     creep._move_ = 0
+    creep._has_carry_ = false
 
     // cache for movement options, since this is same procedure
     creep.__bootstrap__movementCost_nonCarryNonMove = 0
@@ -197,6 +198,7 @@ const bootstrap = {
           break
         case CARRY:
           creep._carry_ += active
+          creep._has_carry_ = true
           creep.__bootstrap__movementCost_carry += 1
           break
         case MOVE:
