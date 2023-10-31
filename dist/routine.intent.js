@@ -230,7 +230,7 @@ const intent = {
     let rc = OK
 
     // if creep was designed to carry anything at all, check remaining store
-    if (_.some(creep.body, _.matchesProperty('type', CARRY))) {
+    if (creep._has_carry_) {
       const freeCapacity = this._getFreeCapacity(creep, what)
       if (freeCapacity <= 0) {
         return bootstrap.ERR_INTENDEE_EXHAUSTED
