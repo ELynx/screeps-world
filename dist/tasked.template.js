@@ -11,19 +11,19 @@ const bootstrap = require('./bootstrap')
 const spawn = require('./routine.spawn')
 
 Room.prototype.aggro = function () {
-  return this.__aggro || []
+  return this._aggro_ || []
 }
 
 Room.prototype.addAggro = function (agroArray) {
-  if (this.__aggro) {
-    this.__aggro = this.__aggro.concat(agroArray)
+  if (this._aggro_) {
+    this._aggro_ = this._aggro_.concat(agroArray)
   } else {
-    this.__aggro = agroArray
+    this._aggro_ = agroArray
   }
 }
 
 Room.prototype.breached = function () {
-  return this.__aggro ? this.__aggro.length === 0 : undefined
+  return this._aggro_ ? this._aggro_.length === 0 : undefined
 }
 
 Room.prototype.getControlPos = function () {
@@ -123,7 +123,7 @@ Creep.prototype.meleeAdjacent = function (targets) {
         noMelee = true
       }
 
-      const hasAggro = target.__aggro !== undefined
+      const hasAggro = target._aggro_ !== undefined
 
       target4 = target
       if (noMelee) target3 = target
