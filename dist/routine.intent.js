@@ -471,7 +471,7 @@ const intent = {
 
     const spawnTime = Math.min(body.length, MAX_CREEP_SIZE) * CREEP_SPAWN_TIME
 
-    const planedSpawning = {
+    const plannedSpawning = {
       name,
       needTime: spawnTime,
       remainingTime: spawnTime + 1,
@@ -482,7 +482,7 @@ const intent = {
       setDirections: function (directions) { }
     }
 
-    this.setIntended(spawn, spawningKey, planedSpawning)
+    this.setIntended(spawn, spawningKey, plannedSpawning)
     this.subIntended(spawn.room, energyAvailableKey, bodyCost)
     this.roomEnergySpent(spawn, 'spawnCreep', bodyCost)
 
