@@ -113,7 +113,7 @@ strelok.creepAtDestination = function (creep) {
   const targets = _.filter(
     this.roomTargets[dest],
     function (hostile) {
-      if (hostile.__aggro) {
+      if (hostile._aggro_) {
         return true
       }
 
@@ -192,7 +192,7 @@ strelok.creepAtDestination = function (creep) {
         const targetIsStructure = fireTarget.structureType !== undefined
         const targetIsNotMelee = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK))
 
-        if (targetIsStructure && fireTarget.__aggro) {
+        if (targetIsStructure && fireTarget._aggro_) {
           if (rangeToFireTarget > 2) {
             flee = false
             range = 2
