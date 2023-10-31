@@ -96,8 +96,7 @@ Creep.prototype.healClosest = function (creeps) {
 }
 
 Creep.prototype.healAdjacent = function (creeps) {
-  for (let i = 0; i < creeps.length; ++i) {
-    const target = creeps[i]
+  for (const target of creeps) {
     if (this.pos.isNearTo(target)) {
       return this.heal(target)
     }
