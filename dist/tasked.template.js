@@ -185,6 +185,7 @@ Creep.prototype.unlive = function () {
   if (result) {
     // forget who they serve
     this.memory.flag = undefined
+    this.flag = undefined
     // mark to be cycled out of existence
     this.memory.rccl = true
 
