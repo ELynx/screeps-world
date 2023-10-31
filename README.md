@@ -21,6 +21,8 @@ Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
 
+* Visualise green and yellow cases in room actor better.
+
 * Step away.
 
 * Strelok tries to attack unreachable sections.
@@ -30,6 +32,8 @@ Movement and positioning:
 * Worker creeps avoid hostile areas.
 
 Don't send military to enemy safe mode rooms.
+
+Ignore Invader healers if no other Invader creeps exist.
 
 ## Intents
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
@@ -83,6 +87,8 @@ Room attack definition:
 
 Flag to turn verbose naming on and off.
 
+* Auto condition to turn verbose naming on and off.
+
 Intent queue for withdraw and transfer.
 
 Spawn intent uber-wrapper:
@@ -107,8 +113,8 @@ Global Control farm rooms.
 
 [Creep body part colors](https://github.com/screeps/renderer/blob/a94760f146afd2a299bd13342b83c596d3f10252/engine/src/lib/processors/creepBuildBody.js#L13)
 
-Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far traver!
+Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far travel!
 
 Mix in worker family bodies to allow useful functions up to the end.
 
-Standing on containers is best for special harvest cases.
+Auto create security_ flags based on autobuild.
