@@ -50,7 +50,7 @@ towerProcess.work = function (room) {
       // STRATEGY what targets to aim first
       harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
 
-      // step 1 - increase size to equal or greater than tower cound
+      // step 1 - increase size to equal or greater than tower count
       while (harmful.length < towers.length) {
         harmful = harmful.concat(harmful)
       }
@@ -81,7 +81,7 @@ towerProcess.work = function (room) {
   const damagedCreeps = _.filter(
     creeps,
     function (creep) {
-      // callous
+      // do not heal ones with self-heal
       if (creep.memory && creep.memory.shel) return false
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
