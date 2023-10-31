@@ -527,7 +527,7 @@ autobuildProcess.coverRamparts = function (room) {
       if (csAtY) {
         const csAtXY = csAtY[kx]
         if (csAtXY) {
-          continue // to next y
+          continue // to next x
         }
       }
 
@@ -536,7 +536,7 @@ autobuildProcess.coverRamparts = function (room) {
 
       // no ramparts on walls
       if (terrain.get(x, y) === TERRAIN_MASK_WALL) {
-        continue // to next y
+        continue // to next x
       }
 
       const atXY = atY[kx]
@@ -567,12 +567,13 @@ autobuildProcess.coverRamparts = function (room) {
         }
       }
 
-      if (onlyRoad || hasRamp || hasWall || noCover) continue // to next y
+      if (onlyRoad || hasRamp || hasWall || noCover) continue // to next x
 
-      // terrain is not natural wall
       // there are no construction sites
+      // terrain is not natural wall
       // there are structures other than road
-      // there is no ramp
+      // there is no constructed wall
+      // there is no (other) ramp
       // this presumably can be covered
 
       const rc = room.createConstructionSite(x, y, STRUCTURE_RAMPART)
