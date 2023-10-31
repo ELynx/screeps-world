@@ -11,19 +11,19 @@ const bootstrap = require('./bootstrap')
 const spawn = require('./routine.spawn')
 
 Room.prototype.aggro = function () {
-  return this._aggro_ || []
+  return this.__tasked_template__room_aggro || []
 }
 
 Room.prototype.addAggro = function (agroArray) {
-  if (this._aggro_) {
-    this._aggro_ = this._aggro_.concat(agroArray)
+  if (this.__tasked_template__room_aggro) {
+    this.__tasked_template__room_aggro = this.__tasked_template__room_aggro.concat(agroArray)
   } else {
-    this._aggro_ = agroArray
+    this.__tasked_template__room_aggro = agroArray
   }
 }
 
 Room.prototype.breached = function () {
-  return this._aggro_ ? this._aggro_.length === 0 : undefined
+  return this.__tasked_template__room_aggro ? this.__tasked_template__room_aggro.length === 0 : undefined
 }
 
 Room.prototype.getControlPos = function () {
