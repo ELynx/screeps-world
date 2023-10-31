@@ -183,7 +183,7 @@ strelok.creepAtDestination = function (creep) {
       } // end of traget in firing range
     } // end of if has ranged bpart
 
-    if (creep.__canMove) {
+    if (creep._can_move_) {
       // ballet when close
       if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
         let flee

@@ -235,7 +235,7 @@ function Tasked (id) {
       creep.memory.mrts = creep.room.name
     }
 
-    if (creep.__canMove) {
+    if (creep._can_move_) {
       const controlPos = creep.getControlPos()
       creep.moveToWrapper(
         controlPos,
@@ -254,7 +254,7 @@ function Tasked (id) {
   }
 
   this._coastToHalt = function (creep) {
-    if (!creep.__canMove) {
+    if (!creep._can_move_) {
       creep.fatigueWrapper()
       return
     }
@@ -308,13 +308,13 @@ function Tasked (id) {
       this.prepare()
     }
 
-    const creepsCountKey = '__creeps_count_' + this.id
+    const creepsCountKey = '__tasked_template_creeps_count_' + this.id
 
     const creeps = Game.creepsByShortcut[this.id] || []
 
     for (const creep of creeps) {
       bootstrap.activeBodyParts(creep)
-      creep.__canMove = creep._move_ > 0 && creep.fatigue === 0
+      creep._can_move_ = creep._move_ > 0 && creep.fatigue === 0
 
       if (this.creepPrepare) {
         this.creepPrepare(creep)
