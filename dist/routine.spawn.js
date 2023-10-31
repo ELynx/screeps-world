@@ -77,15 +77,15 @@ const spawn = {
     }
 
     if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend(Memory.spawn_v1.urgent[0], { priority: 'urgent' })
+      return _.extend({ }, Memory.spawn_v1.urgent[0], { priority: 'urgent' })
     }
 
     if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend(Memory.spawn_v1.normal[0], { priority: 'normal' })
+      return _.extend({ }, Memory.spawn_v1.normal[0], { priority: 'normal' })
     }
 
     if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend(Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
+      return _.extend({ }, Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
     }
 
     return undefined
