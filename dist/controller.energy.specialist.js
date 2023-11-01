@@ -1,6 +1,7 @@
 'use strict'
 
 const bootstrap = require('./bootstrap')
+const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
 
@@ -44,7 +45,17 @@ energySpecialistController.act = function (source, creep) {
     }
   }
 
-  return -1
+  // transfer per tick
+  this.wrapIntent(creep, 'transfer', targets[0], RESOURCE_ENERGY)
+
+  // cover conditions when creep stays under controller
+  if (harvestRc == bootstrap.WARN_BOTH_EXHAUSED) return OK
+  if (harvestRc == bootstrap.WARN_INTENDED_EXHAUSTED) return OK
+  if (harvestRc == bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
+  if (harvestRc == bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
+
+  // report error conditions
+  return harvestRc
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
