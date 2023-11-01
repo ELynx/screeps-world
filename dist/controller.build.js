@@ -81,17 +81,6 @@ buildController._sites = function (room) {
   return allSites
 }
 
-buildController.validateTarget = function (allTargets, target, creep) {
-  // not a restocker, no special rules
-  if (!this._isRestocker(creep)) return true
-
-  // stay stationary
-  if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
-  if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
-
-  return true
-}
-
 buildController.targets = function (room) {
   const sites = this._sites(room)
   if (sites.length === 0) return []

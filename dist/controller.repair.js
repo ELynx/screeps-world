@@ -55,17 +55,6 @@ repairController.act = function (target, creep) {
   return this.wrapIntent(creep, 'repair', target, Math.round(creep.memory.xtra * onSpotMultiplier))
 }
 
-repairController.validateTarget = function (allTargets, target, creep) {
-  // not a restocker, no special rules
-  if (!this._isRestocker(creep)) return true
-
-  // care only for single cluster
-  if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
-  if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
-
-  return true
-}
-
 repairController.targets = function (room) {
   const barrHp = room.memory.wlvl * 1000
   // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)

@@ -13,6 +13,9 @@ upgradeController.act = function (controller, creep) {
 }
 
 upgradeController.validateTarget = function (allTargets, target, creep) {
+  // plug the default check as well
+  if (this._validateRestocker(target, creep) === false) return false
+
   // no limit below level 8
   if (target.level < 8) {
     return true
