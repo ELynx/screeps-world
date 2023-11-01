@@ -19,18 +19,50 @@ energySpecialistController.act = function (source, creep) {
 
   const targets = this.unloadTargets(source)
 
-  // nothing to work with, quit the loop and build it
+  // go to "build" phase
   if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
+
+  // step on the container, in case not there
+  for (const target of targets) {
+    if (target.structureType === STRUCTURE_CONTAINER) {
+      if (creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y) {
+        const direction = creep.pos.getDirectionTo(target)
+        creep.moveWrapper(direction)
+        break
+      }
+    }
+  }
+
+  // if source is hard empty, 
+  if (harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) return bootstrap.WARN_INTENDED_EXHAUSTED
+
+  // TODO
+  return -1
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // maximum one per source
+  // ignore sources without energy, to keep creeps out of controller
+  if (target.energy === 0) return false
+
+  // TODO this logic does not handle edge cases
+  // e.g. two sources regen at same tick, two restockers want to swap places now
+
+  // already stands near, go for it
+  if (target.pos.isNearTo(creep.pos)) return true
+
+  // stands near other source?
+  // do not go away, independent of energy
+  for (const someTarget of allTargets) {
+    if (someTarget.pos.isNearTo(creep.pos)) return false
+  }
+
+  // newcomer, see if someone took it
   const others = this._allAssignedTo(target)
   return others.length === 0
 }
 
 energySpecialistController.targets = function (room) {
-  // just stick'em to the source
+  // get all sources in, sort out per creep
   return room.find(FIND_SOURCES)
 }
 
