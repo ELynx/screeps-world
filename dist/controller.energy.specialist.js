@@ -10,7 +10,38 @@ const energySpecialistController = new Controller('energy.specialist')
 energySpecialistController.actRange = 1
 
 energySpecialistController.unloadTargets = function (source) {
-  return []
+  const allStructures = room.find(FIND_STRUCTURES)
+
+  const aroundSource = _.filter(
+    allStructures,
+    function (structure) {
+      if (Math.abs(structure.pos.x - source.pos.x) > 2) return false
+      if (Math.abs(structure.pos.y - source.pos.y) > 2) return false
+      return true
+    }
+  )
+
+  const withEnergyDemand = _.filter(
+    aroundSource,
+    function (structure) {
+      if (structure.demand_restocker !== undefined) {
+        return structure.demand_restocker.priority !== null && structure.demand_restocker.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
+      }
+
+      return false
+    }
+  )
+
+  withEnergyDemand.sort(
+    function (t1, t2) {
+      const priority1 = t1.demand_restocker.priority
+      const priority2 = t2.demand_restocker.priority
+
+      return priority1 - priority2
+    }
+  )
+
+  return withEnergyDemand
 }
 
 energySpecialistController.act = function (source, creep) {
