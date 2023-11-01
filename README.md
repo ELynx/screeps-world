@@ -19,6 +19,8 @@ Proprietary and confidential.
 ## TODO
 Spawn blocked in one room starves other rooms.
 
+Source link placement adjacent (and maybe vectored) from source container.
+
 Movement and positioning:
 
 * Visualise green and yellow cases in room actor better.
