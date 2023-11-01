@@ -10,6 +10,8 @@ energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
 
+energyHarvestController.validateTarget = undefined // not needed because filter excludes it
+
 energyHarvestController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => source.energy > 0)

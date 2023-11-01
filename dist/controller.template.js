@@ -145,10 +145,23 @@ function Controller (id) {
     return targets
   }
 
+  this._validateRestocker = function (target, creep) {
+    // not a restocker, no special rules
+    if (this._isNotRestocker(creep)) return true
+  
+    // stay stationary
+    if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
+    if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
+  
+    return true
+  }
+
   /**
-    Check if target is take-able.
-    **/
-  this.validateTarget = undefined
+  Check if target is take-able.
+  **/
+  this.validateTarget = function (allTargets, target, creep) {
+    return this._validateRestocker(target, creep)
+  }
 
   this._allAssignedTo = function (target) {
     // in case when called, e.g. by flag

@@ -52,6 +52,8 @@ grabController.act = function (room, creep) {
   return OK
 }
 
+grabController.validateTarget = undefined // not needed because nearby is implied
+
 grabController.targets = function (room) {
   this.fastCheck = true
 
