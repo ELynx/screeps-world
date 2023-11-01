@@ -23,11 +23,14 @@ energySpecialistController.act = function (source, creep) {
       harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
-    // TODO
+    const targets = this.unloadTargets(source)
+    for (const target of targets) {
+
+    }
   }
 
   // some other NOK state, report outside to release from controller
-  // also, this is a fall-through when there is no targets found and build has to be performed
+  // also, this is a fallthrough when there is no unload targets found and build has to be performed
   return harvestRc
 }
 
