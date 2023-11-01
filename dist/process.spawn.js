@@ -94,33 +94,12 @@ spawnProcess.streloks = function (room, live) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const restockerBody = bodywork.restocker(room)
-
-  const workInRestocker = _.countBy(restockerBody)[WORK] || 0
-  if (workInRestocker <= 0) {
-    return
-  }
-
   const sources = room.find(FIND_SOURCES).length
   if (sources === 0) {
     return
   }
 
-  let restockersNeeded
-  let restockersSupported
-
-  if (room._my_) {
-    const workNeededPerSource = room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
-    const restockersNeededPerSource = Math.ceil(workNeededPerSource / workInRestocker)
-
-    restockersNeeded = sources * restockersNeededPerSource
-    restockersSupported = room.memory.slvl
-  } else {
-    restockersNeeded = sources
-    restockersSupported = sources
-  }
-
-  const want = Math.min(restockersNeeded, restockersSupported)
+  const want = sources
   const now = this._hasAndPlanned(room, live, 'restocker')
 
   const roomCanSpawn = this._canSpawn(room)
@@ -208,10 +187,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 }
 
 spawnProcess.plunders = function (room, live) {
-  const plundersNeeded = this._hasAndPlanned(room, live, 'restocker')
-  const plundersSupported = room.memory.slvl || 0
-
-  const want = Math.min(plundersNeeded, plundersSupported)
+  const want = this._hasAndPlanned(room, live, 'restocker')
   const now = this._hasAndPlanned(room, live, 'plunder')
 
   this.addToQueue(
