@@ -8,6 +8,10 @@ const energySpecialistController = new Controller('energy.specialist')
 
 energySpecialistController.actRange = 1
 
+energySpecialistController.unloadTargets = function (source) {
+  return []
+}
+
 energySpecialistController.act = function (source, creep) {
   // start by harvesting; if that is OK, keep harvesting
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
@@ -15,7 +19,7 @@ energySpecialistController.act = function (source, creep) {
 
   // cover all cases where something was exhausted
   if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
-      harvestRc == bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
       harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
