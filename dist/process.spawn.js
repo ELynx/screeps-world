@@ -94,21 +94,14 @@ spawnProcess.streloks = function (room, live) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const sources = room.find(FIND_SOURCES).length
-  if (sources === 0) {
-    return
-  }
-
-  const want = sources
+  const want = room.find(FIND_SOURCES).length
   const now = this._hasAndPlanned(room, live, 'restocker')
-
-  const roomCanSpawn = this._canSpawn(room)
 
   this.addToQueue(
     room.name,
-    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'restocker',
-    roomCanSpawn ? 'restocker' : restockerBody,
+    'restocker',
     {
       rstk: true
     },
