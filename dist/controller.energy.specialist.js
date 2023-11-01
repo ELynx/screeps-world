@@ -9,7 +9,22 @@ const energySpecialistController = new Controller('energy.specialist')
 energySpecialistController.actRange = 1
 
 energySpecialistController.act = function (source, creep) {
-  return -1
+  // start by harvesting; if that is OK, keep harvesting
+  const harvestRc = this.wrapIntent(creep, 'harvest', source)
+  if (harvestRc === OK) return OK
+
+  // cover all cases where something was exhausted
+  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
+      harvestRc == bootstrap.WARN_INTENDED_EXHAUSTED ||
+      harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
+      harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED ||
+      harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
+    // TODO
+  }
+
+  // some other NOK state, report outside to release from controller
+  // also, this is a fall-through when there is no targets found and build has to be performed
+  return harvestRc
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
