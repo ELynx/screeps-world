@@ -12,7 +12,7 @@ const unspecialistId = 'energy.unspecialist'
 
 energySpecialistController.actRange = 1
 
-energySpecialistController.restockTargets = function (room) {
+energySpecialistController.restockTargets = function (source) {
   const unspecialist = bootstrap.roomControllers[unspecialistId]
 
   if (unspecialist === undefined) {
@@ -20,7 +20,16 @@ energySpecialistController.restockTargets = function (room) {
     return []
   }
 
-  return unspecialist._findTargets(room)
+  // all in room
+  const allStructures = unspecialist._findTargets(source.room)
+
+  // localised to source
+  return _.filter(
+    allStructures,
+    function (structure) {
+      return (Math.abs(source.pos.x - structure.pos.x) <= 2) && (Math.abs(source.pos.y - structure.pos.y) <= 2)
+    }
+  )
 }
 
 energySpecialistController.restock = function (target, creep) {
@@ -45,7 +54,7 @@ energySpecialistController.act = function (source, creep) {
   if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
       harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
       harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
-    const restockTargets = this.restockTargets(creep.room)
+    const restockTargets = this.restockTargets(source)
 
     // check if any of targets are in bad shape when harvesting in remote room
     if (creep.room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
