@@ -76,7 +76,12 @@ energySpecialistController.act = function (source, creep) {
   }
 
   // transfer per tick
-  this.wrapIntent(creep, 'transfer', targets[0], RESOURCE_ENERGY)
+  for (const target of targets) {
+    if (creep.pos.isNearTo(target.pos)) {
+      this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
+      break
+    }
+  }
 
   // cover conditions when creep stays under controller
   if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED) return OK
