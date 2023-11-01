@@ -66,6 +66,7 @@ const controllersMyAuto = [
 ]
 
 const controllersRemoteHarvestAuto = [
+  repairController.id,
   buildController.id,
   energySpecialistController.id
 ]

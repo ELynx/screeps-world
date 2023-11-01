@@ -81,6 +81,17 @@ buildController._sites = function (room) {
   return allSites
 }
 
+buildController.validateTarget = function (allTargets, target, creep) {
+  // not a restocker, no special rules
+  if (!this._isRestocker(creep)) return true
+
+  // care only for single cluster
+  if (Math.abs(target.pos.x - creep.pos.x) > 2) return false
+  if (Math.abs(target.pos.y - creep.pos.y) > 2) return false
+
+  return true
+}
+
 buildController.targets = function (room) {
   const sites = this._sites(room)
   if (sites.length === 0) return []

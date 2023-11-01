@@ -151,6 +151,9 @@ function Controller (id) {
   this.validateTarget = undefined
 
   this._allAssignedTo = function (target) {
+    // in case when called, e.g. by flag
+    if (target.room === undefined) return []
+
     const roomCreeps = target.room.getRoomControlledCreeps()
     return _.filter(
       roomCreeps,
