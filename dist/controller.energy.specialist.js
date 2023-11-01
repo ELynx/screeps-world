@@ -6,6 +6,8 @@ const Controller = require('./controller.template')
 
 const energySpecialistController = new Controller('energy.specialist')
 
+const WaitNearEmptySource = 10
+
 energySpecialistController.actRange = 1
 
 energySpecialistController.unloadTargets = function (source) {
@@ -50,7 +52,8 @@ energySpecialistController.act = function (source, creep) {
 
   const targets = this.unloadTargets(source)
 
-  // nothing to unload to, go to "build" phase
+  // nothing to unload to, do other controllers
+  // can happen if all destinations are full
   if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
 
   // step on the container, in case not there
@@ -64,11 +67,9 @@ energySpecialistController.act = function (source, creep) {
     }
   }
 
-  // when source is empty, maybe it is time for other controllers
-  // keep energy for other controllers
-
+  // when source is empty, do other controllers
   if (harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) return harvestRc
-  if (source.ticksToRegeneration && source.ticksToRegeneration > 10) {
+  if (source.ticksToRegeneration && source.ticksToRegeneration > WaitNearEmptySource) {
     if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
         harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) {
       return harvestRc
