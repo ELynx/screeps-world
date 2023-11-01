@@ -45,7 +45,7 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
   if (target.energy === 0) return false
 
   // TODO this logic does not handle edge cases
-  // e.g. two sources regen at same tick, two restockers want to swap places now
+  // e.g. two sources regen at same tick => two restockers want to swap places
 
   // already stands near, go for it
   if (target.pos.isNearTo(creep.pos)) return true
@@ -56,7 +56,7 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
     if (someTarget.pos.isNearTo(creep.pos)) return false
   }
 
-  // newcomer, see if someone took it
+  // not near anything, take source if free
   const others = this._allAssignedTo(target)
   return others.length === 0
 }
