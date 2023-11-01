@@ -19,8 +19,6 @@ upgradeController.validateTarget = function (allTargets, target, creep) {
   }
 
   let othersWork = 0
-
-  // accounting for specialist
   const others = this._allAssignedTo(target)
   for (const other of others) {
     bootstrap.activeBodyParts(other)

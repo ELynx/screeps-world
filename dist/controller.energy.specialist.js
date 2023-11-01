@@ -17,37 +17,16 @@ energySpecialistController.act = function (source, creep) {
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
   if (harvestRc === OK) return OK
 
-  // cover all cases where something was exhausted
-  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
-      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
-      harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
-      harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED ||
-      harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) {
-    const targets = this.unloadTargets(source)
-    for (const target of targets) {
+  const targets = this.unloadTargets(source)
 
-    }
-  }
-
-  // some other NOK state, report outside to release from controller
-  // also, this is a fallthrough when there is no unload targets found and build has to be performed
-  return harvestRc
+  // nothing to work with, quit the loop and build it
+  if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // if there is no one in the room, no collision
-  if (target.room === undefined) {
-    return true
-  }
-
   // maximum one per source
-  // eslint-disable-next-line no-unreachable-loop
   const others = this._allAssignedTo(target)
-  for (const other of others) {
-    return false
-  }
-
-  return true
+  return others.length === 0
 }
 
 energySpecialistController.targets = function (room) {
