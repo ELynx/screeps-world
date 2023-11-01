@@ -1,7 +1,6 @@
 'use strict'
 
 const bootstrap = require('./bootstrap')
-const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
 
@@ -10,7 +9,7 @@ const energySpecialistController = new Controller('energy.specialist')
 energySpecialistController.actRange = 1
 
 energySpecialistController.unloadTargets = function (source) {
-  const allStructures = room.find(FIND_STRUCTURES)
+  const allStructures = source.room.find(FIND_STRUCTURES)
 
   const aroundSource = _.filter(
     allStructures,
@@ -80,10 +79,10 @@ energySpecialistController.act = function (source, creep) {
   this.wrapIntent(creep, 'transfer', targets[0], RESOURCE_ENERGY)
 
   // cover conditions when creep stays under controller
-  if (harvestRc == bootstrap.WARN_BOTH_EXHAUSED) return OK
-  if (harvestRc == bootstrap.WARN_INTENDED_EXHAUSTED) return OK
-  if (harvestRc == bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
-  if (harvestRc == bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
+  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED) return OK
+  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) return OK
+  if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
+  if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
 
   // report error conditions
   return harvestRc
