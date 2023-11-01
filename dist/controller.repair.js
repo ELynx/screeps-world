@@ -111,14 +111,19 @@ repairController.targets = function (room) {
           return true
         }
       } else {
-        const targetHp = Math.ceil(structure.hitsMax * otherMult)
-        if (structure.hits < targetHp) {
-          if (structure.structureType === STRUCTURE_CONTAINER) {
-            if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
-              if (!structure.isSource()) return false
-            }
-          }
+        let targetHp = Math.ceil(structure.hitsMax * otherMult)
 
+        // remote containers have special rules
+        if (structure.structureType === STRUCTURE_CONTAINER &&
+            room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+          // ignore random containers
+          if (!structure.isSource()) return false
+
+          // mark for fixing with any damage
+          targetHp = structure.hitsMax
+        }
+
+        if (structure.hits < targetHp) {
           // STRATEGY some histeresis, repair to top
           structure.__repairController_targetHp = structure.hitsMax
           return true

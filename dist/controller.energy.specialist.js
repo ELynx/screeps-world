@@ -19,7 +19,7 @@ energySpecialistController.act = function (source, creep) {
 
   const targets = this.unloadTargets(source)
 
-  // go to "build" phase
+  // nothing to unload to, go to "build" phase
   if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
 
   // step on the container, in case not there
@@ -33,10 +33,17 @@ energySpecialistController.act = function (source, creep) {
     }
   }
 
-  // if source is hard empty, 
-  if (harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) return bootstrap.WARN_INTENDED_EXHAUSTED
+  // when source is empty, maybe it is time for other controllers
+  // keep energy for other controllers
 
-  // TODO
+  if (harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) return harvestRc
+  if (source.ticksToRegeneration && source.ticksToRegeneration > 10) {
+    if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
+        harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) {
+      return harvestRc
+    }
+  }
+
   return -1
 }
 
