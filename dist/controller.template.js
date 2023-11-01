@@ -148,11 +148,11 @@ function Controller (id) {
   this._validateRestocker = function (target, creep) {
     // not a restocker, no special rules
     if (this._isNotRestocker(creep)) return true
-  
+
     // stay stationary
     if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
     if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
-  
+
     return true
   }
 
