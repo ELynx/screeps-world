@@ -52,7 +52,7 @@ grabController.act = function (room, creep) {
   return OK
 }
 
-grabController.validateTarget = undefined // not needed because nearby is implied
+grabController.validateTarget = undefined // not needed because filter excludes it
 
 grabController.targets = function (room) {
   this.fastCheck = true
@@ -136,6 +136,9 @@ grabController.targets = function (room) {
 }
 
 grabController.filterCreep = function (creep) {
+  // they bring trash to source containers otherwise
+  if (this._isRestocker(creep)) return false
+
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
     if (this.fastCheckX[creep.pos.x] === undefined) {
