@@ -1,5 +1,7 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
+
 const Tasked = require('./tasked.template')
 
 const shuffle = new Tasked('shuffle')
@@ -33,21 +35,33 @@ shuffle.creepAtDestination = function (creep) {
         to = creep.room.storage
       }
 
-      if (from && to) {
-        const resourceTypes1 = _.shuffle(_.keys(from.store))
-        for (const resourceType of resourceTypes1) {
-          if (from.structureType === STRUCTURE_TERMINAL && resourceType === RESOURCE_ENERGY) {
-            continue
-          }
+      if (to && to.demand.priority) {
+        const resourceTypes = _.shuffle(_.keys(creep.store))
+        for (const resourceType of resourceTypes) {
+          const toGive = to.demand.amount(resourceType)
+          if (toGive <= 0) continue
 
-          const rc = creep.withdraw(from, resourceType)
-          if (rc !== OK) break
+          intentSolver.wrapCreepIntent(creep, 'transfer', to, resourceType, toGive)
+          break
         }
+      }
 
-        const resourceTypes2 = _.shuffle(_.keys(creep.store))
-        for (const resourceType of resourceTypes2) {
-          const rc = creep.transfer(to, resourceType)
-          if (rc !== OK) break
+      const canTakeThisTick = creep.store.getFreeCapacity()
+      if (canTakeThisTick <= 0) return // this is ugly code but fast
+
+      if (to && to.demand.priority && from && from.supply.priority) {
+        const resourceTypes = _.shuffle(_.keys(from.store))
+        for (const resourceType of resourceTypes) {
+          const want = to.demand.amount(resourceType)
+          if (want <= 0) continue
+
+          const canGive = from.supply.amount(resourceType)
+          if (canGive <= 0) continue
+
+          const mutual = Math.min(want, canGive, canTakeThisTick)
+
+          intentSolver.wrapCreepIntent(creep, 'withdraw', from, resourceType, mutual)
+          break
         }
       }
     }
