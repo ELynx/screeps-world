@@ -9,6 +9,7 @@ const taskedObserve = require('./tasked.observe')
 const taskedOutlast = require('./tasked.outlast')
 const taskedPixel = require('./tasked.pixelgenerator')
 const taskedPlunder = require('./tasked.plunder')
+const taskedShuffle = require('./tasked.shuffle')
 const taskedSpawn = require('./tasked.spawn')
 const taskedStrelok = require('./tasked.strelok')
 
@@ -21,6 +22,7 @@ const taskedAuto = [
   taskedStrelok.id, // consumes aggro
   taskedPlunder.id, // paramilitary
   taskedClaim.id, // a bit paramilitary
+  taskedShuffle.id, // economy
   taskedObserve.id, // lowest prio
   // consume spawn(s)
   taskedSpawn.id,
