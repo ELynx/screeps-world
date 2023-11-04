@@ -38,10 +38,15 @@ shuffle.creepAtDestination = function (creep) {
       if (to && to.demand.priority) {
         const resourceTypes = _.shuffle(_.keys(creep.store))
         for (const resourceType of resourceTypes) {
-          const toGive = to.demand.amount(resourceType)
-          if (toGive <= 0) continue
+          const want = to.demand.amount(resourceType)
+          if (want <= 0) continue
 
-          intentSolver.wrapCreepIntent(creep, 'transfer', to, resourceType, toGive)
+          const canGive = creep.store.getUsedCapacity(resourceType)
+          if (canGive <= 0) continue
+
+          const mutual = Math.min(want, canGive)
+
+          intentSolver.wrapCreepIntent(creep, 'transfer', to, resourceType, mutual)
           break
         }
       }
