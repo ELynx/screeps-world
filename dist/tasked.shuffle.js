@@ -58,11 +58,11 @@ shuffle.flagPrepare = function (flag) {
   if (flag.room.terminal === undefined) return this.FLAG_IGNORE
 
   if (flag.name.indexOf('>>>') !== -1) {
-    if (flag.room.storage.getUsedCapacity() === 0) return this.FLAG_IGNORE
+    if (flag.room.storage.store.getUsedCapacity() === 0) return this.FLAG_IGNORE
   }
 
   if (flag.name.indexOf('<<<') !== -1) {
-    if (flag.room.terminal.getUsedCapacity() === 0) return this.FLAG_IGNORE
+    if (flag.room.terminal.store.getUsedCapacity() === 0) return this.FLAG_IGNORE
   }
 
   return this.FLAG_SPAWN
