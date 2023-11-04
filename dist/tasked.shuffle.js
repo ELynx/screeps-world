@@ -36,7 +36,9 @@ shuffle.creepAtDestination = function (creep) {
       if (from && to) {
         const resourceTypes1 = _.shuffle(_.keys(from.store))
         for (const resourceType of resourceTypes1) {
-          if (from.structureType === STRUCTURE_TERMINAL && resourceType === RESOURCE_ENERGY) { continue }
+          if (from.structureType === STRUCTURE_TERMINAL && resourceType === RESOURCE_ENERGY) {
+            continue
+          }
 
           const rc = creep.withdraw(from, resourceType)
           if (rc !== OK) break
