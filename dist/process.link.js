@@ -67,8 +67,8 @@ linkProcess.work = function (room) {
 
   destinations.sort(
     function (l1, l2) {
-      proxL1 = l1.__process_link_proximity || 0
-      proxL2 = l2.__process_link_proximity || 0
+      const proxL1 = l1.__process_link_proximity || 0
+      const proxL2 = l2.__process_link_proximity || 0
 
       if (proxL1 === proxL2) {
         // STRATEGY tie break - least energy
