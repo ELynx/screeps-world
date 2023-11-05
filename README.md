@@ -19,6 +19,8 @@ Proprietary and confidential.
 ## TODO
 Spawn blocked in one room starves other rooms.
 
+No firing at things in room safe mode.
+
 Source link placement adjacent (and maybe vectored) from source container.
 
 Movement and positioning:
