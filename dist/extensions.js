@@ -271,6 +271,14 @@ Room.prototype.getRoomControlledCreeps = function () {
   return this.__getRoomControlledCreeps_creeps
 }
 
+Room.prototype.getRoomControlledWorkers = function () {
+  if (this.__getRoomControlledWorkers_creeps === undefined) {
+    this.__getRoomControlledWorkers_creeps = _.filter(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))
+  }
+
+  return this.__getRoomControlledWorkers_creeps
+}
+
 Room.prototype.getViableRoomOwnedCreeps = function () {
   if (this.__getViableRoomOwnedCreeps_creeps === undefined) {
     this.__getViableRoomOwnedCreeps_creeps = _.filter(
@@ -354,7 +362,7 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   }
 
   // if there are no workers, only dribble will help
-  if (!_.some(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))) {
+  if (this.getRoomControlledWorkers().length === 0) {
     this.__extendedAvailableEnergyCapacity_value = SPAWN_ENERGY_CAPACITY
     return this.__extendedAvailableEnergyCapacity_value
   }
