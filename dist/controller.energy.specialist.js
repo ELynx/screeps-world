@@ -48,6 +48,9 @@ energySpecialistController.unloadTargets = function (source) {
 }
 
 energySpecialistController.act = function (source, creep) {
+  // secret shared by harvesting creeps
+  source.__in_harvest__ = true
+
   // start by harvesting; if that is OK, keep harvesting
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
   if (harvestRc === OK) return OK
@@ -91,6 +94,9 @@ energySpecialistController.act = function (source, creep) {
   if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) return OK
   if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
   if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
+
+  // remove secret as well
+  source.__in_harvest__ = undefined
 
   // report error conditions
   return harvestRc
