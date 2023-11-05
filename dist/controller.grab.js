@@ -52,7 +52,7 @@ grabController.act = function (room, creep) {
   return OK
 }
 
-grabController.validateTarget = undefined // not needed because filter excludes it
+grabController.validateTarget = undefined // default validation is specific to Restockers, this is already handled by `filterCreep`
 
 grabController.targets = function (room) {
   this.fastCheck = true
