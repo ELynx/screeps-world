@@ -14,7 +14,7 @@ energyHarvestController.validateTarget = undefined // default validation is spec
 
 energyHarvestController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
-  return _.filter(allSources, source => (source.energy > 0 && source.__in_harvest__ === undefined)) // secret shared by harvesting creeps
+  return _.filter(allSources, source => (source.energy > 0 && source.__in_harvest__ !== true)) // secret shared by harvesting creeps
 }
 
 energyHarvestController.filterCreep = function (creep) {
