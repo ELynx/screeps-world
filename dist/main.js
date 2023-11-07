@@ -60,8 +60,14 @@ const loop = function () {
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {
-    // eslint-disable-next-line no-eval
-    eval(Memory.eval)
+    try {
+      // eslint-disable-next-line no-eval
+      eval(Memory.eval)
+    } catch {
+      // cannot be fixed even from console, because execution dies
+      // fix here
+      Memory.eval = undefined
+    }
   }
 }
 
