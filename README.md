@@ -20,8 +20,6 @@ Proprietary and confidential.
 
 ## TODO
 
-Intent wrapper gives ERR_FULL -8 (The target cannot receive any more resources) on creep transfer, expected 2.
-
 Spawn blocked in one room starves other rooms.
 
 No firing at things in room safe mode.

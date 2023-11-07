@@ -65,15 +65,16 @@ const storageDemand = function (__storage, priority) {
     priority,
 
     amount: function (type) {
+      const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
+
       const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
       const neededEnergy = this.__storage.room.memory.stre || 0
       const missingEnergy = Math.max(neededEnergy - usedByEnergy, 0)
 
       if (RESOURCE_ENERGY === type) {
-        return missingEnergy
+        return Math.min(missingEnergy, freeForTypeBeforeReserve)
       }
 
-      const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
       const freeForTypeAfterReserve = freeForTypeBeforeReserve - missingEnergy
       if (freeForTypeAfterReserve <= 0) return 0
       return freeForTypeAfterReserve
