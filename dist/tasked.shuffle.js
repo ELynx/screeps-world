@@ -79,11 +79,15 @@ shuffle.flagPrepare = function (flag) {
   if (flag.room.terminal === undefined) return this.FLAG_IGNORE
 
   if (flag.name.indexOf('>>>') !== -1) {
+    // TODO dns
     if (flag.room.storage.store.getUsedCapacity() === 0) return this.FLAG_IGNORE
+    if (flag.room.terminal.store.getFreeCapacity() < 30000) return this.FLAG_IGNORE
   }
 
   if (flag.name.indexOf('<<<') !== -1) {
+    // TODO dns
     if (flag.room.terminal.store.getUsedCapacity() === 0) return this.FLAG_IGNORE
+    if (flag.room.storage.store.getFreeCapacity() < 10000) return this.FLAG_IGNORE
   }
 
   return this.FLAG_SPAWN
