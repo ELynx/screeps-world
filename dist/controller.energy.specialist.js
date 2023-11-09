@@ -23,6 +23,9 @@ energySpecialistController.observeMyCreep = function (creep) {
     // shared by harvesting controllers
     source._in_harvest_ = true
   }
+
+  // stick creep to source
+  creep.memory._est = creep.memory.dest
 }
 
 energySpecialistController.unloadTargets = function (source) {
@@ -112,25 +115,17 @@ energySpecialistController.act = function (source, creep) {
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // ignore sources without energy, to keep creeps out of controller
-  if (target.energy === 0) return false
-
-  // already stands near, go for it
-  if (target.pos.isNearTo(creep.pos)) return true
-
-  // stands near other source?
-  // do not go away, independent of energy
-  for (const someTarget of allTargets) {
-    if (someTarget.pos.isNearTo(creep.pos)) return false
+  // if sticky
+  if (creep.memory._est !== undefined) {
+    return target.id === creep.memory._est
   }
 
-  // target exclusion is handled by observe logic
   return true
 }
 
 energySpecialistController.targets = function (room) {
-  // get all sources in, sort out per creep
-  return room.find(FIND_SOURCES)
+  const allSources = room.find(FIND_SOURCES)
+  return _.filter(allSources, source => source.energy > 0)
 }
 
 energySpecialistController.filterCreep = function (creep) {
