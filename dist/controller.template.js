@@ -229,6 +229,14 @@ function Controller (id) {
     return creep.memory.rccl || false
   }
 
+  this._universalWantStoreNonEnergy = function (structure) {
+    if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
+      return structure.demand.amount(RESOURCE_POWER) > 0
+    }
+  
+    return false
+  }
+
   this._usesDefaultFilter = undefined
 
   /**
