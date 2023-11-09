@@ -233,7 +233,7 @@ function Controller (id) {
     if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
       return structure.demand.amount(RESOURCE_POWER) > 0
     }
-  
+
     return false
   }
 
