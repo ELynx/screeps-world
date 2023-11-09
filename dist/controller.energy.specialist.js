@@ -107,9 +107,6 @@ energySpecialistController.act = function (source, creep) {
   if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
   if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
 
-  // remove secret as well
-  source.__in_harvest__ = undefined
-
   // report error conditions
   return harvestRc
 }
