@@ -57,7 +57,7 @@ grabController.validateTarget = undefined // default validation is specific to R
 grabController.targets = function (room) {
   this.fastCheck = true
 
-  const hasUniversalStore = room.storage || room.terminal
+  const hasUniversalStore = this._universalWantStoreNonEnergy(room.storage) || this._universalWantStoreNonEnergy(room.terminal)
 
   const tombstones = room.find(FIND_TOMBSTONES)
   const ruins = room.find(FIND_RUINS)
