@@ -20,8 +20,6 @@ Proprietary and confidential.
 
 ## TODO
 
-Distribute sources among restockers.
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
