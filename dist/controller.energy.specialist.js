@@ -10,6 +10,15 @@ const WaitNearEmptySource = 10
 
 energySpecialistController.actRange = 1
 
+energySpecialistController.roomPrepare = function (room) {
+  this._roomPrepare(room)
+  this._prepareExcludedTargets(room)
+}
+
+energySpecialistController.observeMyCreep = function (creep) {
+  this._excludeTarget(creep)
+}
+
 energySpecialistController.unloadTargets = function (source) {
   const allStructures = source.room.find(FIND_STRUCTURES)
 
@@ -106,9 +115,6 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
   // ignore sources without energy, to keep creeps out of controller
   if (target.energy === 0) return false
 
-  // TODO this logic does not handle edge cases
-  // e.g. two sources regen at same tick => two restockers want to swap places
-
   // already stands near, go for it
   if (target.pos.isNearTo(creep.pos)) return true
 
@@ -118,9 +124,8 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
     if (someTarget.pos.isNearTo(creep.pos)) return false
   }
 
-  // not near anything, take source if free
-  const others = this._allAssignedTo(target)
-  return others.length === 0
+  // target exclusion is handled by observe logic
+  return true
 }
 
 energySpecialistController.targets = function (room) {
