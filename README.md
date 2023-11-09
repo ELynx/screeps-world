@@ -20,6 +20,10 @@ Proprietary and confidential.
 
 ## TODO
 
+Distribute sources among restockers.
+
+Do nog `grab` resources when there is nowhere to place resoures.
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
