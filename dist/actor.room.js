@@ -313,6 +313,8 @@ const roomActor =
         }
 
         if (creep.fatigue > 0) {
+          // do not forget to let controller know there is an assignee
+          this.roomControllersObserveOwn(creep)
           creep.fatigueWrapper()
           continue
         }
