@@ -22,12 +22,6 @@ Proprietary and confidential.
 
 Spawn blocked in one room starves other rooms.
 
-No firing at things in room safe mode.
-
-Ignore Invader healers if no other Invader creeps exist.
-
-Source link placement adjacent (and maybe vectored) from source container.
-
 Movement and positioning:
 
 * Visualise green and yellow cases in room actor better.
@@ -39,8 +33,6 @@ Movement and positioning:
 * Plunder tries to plunder unreachable sections.
 
 * Worker creeps avoid hostile areas.
-
-Don't send military to enemy safe mode rooms.
 
 ## Intents
 
@@ -79,6 +71,8 @@ Some material on autobases:
 * [Screeps Script](https://github.com/slothsoft/screeps-script)
 
 Fatigue based emergent road building.
+
+Source link placement adjacent (and maybe vectored) from source container.
 
 ### Economy
 
@@ -121,6 +115,12 @@ Mix in worker family bodies to allow useful functions up to the end.
 Instead of healing by towers spawn healers.
 
 Auto create security_ flags based on autobuild.
+
+No firing at things in room safe mode.
+
+Ignore Invader healers if no other Invader creeps exist.
+
+Don't send military to enemy safe mode rooms.
 
 ### Technical
 
