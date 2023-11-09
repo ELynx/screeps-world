@@ -17,6 +17,12 @@ energySpecialistController.roomPrepare = function (room) {
 
 energySpecialistController.observeMyCreep = function (creep) {
   this._excludeTarget(creep)
+
+  const source = bootstrap.getObjectById(creep.memory.dest)
+  if (source) {
+    // shared by harvesting controllers
+    source._in_harvest_ = true
+  }
 }
 
 energySpecialistController.unloadTargets = function (source) {
@@ -57,9 +63,6 @@ energySpecialistController.unloadTargets = function (source) {
 }
 
 energySpecialistController.act = function (source, creep) {
-  // secret shared by harvesting creeps
-  source.__in_harvest__ = true
-
   // start by harvesting; if that is OK, keep harvesting
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
   if (harvestRc === OK) return OK
