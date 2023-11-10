@@ -141,7 +141,8 @@ spawnProcess.workers = function (room, live, limit = undefined) {
     const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
 
     if (nowRestockers !== 0) {
-      const workInRestocker = _.countBy(bodywork.restocker(room))[WORK] || 0
+      const restockerBody = room._my_ ? bodywork.restocker_my(room) : bodywork.restocker_other(room)
+      const workInRestocker = _.countBy(restockerBody)[WORK] || 0
       if (workInRestocker > 0) {
         const workInWorker = _.countBy(workerBody)[WORK] || 0
         if (workInWorker > 0) {
