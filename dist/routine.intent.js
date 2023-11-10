@@ -559,6 +559,13 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
+  getEnergy: function (something) {
+    const key = '__amount'
+    const value = something.energy
+
+    return this.getWithIntended(something, key, value)
+  },
+
   getSpawnSpawning: function (spawn) {
     const key = '__spawning'
     const value = spawn.spawning
