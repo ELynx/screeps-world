@@ -2,11 +2,11 @@
 
 const bootstrap = require('./bootstrap')
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energySpecialistController = new Controller('energy.specialist')
-
-const WaitNearEmptySource = 10
 
 energySpecialistController.actRange = 1
 
@@ -87,30 +87,20 @@ energySpecialistController.act = function (source, creep) {
     }
   }
 
-  // when source is empty, do other controllers
-  if (harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED) return harvestRc
-  if (source.ticksToRegeneration && source.ticksToRegeneration > WaitNearEmptySource) {
-    if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
-        harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) {
-      return harvestRc
-    }
-  }
-
-  // transfer per tick
+  // transfer to target
   for (const target of targets) {
     if (creep.pos.isNearTo(target.pos)) {
-      this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
-      break
+      const transferRc = this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
+      if (transferRc >= OK) {
+        break
+      }
     }
   }
 
   // cover conditions when creep stays under controller
-  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED) return OK
-  if (harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED) return OK
   if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
-  if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK // stick and try to harvest even if full
+  if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK
 
-  // report error conditions
   return harvestRc
 }
 
@@ -125,7 +115,7 @@ energySpecialistController.validateTarget = function (allTargets, target, creep)
 
 energySpecialistController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
-  return _.filter(allSources, source => source.energy > 0)
+  return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
 }
 
 energySpecialistController.filterCreep = function (creep) {
