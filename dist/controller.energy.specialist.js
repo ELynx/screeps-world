@@ -34,6 +34,9 @@ energySpecialistController.unloadTargets = function (source) {
   const aroundSource = _.filter(
     allStructures,
     function (structure) {
+      // force maintenance
+      if (structure.hits && structure.hitsMax && structure.hits < structure.hitsMax) return false
+
       let distance = 1 // default for container
       if (structure.structureType === STRUCTURE_LINK) distance = 2
       if (Math.abs(structure.pos.x - source.pos.x) > distance) return false
