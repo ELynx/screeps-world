@@ -24,7 +24,7 @@ const bodywork = {
     const c = new Array(move)
     c.fill(MOVE)
 
-    return a.concat(b).concat(c)
+    return _.shuffle(a.concat(b).concat(c))
   },
 
   worker: function (room) {
