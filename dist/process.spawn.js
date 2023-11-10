@@ -101,7 +101,7 @@ spawnProcess.restockers = function (room, live) {
     room.name,
     this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'restocker',
-    'restocker',
+    room._my_ ? 'restocker_my' : 'restocker_other',
     {
       rstk: true
     },
@@ -258,7 +258,8 @@ spawnProcess._registerBodyFunction = function (routineId) {
 
 spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('worker')
-  this._registerBodyFunction('restocker')
+  this._registerBodyFunction('restocker_my')
+  this._registerBodyFunction('restocker_other')
   this._registerBodyFunction('miner')
 }
 

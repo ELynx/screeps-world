@@ -61,27 +61,7 @@ const bodywork = {
     return this.makeWCM(12, 12)
   },
 
-  // STRATEGY these do not walk with filled CARRY
-  restocker: function (room) {
-    // cannot produce creeps -> no level regulation
-    if (!room._my_) {
-      if (room.ownedOrReserved()) {
-        // target is 3000 / 250 / 2 = 6 WORK body parts
-        // 950
-        return this.makeWCM(6, 1, 6)
-      }
-
-      if (room.sourceKeeper()) {
-        // target is 4000 / 250 / 2 = 8 WORK body parts
-        // 1250
-        return this.makeWCM(8, 1, 8)
-      }
-
-      // target is 1500 / 250 / 2 = 3 WORK body parts
-      // 500
-      return this.makeWCM(3, 1, 3)
-    }
-
+  restocker_my: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
 
     // call for new room
@@ -104,13 +84,25 @@ const bodywork = {
     return this.makeWCM(5, 1, 5)
   },
 
-  miner: function (room) {
-    if (!room._my_) {
-      // if decision is ever made to mide outside, it must be done with superior machines
-      // 3400
-      return this.makeWCM(20, 4)
+  restocker_other: function (room) {
+    if (room.ownedOrReserved()) {
+      // target is 3000 / 250 / 2 = 6 WORK body parts
+      // 950
+      return this.makeWCM(6, 1, 6)
     }
 
+    if (room.sourceKeeper()) {
+      // target is 4000 / 250 / 2 = 8 WORK body parts
+      // 1250
+      return this.makeWCM(8, 1, 8)
+    }
+
+    // target is 1500 / 250 / 2 = 3 WORK body parts
+    // 500
+    return this.makeWCM(3, 1, 3)
+  },
+
+  miner: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
