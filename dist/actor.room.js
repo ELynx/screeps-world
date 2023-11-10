@@ -179,6 +179,9 @@ const roomActor =
   },
 
   consumingControllersControl: function (controllers, room, creep) {
+    let didConsume = false
+    let error = false
+    let warning = false
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
@@ -192,16 +195,24 @@ const roomActor =
 
         if (rc >= OK) {
           this._roomControllerObserveOwn(controller, creep)
+          didConsume = true
         }
 
-        if (rc === bootstrap.WARN_BOTH_EXHAUSED ||
-            rc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
-            rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
-          return rc
+        if (rc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
+          error = true
+          break
+        }
+
+        if (rc === bootstrap.WARN_BOTH_EXHAUSED || rc === bootstrap.WARN_INTENDEE_EXHAUSTED) {
+          warning = true
+          break
         }
       }
     }
 
+    if (!didConsume) return ERR_NOT_FOUND
+    if (error) return bootstrap.ERR_INTENDEE_EXHAUSTED
+    if (warning) return bootstrap.WARN_INTENDEE_EXHAUSTED
     return OK
   },
 
@@ -267,7 +278,7 @@ const roomActor =
 
         // do pass-by chores that consume something into creep
         const consumingRc = this.consumingControllersControl(consumingControllers, room, creep)
-        if (consumingRc !== OK) {
+        if (consumingRc >= OK) {
           if (_.some(controllersFreeCapacity, _.matches(creep.memory.ctrl))) {
             bootstrap.unassignCreep(creep)
           }
