@@ -17,13 +17,6 @@ energySpecialistController.roomPrepare = function (room) {
 
 energySpecialistController.observeMyCreep = function (creep) {
   this._excludeTarget(creep)
-
-  const source = bootstrap.getObjectById(creep.memory.dest)
-  if (source) {
-    // shared by harvesting controllers
-    source._in_harvest_ = true
-  }
-
   // stick creep to source
   creep.memory._est = creep.memory.dest
 }
@@ -35,7 +28,7 @@ energySpecialistController.unloadTargets = function (source) {
     allStructures,
     function (structure) {
       // force maintenance
-      if (structure.hits && structure.hitsMax && structure.hits < structure.hitsMax) return false
+      // if (structure.hits && structure.hitsMax && structure.hits < structure.hitsMax) return false
 
       let distance = 1 // default for container
       if (structure.structureType === STRUCTURE_LINK) distance = 2
@@ -108,12 +101,14 @@ energySpecialistController.act = function (source, creep) {
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // if sticky
+  // if already sticky
   if (creep.memory._est !== undefined) {
     return target.id === creep.memory._est
   }
 
-  return true
+  // if not, check that target is not someone else's sticky
+  const others = target.room.getRoomControlledCreeps()
+  return !_.some(others, _.matchesProperty('memory._est', target.id))
 }
 
 energySpecialistController.targets = function (room) {
