@@ -85,21 +85,21 @@ const bodywork = {
   },
 
   restocker_other: function (room) {
+    // target is always 250 ticks, leaving 50 ticks for repairs
+    // w eq c so there are no "odd" numbers on capacity
+
     if (room.ownedOrReserved()) {
       // target is 3000 / 250 / 2 = 6 WORK body parts
-      // 950
-      return this.makeWCM(6, 1, 6)
+      return this.makeWCM(6, 6, 6)
     }
 
     if (room.sourceKeeper()) {
       // target is 4000 / 250 / 2 = 8 WORK body parts
-      // 1250
-      return this.makeWCM(8, 1, 8)
+      return this.makeWCM(8, 8, 8)
     }
 
     // target is 1500 / 250 / 2 = 3 WORK body parts
-    // 500
-    return this.makeWCM(3, 1, 3)
+    return this.makeWCM(3, 3, 3)
   },
 
   miner: function (room) {
