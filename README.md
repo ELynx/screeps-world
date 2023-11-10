@@ -110,8 +110,6 @@ Flag to turn verbose naming on and off.
 
 * Auto condition to turn verbose naming on and off.
 
-Mix in worker family bodies to allow useful functions up to the end.
-
 Instead of healing by towers spawn healers.
 
 Auto create security_ flags based on autobuild.
