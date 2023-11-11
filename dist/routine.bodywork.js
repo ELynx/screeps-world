@@ -106,34 +106,17 @@ const bodywork = {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
-    if (energy < 550) {
-      // 250
-      return this.makeWCM(1, 1)
+    if (energy < 1250) {
+      return []
     }
 
-    if (energy < 800) {
-      // 550
-      return this.makeWCM(3, 1)
+    if (energy < 2500 || sourceLevel < 3) {
+      // 1250
+      return this.makeWCM(5, 5)
     }
 
-    if (energy < 850) {
-      // special case, limp a bit when loaded
-      // 800
-      return this.makeWCM(5, 1, 5)
-    }
-
-    if (energy < 1700) {
-      // 850
-      return this.makeWCM(5, 1)
-    }
-
-    if (energy < 3400 || sourceLevel < 3) {
-      // 1700
-      return this.makeWCM(10, 2)
-    }
-
-    // 3400
-    return this.makeWCM(20, 4)
+    // 2500
+    return this.makeWCM(10, 10)
   }
 }
 
