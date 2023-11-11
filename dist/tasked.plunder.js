@@ -122,7 +122,7 @@ plunder.moveAndLoad = function (creep, target) {
     const resourceTypes = _.shuffle(_.keys(target.store))
     for (const resourceType of resourceTypes) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc !== OK) break
+      if (rc >= OK) break
     }
   } else {
     creep.moveToWrapper(
