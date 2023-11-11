@@ -24,14 +24,15 @@ mineralRestockController.act = function (structure, creep) {
     const howMuch = (canGive > wantTake) ? wantTake : undefined
 
     const rc = this.wrapIntent(creep, 'transfer', structure, resourceType, howMuch)
-    if (rc !== OK) {
-      return rc
+    if (rc >= OK) {
+      // one transfer per tick
+      // creep will be de-assigned, if more resources are there it will be found again
+      return bootstrap.WARN_INTENDEE_EXHAUSTED
     }
   }
 
-  // if here then all transfers were OK
-  // thus do not keep at target
-  return bootstrap.WARN_INTENDEE_EXHAUSTED
+  // there is something wrong with resources
+  return bootstrap.ERR_INTENDEE_EXHAUSTED
 }
 
 // STRATEGY mineral fill order
