@@ -38,7 +38,7 @@ grabController.act = function (room, creep) {
           const rc = this.wrapIntent(creep, 'withdraw', from, typeToGrab)
           if (rc >= OK) {
             didWithdraw = true
-            break; // from types cycle
+            break // from types cycle
           }
         }
       }
