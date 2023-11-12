@@ -52,7 +52,7 @@ const bodywork = {
       return this.makeWCM(3, 3)
     }
 
-    if (energy < 3000 || sourceLevel < 3) {
+    if (energy < 3000 || sourceLevel < 2) {
       // 1500
       return this.makeWCM(6, 6)
     }
@@ -110,7 +110,7 @@ const bodywork = {
       return []
     }
 
-    if (energy < 2500 || sourceLevel < 3) {
+    if (energy < 2500 || sourceLevel < 2) {
       // 1250
       return this.makeWCM(5, 5)
     }

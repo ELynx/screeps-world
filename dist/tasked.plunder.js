@@ -291,7 +291,7 @@ plunder.makeBody = function (room) {
     return this.makeCM(8)
   }
 
-  if (energy < 2000 || sourceLevel < 3) {
+  if (energy < 2000 || sourceLevel < 2) {
     // 1200
     return this.makeCM(12)
   }

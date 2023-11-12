@@ -55,83 +55,8 @@ roomInfoProcess.harvestLevel = function (room) {
 }
 
 roomInfoProcess.sourceLevel = function (room) {
-  const allStructures = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: function (structure) {
-        return structure.isActiveSimple
-      }
-    }
-  )
-
-  const containers = _.filter(
-    allStructures,
-    function (structure) {
-      return structure.structureType === STRUCTURE_CONTAINER && structure.isSource()
-    }
-  )
-
-  let total = containers.length
-
-  if (!room._my_) {
-    return total
-  }
-
-  const links = _.filter(
-    allStructures,
-    function (structure) {
-      return structure.structureType === STRUCTURE_LINK
-    }
-  )
-
-  let hasExchange = false
-  if (links.length > 1) {
-    for (const link of links) {
-      if (!link.isSource()) {
-        hasExchange = true
-        break
-      }
-    }
-  }
-
-  if (!hasExchange) {
-    return total
-  }
-
-  const consideredPositions = { }
-
-  for (const container of containers) {
-    const p = container.pos
-    consideredPositions[(p.x + 1) + 100 * (p.y + 1)] = p
-  }
-
-  const terrain = room.getTerrain()
   const sources = room.find(FIND_SOURCES)
-
-  for (const link of links) {
-    if (link.isSource()) {
-      let notFound = true
-      for (let j = 0; j < sources.length && notFound; ++j) {
-        const source = sources[j]
-        const betweenTwo = link.pos.findSharedAdjacentPositions(source.pos)
-        for (let k = 0; k < betweenTwo.length && notFound; ++k) {
-          const p = betweenTwo[k]
-          const index = (p.x + 1) + 100 * (p.y + 1)
-
-          // to next between position
-          if (consideredPositions[index]) continue
-          if (!this._walkable(terrain, p)) continue
-
-          consideredPositions[index] = p
-          notFound = false
-        }
-      }
-
-      if (notFound === false) ++total
-    }
-  }
-
-  return total
+  return sources.length
 }
 
 /**
