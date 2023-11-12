@@ -63,6 +63,16 @@ energySpecialistController.act = function (source, creep) {
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
   if (harvestRc === OK) return OK
 
+  // in remote room, stash some energy for repair
+  if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+    const inSource = intentSolver.getEnergy(source)
+    const inCreep = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+    // STRATEGY how much energy closer to the end of source
+    if (inSource + inCreep <= 200) {
+      return harvestRc
+    } 
+  }
+
   const targets = this.unloadTargets(source)
 
   // nothing to unload to, do other controllers
