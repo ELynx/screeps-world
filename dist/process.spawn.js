@@ -94,7 +94,7 @@ spawnProcess.streloks = function (room, live) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const want = room.find(FIND_SOURCES).length
+  const want = room.memory.slvl || 0
   const now = this._hasAndPlanned(room, live, 'restocker')
 
   this.addToQueue(
@@ -111,7 +111,7 @@ spawnProcess.restockers = function (room, live) {
 }
 
 spawnProcess.miners = function (room, live) {
-  const want = room.memory.mlvl
+  const want = room.memory.mlvl || 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
   this.addToQueue(
