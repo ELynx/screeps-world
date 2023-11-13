@@ -54,7 +54,7 @@ const controllersMyAuto = [
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.full.id, // catch anyone with mineral only
-  energySpecialistController.id, // catch restockers to
+  energySpecialistController.id, // catch restockers
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
   energyRestockController.id,
