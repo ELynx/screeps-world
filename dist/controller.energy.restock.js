@@ -35,7 +35,11 @@ energyRestockController.targets = function (room) {
   const withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
+      // TODO unmagic number, 1000+ is passive storage
+      return structure.demand.priority !== null &&
+             structure.demand.priority < 1000 &&
+             structure.demand.amount(RESOURCE_ENERGY) > 0 &&
+             structure.isActiveSimple
     }
   )
 
