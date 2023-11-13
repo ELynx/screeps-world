@@ -368,7 +368,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      return energyDemandSource(this, RankPassiveStorage)
+      return energyDemand(this, RankPassiveStorage)
     },
     configurable: true,
     enumerable: true
