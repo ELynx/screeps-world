@@ -77,7 +77,7 @@ energySpecialistController.act = function (source, creep) {
   // step on the container, in case not there
   for (const target of targets) {
     if (target.structureType === STRUCTURE_CONTAINER) {
-      if (creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y) {
+      if (creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y && source.pos.isNearTo(target.pos)) {
         const direction = creep.pos.getDirectionTo(target)
         creep.moveWrapper(direction, { jiggle: true })
         break
