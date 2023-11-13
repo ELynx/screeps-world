@@ -428,7 +428,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      const tickFunction = _.bind(storageDemand, null, this, Rank2Middle + 1)
+      const tickFunction = _.bind(storageDemand, null, this, RankPassiveStorage)
       return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
@@ -454,7 +454,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      const tickFunction = _.bind(terminalDemand, null, this, Rank2Middle)
+      const tickFunction = _.bind(terminalDemand, null, this, RankPassiveStorage + 1)
       return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
