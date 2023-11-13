@@ -255,7 +255,7 @@ const energySupply = function (something, priority) {
   return getSupplyFromIntent(something, tickFunction)
 }
 
-const energySupply_isSource_false = function (something, priority) {
+const energySupplyWhenIsSourceEqFalse = function (something, priority) {
   if (something.__supply_cache_x) return something.__supply_cache_x
 
   if (something.isSource()) {
@@ -380,7 +380,7 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return energySupply_isSource_false(this, Rank1Middle)
+      return energySupplyWhenIsSourceEqFalse(this, Rank1Middle)
     },
     configurable: true,
     enumerable: true
