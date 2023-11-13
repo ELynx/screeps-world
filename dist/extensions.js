@@ -88,14 +88,23 @@ Creep.prototype.fatigueWrapper = function () {
   return OK
 }
 
-Creep.prototype.moveWrapper = function (direction) {
+Creep.prototype.moveWrapper = function (direction, options = { }) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
   }
 
+  let actualDirection = direction
+
+  if (options.jiggle === true) {
+    if (this.moved() === false) {
+      const adjacentDirections = bootstrap.adjacentDirections[direction]
+      actualDirection = adjacentDirections[Game.time % 2]
+    }
+  }
+
   this.rememberPosition()
 
-  return this.move(direction)
+  return this.move(actualDirection)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {

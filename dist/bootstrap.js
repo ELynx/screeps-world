@@ -24,6 +24,17 @@ const bootstrap = {
   // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
   ERR_INTENDED_EXHAUSTED: -10003,
 
+  adjacentDirections: {
+    [TOP]:          [TOP_LEFT,     TOP_RIGHT],
+    [TOP_RIGHT]:    [TOP,          RIGHT],
+    [RIGHT]:        [TOP_RIGHT,    BOTTOM_RIGHT],
+    [BOTTOM_RIGHT]: [RIGHT,        BOTTOM],
+    [BOTTOM]:       [BOTTOM_RIGHT, BOTTOM_LEFT],
+    [BOTTOM_LEFT]:  [BOTTOM,       LEFT],
+    [LEFT]:         [BOTTOM_LEFT,  TOP_LEFT],
+    [TOP_LEFT]:     [LEFT,         TOP]
+  },
+
   /**
    Same as built-in, but tries to get some shortcuts
    **/
