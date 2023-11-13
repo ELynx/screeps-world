@@ -68,6 +68,9 @@ const storageDemand = function (__storage, priority) {
       const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
 
       const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
+      // TODO move value outside of specific function
+      // TODO do not fill space reserved for energy even this space it is not needed
+      // TODO allow to stash more energy than needed
       const neededEnergy = this.__storage.room.memory.stre || 0
       const missingEnergy = Math.max(neededEnergy - usedByEnergy, 0)
 
