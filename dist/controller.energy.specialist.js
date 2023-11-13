@@ -70,7 +70,7 @@ energySpecialistController.act = function (source, creep) {
     // STRATEGY how much energy closer to the end of source
     if (inSource + inCreep <= 200) {
       return harvestRc
-    } 
+    }
   }
 
   const targets = this.unloadTargets(source)
