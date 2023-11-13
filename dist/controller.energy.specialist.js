@@ -27,8 +27,7 @@ energySpecialistController.unloadTargets = function (source) {
   const aroundSource = _.filter(
     allStructures,
     function (structure) {
-      let distance = 1 // default for container
-      if (structure.structureType === STRUCTURE_LINK) distance = 2
+      const distance = 2
       if (Math.abs(structure.pos.x - source.pos.x) > distance) return false
       if (Math.abs(structure.pos.y - source.pos.y) > distance) return false
       return true
@@ -38,18 +37,14 @@ energySpecialistController.unloadTargets = function (source) {
   const withEnergyDemand = _.filter(
     aroundSource,
     function (structure) {
-      if (structure.demand_restocker !== undefined) {
-        return structure.demand_restocker.priority !== null && structure.demand_restocker.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
-      }
-
-      return false
+      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
     }
   )
 
   withEnergyDemand.sort(
     function (t1, t2) {
-      const priority1 = t1.demand_restocker.priority
-      const priority2 = t2.demand_restocker.priority
+      const priority1 = t1.demand.priority
+      const priority2 = t2.demand.priority
 
       return priority1 - priority2
     }
