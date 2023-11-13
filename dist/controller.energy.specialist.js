@@ -64,7 +64,7 @@ energySpecialistController.act = function (source, creep) {
   if (harvestRc === OK) return OK
 
   // in remote room, stash some energy for repair
-  if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+  if (source.room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
     const inSource = intentSolver.getEnergy(source)
     const inCreep = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
     // STRATEGY how much energy closer to the end of source
