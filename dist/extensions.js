@@ -125,18 +125,20 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
 
   this.rememberPosition()
 
-  if (options.rememberStop === true) {
-    options.serializeMemory = false
-  }
+  // even if was set, force to false
+  options.serializeMemory = false
 
   const rc = this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 
+  // stash a copy for fast use and serialize
+  if (this.memory._move && _.isArray(this.memory._move.path)) {
+    this._move_path_ = this.memory._move.path.slice(0)
+    this.memory._move.path = Room.serializePath(this.memory._move.path)
+  }
+
   if (options.rememberStop === true) {
-    if (this.memory._move && _.isArray(this.memory._move.path)) {
-      const stop = _.last(this.memory._move.path)
-
-      this.memory._move.path = Room.serializePath(this.memory._move.path)
-
+    if (this._move_path_) {
+      const stop = _.last(this._move_path_)
       if (stop) {
         bootstrap.makeItStop(this, stop)
       }
