@@ -169,9 +169,6 @@ const creepWork = function (creep) {
 module.exports.loop = function () {
   generatePixel()
 
-  const hamster = getCreep('hamster', 'HamsterHole', LEFT)
-  creepWork(hamster)
-
-  const mousy = getCreep('mousy', 'HamsterHole', BOTTOM)
-  creepWork(mousy)
+  creepWork(getCreep('hamster', 'HamsterHole', LEFT))
+  creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
 }
