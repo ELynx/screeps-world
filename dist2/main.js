@@ -9,7 +9,7 @@ const generatePixel = function () {
 const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
 
 const spawnGate = function (room) {
-    if (room.energyAvailable < SPAWN_ENERGY_START) {
+    if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
         return ERR_NOT_ENOUGH_RESOURCES
     }
 
