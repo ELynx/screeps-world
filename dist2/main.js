@@ -6,8 +6,8 @@ const generatePixel = function () {
   return ERR_NOT_ENOUGH_RESOURCES
 }
 
-const spawnGate = function (room) {
-  if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
+const spawnXspawnCreepXgate = function (spawn) {
+  if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
     return ERR_NOT_ENOUGH_RESOURCES
   }
 
@@ -48,7 +48,7 @@ const getCreep = function (creepName, spawnName, spawnDirection) {
       return undefined
     }
 
-    if (spawnGate(spawn.room) !== OK) {
+    if (spawnXspawnCreepXgate(spawn) !== OK) {
       return undefined
     }
 
@@ -91,6 +91,33 @@ const creepRestock = function (creep) {
   return creep.transfer(_.sample(near), RESOURCE_ENERGY)
 }
 
+const creepXrepairXgate = function (creep) {
+    const structures = creep.room.find(FIND_STRUCTURES)
+
+    const someTower = _.find(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+    if (someTower) return ERR_BUSY
+
+    return OK
+}
+
+const repairTargets = function (room) {
+    return []
+}
+
+const creepRepair = function (creep) {
+    const gateRc = creepXrepairXgate(creep)
+    if (gateRc !== OK) return gateRc
+
+    const targets = repairTargets(creep.room)
+
+    const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
+    if (inRange.length === 0) {
+        return ERR_NOT_FOUND
+    }
+
+    return creep.repair(_.sample(inRange))
+}
+
 const creepBuild = function (creep) {
   const constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES)
 
@@ -131,6 +158,7 @@ const creepWork = function (creep) {
   if (creep.memory.work) {
     if (creepDowngradeController(creep) === OK) return OK
     if (creepRestock(creep) === OK) return OK
+    if (creepRepair(creep) === OK) return OK
     if (creepBuild(creep) === OK) return OK
     return creepUpgradeController(creep)
   } else {
