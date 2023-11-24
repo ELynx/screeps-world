@@ -140,6 +140,90 @@ const creepBuild = function (creep) {
   return creep.build(_.sample(inRange))
 }
 
+const grabTargets = function (room) {
+    if (room.__grab_cache__) {
+        return room.__grab_cache__
+    }
+    
+    const tombstones = room.find(FIND_TOMBSTONES)
+    const ruins = room.find(FIND_RUINS)
+    const resources = room.find(FIND_DROPPED_RESOURCES)
+  
+    const grabs = []
+  
+    for (const tombstone of tombstones) {
+        if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+            grabs.push(
+                {
+                    type: LOOK_TOMBSTONES,
+                    [LOOK_TOMBSTONES]: tombstone
+                }
+            )
+        }
+    }
+  
+    for (const ruin of ruins) {
+        if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+          grabs.push(
+            {
+              type: LOOK_RUINS,
+              [LOOK_RUINS]: ruin
+            }
+          )
+        }
+    }
+  
+    for (const resource of resources) {
+      if (resource.resourceType === RESOURCE_ENERGY) {
+        if (resource.amount > 0) {
+          grabs.push(
+            {
+              type: LOOK_RESOURCES,
+              [LOOK_RESOURCES]: resource
+            }
+          )
+        }
+      }
+    }
+  
+    room.__grab_cache__ = grabs
+
+    return grabs
+  }
+
+const creepGrab = function (creep) {
+    const grabs = grabTargets(creep.room)
+
+    let didWithdraw = false
+    let didPickup = false
+
+    for (const grab of grabs) {
+      const from = grab[grab.type]
+  
+      if (!creep.pos.isNearTo(from)) continue
+  
+      if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
+        const rc = creep.withdraw(from, RESOURCE_ENERGY)
+        if (rc === OK) {
+            didWithdraw = true
+        }
+      }
+  
+      if (didPickup === false && grab.type === LOOK_RESOURCES) {
+        const rc = creep.pickup(from)
+        if (rc === 0) {
+            didPickup = true
+        }
+      }
+  
+      if (didWithdraw && didPickup) break
+    }
+  
+    if (didWithdraw || didPickup) return OK
+
+    return ERR_NOT_FOUND
+}
+
 const creepHarvest = function (creep) {
   const sources = creep.room.find(FIND_SOURCES)
 
@@ -164,6 +248,10 @@ const creepWork = function (creep) {
 
   if (energySize >= energyCapacity) {
     creep.memory.work = true
+  }
+
+  if (energySize < energyCapacity) {
+    creepGrab(creep)
   }
 
   if (creep.memory.work) {
