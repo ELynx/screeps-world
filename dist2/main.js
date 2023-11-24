@@ -1,17 +1,42 @@
-getPixel = function () {
+const generatePixel = function () {
     if (Game.cpu.bucket >= PIXEL_CPU_COST) {
-        Game.cpu.generatePixel()
+        return Game.cpu.generatePixel()
     }
+
+    return ERR_NOT_ENOUGH_RESOURCES
 }
 
-getCreep = function (creepName, spawnName, body, spawnDirection) {
+const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
+
+const spawnGate = function (room) {
+    if (room.energyAvailable < SPAWN_ENERGY_START) {
+        return ERR_NOT_ENOUGH_RESOURCES
+    }
+
+    return OK
+}
+
+const makeBody = function (room) {
+    const pairs = Math.floor(room.energyAvailable / WorkCarryPairCost)
+    if (pairs <= 0) return []
+
+    const work = new Array(pairs)
+    work.fill(WORK)
+
+    const carry = new Array(pairs)
+    carry.fill(CARRY)
+
+    return _.shuffle(work.concat(carry))
+}
+
+const getCreep = function (creepName, spawnName, spawnDirection) {
     const creep = Game.creeps[creepName]
 
     if (creep === undefined) {
         const spawn = Game.spawns[spawnName]
 
         if (spawn === undefined) {
-            console.log('No spawn [' + spawnName + '] found')
+            console.log('No spawn [' + spawnName + '] found for creep [' + creepName + ']')
             return undefined
         }
 
@@ -20,6 +45,15 @@ getCreep = function (creepName, spawnName, body, spawnDirection) {
         }
 
         if (spawn.__spawned_this_tick__) {
+            return undefined
+        }
+
+        if (spawnGate(spawn.room) !== OK) {
+            return undefined
+        }
+
+        const body = makeBody(spawn.room)
+        if (body.length === 0) {
             return undefined
         }
 
@@ -32,7 +66,11 @@ getCreep = function (creepName, spawnName, body, spawnDirection) {
     return creep
 }
 
-creepDowngradeController = function (creep) {
+const creepUpgradeController = function (creep) {
+    return creep.upgradeController(creep.room.controller)
+}
+
+const creepDowngradeController = function (creep) {
     if (_.random(1, 6) === 6) {
         return creepUpgradeController(creep)
     }
@@ -40,20 +78,23 @@ creepDowngradeController = function (creep) {
     return ERR_BUSY
 }
 
-creepRestock = function (creep) {
-    // in case containers ever appear, do not restock them
-    const structures = creep.room.find(FIND_MY_STRUCTURES)
+const creepRestock = function (creep) {
+    const structures = creep.room.find(FIND_STRUCTURES)
 
-    const withEnergyDemand = _.filter(structures, structure => (structure.store && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
-    const near = _.filter(withEnergyDemand, structure => structure.pos.isNearTo(creep))
+    const withEnergyDemand = _.filter(structures, x => (x.store && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
+
+    const near = _.filter(withEnergyDemand, x => x.pos.isNearTo(creep))
+    if (near.length === 0) {
+        return ERR_NOT_FOUND
+    }
 
     return creep.transfer(_.sample(near), RESOURCE_ENERGY)
 }
 
-creepBuild = function (creep) {
+const creepBuild = function (creep) {
     const constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES)
 
-    const inRange = _.filter(constructionSites, cs => cs.pos.inRangeTo(creep, 3))
+    const inRange = _.filter(constructionSites, x => x.pos.inRangeTo(creep, 3))
     if (inRange.length === 0) {
         return ERR_NOT_FOUND
     }
@@ -61,60 +102,48 @@ creepBuild = function (creep) {
     return creep.build(_.sample(inRange))
 }
 
-creepUpgradeController = function (creep) {
-    return creep.upgradeController(creep.room.controller)
-}
-
-creepHarvest = function (creep) {
+const creepHarvest = function (creep) {
     const sources = creep.room.find(FIND_SOURCES)
 
-    const near = _.filter(sources, source => source.pos.isNearTo(creep))
+    const near = _.filter(sources, x => x.pos.isNearTo(creep))
     if (near.length === 0) {
-        console.log('No near source found for creep [' + creep.name + ']')
+        console.log('No source found for creep [' + creep.name + ']')
         return ERR_NOT_FOUND
     }
 
     return creep.harvest(_.sample(near))
 }
 
-creepWork = function (creep) {
-    // just don't bother with external, check here
+const creepWork = function (creep) {
     if (creep === undefined) return ERR_INVALID_TARGET
 
-    const energySize      = creep.store.getUsedCapacity(RESOURCE_ENERGY)
+    const energySize = creep.store.getUsedCapacity(RESOURCE_ENERGY)
     const energyCapacity  = creep.store.getCapacity(RESOURCE_ENERGY)
 
-    if (creep.memory.role !== undefined && energySize === 0) {
-        creep.memory.role = undefined
+    if (creep.memory.work && energySize === 0) {
+        creep.memory.work = undefined
     }
 
     if (energySize >= energyCapacity) {
-        creep.memory.role = 'work'
+        creep.memory.work = true
     }
 
-    if (creep.memory.role === 'work') {
-        const rc0 = creepDowngradeController(creep)
-        if (rc0 === OK) return OK
-        const rc1 = creepRestock(creep)
-        if (rc1 === OK) return OK
-        const rc2 = creepBuild(creep)
-        if (rc2 === OK) return OK
-        const rc3 = creepUpgradeController(creep)
+    if (creep.memory.work) {
+        if (creepDowngradeController(creep) === OK) return OK
+        if (creepRestock(creep) === OK) return OK
+        if (creepBuild(creep) === OK) return OK
+        return creepUpgradeController(creep)
     } else {
         return creepHarvest(creep)
     }
-
-    return ERR_NO_PATH
 }
 
 module.exports.loop = function () {
-    getPixel()
+    generatePixel()
 
-    const body = [WORK, WORK, CARRY, CARRY]
-
-    const hamster = getCreep('hamster', 'HamsterHole', body, LEFT)
+    const hamster = getCreep('hamster', 'HamsterHole', LEFT)
     creepWork(hamster)
 
-    const mousy = getCreep('mousy', 'HamsterHole', body, BOTTOM)
+    const mousy = getCreep('mousy', 'HamsterHole', BOTTOM)
     creepWork(mousy)
 }
