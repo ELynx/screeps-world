@@ -1,11 +1,3 @@
-const generatePixel = function () {
-  if (Game.cpu.bucket >= PIXEL_CPU_COST) {
-    return Game.cpu.generatePixel()
-  }
-
-  return ERR_NOT_ENOUGH_RESOURCES
-}
-
 const spawnXspawnCreepXgate = function (spawn) {
   if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
     return ERR_NOT_ENOUGH_RESOURCES
@@ -228,6 +220,14 @@ const towers = function () {
         towersWork(Game.rooms[roomName])
     }
 }
+
+const generatePixel = function () {
+    if (Game.cpu.bucket >= PIXEL_CPU_COST) {
+      return Game.cpu.generatePixel()
+    }
+  
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
 
 module.exports.loop = function () {
   creeps()
