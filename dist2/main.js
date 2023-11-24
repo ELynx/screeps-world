@@ -84,69 +84,69 @@ const creepRestock = function (creep) {
 }
 
 const creepXrepairXgate = function (creep) {
-    const structures = creep.room.find(FIND_STRUCTURES)
+  const structures = creep.room.find(FIND_STRUCTURES)
 
-    const someTower = _.find(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
-    if (someTower) return ERR_BUSY
+  const someTower = _.find(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+  if (someTower) return ERR_BUSY
 
-    return OK
+  return OK
 }
 
 const RoadPlainHits = ROAD_HITS // 5000
 const RoadWallHits = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
 
 const repairTargets = function (room, isTower = false) {
-    if (isTower && room.__tower_repair_cache__) {
-        return room.__tower_repair_cache__
-    } else if (room.__creep_repair_cache__) {
-        return room.__creep_repair_cache__
-    }
+  if (isTower && room.__tower_repair_cache__) {
+    return room.__tower_repair_cache__
+  } else if (room.__creep_repair_cache__) {
+    return room.__creep_repair_cache__
+  }
 
-    const structures = room.find(FIND_STRUCTURES)
+  const structures = room.find(FIND_STRUCTURES)
 
-    const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
-    const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
+  const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
+  const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
 
-    const targets = _.filter(
-        mineOrNeutral,
-        function (structure) {
-            if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
-                if (isTower) {
-                    return structure.hits < 30000
-                } else {
-                    return structure.hits < 5000
-                }
-            }
-
-            if (structure.structureType === STRUCTURE_ROAD && isTower !== true) {
-                return structure.hitsMax === RoadWallHits && (structure.hitsMax - structure.hits >= RoadPlainHits)
-            }
-
-            return true
+  const targets = _.filter(
+    mineOrNeutral,
+    function (structure) {
+      if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
+        if (isTower) {
+          return structure.hits < 30000
+        } else {
+          return structure.hits < 5000
         }
-    )
+      }
 
-    if (isTower) {
-        room.__tower_repair_cache__ = targets
-    } else {
-        room.__creep_repair_cache__ = targets
+      if (structure.structureType === STRUCTURE_ROAD && isTower !== true) {
+        return structure.hitsMax === RoadWallHits && (structure.hitsMax - structure.hits >= RoadPlainHits)
+      }
+
+      return true
     }
+  )
 
-    return targets
+  if (isTower) {
+    room.__tower_repair_cache__ = targets
+  } else {
+    room.__creep_repair_cache__ = targets
+  }
+
+  return targets
 }
 
 const creepRepair = function (creep) {
-    const gateRc = creepXrepairXgate(creep)
-    if (gateRc !== OK) return gateRc
+  const gateRc = creepXrepairXgate(creep)
+  if (gateRc !== OK) return gateRc
 
-    const targets = repairTargets(creep.room)
+  const targets = repairTargets(creep.room)
 
-    const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
-    if (inRange.length === 0) {
-        return ERR_NOT_FOUND
-    }
+  const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
+  if (inRange.length === 0) {
+    return ERR_NOT_FOUND
+  }
 
-    return creep.repair(_.sample(inRange))
+  return creep.repair(_.sample(inRange))
 }
 
 const creepBuild = function (creep) {
@@ -198,77 +198,77 @@ const creepWork = function (creep) {
 }
 
 const creeps = function () {
-    creepWork(getCreep('hamster', 'HamsterHole', LEFT))
-    creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
+  creepWork(getCreep('hamster', 'HamsterHole', LEFT))
+  creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
 }
 
 const towerAttack = function (tower, what) {
-    const targets = tower.room.find(what)
+  const targets = tower.room.find(what)
 
-    const notMine = _.filter(targets, x => !x.my)
-    if (notMine.length > 0) {
-        return tower.attack(_.sample(notMine))
-    }
+  const notMine = _.filter(targets, x => !x.my)
+  if (notMine.length > 0) {
+    return tower.attack(_.sample(notMine))
+  }
 
-    return ERR_NOT_FOUND
+  return ERR_NOT_FOUND
 }
 
 const towerHeal = function (tower, what) {
-    const targets = tower.room.find(what)
+  const targets = tower.room.find(what)
 
-    const mine = _.filter(targets, x => x.my)
-    if (mine.length > 0) {
-        return tower.heal(_.sample(mine))
-    }
+  const mine = _.filter(targets, x => x.my)
+  if (mine.length > 0) {
+    return tower.heal(_.sample(mine))
+  }
 
-    return ERR_NOT_FOUND
+  return ERR_NOT_FOUND
 }
 
 const towerRepair = function (tower) {
-    const targets = repairTargets(tower.room, true)
+  const targets = repairTargets(tower.room, true)
 
-    if (targets.length > 0) {
-        return tower.repair(_.sample(targets))
-    }
+  if (targets.length > 0) {
+    return tower.repair(_.sample(targets))
+  }
 
-    return ERR_NOT_FOUND
+  return ERR_NOT_FOUND
 }
 
 const towerWork = function (tower) {
-    if (tower.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) {
-        return ERR_NOT_ENOUGH_RESOURCES
-    }
+  if (tower.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
 
-    if (towerAttack(tower, FIND_CREEPS) === OK) return OK
-    if (towerAttack(tower, FIND_POWER_CREEPS) === OK) return OK
-    if (towerAttack(tower, FIND_STRUCTURES) === OK) return OK
-    if (towerHeal(tower, FIND_CREEPS) === OK) return OK
-    return towerRepair(tower)
+  if (towerAttack(tower, FIND_CREEPS) === OK) return OK
+  if (towerAttack(tower, FIND_POWER_CREEPS) === OK) return OK
+  if (towerAttack(tower, FIND_STRUCTURES) === OK) return OK
+  if (towerHeal(tower, FIND_CREEPS) === OK) return OK
+  return towerRepair(tower)
 }
 
 const towersWork = function (room) {
-    const structures = room.find(FIND_STRUCTURES)
+  const structures = room.find(FIND_STRUCTURES)
 
-    const towers = _.filter(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+  const towers = _.filter(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
 
-    for (const tower of towers) {
-        towerWork(tower)
-    }
+  for (const tower of towers) {
+    towerWork(tower)
+  }
 }
 
 const towers = function () {
-    for (const roomName of Game.rooms) {
-        towersWork(Game.rooms[roomName])
-    }
+  for (const roomName of Game.rooms) {
+    towersWork(Game.rooms[roomName])
+  }
 }
 
 const generatePixel = function () {
-    if (Game.cpu.bucket >= PIXEL_CPU_COST) {
-      return Game.cpu.generatePixel()
-    }
-  
-    return ERR_NOT_ENOUGH_RESOURCES
+  if (Game.cpu.bucket >= PIXEL_CPU_COST) {
+    return Game.cpu.generatePixel()
   }
+
+  return ERR_NOT_ENOUGH_RESOURCES
+}
 
 module.exports.loop = function () {
   creeps()
