@@ -92,30 +92,30 @@ const creepRestock = function (creep) {
 }
 
 const creepXrepairXgate = function (creep) {
-    const structures = creep.room.find(FIND_STRUCTURES)
+  const structures = creep.room.find(FIND_STRUCTURES)
 
-    const someTower = _.find(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
-    if (someTower) return ERR_BUSY
+  const someTower = _.find(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+  if (someTower) return ERR_BUSY
 
-    return OK
+  return OK
 }
 
 const repairTargets = function (room) {
-    return []
+  return []
 }
 
 const creepRepair = function (creep) {
-    const gateRc = creepXrepairXgate(creep)
-    if (gateRc !== OK) return gateRc
+  const gateRc = creepXrepairXgate(creep)
+  if (gateRc !== OK) return gateRc
 
-    const targets = repairTargets(creep.room)
+  const targets = repairTargets(creep.room)
 
-    const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
-    if (inRange.length === 0) {
-        return ERR_NOT_FOUND
-    }
+  const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
+  if (inRange.length === 0) {
+    return ERR_NOT_FOUND
+  }
 
-    return creep.repair(_.sample(inRange))
+  return creep.repair(_.sample(inRange))
 }
 
 const creepBuild = function (creep) {
