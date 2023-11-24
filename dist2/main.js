@@ -100,7 +100,7 @@ const creepXrepairXgate = function (creep) {
     return OK
 }
 
-const repairTargets = function (room) {
+const repairTargets = function (room, isTower = false) {
     return []
 }
 
@@ -166,9 +166,71 @@ const creepWork = function (creep) {
   }
 }
 
-module.exports.loop = function () {
-  generatePixel()
+const creeps = function () {
+    creepWork(getCreep('hamster', 'HamsterHole', LEFT))
+    creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
+}
 
-  creepWork(getCreep('hamster', 'HamsterHole', LEFT))
-  creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
+const towerAttack = function (tower, what) {
+    const targets = tower.room.find(what)
+
+    if (targets.length > 0) {
+        return tower.attack(_.sample(targets))
+    }
+
+    return ERR_NOT_FOUND
+}
+
+const towerHeal = function (tower, what) {
+    const targets = tower.room.find(what)
+
+    if (targets.length > 0) {
+        return tower.heal(_.sample(targets))
+    }
+
+    return ERR_NOT_FOUND
+}
+
+const towerRepair = function (tower) {
+    const targets = repairTargets(tower.room, true)
+
+    if (targets.length > 0) {
+        return tower.repair(_.sample(targets))
+    }
+
+    return ERR_NOT_FOUND
+}
+
+const towerWork = function (tower) {
+    if (tower.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) {
+        return ERR_NOT_ENOUGH_RESOURCES
+    }
+
+    if (towerAttack(tower, FIND_HOSTILE_CREEPS) === OK) return OK
+    if (towerAttack(tower, FIND_HOSTILE_POWER_CREEPS) === OK) return OK
+    // FIND_HOSTILE_STRUCTURES
+    if (towerHeal(tower, FIND_MY_CREEPS) === OK) return OK
+    return towerRepair(tower)
+}
+
+const towersWork = function (room) {
+    const structures = room.find(FIND_STRUCTURES)
+
+    const towers = _.filter(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
+
+    for (const tower of towers) {
+        towerWork(tower)
+    }
+}
+
+const towers = function () {
+    for (const roomName of Game.rooms) {
+        towersWork(Game.rooms[roomName])
+    }
+}
+
+module.exports.loop = function () {
+  creeps()
+  towers()
+  generatePixel()
 }
