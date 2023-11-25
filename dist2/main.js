@@ -320,6 +320,130 @@ const towers = function () {
   }
 }
 
+const StructureTypeToIndex = {
+    [STRUCTURE_WALL]: 0,
+    [STRUCTURE_CONTAINER]: 1,
+    [STRUCTURE_EXTENSION]: 2,
+    [STRUCTURE_FACTORY]: 3,
+    [STRUCTURE_LAB]: 4,
+    [STRUCTURE_LINK]: 5,
+    [STRUCTURE_NUKER]: 6,
+    [STRUCTURE_OBSERVER]: 7,
+    [STRUCTURE_POWER_SPAWN]: 8,
+    [STRUCTURE_RAMPART]: 9,
+    [STRUCTURE_ROAD]: 10,
+    [STRUCTURE_SPAWN]: 11,
+    [STRUCTURE_STORAGE]: 12,
+    // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
+    [STRUCTURE_TERMINAL]: 14,
+    [STRUCTURE_TOWER]: 15
+  }
+  
+  const IndexToStructureType =
+  [
+    STRUCTURE_WALL,
+    STRUCTURE_CONTAINER,
+    STRUCTURE_EXTENSION,
+    STRUCTURE_FACTORY,
+    STRUCTURE_LAB,
+    STRUCTURE_LINK,
+    STRUCTURE_NUKER,
+    STRUCTURE_OBSERVER,
+    STRUCTURE_POWER_SPAWN,
+    STRUCTURE_RAMPART,
+    STRUCTURE_ROAD,
+    STRUCTURE_SPAWN,
+    STRUCTURE_STORAGE,
+    undefined, // there is nothing on index 13 aka 0b1101 because this lands into forbidden UTF-16
+    STRUCTURE_TERMINAL,
+    STRUCTURE_TOWER
+  ]
+  
+  Structure.prototype.encode = function () {
+    // protection from area walls
+    if (this.hits === undefined || this.hitsMax === undefined) return undefined
+  
+    const index = StructureTypeToIndex[this.structureType]
+    if (index === undefined) return undefined
+  
+    const x = this.pos.x
+    const y = this.pos.y
+  
+    // idea taken from screeps packrat
+    const code = (index << 12) | (x << 6) | y
+  
+    return String.fromCharCode(code)
+  }
+  
+  Structure.prototype.decode = function (code) {
+    const index = (code & 0b1111000000000000) >> 12
+    const xxxxx = (code & 0b0000111111000000) >> 6
+    const yyyyyy = code & 0b0000000000111111
+  
+    const structureType = IndexToStructureType[index]
+  
+    return [{ x: xxxxx, y: yyyyyy }, structureType]
+  }
+  
+Room.prototype.encode = function () {
+    // determinism for photo
+    const allStructures = this
+      .find(FIND_STRUCTURES)
+      .sort(
+        function (s1, s2) {
+          const index1 = (s1.pos.y + 1) * 100 + s1.pos.x
+          const index2 = (s2.pos.y + 1) * 100 + s2.pos.x
+          if (index1 === index2) return s1.structureType.localeCompare(s2.structureType)
+  
+          return index1 - index2
+        }
+      )
+  
+    let photo = ''
+    for (const structure of allStructures) {
+      const code = structure.takePhoto()
+      if (code === undefined) continue
+  
+      photo += code
+    }
+  
+    console.log(photo)
+  
+    this.memory.photo = photo
+  }
+  
+  Room.prototype.decode  = function () {
+    const photo = this.memory.photo
+    if (photo === undefined) return
+  
+    for (let i = 0; i < photo.length; ++i) {
+      const code = photo.charCodeAt(i)
+      const [position, structureType] = Structure.prototype.decode(code)
+      if (structureType === undefined) continue
+  
+      this.createConstructionSite(position.x, position.y, structureType)
+    }
+  }
+
+const autobuild = function () {
+    const flag = Game.flags['photo']
+    if (flag) {
+        if (flag.room) {
+            flag.room.encode()
+        }
+
+        flag.remove()
+
+        return
+    }
+
+    if (Game.time % 100 === 0) {
+        for (const roomName in Game.rooms) {
+            Game.rooms[roomName].decode()
+        }
+    }
+}
+
 const generatePixel = function () {
   if (Game.cpu.bucket >= PIXEL_CPU_COST) {
     return Game.cpu.generatePixel()
@@ -331,5 +455,6 @@ const generatePixel = function () {
 module.exports.loop = function () {
   creeps()
   towers()
+  autobuild()
   generatePixel()
 }
