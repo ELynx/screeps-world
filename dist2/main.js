@@ -401,7 +401,7 @@ Room.prototype.encode = function () {
 
   let photo = ''
   for (const structure of allStructures) {
-    const code = structure.takePhoto()
+    const code = structure.encode()
     if (code === undefined) continue
 
     photo += code
