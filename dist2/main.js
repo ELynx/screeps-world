@@ -70,9 +70,9 @@ const upgradeController = function (creep) {
 }
 
 const restock = function (creep) {
-  const structures = creep.room.find(FIND_STRUCTURES)
+  const targets = creep.room.find(FIND_STRUCTURES)
 
-  const withEnergyDemand = _.filter(structures, x => (x.store && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
+  const withEnergyDemand = _.filter(targets, x => (x.store && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
 
   const near = _.filter(withEnergyDemand, x => x.pos.isNearTo(creep))
   if (near.length === 0) {
@@ -105,9 +105,9 @@ const build = function (creep) {
 }
 
 const harvest = function (creep) {
-  const sources = creep.room.find(FIND_SOURCES_ACTIVE)
+  const targets = creep.room.find(FIND_SOURCES_ACTIVE)
 
-  const near = _.filter(sources, x => x.pos.isNearTo(creep))
+  const near = _.filter(targets, x => x.pos.isNearTo(creep))
   if (near.length === 0) {
     console.log('No source found for creep [' + creep.name + ']')
     return ERR_NOT_FOUND
@@ -129,23 +129,16 @@ const getCreep = function (creepName, roomName, x, y, xKeep = undefined, yKeep =
   spawnCreep(name1, name2, roomName, x, y, xKeep, yKeep)
 
   const creep1 = Game.creeps[name1]
-  const creep2 = Game.creeps[name2]
-
-  let creep
-
   if (creep1 && creep1.spawning === false) {
-    creep = creep1
+    return creep1
   }
 
+  const creep2 = Game.creeps[name2]
   if (creep2 && creep2.spawning === false) {
-    creep = creep2
+    return creep2
   }
 
-  if (creep) {
-    creep.__work__ = creep.getActiveBodyparts(WORK)
-  }
-
-  return creep
+  return undefined
 }
 
 const getGrabTargets = function (room) {
@@ -157,11 +150,11 @@ const getGrabTargets = function (room) {
   const ruins = room.find(FIND_RUINS)
   const resources = room.find(FIND_DROPPED_RESOURCES)
 
-  const grabTargets = []
+  const targets = []
 
   for (const tombstone of tombstones) {
     if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabTargets.push(
+      targets.push(
         {
           type: LOOK_TOMBSTONES,
           [LOOK_TOMBSTONES]: tombstone
@@ -172,7 +165,7 @@ const getGrabTargets = function (room) {
 
   for (const ruin of ruins) {
     if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabTargets.push(
+      targets.push(
         {
           type: LOOK_RUINS,
           [LOOK_RUINS]: ruin
@@ -182,24 +175,20 @@ const getGrabTargets = function (room) {
   }
 
   for (const resource of resources) {
-    if (resource.resourceType === RESOURCE_ENERGY) {
-      if (resource.amount > 0) {
-        grabTargets.push(
-          {
-            type: LOOK_RESOURCES,
-            [LOOK_RESOURCES]: resource
-          }
-        )
-      }
+    if (resource.resourceType === RESOURCE_ENERGY && resource.amount > 0) {
+      targets.push(
+        {
+          type: LOOK_RESOURCES,
+          [LOOK_RESOURCES]: resource
+        }
+      )
     }
   }
 
-  room.__grab_target_cache__ = grabTargets
+  room.__grab_target_cache__ = targets
 
-  return grabTargets
+  return targets
 }
-
-const ROAD_HITS_WALL = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
 
 const getRepairTargets = function (room) {
   if (room.__repair_target_cache__) {
@@ -211,25 +200,9 @@ const getRepairTargets = function (room) {
   const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
   const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
 
-  const targets = _.filter(
-    mineOrNeutral,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
-        return structure.hits < 5000
-      }
+  room.__repair_target_cache__ = mineOrNeutral
 
-      if (structure.structureType === STRUCTURE_ROAD) {
-        // repair only wall road, and not immediately
-        return structure.hitsMax === ROAD_HITS_WALL && (structure.hitsMax - structure.hits >= ROAD_HITS)
-      }
-
-      return true
-    }
-  )
-
-  room.__repair_target_cache__ = targets
-
-  return targets
+  return mineOrNeutral
 }
 
 const makeAlternativeName = function (name) {
@@ -303,10 +276,6 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
 const spawnCreepXgate = function (room) {
   if (room === undefined) {
     return ERR_INVALID_TARGET
-  }
-
-  if (room.__spawned_this_tick__) {
-    return ERR_BUSY
   }
 
   if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
