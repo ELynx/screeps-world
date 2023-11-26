@@ -6,10 +6,10 @@ module.exports.loop = function () {
 
 const creeps = function () {
   const roomA = 'E56N59'
-  const x1A = 10
-  const y1A = 10
-  const x2A = 11
-  const y2A = 11
+  const x1A = 36
+  const y1A = 3
+  const x2A = 36
+  const y2A = 4
 
   work(getCreep('hamster', roomA, x1A, y1A, x2A, y2A))
   work(getCreep('mousy', roomA, x2A, y2A, x1A, y1A))
@@ -212,7 +212,18 @@ const getCreep = function (creepName, roomName, x, y, xKeep = undefined, yKeep =
 
   spawnCreep(name1, name2, roomName, x, y, xKeep, yKeep)
 
-  const creep = Game.creeps[name1] || Game.creeps[name2]
+  const creep1 = Game.creeps[name1]
+  const creep2 = Game.creeps[name2]
+
+  let creep
+
+  if (creep1 && creep1.spawning === false) {
+    creep = creep1
+  }
+
+  if (creep2 && creep2.spawning === false) {
+    creep = creep2
+  }
 
   if (creep) {
     creep.__work__ = creep.getActiveBodyparts(WORK)
@@ -226,36 +237,63 @@ const makeAlternativeName = function (name) {
 }
 
 const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yKeep = undefined) {
-  const spawn = Game.spawns[spawnName]
+  const creep1 = Game.creeps[name1]
+  const creep2 = Game.creeps[name2]
 
-  if (spawn === undefined) {
-    console.log('No spawn [' + spawnName + '] found for creep [' + creepName + ']')
-    return undefined
+  if (creep1 && creep2) {
+    return OK
   }
 
-  if (spawn.spawning) {
-    return undefined
+  const room = Game.rooms[roomName]
+  const gateRc = spawnXspawnCreepXgate(room)
+  if (gateRc !== OK) {
+    return gateRc
   }
 
-  if (spawn.__spawned_this_tick__) {
-    return undefined
+  const prio1 = []
+  const prio2 = []
+
+  for (const spawnName in Game.spawns) {
+    const spawn = Game.spawns[spawnName]
+
+    if (spawn.room.roomName !== roomName) continue
+
+    if (xKeep !== undefined && yKeep !== undefined && spawn.pos.isNearTo(xKeep, yKeep)) {
+      prio2.push(spawn)
+    } else {
+      prio1.push(spawn)
+    }
   }
 
-  if (spawnXspawnCreepXgate(spawn) !== OK) {
-    return undefined
+  const queue = prio1.concat(prio2)
+
+  if (queue.length === 0) {
+    console.log('No spawn in room [' + roomName + '] found for creep [' + name1 + ']')
+    return ERR_NOT_FOUND
   }
 
-  const body = makeBody(spawn.room)
-  if (body.length === 0) {
-    return undefined
+  for (const spawn of queue) {
+    if (spawn.spawning) continue
+
+    if (spawn.__spawned_this_tick__) continue
+
+    const body = makeBody(spawn.room)
+    if (body.length === 0) continue
+
+    const spawnDirection = spawn.pos.getDirectionTo(x, y)
+
+    const spawnRc = spawn.spawnCreep(body, creepName, { directions: [spawnDirection] })
+    if (spawnRc === OK) {
+      spawn.__spawned_this_tick__ = true
+      return OK
+    }
   }
 
-  spawn.spawnCreep(body, creepName, { directions: [spawnDirection] })
-  spawn.__spawned_this_tick__ = true
+  return ERR_NOT_FOUND
 }
 
-const spawnXspawnCreepXgate = function (spawn) {
-  if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
+const spawnXspawnCreepXgate = function (room) {
+  if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
     return ERR_NOT_ENOUGH_RESOURCES
   }
 
