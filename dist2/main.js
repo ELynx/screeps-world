@@ -31,7 +31,7 @@ const grab = function (creep) {
   for (const target of targets) {
     const from = target[target.type]
 
-    if (!creep.pos.isNearTo(from)) continue
+    if (!from.pos.isNearTo(creep)) continue
 
     if ((didWithdraw === false) && (target.type === LOOK_TOMBSTONES || target.type === LOOK_RUINS)) {
       const rc = creep.withdraw(from, RESOURCE_ENERGY)
@@ -64,12 +64,12 @@ const restock = function (creep) {
 
   const withEnergyDemand = _.filter(targets, x => (x.store && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
 
-  const near = _.filter(withEnergyDemand, x => x.pos.isNearTo(creep))
-  if (near.length === 0) {
+  const inRange = _.filter(withEnergyDemand, x => x.pos.isNearTo(creep))
+  if (inRange.length === 0) {
     return ERR_NOT_FOUND
   }
 
-  return creep.transfer(_.sample(near), RESOURCE_ENERGY)
+  return creep.transfer(_.sample(inRange), RESOURCE_ENERGY)
 }
 
 const repair = function (creep) {
@@ -129,13 +129,13 @@ const harvest = function (creep) {
 
   const targets = creep.room.find(FIND_SOURCES_ACTIVE)
 
-  const near = _.filter(targets, x => x.pos.isNearTo(creep))
-  if (near.length === 0) {
+  const inRange = _.filter(targets, x => x.pos.isNearTo(creep))
+  if (inRange.length === 0) {
     console.log('No source found for creep [' + creep.name + ']')
     return ERR_NOT_FOUND
   }
 
-  const rc = creep.harvest(_.sample(near))
+  const rc = creep.harvest(_.sample(inRange))
   if (rc === OK) {
     creep.__pipeline_1__ = 1
   }
@@ -271,12 +271,6 @@ const makeAlternativeName = function (name) {
 }
 
 const spawnCreep = function (name1, name2, room, x, y) {
-  // gate
-  const gateRc = spawnCreepXgate(room)
-  if (gateRc !== OK) {
-    return gateRc
-  }
-
   // if something is already spawning
   const creep1 = Game.creeps[name1]
   if (creep1 && creep1.spawning) {
@@ -289,7 +283,7 @@ const spawnCreep = function (name1, name2, room, x, y) {
     return OK
   }
 
-  // if both creeps are present, error state
+  // both present and not spawning, error state
   if (creep1 && creep2) {
     return ERR_BUSY
   }
@@ -309,10 +303,9 @@ const spawnCreep = function (name1, name2, room, x, y) {
   const otherCreepName = name2
 
   // check if creep with enough life exists
-  // +2 is purely experimental
   if (creep) {
     const ticksToSpawn = body.length * CREEP_SPAWN_TIME
-    if (creep.ticksToLive > ticksToSpawn + 2) {
+    if (creep.ticksToLive > ticksToSpawn + 1) {
       return OK
     }
 
@@ -353,14 +346,6 @@ const spawnCreep = function (name1, name2, room, x, y) {
   return ERR_NOT_FOUND
 }
 
-const spawnCreepXgate = function (room) {
-  if (room === undefined) {
-    return ERR_INVALID_TARGET
-  }
-
-  return OK
-}
-
 const makeBody = function (room) {
   if (room.__make_body_cache__) {
     return room.__make_body_cache__
@@ -370,6 +355,7 @@ const makeBody = function (room) {
 
   // if someone there to restock
   if (_.keys(Game.creeps).length > 0) {
+    console.log('TODO body economics')
   }
 
   return room.__make_body_cache__ = _.shuffle(body)
