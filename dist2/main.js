@@ -132,6 +132,11 @@ const getCreepByFlagName = function (flagName) {
 }
 
 const getCreep = function (creepName, room, x, y) {
+  const gateRc = getCreepXgate(room, x, y)
+  if (gateRc !== OK) {
+    return undefined
+  }
+
   const name1 = creepName
   const name2 = makeAlternativeName(creepName)
 
@@ -148,6 +153,27 @@ const getCreep = function (creepName, room, x, y) {
   }
 
   return undefined
+}
+
+const getCreepXgate = function (room, x, y) {
+  const terrain = room.getTerrain()
+  const atXY = terrain.get(x, y)
+
+  // do not spawn into wall
+  if (atXY === TERRAIN_MASK_WALL) {
+    const structures = room.find(FIND_STRUCTURES)
+    for (const structure of structures) {
+      if (structure.pos.x === x && structure.pos.y === y) {
+        if (structure.structureType === STRUCTURE_ROAD) {
+          return OK
+        }
+      }
+    }
+
+    return ERR_BUSY
+  }
+
+  return OK
 }
 
 const getGrabTargets = function (room) {
