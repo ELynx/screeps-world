@@ -5,14 +5,10 @@ module.exports.loop = function () {
 }
 
 const creeps = function () {
-  const roomA = 'E56N59'
-  const x1A = 36
-  const y1A = 3
-  const x2A = 36
-  const y2A = 4
-
-  work(getCreep('hamster', roomA, x1A, y1A, x2A, y2A))
-  work(getCreep('mousy', roomA, x2A, y2A, x1A, y1A))
+  for (const flagName in Game.flags) {
+    if (flagName === 'savePlan') continue
+    work(getCreepByFlagName(flagName))
+  }
 }
 
 const work = function (creep) {
@@ -122,11 +118,24 @@ const harvest = function (creep) {
   return rc
 }
 
-const getCreep = function (creepName, roomName, x, y, xKeep = undefined, yKeep = undefined) {
+const getCreepByFlagName = function (flagName) {
+  const flag = Game.flags[flagName]
+  if (flag === undefined) {
+    return undefined
+  }
+
+  if (flag.room === undefined) {
+    return undefined
+  }
+
+  return getCreep(flagName, flag.room, flag.pos.x, flag.pos.y)
+}
+
+const getCreep = function (creepName, room, x, y) {
   const name1 = creepName
   const name2 = makeAlternativeName(creepName)
 
-  spawnCreep(name1, name2, roomName, x, y, xKeep, yKeep)
+  spawnCreep(name1, name2, room, x, y)
 
   const creep1 = Game.creeps[name1]
   if (creep1 && creep1.spawning === false) {
@@ -209,9 +218,8 @@ const makeAlternativeName = function (name) {
   return name.replace('a', 'ä').replace('o', 'ö').replace('u', 'ü').replace('e', 'ё')
 }
 
-const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yKeep = undefined) {
+const spawnCreep = function (name1, name2, room, x, y) {
   // gate
-  const room = Game.rooms[roomName]
   const gateRc = spawnCreepXgate(room)
   if (gateRc !== OK) {
     return gateRc
@@ -260,22 +268,16 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
     }
   }
 
-  const prio1 = []
-  const prio2 = []
+  const queue = []
 
   for (const spawnName in Game.spawns) {
     const spawn = Game.spawns[spawnName]
 
     if (spawn.room.name !== room.name) continue
+    if (!spawn.pos.isNearTo(x, y)) continue
 
-    if (xKeep !== undefined && yKeep !== undefined && spawn.pos.isNearTo(xKeep, yKeep)) {
-      prio2.push(spawn)
-    } else {
-      prio1.push(spawn)
-    }
+    queue.push(spawn)
   }
-
-  const queue = prio1.concat(prio2)
 
   if (queue.length === 0) {
     console.log('No spawn in room [' + roomName + '] found for creep [' + creepName + ']')
