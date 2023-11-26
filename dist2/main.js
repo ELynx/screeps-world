@@ -321,7 +321,7 @@ const spawnCreep = function (name1, name2, room, x, y) {
   // check if creep with enough life exists
   if (creep) {
     const ticksToSpawn = body.length * CREEP_SPAWN_TIME
-    if (creep.ticksToLive > ticksToSpawn + 1) {
+    if (creep.ticksToLive >= ticksToSpawn) {
       return OK
     }
 
