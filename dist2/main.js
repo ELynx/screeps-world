@@ -61,15 +61,13 @@ const getCreep = function (creepName, spawnName, spawnDirection) {
 }
 
 const creepUpgradeController = function (creep) {
-  return creep.upgradeController(creep.room.controller)
-}
+  const rc = creep.upgradeController(creep.room.controller)
 
-const creepDowngradeController = function (creep) {
-  if (_.random(1, 6) === 6) {
-    return creepUpgradeController(creep)
+  if (rc === OK) {
+    creep.__upgraded_controller__ = true
   }
 
-  return ERR_BUSY
+  return rc
 }
 
 const creepRestock = function (creep) {
@@ -88,8 +86,8 @@ const creepRestock = function (creep) {
 const ROAD_HITS_WALL = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
 
 const repairTargets = function (room) {
-  if (room.__creep_repair_cache__) {
-    return room.__creep_repair_cache__
+  if (room.__repair_target_cache__) {
+    return room.__repair_target_cache__
   }
 
   const structures = room.find(FIND_STRUCTURES)
@@ -113,7 +111,7 @@ const repairTargets = function (room) {
     }
   )
 
-  room.__creep_repair_cache__ = targets
+  room.__repair_target_cache__ = targets
 
   return targets
 }
@@ -233,7 +231,13 @@ const creepHarvest = function (creep) {
     return ERR_NOT_FOUND
   }
 
-  return creep.harvest(_.sample(near))
+  const rc = creep.harvest(_.sample(near))
+
+  if (rc === OK) {
+    creep.__harvested__ = true
+  }
+
+  return rc
 }
 
 const creepWork = function (creep) {
@@ -255,7 +259,6 @@ const creepWork = function (creep) {
   }
 
   if (creep.memory.work) {
-    if (creepDowngradeController(creep) === OK) return OK
     if (creepRestock(creep) === OK) return OK
     if (creepRepair(creep) === OK) return OK
     if (creepBuild(creep) === OK) return OK
