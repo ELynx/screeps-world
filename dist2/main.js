@@ -270,56 +270,6 @@ const creeps = function () {
   creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
 }
 
-const towerAttack = function (tower, what) {
-  const targets = tower.room.find(what)
-
-  const notMine = _.filter(targets, x => !x.my)
-  if (notMine.length > 0) {
-    return tower.attack(_.sample(notMine))
-  }
-
-  return ERR_NOT_FOUND
-}
-
-const towerHeal = function (tower, what) {
-  const targets = tower.room.find(what)
-
-  const mine = _.filter(targets, x => x.my)
-  if (mine.length > 0) {
-    return tower.heal(_.sample(mine))
-  }
-
-  return ERR_NOT_FOUND
-}
-
-const towerWork = function (tower) {
-  if (tower.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) {
-    return ERR_NOT_ENOUGH_RESOURCES
-  }
-
-  if (towerAttack(tower, FIND_CREEPS) === OK) return OK
-  if (towerAttack(tower, FIND_POWER_CREEPS) === OK) return OK
-  if (towerAttack(tower, FIND_STRUCTURES) === OK) return OK
-  if (towerHeal(tower, FIND_CREEPS) === OK) return OK
-  return ERR_NOT_FOUND
-}
-
-const towersWork = function (room) {
-  const structures = room.find(FIND_STRUCTURES)
-
-  const towers = _.filter(structures, _.matchesProperty('structureType', STRUCTURE_TOWER))
-
-  for (const tower of towers) {
-    towerWork(tower)
-  }
-}
-
-const towers = function () {
-  for (const roomName in Game.rooms) {
-    towersWork(Game.rooms[roomName])
-  }
-}
-
 const StructureTypeToIndex = {
   [STRUCTURE_WALL]: 0,
   [STRUCTURE_CONTAINER]: 1,
@@ -454,7 +404,6 @@ const generatePixel = function () {
 
 module.exports.loop = function () {
   creeps()
-  towers()
   autobuild()
   generatePixel()
 }
