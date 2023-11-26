@@ -2,6 +2,7 @@ module.exports.loop = function () {
   creeps()
   autobuild()
   generatePixel()
+  clearMemory()
 }
 
 const creeps = function () {
@@ -504,5 +505,17 @@ Structure.prototype.decode = function (code) {
 const generatePixel = function () {
   if (Game.rooms.sim === undefined) {
     return Game.cpu.generatePixel()
+  }
+}
+
+const clearMemory = function () {
+  Memory.creeps = undefined
+  Memory.spawns = undefined
+  Memory.flags = undefined
+
+  for (const roomName in Memory.rooms) {
+    if (!Game.rooms[roomName]) {
+        Memory.rooms[roomName] = undefined
+    }
   }
 }
