@@ -245,9 +245,7 @@ const getGrabTargets = function (room) {
     }
   }
 
-  room.__grab_target_cache__ = targets
-
-  return targets
+  return room.__grab_target_cache__ = targets
 }
 
 const getRepairTargets = function (room) {
@@ -255,14 +253,17 @@ const getRepairTargets = function (room) {
     return room.__repair_target_cache__
   }
 
+  // if there is construction to be done, do not over-build ramps, walls and roads
+  // 30000 is two decays of road on the wall
+  const constructionSites = room.find(FIND_CONSTRUCTION_SITES)
+  const belowHits = constructionSites.length > 0 ? 30000 : Number.MAX_SAFE_INTEGER
+
   const structures = room.find(FIND_STRUCTURES)
 
-  const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
+  const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax && x.hits < belowHits))
   const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
 
-  room.__repair_target_cache__ = mineOrNeutral
-
-  return mineOrNeutral
+  return room.__repair_target_cache__ = mineOrNeutral
 }
 
 const makeAlternativeName = function (name) {
@@ -308,9 +309,10 @@ const spawnCreep = function (name1, name2, room, x, y) {
   const otherCreepName = name2
 
   // check if creep with enough life exists
+  // +2 is purely experimental
   if (creep) {
     const ticksToSpawn = body.length * CREEP_SPAWN_TIME
-    if (creep.ticksToLive > ticksToSpawn) {
+    if (creep.ticksToLive > ticksToSpawn + 2) {
       return OK
     }
 
@@ -356,28 +358,21 @@ const spawnCreepXgate = function (room) {
     return ERR_INVALID_TARGET
   }
 
-  if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
-    return ERR_NOT_ENOUGH_RESOURCES
-  }
-
   return OK
 }
 
-const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
-
 const makeBody = function (room) {
-  const pairs = Math.floor(room.energyAvailable / WorkCarryPairCost)
-  if (pairs <= 0) {
-    return []
+  if (room.__make_body_cache__) {
+    return room.__make_body_cache__
   }
 
-  const work = new Array(pairs)
-  work.fill(WORK)
+  let body = [WORK, WORK, CARRY] // backup for 300 spawn trickle charge
 
-  const carry = new Array(pairs)
-  carry.fill(CARRY)
+  // if someone there to restock
+  if (_.keys(Game.creeps).length > 0) {
+  }
 
-  return _.shuffle(work.concat(carry))
+  return room.__make_body_cache__ = _.shuffle(body)
 }
 
 const autobuild = function () {
