@@ -14,6 +14,8 @@ const creeps = function () {
 const work = function (creep) {
   if (creep === undefined) return ERR_INVALID_TARGET
 
+  creep.__work__ = creep.getActiveBodyparts(WORK)
+
   grab(creep)
   upgradeController(creep)
   restock(creep)
@@ -77,6 +79,11 @@ const repair = function (creep) {
     return ERR_BUSY
   }
 
+  const gateRc = creepXpowerXgate(creep, REPAIR_POWER * REPAIR_COST)
+  if (gateRc !== OK) {
+    return gateRc
+  }
+
   const targets = getRepairTargets(creep.room)
 
   const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
@@ -97,14 +104,9 @@ const build = function (creep) {
     return ERR_BUSY
   }
 
-  const work = creep.getActiveBodyparts(WORK)
-  const energyToFullBuild = work * BUILD_POWER
-  const energySpentOnUpgradeController = work * UPGRADE_CONTROLLER_POWER
-  const energyMax = creep.store.getCapacity()
-  const energyTreshold = Math.min(energyToFullBuild + energySpentOnUpgradeController, energyMax)
-
-  if (creep.store.getUsedCapacity(RESOURCE_ENERGY) < energyTreshold) {
-    return ERR_NOT_ENOUGH_RESOURCES
+  const gateRc = creepXpowerXgate(creep, BUILD_POWER)
+  if (gateRc !== OK) {
+    return gateRc
   }
 
   const targets = creep.room.find(FIND_CONSTRUCTION_SITES)
@@ -245,7 +247,20 @@ const getGrabTargets = function (room) {
     }
   }
 
-  return room.__grab_target_cache__ = targets
+  return (room.__grab_target_cache__ = targets)
+}
+
+const creepXpowerXgate = function (creep, power) {
+  const energyToPower = creep.__work__ * power
+  const energySpentOnUpgradeController = creep.__work__ * UPGRADE_CONTROLLER_POWER
+  const energyMax = creep.store.getCapacity()
+  const energyTreshold = Math.min(energyToPower + energySpentOnUpgradeController, energyMax)
+
+  if (creep.store.getUsedCapacity(RESOURCE_ENERGY) < energyTreshold) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
+
+  return OK
 }
 
 const getRepairTargets = function (room) {
@@ -263,7 +278,7 @@ const getRepairTargets = function (room) {
   const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax && x.hits < belowHits))
   const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
 
-  return room.__repair_target_cache__ = mineOrNeutral
+  return (room.__repair_target_cache__ = mineOrNeutral)
 }
 
 const makeAlternativeName = function (name) {
@@ -358,7 +373,7 @@ const makeBody = function (room) {
     console.log('TODO body economics')
   }
 
-  return room.__make_body_cache__ = _.shuffle(body)
+  return (room.__make_body_cache__ = _.shuffle(body))
 }
 
 const autobuild = function () {
