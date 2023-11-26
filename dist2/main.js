@@ -481,5 +481,7 @@ Structure.prototype.decode = function (code) {
 }
 
 const generatePixel = function () {
-  return Game.cpu.generatePixel()
+  if (Game.rooms.sim === undefined) {
+    return Game.cpu.generatePixel()
+  }
 }
