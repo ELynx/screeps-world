@@ -515,7 +515,7 @@ const clearMemory = function () {
 
   for (const roomName in Memory.rooms) {
     if (!Game.rooms[roomName]) {
-        Memory.rooms[roomName] = undefined
+      Memory.rooms[roomName] = undefined
     }
   }
 }
