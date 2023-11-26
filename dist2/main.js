@@ -56,13 +56,7 @@ const grab = function (creep) {
 }
 
 const upgradeController = function (creep) {
-  const rc = creep.upgradeController(creep.room.controller)
-
-  if (rc === OK) {
-    creep.__upgraded_controller__ = true
-  }
-
-  return rc
+  return creep.upgradeController(creep.room.controller)
 }
 
 const restock = function (creep) {
@@ -79,6 +73,10 @@ const restock = function (creep) {
 }
 
 const repair = function (creep) {
+  if (creep.__pipeline_1__ && creep.__pipeline_1__ > 4) {
+    return ERR_BUSY
+  }
+
   const targets = getRepairTargets(creep.room)
 
   const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
@@ -86,10 +84,29 @@ const repair = function (creep) {
     return ERR_NOT_FOUND
   }
 
-  return creep.repair(_.sample(inRange))
+  const rc = creep.repair(_.sample(inRange))
+  if (rc === OK) {
+    creep.__pipeline_1__ = 4
+  }
+
+  return rc
 }
 
 const build = function (creep) {
+  if (creep.__pipeline_1__ && creep.__pipeline_1__ > 3) {
+    return ERR_BUSY
+  }
+
+  const work = creep.getActiveBodyparts(WORK)
+  const energyToFullBuild = work * BUILD_POWER
+  const energySpentOnUpgradeController = work * UPGRADE_CONTROLLER_POWER
+  const energyMax = creep.store.getCapacity()
+  const energyTreshold = Math.min(energyToFullBuild + energySpentOnUpgradeController, energyMax)
+
+  if (creep.store.getUsedCapacity(RESOURCE_ENERGY) < energyTreshold) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
+
   const targets = creep.room.find(FIND_CONSTRUCTION_SITES)
 
   const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
@@ -97,10 +114,19 @@ const build = function (creep) {
     return ERR_NOT_FOUND
   }
 
-  return creep.build(_.sample(inRange))
+  const rc = creep.build(_.sample(inRange))
+  if (rc === OK) {
+    creep.__pipeline_1__ = 3
+  }
+
+  return rc
 }
 
 const harvest = function (creep) {
+  if (creep.__pipeline_1__ && creep.__pipeline_1__ > 1) {
+    return ERR_BUSY
+  }
+
   const targets = creep.room.find(FIND_SOURCES_ACTIVE)
 
   const near = _.filter(targets, x => x.pos.isNearTo(creep))
@@ -110,9 +136,8 @@ const harvest = function (creep) {
   }
 
   const rc = creep.harvest(_.sample(near))
-
   if (rc === OK) {
-    creep.__harvested__ = true
+    creep.__pipeline_1__ = 1
   }
 
   return rc
