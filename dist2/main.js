@@ -306,7 +306,7 @@ const spawnCreep = function (name1, name2, room, x, y) {
   }
 
   if (queue.length === 0) {
-    console.log('No spawn in room [' + roomName + '] found for creep [' + creepName + ']')
+    console.log('No spawn in room [' + room.name + '] found for creep [' + creepName + ']')
     return ERR_NOT_FOUND
   }
 
