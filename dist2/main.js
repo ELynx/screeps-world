@@ -366,7 +366,7 @@ const makeBody = function (room) {
     return room.__make_body_cache__
   }
 
-  let body = [WORK, WORK, CARRY] // backup for 300 spawn trickle charge
+  const body = [WORK, WORK, CARRY] // backup for 300 spawn trickle charge
 
   // if someone there to restock
   if (_.keys(Game.creeps).length > 0) {
