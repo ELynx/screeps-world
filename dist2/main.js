@@ -229,10 +229,35 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
     return OK
   }
 
+  // if both creeps are present, error state
+  if (creep1 && creep2) {
+    return ERR_BUSY
+  }
+
+  // one of them has to be undefined
+  // both can be undefined
+  const creep = creep1 || creep2
+
   // see if preemprive spawn is needed
   const body = makeBody(room)
   if (body.length === 0) {
     return ERR_NOT_ENOUGH_RESOURCES
+  }
+
+  // by default, give 1st name
+  let creepName = name1
+  const otherCreepName = name2
+
+  // check if creep with enough life exists
+  if (creep) {
+    const ticksToSpawn = body.length * CREEP_SPAWN_TIME
+    if (creep.ticksToLive > ticksToSpawn) {
+      return OK
+    }
+
+    if (creep.name === creepName) {
+      creepName = otherCreepName
+    }
   }
 
   const prio1 = []
@@ -241,7 +266,7 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
   for (const spawnName in Game.spawns) {
     const spawn = Game.spawns[spawnName]
 
-    if (spawn.room.roomName !== roomName) continue
+    if (spawn.room.name !== room.name) continue
 
     if (xKeep !== undefined && yKeep !== undefined && spawn.pos.isNearTo(xKeep, yKeep)) {
       prio2.push(spawn)
@@ -253,7 +278,7 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
   const queue = prio1.concat(prio2)
 
   if (queue.length === 0) {
-    console.log('No spawn in room [' + roomName + '] found for creep [' + name1 + ']')
+    console.log('No spawn in room [' + roomName + '] found for creep [' + creepName + ']')
     return ERR_NOT_FOUND
   }
 
