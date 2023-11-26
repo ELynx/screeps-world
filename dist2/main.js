@@ -1,66 +1,116 @@
-const spawnXspawnCreepXgate = function (spawn) {
-  if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
-    return ERR_NOT_ENOUGH_RESOURCES
-  }
-
-  return OK
+module.exports.loop = function () {
+  creeps()
+  autobuild()
+  generatePixel()
 }
 
-const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
+const creeps = function () {
+  const roomA = 'E56N59'
+  const x1A = 10
+  const y1A = 10
+  const x2A = 11
+  const y2A = 11
 
-const makeBody = function (room) {
-  const pairs = Math.floor(room.energyAvailable / WorkCarryPairCost)
-  if (pairs <= 0) {
-    return []
-  }
-
-  const work = new Array(pairs)
-  work.fill(WORK)
-
-  const carry = new Array(pairs)
-  carry.fill(CARRY)
-
-  return _.shuffle(work.concat(carry))
+  work(getCreep('hamster', roomA, x1A, y1A, x2A, y2A))
+  work(getCreep('mousy', roomA, x2A, y2A, x1A, y1A))
 }
 
-const getCreep = function (creepName, spawnName, spawnDirection) {
-  const creep = Game.creeps[creepName]
+const work = function (creep) {
+  if (creep === undefined) return ERR_INVALID_TARGET
 
-  if (creep === undefined) {
-    const spawn = Game.spawns[spawnName]
-
-    if (spawn === undefined) {
-      console.log('No spawn [' + spawnName + '] found for creep [' + creepName + ']')
-      return undefined
-    }
-
-    if (spawn.spawning) {
-      return undefined
-    }
-
-    if (spawn.__spawned_this_tick__) {
-      return undefined
-    }
-
-    if (spawnXspawnCreepXgate(spawn) !== OK) {
-      return undefined
-    }
-
-    const body = makeBody(spawn.room)
-    if (body.length === 0) {
-      return undefined
-    }
-
-    spawn.spawnCreep(body, creepName, { directions: [spawnDirection] })
-    spawn.__spawned_this_tick__ = true
-
-    return undefined
-  }
-
-  return creep
+  grab(creep)
+  upgradeController(creep)
+  restock(creep)
+  repair(creep)
+  build(creep)
+  harvest(creep)
 }
 
-const creepUpgradeController = function (creep) {
+const grab = function (creep) {
+  const targets = getGrabTargets(creep.room)
+
+  let didWithdraw = false
+  let didPickup = false
+
+  for (const target of targets) {
+    const from = target[target.type]
+
+    if (!creep.pos.isNearTo(from)) continue
+
+    if ((didWithdraw === false) && (target.type === LOOK_TOMBSTONES || target.type === LOOK_RUINS)) {
+      const rc = creep.withdraw(from, RESOURCE_ENERGY)
+      if (rc === OK) {
+        didWithdraw = true
+      }
+    }
+
+    if (didPickup === false && target.type === LOOK_RESOURCES) {
+      const rc = creep.pickup(from)
+      if (rc === 0) {
+        didPickup = true
+      }
+    }
+
+    if (didWithdraw && didPickup) break
+  }
+
+  if (didWithdraw || didPickup) return OK
+
+  return ERR_NOT_FOUND
+}
+
+const getGrabTargets = function (room) {
+  if (room.__grab_target_cache__) {
+    return room.__grab_target_cache__
+  }
+
+  const tombstones = room.find(FIND_TOMBSTONES)
+  const ruins = room.find(FIND_RUINS)
+  const resources = room.find(FIND_DROPPED_RESOURCES)
+
+  const grabTargets = []
+
+  for (const tombstone of tombstones) {
+    if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+      grabTargets.push(
+        {
+          type: LOOK_TOMBSTONES,
+          [LOOK_TOMBSTONES]: tombstone
+        }
+      )
+    }
+  }
+
+  for (const ruin of ruins) {
+    if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+      grabTargets.push(
+        {
+          type: LOOK_RUINS,
+          [LOOK_RUINS]: ruin
+        }
+      )
+    }
+  }
+
+  for (const resource of resources) {
+    if (resource.resourceType === RESOURCE_ENERGY) {
+      if (resource.amount > 0) {
+        grabTargets.push(
+          {
+            type: LOOK_RESOURCES,
+            [LOOK_RESOURCES]: resource
+          }
+        )
+      }
+    }
+  }
+
+  room.__grab_target_cache__ = grabTargets
+
+  return grabTargets
+}
+
+const upgradeController = function (creep) {
   const rc = creep.upgradeController(creep.room.controller)
 
   if (rc === OK) {
@@ -70,7 +120,7 @@ const creepUpgradeController = function (creep) {
   return rc
 }
 
-const creepRestock = function (creep) {
+const restock = function (creep) {
   const structures = creep.room.find(FIND_STRUCTURES)
 
   const withEnergyDemand = _.filter(structures, x => (x.store && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
@@ -83,9 +133,20 @@ const creepRestock = function (creep) {
   return creep.transfer(_.sample(near), RESOURCE_ENERGY)
 }
 
+const repair = function (creep) {
+  const targets = getRepairTargets(creep.room)
+
+  const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
+  if (inRange.length === 0) {
+    return ERR_NOT_FOUND
+  }
+
+  return creep.repair(_.sample(inRange))
+}
+
 const ROAD_HITS_WALL = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
 
-const repairTargets = function (room) {
+const getRepairTargets = function (room) {
   if (room.__repair_target_cache__) {
     return room.__repair_target_cache__
   }
@@ -116,21 +177,10 @@ const repairTargets = function (room) {
   return targets
 }
 
-const creepRepair = function (creep) {
-  const targets = repairTargets(creep.room)
+const build = function (creep) {
+  const targets = creep.room.find(FIND_CONSTRUCTION_SITES)
 
   const inRange = _.filter(targets, x => x.pos.inRangeTo(creep, 3))
-  if (inRange.length === 0) {
-    return ERR_NOT_FOUND
-  }
-
-  return creep.repair(_.sample(inRange))
-}
-
-const creepBuild = function (creep) {
-  const constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES)
-
-  const inRange = _.filter(constructionSites, x => x.pos.inRangeTo(creep, 3))
   if (inRange.length === 0) {
     return ERR_NOT_FOUND
   }
@@ -138,92 +188,8 @@ const creepBuild = function (creep) {
   return creep.build(_.sample(inRange))
 }
 
-const grabTargets = function (room) {
-  if (room.__grab_cache__) {
-    return room.__grab_cache__
-  }
-
-  const tombstones = room.find(FIND_TOMBSTONES)
-  const ruins = room.find(FIND_RUINS)
-  const resources = room.find(FIND_DROPPED_RESOURCES)
-
-  const grabs = []
-
-  for (const tombstone of tombstones) {
-    if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabs.push(
-        {
-          type: LOOK_TOMBSTONES,
-          [LOOK_TOMBSTONES]: tombstone
-        }
-      )
-    }
-  }
-
-  for (const ruin of ruins) {
-    if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabs.push(
-        {
-          type: LOOK_RUINS,
-          [LOOK_RUINS]: ruin
-        }
-      )
-    }
-  }
-
-  for (const resource of resources) {
-    if (resource.resourceType === RESOURCE_ENERGY) {
-      if (resource.amount > 0) {
-        grabs.push(
-          {
-            type: LOOK_RESOURCES,
-            [LOOK_RESOURCES]: resource
-          }
-        )
-      }
-    }
-  }
-
-  room.__grab_cache__ = grabs
-
-  return grabs
-}
-
-const creepGrab = function (creep) {
-  const grabs = grabTargets(creep.room)
-
-  let didWithdraw = false
-  let didPickup = false
-
-  for (const grab of grabs) {
-    const from = grab[grab.type]
-
-    if (!creep.pos.isNearTo(from)) continue
-
-    if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
-      const rc = creep.withdraw(from, RESOURCE_ENERGY)
-      if (rc === OK) {
-        didWithdraw = true
-      }
-    }
-
-    if (didPickup === false && grab.type === LOOK_RESOURCES) {
-      const rc = creep.pickup(from)
-      if (rc === 0) {
-        didPickup = true
-      }
-    }
-
-    if (didWithdraw && didPickup) break
-  }
-
-  if (didWithdraw || didPickup) return OK
-
-  return ERR_NOT_FOUND
-}
-
-const creepHarvest = function (creep) {
-  const sources = creep.room.find(FIND_SOURCES)
+const harvest = function (creep) {
+  const sources = creep.room.find(FIND_SOURCES_ACTIVE)
 
   const near = _.filter(sources, x => x.pos.isNearTo(creep))
   if (near.length === 0) {
@@ -240,37 +206,141 @@ const creepHarvest = function (creep) {
   return rc
 }
 
-const creepWork = function (creep) {
-  if (creep === undefined) return ERR_INVALID_TARGET
+const getCreep = function (creepName, roomName, x, y, xKeep = undefined, yKeep = undefined) {
+  const name1 = creepName
+  const name2 = makeAlternativeName(creepName)
 
-  const energySize = creep.store.getUsedCapacity(RESOURCE_ENERGY)
-  const energyCapacity = creep.store.getCapacity(RESOURCE_ENERGY)
+  spawnCreep(name1, name2, roomName, x, y, xKeep, yKeep)
 
-  if (creep.memory.work && energySize === 0) {
-    creep.memory.work = undefined
+  const creep = Game.creeps[name1] || Game.creeps[name2]
+
+  if (creep) {
+    creep.__work__ = creep.getActiveBodyparts(WORK)
   }
 
-  if (energySize >= energyCapacity) {
-    creep.memory.work = true
+  return creep
+}
+
+const makeAlternativeName = function (name) {
+  return name.replace('a', 'ä').replace('o', 'ö').replace('u', 'ü').replace('e', 'ё')
+}
+
+const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yKeep = undefined) {
+  const spawn = Game.spawns[spawnName]
+
+  if (spawn === undefined) {
+    console.log('No spawn [' + spawnName + '] found for creep [' + creepName + ']')
+    return undefined
   }
 
-  if (energySize < energyCapacity) {
-    creepGrab(creep)
+  if (spawn.spawning) {
+    return undefined
   }
 
-  if (creep.memory.work) {
-    if (creepRestock(creep) === OK) return OK
-    if (creepRepair(creep) === OK) return OK
-    if (creepBuild(creep) === OK) return OK
-    return creepUpgradeController(creep)
-  } else {
-    return creepHarvest(creep)
+  if (spawn.__spawned_this_tick__) {
+    return undefined
+  }
+
+  if (spawnXspawnCreepXgate(spawn) !== OK) {
+    return undefined
+  }
+
+  const body = makeBody(spawn.room)
+  if (body.length === 0) {
+    return undefined
+  }
+
+  spawn.spawnCreep(body, creepName, { directions: [spawnDirection] })
+  spawn.__spawned_this_tick__ = true
+}
+
+const spawnXspawnCreepXgate = function (spawn) {
+  if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
+
+  return OK
+}
+
+const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
+
+const makeBody = function (room) {
+  if (room === undefined) {
+    return []
+  }
+
+  const pairs = Math.floor(room.energyAvailable / WorkCarryPairCost)
+  if (pairs <= 0) {
+    return []
+  }
+
+  const work = new Array(pairs)
+  work.fill(WORK)
+
+  const carry = new Array(pairs)
+  carry.fill(CARRY)
+
+  return _.shuffle(work.concat(carry))
+}
+
+const autobuild = function () {
+  const flag = Game.flags.savePlan
+  if (flag) {
+    if (flag.room) {
+      flag.room.savePlan()
+    }
+
+    flag.remove()
+
+    return
+  }
+
+  if (Game.time % 100 === 0) {
+    for (const roomName in Game.rooms) {
+      Game.rooms[roomName].buildFromPlan()
+    }
   }
 }
 
-const creeps = function () {
-  creepWork(getCreep('hamster', 'HamsterHole', LEFT))
-  creepWork(getCreep('mousy', 'HamsterHole', BOTTOM))
+Room.prototype.savePlan = function () {
+  const allStructures = this
+    .find(FIND_STRUCTURES)
+    .sort(
+      function (s1, s2) {
+        const index1 = (s1.pos.y + 1) * 100 + s1.pos.x
+        const index2 = (s2.pos.y + 1) * 100 + s2.pos.x
+        if (index1 === index2) return s1.structureType.localeCompare(s2.structureType)
+
+        return index1 - index2
+      }
+    )
+
+  let plan = ''
+  for (const structure of allStructures) {
+    const code = structure.encode()
+    if (code === undefined) continue
+
+    plan += code
+  }
+
+  if (plan === '') {
+    plan = undefined
+  }
+
+  this.memory.plan = plan
+}
+
+Room.prototype.buildFromPlan = function () {
+  const plan = this.memory.plan
+  if (plan === undefined) return
+
+  for (let i = 0; i < plan.length; ++i) {
+    const code = plan.charCodeAt(i)
+    const [position, structureType] = Structure.prototype.decode(code)
+    if (structureType === undefined) continue
+
+    this.createConstructionSite(position.x, position.y, structureType)
+  }
 }
 
 const StructureTypeToIndex = {
@@ -338,75 +408,6 @@ Structure.prototype.decode = function (code) {
   return [{ x: xxxxx, y: yyyyyy }, structureType]
 }
 
-Room.prototype.encode = function () {
-  // determinism for photo
-  const allStructures = this
-    .find(FIND_STRUCTURES)
-    .sort(
-      function (s1, s2) {
-        const index1 = (s1.pos.y + 1) * 100 + s1.pos.x
-        const index2 = (s2.pos.y + 1) * 100 + s2.pos.x
-        if (index1 === index2) return s1.structureType.localeCompare(s2.structureType)
-
-        return index1 - index2
-      }
-    )
-
-  let photo = ''
-  for (const structure of allStructures) {
-    const code = structure.encode()
-    if (code === undefined) continue
-
-    photo += code
-  }
-
-  console.log(photo)
-
-  this.memory.photo = photo
-}
-
-Room.prototype.decode = function () {
-  const photo = this.memory.photo
-  if (photo === undefined) return
-
-  for (let i = 0; i < photo.length; ++i) {
-    const code = photo.charCodeAt(i)
-    const [position, structureType] = Structure.prototype.decode(code)
-    if (structureType === undefined) continue
-
-    this.createConstructionSite(position.x, position.y, structureType)
-  }
-}
-
-const autobuild = function () {
-  const flag = Game.flags.photo
-  if (flag) {
-    if (flag.room) {
-      flag.room.encode()
-    }
-
-    flag.remove()
-
-    return
-  }
-
-  if (Game.time % 100 === 0) {
-    for (const roomName in Game.rooms) {
-      Game.rooms[roomName].decode()
-    }
-  }
-}
-
 const generatePixel = function () {
-  if (Game.cpu.bucket >= PIXEL_CPU_COST) {
-    return Game.cpu.generatePixel()
-  }
-
-  return ERR_NOT_ENOUGH_RESOURCES
-}
-
-module.exports.loop = function () {
-  creeps()
-  autobuild()
-  generatePixel()
+  return Game.cpu.generatePixel()
 }
