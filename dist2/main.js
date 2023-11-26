@@ -59,57 +59,6 @@ const grab = function (creep) {
   return ERR_NOT_FOUND
 }
 
-const getGrabTargets = function (room) {
-  if (room.__grab_target_cache__) {
-    return room.__grab_target_cache__
-  }
-
-  const tombstones = room.find(FIND_TOMBSTONES)
-  const ruins = room.find(FIND_RUINS)
-  const resources = room.find(FIND_DROPPED_RESOURCES)
-
-  const grabTargets = []
-
-  for (const tombstone of tombstones) {
-    if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabTargets.push(
-        {
-          type: LOOK_TOMBSTONES,
-          [LOOK_TOMBSTONES]: tombstone
-        }
-      )
-    }
-  }
-
-  for (const ruin of ruins) {
-    if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-      grabTargets.push(
-        {
-          type: LOOK_RUINS,
-          [LOOK_RUINS]: ruin
-        }
-      )
-    }
-  }
-
-  for (const resource of resources) {
-    if (resource.resourceType === RESOURCE_ENERGY) {
-      if (resource.amount > 0) {
-        grabTargets.push(
-          {
-            type: LOOK_RESOURCES,
-            [LOOK_RESOURCES]: resource
-          }
-        )
-      }
-    }
-  }
-
-  room.__grab_target_cache__ = grabTargets
-
-  return grabTargets
-}
-
 const upgradeController = function (creep) {
   const rc = creep.upgradeController(creep.room.controller)
 
@@ -142,39 +91,6 @@ const repair = function (creep) {
   }
 
   return creep.repair(_.sample(inRange))
-}
-
-const ROAD_HITS_WALL = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
-
-const getRepairTargets = function (room) {
-  if (room.__repair_target_cache__) {
-    return room.__repair_target_cache__
-  }
-
-  const structures = room.find(FIND_STRUCTURES)
-
-  const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
-  const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
-
-  const targets = _.filter(
-    mineOrNeutral,
-    function (structure) {
-      if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
-        return structure.hits < 5000
-      }
-
-      if (structure.structureType === STRUCTURE_ROAD) {
-        // repair only wall road, and not immediately
-        return structure.hitsMax === ROAD_HITS_WALL && (structure.hitsMax - structure.hits >= ROAD_HITS)
-      }
-
-      return true
-    }
-  )
-
-  room.__repair_target_cache__ = targets
-
-  return targets
 }
 
 const build = function (creep) {
@@ -232,22 +148,118 @@ const getCreep = function (creepName, roomName, x, y, xKeep = undefined, yKeep =
   return creep
 }
 
+const getGrabTargets = function (room) {
+  if (room.__grab_target_cache__) {
+    return room.__grab_target_cache__
+  }
+
+  const tombstones = room.find(FIND_TOMBSTONES)
+  const ruins = room.find(FIND_RUINS)
+  const resources = room.find(FIND_DROPPED_RESOURCES)
+
+  const grabTargets = []
+
+  for (const tombstone of tombstones) {
+    if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+      grabTargets.push(
+        {
+          type: LOOK_TOMBSTONES,
+          [LOOK_TOMBSTONES]: tombstone
+        }
+      )
+    }
+  }
+
+  for (const ruin of ruins) {
+    if (ruin.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+      grabTargets.push(
+        {
+          type: LOOK_RUINS,
+          [LOOK_RUINS]: ruin
+        }
+      )
+    }
+  }
+
+  for (const resource of resources) {
+    if (resource.resourceType === RESOURCE_ENERGY) {
+      if (resource.amount > 0) {
+        grabTargets.push(
+          {
+            type: LOOK_RESOURCES,
+            [LOOK_RESOURCES]: resource
+          }
+        )
+      }
+    }
+  }
+
+  room.__grab_target_cache__ = grabTargets
+
+  return grabTargets
+}
+
+const ROAD_HITS_WALL = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO // 5000 * 150 = 750000
+
+const getRepairTargets = function (room) {
+  if (room.__repair_target_cache__) {
+    return room.__repair_target_cache__
+  }
+
+  const structures = room.find(FIND_STRUCTURES)
+
+  const canBeRepaired = _.filter(structures, x => (CONSTRUCTION_COST[x.structureType] && x.hits && x.hitsMax && x.hits < x.hitsMax))
+  const mineOrNeutral = _.filter(canBeRepaired, x => (x.my || true))
+
+  const targets = _.filter(
+    mineOrNeutral,
+    function (structure) {
+      if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
+        return structure.hits < 5000
+      }
+
+      if (structure.structureType === STRUCTURE_ROAD) {
+        // repair only wall road, and not immediately
+        return structure.hitsMax === ROAD_HITS_WALL && (structure.hitsMax - structure.hits >= ROAD_HITS)
+      }
+
+      return true
+    }
+  )
+
+  room.__repair_target_cache__ = targets
+
+  return targets
+}
+
 const makeAlternativeName = function (name) {
   return name.replace('a', 'ä').replace('o', 'ö').replace('u', 'ü').replace('e', 'ё')
 }
 
 const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yKeep = undefined) {
-  const creep1 = Game.creeps[name1]
-  const creep2 = Game.creeps[name2]
+  // gate
+  const room = Game.rooms[roomName]
+  const gateRc = spawnCreepXgate(room)
+  if (gateRc !== OK) {
+    return gateRc
+  }
 
-  if (creep1 && creep2) {
+  // if something is already spawning
+  const creep1 = Game.creeps[name1]
+  if (creep1 && creep1.spawning) {
     return OK
   }
 
-  const room = Game.rooms[roomName]
-  const gateRc = spawnXspawnCreepXgate(room)
-  if (gateRc !== OK) {
-    return gateRc
+  // if something is already spawning
+  const creep2 = Game.creeps[name2]
+  if (creep2 && creep2.spawning) {
+    return OK
+  }
+
+  // see if preemprive spawn is needed
+  const body = makeBody(room)
+  if (body.length === 0) {
+    return ERR_NOT_ENOUGH_RESOURCES
   }
 
   const prio1 = []
@@ -274,11 +286,7 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
 
   for (const spawn of queue) {
     if (spawn.spawning) continue
-
     if (spawn.__spawned_this_tick__) continue
-
-    const body = makeBody(spawn.room)
-    if (body.length === 0) continue
 
     const spawnDirection = spawn.pos.getDirectionTo(x, y)
 
@@ -292,7 +300,15 @@ const spawnCreep = function (name1, name2, roomName, x, y, xKeep = undefined, yK
   return ERR_NOT_FOUND
 }
 
-const spawnXspawnCreepXgate = function (room) {
+const spawnCreepXgate = function (room) {
+  if (room === undefined) {
+    return ERR_INVALID_TARGET
+  }
+
+  if (room.__spawned_this_tick__) {
+    return ERR_BUSY
+  }
+
   if (room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
     return ERR_NOT_ENOUGH_RESOURCES
   }
@@ -303,10 +319,6 @@ const spawnXspawnCreepXgate = function (room) {
 const WorkCarryPairCost = BODYPART_COST[WORK] + BODYPART_COST[CARRY]
 
 const makeBody = function (room) {
-  if (room === undefined) {
-    return []
-  }
-
   const pairs = Math.floor(room.energyAvailable / WorkCarryPairCost)
   if (pairs <= 0) {
     return []
