@@ -292,7 +292,7 @@ function Controller (id) {
     let remainingTargets = allTargets.slice(0)
 
     let unassignedCreeps = []
-    let assignCreeps = []
+    const assignCreeps = []
 
     for (let i = 0; i < roomCreeps.length; ++i) {
       if (remainingTargets.length === 0) {
