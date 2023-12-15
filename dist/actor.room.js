@@ -169,6 +169,12 @@ const roomActor =
 
       const [creepsUnused, creepsUsed] = controller.control(room, creeps)
 
+      if (_.some(controllersBlockStop, _.matches(id))) {
+        for (const creep of creepsUsed) {
+          creep.blockStop()
+        }
+      }
+
       // if all creeps had been taken
       if (creepsUnused.length === 0) {
         return []
