@@ -167,12 +167,14 @@ const roomActor =
         continue
       }
 
-      creeps = controller.control(room, creeps)
+      const [creepsUnused, creepsUsed] = controller.control(room, creeps)
 
       // if all creeps had been taken
-      if (creeps.length === 0) {
+      if (creepsUnused.length === 0) {
         return []
       }
+
+      creeps = creepsUnused
     }
 
     return creeps
