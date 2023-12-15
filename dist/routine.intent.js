@@ -132,6 +132,7 @@ const intent = {
     if (noLessThan === true && amount && amount > sourceHas) {
       return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
+
     const sourceOut = amount || sourceHas
 
     const targetFree = this._getFreeCapacity(target, type)
