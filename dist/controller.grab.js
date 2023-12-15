@@ -48,7 +48,7 @@ grabController.act = function (room, creep) {
       if (hasUniversalStore || from.resourceType === RESOURCE_ENERGY) {
         if (intentSolver.getAmount(from) > 0) {
           const rc = this.wrapIntent(creep, 'pickup', from)
-          if (rc >= 0) {
+          if (rc >= OK) {
             didPickup = true
           }
         }
