@@ -290,7 +290,9 @@ function Controller (id) {
     const allTargets = this._findTargets(room)
 
     let remainingTargets = allTargets.slice(0)
+
     let unassignedCreeps = []
+    let assignCreeps = []
 
     for (let i = 0; i < roomCreeps.length; ++i) {
       if (remainingTargets.length === 0) {
@@ -368,6 +370,7 @@ function Controller (id) {
         }
 
         bootstrap.assignCreep(this, target, path, creep, extra)
+        assignCreeps.push(creep)
 
         // simulate single assignment logic on small scale
         if (this._creepPerTarget) {
@@ -383,7 +386,7 @@ function Controller (id) {
       }
     } // end of creeps loop
 
-    return unassignedCreeps
+    return [unassignedCreeps, assignCreeps]
   }
 
   /**
@@ -394,12 +397,12 @@ function Controller (id) {
   this.control = function (room, roomCreeps) {
     if (!this.targets) {
       console.log('Controller ' + this.id + 'missing targets method')
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
-        return roomCreeps
+        return [roomCreeps, []]
       }
     }
 
@@ -419,24 +422,23 @@ function Controller (id) {
         room._markDefaultFiltered()
       }
 
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
     if (this._findTargets(room).length === 0) {
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
-    // remainder returned
-    const creepsUnused = this.assignCreeps(room, creepMatch)
+    const [creepsUnused, creepsUsed] = this.assignCreeps(room, creepMatch)
 
     if (creepsUnused.length > 0) {
-      return creepSkip.concat(creepsUnused)
+      return [creepSkip.concat(creepsUnused), creepsUsed]
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
       }
 
-      return creepSkip
+      return [creepSkip, creepsUsed]
     }
   }
 
