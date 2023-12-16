@@ -2,9 +2,9 @@
 
 const Tasked = require('./tasked.template')
 
-const claim = new Tasked('claim')
+const claimTasked = new Tasked('claim')
 
-claim._onProblemDetected = function (creep) {
+claimTasked._onProblemDetected = function (creep) {
   const flag = creep.flag
   if (flag) {
     flag.setValue(0)
@@ -13,7 +13,7 @@ claim._onProblemDetected = function (creep) {
   creep.unlive()
 }
 
-claim._roomCheck = function (room) {
+claimTasked._roomCheck = function (room) {
   if (room._my_) return false
   if (room.ally) return false
   if (room.neutral) return false
@@ -21,7 +21,7 @@ claim._roomCheck = function (room) {
   return true
 }
 
-claim.callRoomService = function (room) {
+claimTasked.callRoomService = function (room) {
   // to avoid several calls per tick
   if (room.__claim_serviced) return
   room.__claim_serviced = true
@@ -36,7 +36,7 @@ claim.callRoomService = function (room) {
   position.createFlagWithValue(flagName, 1)
 }
 
-claim.creepAtDestination = function (creep) {
+claimTasked.creepAtDestination = function (creep) {
   const controller = creep.room.controller
   if (!controller) {
     this._onProblemDetected(creep)
@@ -163,7 +163,7 @@ claim.creepAtDestination = function (creep) {
   }
 }
 
-claim.flagPrepare = function (flag) {
+claimTasked.flagPrepare = function (flag) {
   // in case of visibility, check flag sanity
   if (flag.room) {
     if (flag.room.controller === undefined) {
@@ -190,7 +190,7 @@ claim.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-claim.makeClaimM = function (claim, move) {
+claimTasked.makeClaimM = function (claim, move) {
   // move up front to allow crawl even damaged
   const a = new Array(move - 1)
   a.fill(MOVE)
@@ -203,7 +203,7 @@ claim.makeClaimM = function (claim, move) {
   return a.concat(b).concat(c)
 }
 
-claim.makeBody = function (room) {
+claimTasked.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
 
   if (energy < 750) return []
@@ -225,6 +225,6 @@ claim.makeBody = function (room) {
   return this.makeClaimM(2, 10)
 }
 
-claim.register()
+claimTasked.register()
 
-module.exports = claim
+module.exports = claimTasked
