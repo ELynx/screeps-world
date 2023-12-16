@@ -46,7 +46,7 @@ spawnTasked.dismiss = function (model) {
   }
 
   // sanitize deleted flags
-  if (model.memory?.flag) {
+  if (model.memory && model.memory.flag) {
     // special mark of flagless creeps
     if (model.memory.flag.indexOf('_x_') === -1) {
       const flag = Game.flags[model.memory.flag]
@@ -64,7 +64,7 @@ spawnTasked.dismiss = function (model) {
     if (bodyCost > maxCost) {
       console.log('spawn.dismiss found model [' + model.name + '] of body ' + model.body + ' and cost [' + bodyCost + '] with max capacity [' + maxCost + ']')
 
-      if (model.memory?.btyp) {
+      if (model.memory && model.memory.btyp) {
         console.log('spawn.dismiss uses btyp [' + model.memory.btyp + '] as backup')
         model.body = model.memory.btyp
       } else {
@@ -229,7 +229,7 @@ spawnTasked.spawnNext = function () {
   } else {
     // important check - can room spawn anything?
     const room = Game.rooms[nextModel.from]
-    if (room?._my_ && room.level() > 0) {
+    if (room && room._my_ && room.level() > 0) {
       spawns = _.shuffle(this._spawnsInRoom(room))
     } else {
       // fall back to closest
