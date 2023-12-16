@@ -82,7 +82,7 @@ towerProcess.work = function (room) {
     creeps,
     function (creep) {
       // do not heal ones with self-heal
-      if (creep.memory?.shel) return false
+      if (creep.memory && creep.memory.shel) return false
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
     }

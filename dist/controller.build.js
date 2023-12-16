@@ -97,9 +97,9 @@ buildController.targets = function (room) {
   const allCreeps = room.find(FIND_CREEPS)
   let obstacleCreeps
 
-  const roomSafeMode = room.controller?.safeMode
+  const roomSafeMode = room.controller && room.controller.safeMode
   if (roomSafeMode) {
-    const roomOwner = (room.controller?.owner) ? room.controller.owner.username : undefined
+    const roomOwner = (room.controller && room.controller.owner) ? room.controller.owner.username : undefined
     obstacleCreeps = _.filter(allCreeps, _.matchesProperty('owner.username', roomOwner))
   } else {
     obstacleCreeps = allCreeps

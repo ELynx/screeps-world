@@ -361,7 +361,7 @@ function Tasked (id) {
         continue
       }
 
-      if (flag.room?.breached()) {
+      if (flag.room && flag.room.breached()) {
         want = want + this.breachedExtraCreeps
       }
 

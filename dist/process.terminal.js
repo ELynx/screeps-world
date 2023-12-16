@@ -66,7 +66,8 @@ terminalProcess.work = function (room) {
       // if room is not visible then definitely not own order
       // if room has no controller than definitely not own order
       // compare by username, avoid use of "my"
-      if (roomFrom?.controller &&
+      if (roomFrom &&
+          roomFrom.controller &&
           roomFrom.controller.owner &&
           roomFrom.controller.owner.username === room.terminal.owner.username) return false
 
@@ -100,7 +101,8 @@ terminalProcess.work = function (room) {
 
     // don't trade with own orders
     // see above for breakdown
-    if (roomFrom?.controller &&
+    if (roomFrom &&
+        roomFrom.controller &&
         roomFrom.controller.owner &&
         roomFrom.controller.owner.username === room.terminal.owner.username) continue
 
