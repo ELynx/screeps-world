@@ -5,9 +5,9 @@ const intent = require('./routine.intent')
 
 const Tasked = require('./tasked.template')
 
-const spawn = new Tasked('spawn')
+const spawnTasked = new Tasked('spawn')
 
-spawn._maxEnergyCapacity = function () {
+spawnTasked._maxEnergyCapacity = function () {
   if (Game.__maxEnergyCapacity) return Game.__maxEnergyCapacity
 
   Game.__maxEnergyCapacity = 0
@@ -23,7 +23,7 @@ spawn._maxEnergyCapacity = function () {
   return Game.__maxEnergyCapacity
 }
 
-spawn._bodyCost = function (body) {
+spawnTasked._bodyCost = function (body) {
   const usedBody = (body.length > MAX_CREEP_SIZE) ? body.slice(0, MAX_CREEP_SIZE) : body
 
   const costArray = _.map(
@@ -39,7 +39,7 @@ spawn._bodyCost = function (body) {
 /**
  * Should model be dismissed from spawn process
  **/
-spawn.dismiss = function (model) {
+spawnTasked.dismiss = function (model) {
   // sanitize old models
   if (model._time < Game.time - CREEP_LIFE_TIME) {
     return true
@@ -76,7 +76,7 @@ spawn.dismiss = function (model) {
   return false
 }
 
-spawn._peekOrGet = function (queueCall) {
+spawnTasked._peekOrGet = function (queueCall) {
   // prevent forever loop
   let maxAttempts = 10
   while (maxAttempts > 0) {
@@ -100,27 +100,27 @@ spawn._peekOrGet = function (queueCall) {
   return undefined
 }
 
-spawn._queueCallPeek = function () {
+spawnTasked._queueCallPeek = function () {
   return queue.peek()
 }
 
-spawn._queueCallGet = function () {
+spawnTasked._queueCallGet = function () {
   return queue.get()
 }
 
-spawn.peek = function () {
+spawnTasked.peek = function () {
   return this._peekOrGet(this._queueCallPeek)
 }
 
-spawn.get = function () {
+spawnTasked.get = function () {
   return this._peekOrGet(this._queueCallGet)
 }
 
-spawn.postpone = function () {
+spawnTasked.postpone = function () {
   return queue.postpone()
 }
 
-spawn._spawnsCanSpawn = function () {
+spawnTasked._spawnsCanSpawn = function () {
   return _.filter(
     Game.spawns,
     function (spawn) {
@@ -130,7 +130,7 @@ spawn._spawnsCanSpawn = function () {
   )
 }
 
-spawn._spawnsByLevel = function () {
+spawnTasked._spawnsByLevel = function () {
   const spawns = this._spawnsCanSpawn()
 
   spawns.sort(
@@ -142,7 +142,7 @@ spawn._spawnsByLevel = function () {
   return spawns
 }
 
-spawn._spawnsByDistance = function (roomName) {
+spawnTasked._spawnsByDistance = function (roomName) {
   const spawns = this._spawnsCanSpawn()
 
   spawns.sort(
@@ -163,7 +163,7 @@ spawn._spawnsByDistance = function (roomName) {
   return spawns
 }
 
-spawn._spawnsInRoom = function (room) {
+spawnTasked._spawnsInRoom = function (room) {
   return _.filter(
     room.spawns,
     function (spawn) {
@@ -173,11 +173,11 @@ spawn._spawnsInRoom = function (room) {
   )
 }
 
-spawn._getBodyFunction = function (bodyType) {
+spawnTasked._getBodyFunction = function (bodyType) {
   return queue.getBodyFunction(bodyType)
 }
 
-spawn.makeBody = function (spawn, model) {
+spawnTasked.makeBody = function (spawn, model) {
   if (_.isArray(model.body)) {
     return model.body
   }
@@ -192,7 +192,7 @@ spawn.makeBody = function (spawn, model) {
   return undefined
 }
 
-spawn.spawnNextErrorHandler = function (spawn, model, index, rc = undefined) {
+spawnTasked.spawnNextErrorHandler = function (spawn, model, index, rc = undefined) {
   let message =
         'spawn.spawnNext error condition [' + index +
         '] detected for [' + JSON.stringify(model) +
@@ -211,7 +211,7 @@ spawn.spawnNextErrorHandler = function (spawn, model, index, rc = undefined) {
   return true
 }
 
-spawn.spawnNext = function () {
+spawnTasked.spawnNext = function () {
   // not known if model can be spawned
   const nextModel = this.peek()
 
@@ -291,7 +291,7 @@ spawn.spawnNext = function () {
   return this.postpone()
 }
 
-spawn.act = function () {
+spawnTasked.act = function () {
   // STRATEGY spawn attempts per tick
   let maxAttempts = _.keys(Game.spawns).length
 
@@ -300,6 +300,6 @@ spawn.act = function () {
   }
 }
 
-spawn.register()
+spawnTasked.register()
 
-module.exports = spawn
+module.exports = spawnTasked
