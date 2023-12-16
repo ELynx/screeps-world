@@ -1,0 +1,3418 @@
+# callgrind format
+event: wall_uCPU : uCPU total
+event: action_uCPU : uCPU [A]action cost
+event: delta_uCPU = wall_uCPU - action_uCPU: uCPU without [A]action cost
+event: NOKs : [A]actions that returned !== OK
+events: wall_uCPU action_uCPU NOKs
+summary: 225699736543 41937200000 2
+
+fn=iff.convenience
+1 49728328 0 0
+
+fn=(tick)
+1 21951360616 0 0
+cfn=iff.convenience
+calls=3910 1
+1 49728328 0 0
+cfn=cleanup.cleanup
+calls=3910 1
+1 609474866 0 0
+cfn=extensions.shortcuts
+calls=3910 1
+1 6113116987 0 0
+cfn=historyActor.act
+calls=3910 1
+1 1647309098 0 0
+cfn=roomActor.act
+calls=35190 1
+1 175127370533 36543000000 2
+cfn=worldActor.act
+calls=3910 1
+1 20199760111 5394200000 0
+cfn=Creep.toJSON
+calls=1 1
+1 1108338 0 0
+cfn=Room.toJSON
+calls=2 1
+1 507666 0 0
+
+fn=cleanup.memoryNodeNotAccessed
+1 38618392 0 0
+
+fn=cleanup.cleanupMemory
+1 290491473 0 0
+cfn=cleanup.memoryNodeNotAccessed
+calls=15640 1
+1 38618392 0 0
+
+fn=cleanup.cleanup
+1 63652030 0 0
+cfn=cleanup.cleanupMemory
+calls=3910 1
+1 329109864 0 0
+cfn=cleanup.cleanupFlags
+calls=3910 1
+1 216712972 0 0
+
+fn=cleanup.cleanupFlags
+1 216712972 0 0
+
+fn=Room.my:get
+1 173457779 0 0
+
+fn=extensions.shortcuts
+1 5939680492 0 0
+cfn=Room.my:get
+calls=45991 1
+1 173436494 0 0
+
+fn=historyActor.clearCaches
+1 19183644 0 0
+
+fn=historyActor.act
+1 280771352 0 0
+cfn=historyActor.clearCaches
+calls=3910 1
+1 19183644 0 0
+cfn=historyActor.processRoomLog
+calls=45991 1
+1 1207658856 0 0
+cfn=historyActor.processPostLog
+calls=3910 1
+1 139695247 0 0
+
+fn=Room.getEventLog
+1 590798584 0 0
+
+fn=historyActor.processRoomLog
+1 411022847 0 0
+cfn=Room.getEventLog
+calls=45991 1
+1 590798584 0 0
+cfn=historyActor.handle_EVENT_ATTACK
+calls=4624 1
+1 89964325 0 0
+cfn=historyActor.handle_EVENT_HEAL
+calls=3000 1
+1 115873100 0 0
+
+fn=historyActor.processHealers
+1 43406368 0 0
+cfn=historyActor.increaseSideHarm
+calls=2989 1
+1 33570321 0 0
+cfn=historyActor.increaseSideHarmPower
+calls=2989 1
+1 32254654 0 0
+
+fn=historyActor.processPostLog
+1 30463904 0 0
+cfn=historyActor.processHealers
+calls=3910 1
+1 109231343 0 0
+
+fn=roomActor.roomActType
+1 112886627 0 0
+cfn=Room.myReserved
+calls=3910 1
+1 134248503 0 0
+
+fn=roomActor.act
+1 14404415168 0 0
+cfn=roomActor.roomActType
+calls=35190 1
+1 247135130 0 0
+cfn=roomActor.roomControllersFind
+calls=35190 1
+1 120722742 0 0
+cfn=security.work
+calls=35190 1
+1 3613404009 0 0
+cfn=roomInfo.work
+calls=35190 1
+1 2576571716 0 0
+cfn=tower.work
+calls=35190 1
+1 6368718536 911400000 0
+cfn=Room.getRoomControlledCreeps
+calls=35190 1
+1 162914153 0 0
+cfn=roomActor.roomControllersPrepare
+calls=70032 1
+1 8976360236 0 0
+cfn=roomActor.consumingControllersControl
+calls=197280 1
+1 5977850703 30400000 0
+cfn=Creep.target
+calls=182898 1
+1 1310283386 0 0
+cfn=RoomPosition.inRangeTo
+calls=182898 1
+1 584855192 0 0
+cfn=Creep.fatigueWrapper
+calls=5804 1
+1 113458450 0 0
+cfn=Creep.moveToWrapper
+calls=79403 1
+1 35427670604 15804800000 0
+cfn=Creep.blockStop
+calls=24861 1
+1 166806708 0 0
+cfn=roomActor.roomControllersObserveOwn
+calls=76072 1
+1 1344517322 0 0
+cfn=RoomVisual.circle
+calls=76149 1
+1 1041094163 0 0
+cfn=autobuild.work
+calls=34723 1
+1 383915007 0 0
+cfn=terminal.work
+calls=2894 1
+1 753784980 0 0
+cfn=roomActor.roomControllersAct
+calls=100945 1
+1 34552682770 19359200000 2
+cfn=Creep.blockPosition
+calls=111030 1
+1 422000397 0 0
+cfn=roomActor.roomControllersControl
+calls=14109 1
+1 48596346274 0 0
+cfn=spawn.work
+calls=5873 1
+1 6935684309 0 0
+cfn=link.work
+calls=2931 1
+1 994565828 419400000 0
+cfn=RoomPosition.offBorderDistance
+calls=2959 1
+1 12236386 0 0
+cfn=Creep.moveWrapper
+calls=89 1
+1 14964146 17800000 0
+cfn=upgrade._isEmpty
+calls=2889 1
+1 24412220 0 0
+
+fn=roomActor.roomControllersFind
+1 120722742 0 0
+
+fn=Room.myOrMyReserved
+1 147384367 0 0
+cfn=Room.extendedOwnerUsername
+calls=3910 1
+1 27908547 0 0
+
+fn=security.roomCompatible
+1 321817976 0 0
+cfn=Room.myOrMyReserved
+calls=35190 1
+1 174931250 0 0
+
+fn=security.work
+1 960361506 0 0
+cfn=security.roomCompatible
+calls=35190 1
+1 496749226 0 0
+cfn=Room.find
+calls=35190 1
+1 2084935649 0 0
+cfn=Creep.pc:get
+calls=3127 1
+1 71357628 0 0
+
+fn=Creep.hostile:get
+1 1336641660 0 0
+
+fn=Room.find
+1 4050871512 0 0
+cfn=Creep.hostile:get
+calls=218995 1
+1 659432440 0 0
+cfn=OwnedStructure.hostile:get
+calls=110061 1
+1 265035385 0 0
+
+fn=Room.getRoomControlledCreeps
+1 796944105 0 0
+
+fn=Room.extendedAvailableEnergyCapacity
+1 1483660988 0 0
+cfn=Room.getRoomControlledCreeps
+calls=31280 1
+1 603175078 0 0
+
+fn=roomInfo.work
+1 561168397 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=35190 1
+1 1999396668 0 0
+cfn=roomInfo.harvestLevel
+calls=18 1
+1 5947443 0 0
+cfn=roomInfo.sourceLevel
+calls=18 1
+1 6942731 0 0
+cfn=roomInfo.miningLevel
+calls=18 1
+1 484136 0 0
+cfn=roomInfo.wallLevel
+calls=18 1
+1 2632341 0 0
+
+fn=tower.work
+1 5208549662 0 0
+cfn=Room.find
+calls=31280 1
+1 193096209 0 0
+cfn=Creep.hostile:get
+calls=206718 1
+1 533204958 0 0
+cfn=Creep.myOrAlly
+calls=206718 1
+1 -716966407 0 0
+cfn=Creep.pc:get
+calls=105 1
+1 2226176 0 0
+cfn=StructureTower.attack
+calls=4557 1
+1 1148607938 911400000 0
+
+fn=Creep.myOrAlly
+1 -730591580 0 0
+cfn=Creep.ally:get
+calls=5809 1
+1 143239230 0 0
+
+fn=downgrade._roomPrepare
+1 89838715 0 0
+
+fn=downgrade.roomPrepare
+1 445097151 0 0
+cfn=downgrade._roomPrepare
+calls=31267 1
+1 89838715 0 0
+cfn=downgrade._prepareExcludedTargets
+calls=31267 1
+1 94110029 0 0
+
+fn=downgrade._prepareExcludedTargets
+1 94110029 0 0
+
+fn=roomActor.roomControllersPrepare
+1 4496212053 0 0
+cfn=downgrade.roomPrepare
+calls=31267 1
+1 629045895 0 0
+cfn=unlive.roomPrepare
+calls=31267 1
+1 304107898 0 0
+cfn=mineral.harvest.roomPrepare
+calls=31267 1
+1 292954197 0 0
+cfn=mineral.restock.roomPrepare
+calls=31267 1
+1 321697558 0 0
+cfn=energy.specialist.roomPrepare
+calls=35016 1
+1 349195105 0 0
+cfn=energy.unspecialist.roomPrepare
+calls=35016 1
+1 327389266 0 0
+cfn=energy.take.roomPrepare
+calls=31267 1
+1 288002887 0 0
+cfn=energy.harvest.roomPrepare
+calls=31267 1
+1 280316202 0 0
+cfn=energy.restock.roomPrepare
+calls=31267 1
+1 533907230 0 0
+cfn=rampup.roomPrepare
+calls=31267 1
+1 525229004 0 0
+cfn=repair.roomPrepare
+calls=35016 1
+1 614205066 0 0
+cfn=build.roomPrepare
+calls=35016 1
+1 346092871 0 0
+cfn=upgrade.roomPrepare
+calls=31267 1
+1 309441137 0 0
+cfn=mineral.dump.roomPrepare
+calls=31267 1
+1 301942027 0 0
+cfn=grab.roomPrepare
+calls=35016 1
+1 -943378159 0 0
+
+fn=unlive._roomPrepare
+1 67695827 0 0
+
+fn=unlive.roomPrepare
+1 236412071 0 0
+cfn=unlive._roomPrepare
+calls=31267 1
+1 67695827 0 0
+
+fn=mineral.harvest._roomPrepare
+1 67162187 0 0
+
+fn=mineral.harvest.roomPrepare
+1 225792009 0 0
+cfn=mineral.harvest._roomPrepare
+calls=31267 1
+1 67162187 0 0
+
+fn=mineral.restock._roomPrepare
+1 78395295 0 0
+
+fn=mineral.restock.roomPrepare
+1 243302263 0 0
+cfn=mineral.restock._roomPrepare
+calls=31267 1
+1 78395295 0 0
+
+fn=energy.specialist._roomPrepare
+1 78699430 0 0
+
+fn=energy.specialist.roomPrepare
+1 270495675 0 0
+cfn=energy.specialist._roomPrepare
+calls=35016 1
+1 78699430 0 0
+
+fn=energy.unspecialist._roomPrepare
+1 76982534 0 0
+
+fn=energy.unspecialist.roomPrepare
+1 250406732 0 0
+cfn=energy.unspecialist._roomPrepare
+calls=35016 1
+1 76982534 0 0
+
+fn=energy.take._roomPrepare
+1 65115777 0 0
+
+fn=energy.take.roomPrepare
+1 222887110 0 0
+cfn=energy.take._roomPrepare
+calls=31267 1
+1 65115777 0 0
+
+fn=energy.harvest._roomPrepare
+1 69161022 0 0
+
+fn=energy.harvest.roomPrepare
+1 211155181 0 0
+cfn=energy.harvest._roomPrepare
+calls=31267 1
+1 69161022 0 0
+
+fn=energy.restock._roomPrepare
+1 68859596 0 0
+
+fn=energy.restock.roomPrepare
+1 393384810 0 0
+cfn=energy.restock._roomPrepare
+calls=31267 1
+1 68859596 0 0
+cfn=energy.restock._prepareExcludedTargets
+calls=31267 1
+1 71662824 0 0
+
+fn=energy.restock._prepareExcludedTargets
+1 71662824 0 0
+
+fn=rampup._roomPrepare
+1 69398822 0 0
+
+fn=rampup.roomPrepare
+1 385940756 0 0
+cfn=rampup._roomPrepare
+calls=31267 1
+1 69398822 0 0
+cfn=rampup._prepareExcludedTargets
+calls=31267 1
+1 69889426 0 0
+
+fn=rampup._prepareExcludedTargets
+1 69889426 0 0
+
+fn=repair._roomPrepare
+1 83009035 0 0
+
+fn=repair.roomPrepare
+1 450905524 0 0
+cfn=repair._roomPrepare
+calls=35016 1
+1 83009035 0 0
+cfn=repair._prepareExcludedTargets
+calls=35016 1
+1 80290506 0 0
+
+fn=repair._prepareExcludedTargets
+1 80290506 0 0
+
+fn=build._roomPrepare
+1 93228197 0 0
+
+fn=build.roomPrepare
+1 252864673 0 0
+cfn=build._roomPrepare
+calls=35016 1
+1 93228197 0 0
+
+fn=upgrade._roomPrepare
+1 73442807 0 0
+
+fn=upgrade.roomPrepare
+1 235998330 0 0
+cfn=upgrade._roomPrepare
+calls=31267 1
+1 73442807 0 0
+
+fn=mineral.dump._roomPrepare
+1 73948121 0 0
+
+fn=mineral.dump.roomPrepare
+1 227993906 0 0
+cfn=mineral.dump._roomPrepare
+calls=31267 1
+1 73948121 0 0
+
+fn=grab._roomPrepare
+1 80624665 0 0
+
+fn=grab.roomPrepare
+1 -1024002824 0 0
+cfn=grab._roomPrepare
+calls=35016 1
+1 80624665 0 0
+
+fn=grab._hasFreeCapacity
+1 1072133578 0 0
+
+fn=grab.filterCreep
+1 700372573 0 0
+cfn=grab._hasFreeCapacity
+calls=37502 1
+1 1072133578 0 0
+
+fn=roomActor.consumingControllersControl
+1 1788042347 0 0
+cfn=grab.filterCreep
+calls=197280 1
+1 1772506151 0 0
+cfn=grab.act
+calls=34507 1
+1 2318143857 30400000 0
+cfn=roomActor._roomControllerObserveOwn
+calls=34507 1
+1 99158348 0 0
+
+fn=grab.targets
+1 1062404872 0 0
+cfn=Room.find
+calls=103152 1
+1 464524216 0 0
+
+fn=grab._findTargets
+1 288357100 0 0
+cfn=grab.targets
+calls=34384 1
+1 1526929088 0 0
+
+fn=grab.act
+1 419557693 0 0
+cfn=grab._findTargets
+calls=34507 1
+1 1815286188 0 0
+cfn=RoomPosition.isNearTo
+calls=7428 1
+1 34894209 0 0
+cfn=grab.wrapIntent
+calls=152 1
+1 48405767 30400000 0
+
+fn=roomActor._roomControllerObserveOwn
+1 765092739 0 0
+cfn=energy.restock.observeMyCreep
+calls=29570 1
+1 357481426 0 0
+cfn=downgrade.observeMyCreep
+calls=71 1
+1 1466165 0 0
+cfn=repair.observeMyCreep
+calls=17120 1
+1 230383603 0 0
+
+fn=Creep.target
+1 1310283386 0 0
+
+fn=RoomPosition.inRangeTo
+1 789490612 0 0
+
+fn=Creep._refreshMove
+1 564615233 0 0
+
+fn=Creep.fatigueWrapper
+1 64526927 0 0
+cfn=Creep._refreshMove
+calls=5808 1
+1 48978588 0 0
+
+fn=Creep.moved
+1 529678518 0 0
+cfn=Creep.forgetPosition
+calls=5835 1
+1 23383534 0 0
+
+fn=Creep.moveToWrapper
+1 5804514147 0 0
+cfn=Creep.moved
+calls=93988 1
+1 553062052 0 0
+cfn=Creep._refreshMove
+calls=81652 1
+1 515636645 0 0
+cfn=Creep.rememberPosition
+calls=93988 1
+1 441031564 0 0
+cfn=Creep.moveTo
+calls=93988 1
+1 36512833794 18719600000 0
+cfn=Room.serializePath
+calls=295 1
+1 1550988 0 0
+
+fn=Creep.rememberPosition
+1 442968604 0 0
+
+fn=Creep.move
+1 19123912964 18748600000 0
+
+fn=Creep.moveByPath
+1 2293376293 0 0
+cfn=Creep.move
+calls=81490 1
+1 17075696391 16298000000 0
+
+fn=Creep.moveTo
+1 3646623622 0 0
+cfn=Creep.moveByPath
+calls=81574 1
+1 19369072684 16298000000 0
+cfn=RoomPosition.findPathTo
+calls=12122 1
+1 11472040237 0 0
+cfn=Creep.move
+calls=12108 1
+1 2024767284 2421600000 0
+cfn=RoomPosition.isNearTo
+calls=81 1
+1 329967 0 0
+
+fn=Creep.blockStop
+1 166806708 0 0
+
+fn=roomActor.roomControllersObserveOwn
+1 665393642 0 0
+cfn=roomActor._roomControllerObserveOwn
+calls=76072 1
+1 679123680 0 0
+
+fn=RoomVisual.circle
+1 1283367099 0 0
+
+fn=autobuild.work
+1 383915007 0 0
+
+fn=Room.extendedOwnerUsername
+1 126800166 0 0
+
+fn=Room.myReserved
+1 54632297 0 0
+cfn=Room.extendedOwnerUsername
+calls=4562 1
+1 98064401 0 0
+
+fn=terminal.work
+1 530720922 0 0
+cfn=Room.find
+calls=494 1
+1 3676126 0 0
+cfn=StructureTerminal.autoSell
+calls=391 1
+1 219387933 0 0
+
+fn=RoomPosition.isNearTo
+1 460709204 0 0
+
+fn=Creep.harvest
+1 15720785792 13506400000 0
+cfn=RoomPosition.isNearTo
+calls=67532 1
+1 236118320 0 0
+cfn=RoomPosition.lookFor
+calls=2403 1
+1 35787876 0 0
+cfn=Structure.isActive
+calls=2403 1
+1 30011992 0 0
+
+fn=energy.specialist.wrapIntent
+1 2741816199 0 0
+cfn=Creep.harvest
+calls=52963 1
+1 12599734744 10592600000 0
+
+fn=energy.specialist.act
+1 660097645 0 0
+cfn=energy.specialist.wrapIntent
+calls=53011 1
+1 15341550943 10592600000 0
+cfn=energy.specialist.restockTargets
+calls=6983 1
+1 2672165521 0 0
+cfn=RoomPosition.isNearTo
+calls=9848 1
+1 37822795 0 0
+cfn=energy.specialist.restock
+calls=6862 1
+1 2095900173 1372400000 0
+cfn=RoomPosition.getDirectionTo
+calls=56 1
+1 613393 0 0
+cfn=Creep.moveWrapper
+calls=56 1
+1 14746397 11200000 0
+
+fn=roomActor.roomControllersAct
+1 1635996535 0 0
+cfn=energy.specialist.act
+calls=53011 1
+1 20822896868 11976200000 0
+cfn=roomActor._roomControllerObserveOwn
+calls=100808 1
+1 576141904 0 0
+cfn=energy.take.act
+calls=1759 1
+1 671670942 350600000 0
+cfn=energy.harvest.act
+calls=12212 1
+1 3307016069 2433200000 0
+cfn=downgrade.act
+calls=71 1
+1 25605515 14200000 0
+cfn=energy.restock.act
+calls=3435 1
+1 1167617938 676400000 2
+cfn=repair.act
+calls=13024 1
+1 3964482200 2604600000 0
+cfn=mineral.harvest.act
+calls=13311 1
+1 1092508630 480600000 0
+cfn=mineral.restock.act
+calls=237 1
+1 95138961 47400000 0
+cfn=mineral.dump.act
+calls=24 1
+1 8490796 4800000 0
+cfn=upgrade.act
+calls=3753 1
+1 1150000972 750600000 0
+cfn=energy.unspecialist.act
+calls=105 1
+1 33970105 20000000 0
+cfn=unlive.act
+calls=3 1
+1 1145334 600000 0
+
+fn=Creep.blockPosition
+1 422000397 0 0
+
+fn=Creep.forgetPosition
+1 23383534 0 0
+
+fn=energy.restock._excludeTarget
+1 130589372 0 0
+
+fn=energy.restock.observeMyCreep
+1 226892054 0 0
+cfn=energy.restock._excludeTarget
+calls=29570 1
+1 130589372 0 0
+
+fn=Structure.getFromMemory
+1 417938813 0 0
+
+fn=StructureLink.isSource
+1 684884840 0 0
+cfn=Structure.getFromMemory
+calls=99940 1
+1 360338692 0 0
+
+fn=StructureLink.supply:get
+1 564204611 0 0
+cfn=StructureLink.isSource
+calls=36048 1
+1 398816623 0 0
+
+fn=energy.take.act
+1 64248792 0 0
+cfn=StructureLink.supply:get
+calls=1452 1
+1 82041922 0 0
+cfn=energy.take.wrapIntent
+calls=1753 1
+1 521079192 350600000 0
+cfn=StructureStorage.supply:get
+calls=293 1
+1 4085992 0 0
+cfn=StructureTerminal.supply:get
+calls=4 1
+1 41978 0 0
+cfn=StructureContainer.supply:get
+calls=10 1
+1 173065 0 0
+
+fn=Creep.withdraw
+1 471806168 375200000 0
+cfn=RoomPosition.isNearTo
+calls=1876 1
+1 6279764 0 0
+cfn=RoomPosition.lookFor
+calls=47 1
+1 804571 0 0
+
+fn=energy.take.wrapIntent
+1 76029010 0 0
+cfn=Creep.withdraw
+calls=1753 1
+1 445050181 350600000 0
+
+fn=Room._isDefaultFiltered
+1 163640277 0 0
+
+fn=downgrade.control
+1 425856786 0 0
+cfn=Room._isDefaultFiltered
+calls=13292 1
+1 67045338 0 0
+cfn=downgrade.filterCreep
+calls=23245 1
+1 879385445 0 0
+cfn=downgrade._findTargets
+calls=3704 1
+1 158941613 0 0
+cfn=Room._markDefaultFiltered
+calls=9589 1
+1 62316938 0 0
+cfn=downgrade.assignCreeps
+calls=1 1
+1 119789 0 0
+
+fn=downgrade._hasWCM
+1 84997198 0 0
+
+fn=downgrade._isWorkAble
+1 286347815 0 0
+cfn=downgrade._hasWCM
+calls=23245 1
+1 84997198 0 0
+cfn=downgrade._hasEnergy
+calls=20389 1
+1 197401803 0 0
+
+fn=downgrade._hasEnergy
+1 197401803 0 0
+
+fn=downgrade._defaultFilter
+1 153832966 0 0
+cfn=downgrade._isWorkAble
+calls=23245 1
+1 568746816 0 0
+
+fn=downgrade.filterCreep
+1 156805662 0 0
+cfn=downgrade._defaultFilter
+calls=23245 1
+1 722579783 0 0
+
+fn=downgrade.targets
+1 89796583 0 0
+
+fn=downgrade._findTargets
+1 57218710 0 0
+cfn=downgrade.targets
+calls=3704 1
+1 89796583 0 0
+cfn=downgrade._filterExcludedTargets
+calls=3704 1
+1 11927608 0 0
+
+fn=downgrade._filterExcludedTargets
+1 11927608 0 0
+
+fn=roomActor.roomControllersControl
+1 -82639210 0 0
+cfn=downgrade.control
+calls=13292 1
+1 1593665908 0 0
+cfn=unlive.control
+calls=13291 1
+1 485453717 0 0
+cfn=mineral.harvest.control
+calls=13290 1
+1 2165859289 0 0
+cfn=mineral.restock.control
+calls=13138 1
+1 1094861219 0 0
+cfn=energy.specialist.control
+calls=13745 1
+1 1765819693 0 0
+cfn=energy.unspecialist.control
+calls=13617 1
+1 681823160 0 0
+cfn=energy.take.control
+calls=12902 1
+1 6358772281 0 0
+cfn=energy.harvest.control
+calls=11777 1
+1 16738001410 0 0
+cfn=energy.restock.control
+calls=11334 1
+1 14631981355 0 0
+cfn=repair.control
+calls=9816 1
+1 1861034794 0 0
+cfn=build.control
+calls=9418 1
+1 185350321 0 0
+cfn=rampup.control
+calls=8999 1
+1 329912961 0 0
+cfn=upgrade.control
+calls=8674 1
+1 208569637 0 0
+cfn=mineral.dump.control
+calls=8608 1
+1 577879739 0 0
+
+fn=unlive._isRecyclee
+1 130463211 0 0
+
+fn=unlive.filterCreep
+1 173957917 0 0
+cfn=unlive._isRecyclee
+calls=23244 1
+1 130463211 0 0
+
+fn=unlive.control
+1 176781957 0 0
+cfn=unlive.filterCreep
+calls=23244 1
+1 304421127 0 0
+cfn=unlive._findTargets
+calls=3 1
+1 199680 0 0
+cfn=unlive.assignCreeps
+calls=3 1
+1 4050952 0 0
+
+fn=mineral.harvest._isMiner
+1 102752563 0 0
+
+fn=mineral.harvest.filterCreep
+1 174225246 0 0
+cfn=mineral.harvest._isMiner
+calls=23241 1
+1 102752563 0 0
+cfn=mineral.harvest._isHarvestAble
+calls=1542 1
+1 42195483 0 0
+
+fn=mineral.harvest.control
+1 1475771745 0 0
+cfn=mineral.harvest.filterCreep
+calls=23241 1
+1 319173292 0 0
+cfn=mineral.harvest._findTargets
+calls=1262 1
+1 23017821 0 0
+cfn=mineral.harvest.assignCreeps
+calls=255 1
+1 347896431 0 0
+
+fn=mineral.restock._hasCM
+1 66552080 0 0
+
+fn=mineral.restock.filterCreep
+1 311466190 0 0
+cfn=mineral.restock._hasCM
+calls=22986 1
+1 66552080 0 0
+cfn=mineral.restock._isEmpty
+calls=22986 1
+1 154706293 0 0
+cfn=mineral.restock._hasEnergy
+calls=7136 1
+1 27023729 0 0
+
+fn=mineral.restock._isEmpty
+1 154706293 0 0
+
+fn=mineral.restock._hasEnergy
+1 27023729 0 0
+
+fn=mineral.restock.control
+1 171100077 0 0
+cfn=mineral.restock.filterCreep
+calls=22986 1
+1 559748293 0 0
+cfn=mineral.restock._findTargets
+calls=241 1
+1 21924856 0 0
+cfn=mineral.restock.assignCreeps
+calls=241 1
+1 342087993 0 0
+
+fn=energy.specialist._isRestocker
+1 128784221 0 0
+
+fn=energy.specialist.filterCreep
+1 207486971 0 0
+cfn=energy.specialist._isRestocker
+calls=23878 1
+1 117946859 0 0
+cfn=energy.specialist._isHarvestAble
+calls=5250 1
+1 94688263 0 0
+
+fn=energy.specialist.control
+1 222057800 0 0
+cfn=energy.specialist.filterCreep
+calls=23878 1
+1 420122092 0 0
+cfn=energy.specialist._findTargets
+calls=3707 1
+1 130033462 0 0
+cfn=energy.specialist.assignCreeps
+calls=2717 1
+1 993606340 0 0
+
+fn=energy.unspecialist._isRestocker
+1 91896408 0 0
+
+fn=energy.unspecialist.filterCreep
+1 220610506 0 0
+cfn=energy.unspecialist._isRestocker
+calls=23659 1
+1 91896408 0 0
+cfn=energy.unspecialist._hasCM
+calls=5031 1
+1 13110009 0 0
+cfn=energy.unspecialist._hasEnergy
+calls=5031 1
+1 20941616 0 0
+
+fn=energy.unspecialist.control
+1 172189693 0 0
+cfn=energy.unspecialist.filterCreep
+calls=23659 1
+1 346558538 0 0
+cfn=energy.unspecialist._findTargets
+calls=647 1
+1 122778117 0 0
+cfn=energy.unspecialist.assignCreeps
+calls=97 1
+1 40296812 0 0
+
+fn=energy.take._isRestocker
+1 81071466 0 0
+
+fn=energy.take._isNotRestocker
+1 157274989 0 0
+cfn=energy.take._isRestocker
+calls=22540 1
+1 81071466 0 0
+
+fn=energy.take.filterCreep
+1 365609729 0 0
+cfn=energy.take._isNotRestocker
+calls=22540 1
+1 238346455 0 0
+cfn=energy.take._hasCM
+calls=18628 1
+1 44555649 0 0
+cfn=energy.take._isEmpty
+calls=18628 1
+1 71313278 0 0
+
+fn=energy.take._hasCM
+1 44555649 0 0
+
+fn=energy.take._isEmpty
+1 71313278 0 0
+
+fn=energy.take.control
+1 249420586 0 0
+cfn=energy.take.filterCreep
+calls=22540 1
+1 719825111 0 0
+cfn=energy.take._findTargets
+calls=7223 1
+1 2273122917 0 0
+cfn=energy.take.assignCreeps
+calls=4802 1
+1 3116403667 0 0
+
+fn=energy.harvest._isRestocker
+1 83704852 0 0
+
+fn=energy.harvest._isNotRestocker
+1 144020174 0 0
+cfn=energy.harvest._isRestocker
+calls=20768 1
+1 83704852 0 0
+
+fn=energy.harvest.filterCreep
+1 242723875 0 0
+cfn=energy.harvest._isNotRestocker
+calls=20768 1
+1 227725026 0 0
+cfn=energy.harvest._isHarvestAble
+calls=16856 1
+1 285890441 0 0
+
+fn=energy.harvest._hasWCM
+1 44962494 0 0
+
+fn=energy.harvest._isHarvestAble
+1 186105936 0 0
+cfn=energy.harvest._hasWCM
+calls=16856 1
+1 44962494 0 0
+cfn=energy.harvest._isEmpty
+calls=14003 1
+1 54822011 0 0
+
+fn=energy.harvest._isEmpty
+1 54822011 0 0
+
+fn=energy.harvest.control
+1 233893933 0 0
+cfn=energy.harvest.filterCreep
+calls=20768 1
+1 756339342 0 0
+cfn=energy.harvest._findTargets
+calls=5634 1
+1 155404795 0 0
+cfn=energy.harvest.assignCreeps
+calls=4947 1
+1 15592363340 0 0
+
+fn=energy.restock._hasCM
+1 66153411 0 0
+
+fn=energy.restock.filterCreep
+1 243026376 0 0
+cfn=energy.restock._hasCM
+calls=20161 1
+1 66153411 0 0
+cfn=energy.restock._hasEnergy
+calls=20161 1
+1 120676784 0 0
+
+fn=energy.restock._hasEnergy
+1 120676784 0 0
+
+fn=energy.restock.control
+1 214761980 0 0
+cfn=energy.restock.filterCreep
+calls=20161 1
+1 429856570 0 0
+cfn=energy.restock._findTargets
+calls=5042 1
+1 8894431369 0 0
+cfn=energy.restock.assignCreeps
+calls=3815 1
+1 5092931436 0 0
+
+fn=energy.restock.targets
+1 2409254036 0 0
+cfn=Room.find
+calls=5042 1
+1 46088762 0 0
+cfn=StructureSpawn.demand:get
+calls=57162 1
+1 431475806 0 0
+cfn=StructureExtension.demand:get
+calls=466408 1
+1 4289505207 0 0
+cfn=StructureTower.demand:get
+calls=36913 1
+1 406948512 0 0
+cfn=StructureStorage.demand:get
+calls=10841 1
+1 80255988 0 0
+cfn=StructureTerminal.demand:get
+calls=22019 1
+1 124997484 0 0
+
+fn=StructureSpawn.demand:get
+1 443297410 0 0
+
+fn=StructureExtension.demand:get
+1 4338749880 0 0
+
+fn=StructureTower.demand:get
+1 421112211 0 0
+
+fn=StructureStorage.demand:get
+1 103111629 0 0
+
+fn=StructureTerminal.demand:get
+1 137268655 0 0
+
+fn=energy.restock._findTargets
+1 89900798 0 0
+cfn=energy.restock.targets
+calls=5042 1
+1 7788525794 0 0
+cfn=energy.restock._filterExcludedTargets
+calls=5042 1
+1 1025268560 0 0
+
+fn=energy.restock._filterExcludedTargets
+1 1025268560 0 0
+
+fn=energy.restock.assignCreeps
+1 545349792 0 0
+cfn=energy.restock._findTargets
+calls=3815 1
+1 9263783 0 0
+cfn=energy.restock._creepToTargetsAscendingSort
+calls=4907 1
+1 1535224049 0 0
+cfn=RoomPosition.inRangeTo
+calls=23210 1
+1 58450281 0 0
+cfn=Room.findPath
+calls=19763 1
+1 2929540874 0 0
+cfn=Room.serializePath
+calls=2642 1
+1 15102656 0 0
+
+fn=RoomPosition.manhattanDistance
+1 240415059 0 0
+
+fn=energy.restock._manhattanDistanceCost
+1 452935830 0 0
+cfn=RoomPosition.manhattanDistance
+calls=74484 1
+1 161042211 0 0
+
+fn=energy.restock.creepToTargetCost
+1 437734268 0 0
+cfn=energy.restock._manhattanDistanceCost
+calls=74484 1
+1 613978041 0 0
+
+fn=energy.restock._creepToTargetsAscendingSort
+1 483511739 0 0
+cfn=energy.restock.creepToTargetCost
+calls=74484 1
+1 1051712310 0 0
+
+fn=RoomPosition.isEqualTo
+1 75726559 0 0
+
+fn=Room.findPath
+1 26026009920 0 0
+cfn=RoomPosition.isEqualTo
+calls=26457 1
+1 75726559 0 0
+cfn=CostMatrix.set
+calls=2222793 1
+1 6007011122 0 0
+cfn=CostMatrix.clone
+calls=14630 1
+1 182503065 0 0
+cfn=CostMatrix.setStationaryCreepsUnwalkabke
+calls=9583 1
+1 455268563 0 0
+
+fn=CostMatrix.set
+1 6007011122 0 0
+
+fn=CostMatrix.clone
+1 182503065 0 0
+
+fn=CostMatrix.setStationaryCreepsUnwalkabke
+1 212995627 0 0
+cfn=RoomVisual.circle
+calls=25267 1
+1 242272936 0 0
+
+fn=Room.serializePath
+1 35831520 0 0
+
+fn=Creep.viable:get
+1 1709248477 0 0
+
+fn=Room.getViableRoomOwnedCreeps
+1 3177728659 0 0
+cfn=Creep.viable:get
+calls=353042 1
+1 1708935151 0 0
+
+fn=spawn.work
+1 302738933 0 0
+cfn=Room.getViableRoomOwnedCreeps
+calls=5873 1
+1 4886663811 0 0
+cfn=spawn.my
+calls=5221 1
+1 1607733976 0 0
+cfn=Room.myReserved
+calls=652 1
+1 18448196 0 0
+cfn=spawn.myReserved
+calls=652 1
+1 120099394 0 0
+
+fn=spawn.streloks
+1 53583761 0 0
+cfn=spawn._hasAndPlanned
+calls=285 1
+1 6848392 0 0
+cfn=spawn._canSpawn
+calls=285 1
+1 4126165 0 0
+cfn=spawn.addToQueue
+calls=285 1
+1 1316589 0 0
+
+fn=spawn.my
+1 -1155171511 0 0
+cfn=spawn.streloks
+calls=5221 1
+1 60123211 0 0
+cfn=spawn.restockers
+calls=5221 1
+1 675127836 0 0
+cfn=spawn.miners
+calls=5221 1
+1 246318791 0 0
+cfn=spawn.workers
+calls=5221 1
+1 1781335648 0 0
+
+fn=spawn.restockers
+1 347844281 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=5221 1
+1 21783722 0 0
+cfn=Room.find
+calls=5873 1
+1 39854435 0 0
+cfn=Room.sourceEnergyCapacity
+calls=5221 1
+1 111926487 0 0
+cfn=spawn._hasAndPlanned
+calls=5873 1
+1 134498204 0 0
+cfn=spawn._canSpawn
+calls=5873 1
+1 61826011 0 0
+cfn=spawn.addToQueue
+calls=5873 1
+1 21922173 0 0
+cfn=Room.ownedOrReserved
+calls=652 1
+1 3991832 0 0
+
+fn=Room.ownedOrReserved
+1 82231257 0 0
+
+fn=Room.sourceEnergyCapacity
+1 71202724 0 0
+cfn=Room.ownedOrReserved
+calls=7638 1
+1 78239425 0 0
+
+fn=spawn.makeKey
+1 59562040 0 0
+
+fn=spawn._hasAndPlanned
+1 286686677 0 0
+cfn=spawn.makeKey
+calls=23125 1
+1 57860713 0 0
+
+fn=spawn._canSpawn
+1 120524226 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=16600 1
+1 39423561 0 0
+
+fn=spawn.addToQueue
+1 46587121 0 0
+cfn=spawn._eraseFromQueue
+calls=683 1
+1 11171572 0 0
+cfn=spawn._addToQueue
+calls=78 1
+1 2130914 0 0
+
+fn=spawn.miners
+1 112671280 0 0
+cfn=spawn._hasAndPlanned
+calls=5221 1
+1 66724693 0 0
+cfn=spawn._canSpawn
+calls=5221 1
+1 47905013 0 0
+cfn=spawn.addToQueue
+calls=5221 1
+1 19017805 0 0
+
+fn=spawn.workers
+1 1575358993 0 0
+cfn=spawn._hasAndPlanned
+calls=10442 1
+1 119835647 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=10442 1
+1 24064404 0 0
+cfn=spawn._canSpawn
+calls=5221 1
+1 46090598 0 0
+cfn=spawn.addToQueue
+calls=5221 1
+1 15986006 0 0
+
+fn=energy.harvest.wrapIntent
+1 493939228 0 0
+cfn=Creep.harvest
+calls=12166 1
+1 2717883378 2433200000 0
+
+fn=energy.harvest.act
+1 95193463 0 0
+cfn=energy.harvest.wrapIntent
+calls=12212 1
+1 3211822606 2433200000 0
+
+fn=Creep.upgradeController
+1 926248583 764800000 0
+cfn=RoomPosition.inRangeTo
+calls=3824 1
+1 11109559 0 0
+
+fn=downgrade.wrapIntent
+1 6506656 0 0
+cfn=Creep.upgradeController
+calls=71 1
+1 18314629 14200000 0
+
+fn=downgrade.act
+1 784230 0 0
+cfn=downgrade.wrapIntent
+calls=71 1
+1 24821285 14200000 0
+
+fn=downgrade._excludeTarget
+1 869621 0 0
+
+fn=downgrade.observeMyCreep
+1 596544 0 0
+cfn=downgrade._excludeTarget
+calls=71 1
+1 869621 0 0
+
+fn=outlast.act
+1 51658616 0 0
+
+fn=worldActor.taskControllersControl
+1 194096280 0 0
+cfn=outlast.act
+calls=3910 1
+1 51658616 0 0
+cfn=aggro.act
+calls=3910 1
+1 18683596 0 0
+cfn=beetle.act
+calls=3910 1
+1 25277567 0 0
+cfn=strelok.act
+calls=3910 1
+1 8420108482 1241400000 0
+cfn=plunder.act
+calls=3910 1
+1 3749471034 1233000000 0
+cfn=claim.act
+calls=3910 1
+1 5843859610 2890400000 0
+cfn=observe.act
+calls=3910 1
+1 198448880 0 0
+cfn=spawn.act
+calls=3910 1
+1 355576106 29400000 0
+cfn=pixelGenerator.act
+calls=3910 1
+1 12455752 0 0
+
+fn=aggro.act
+1 18683596 0 0
+
+fn=beetle.act
+1 25277567 0 0
+
+fn=strelok.prepare
+1 13923933 0 0
+
+fn=strelok.act
+1 270761971 0 0
+cfn=strelok.prepare
+calls=3910 1
+1 13923933 0 0
+cfn=strelok.creepPrepare
+calls=8000 1
+1 230090500 0 0
+cfn=Creep.getControlRoom
+calls=7495 1
+1 53339285 0 0
+cfn=strelok.creepAtDestination
+calls=7495 1
+1 7851992794 1241400000 0
+
+fn=plunder.prepare
+1 12520906 0 0
+
+fn=plunder.act
+1 284952494 0 0
+cfn=plunder.prepare
+calls=3910 1
+1 12520906 0 0
+cfn=plunder.creepPrepare
+calls=7621 1
+1 129280450 0 0
+cfn=Creep.getControlRoom
+calls=7195 1
+1 34373024 0 0
+cfn=plunder.creepRoomTravel
+calls=5497 1
+1 2863301249 1098000000 0
+cfn=plunder.creepAtDestination
+calls=1698 1
+1 425042912 135000000 0
+
+fn=Creep.getControlRoom
+1 226377648 0 0
+
+fn=claim.act
+1 624877787 0 0
+cfn=Creep.getControlRoom
+calls=14408 1
+1 79323219 0 0
+cfn=claim.creepAtDestination
+calls=13038 1
+1 3823800748 2607600000 0
+cfn=claim.creepRoomTravel
+calls=1370 1
+1 600421904 273200000 0
+cfn=Flag.getValue
+calls=15640 1
+1 37933776 0 0
+cfn=Room.breached
+calls=14711 1
+1 36571084 0 0
+cfn=claim.flagPrepare
+calls=15640 1
+1 587588343 0 0
+cfn=Flag.setSecondaryColor
+calls=15640 1
+1 53139915 9600000 0
+cfn=claim.spawnFrom
+calls=24 1
+1 103009 0 0
+cfn=claim.spawnPriority
+calls=24 1
+1 50566 0 0
+cfn=claim.bodyName
+calls=24 1
+1 49257 0 0
+
+fn=Room.ally:get
+1 270276153 0 0
+
+fn=claim._roomCheck
+1 261096271 0 0
+cfn=Room.ally:get
+calls=27749 1
+1 270261196 0 0
+cfn=Room.neutral:get
+calls=27749 1
+1 107627352 0 0
+
+fn=Room.neutral:get
+1 107637742 0 0
+
+fn=claim.creepAtDestination
+1 429706780 0 0
+cfn=claim._roomCheck
+calls=13038 1
+1 354257592 0 0
+cfn=RoomPosition.isNearTo
+calls=13038 1
+1 46477518 0 0
+cfn=Creep.moveToWrapper
+calls=873 1
+1 295845244 174600000 0
+cfn=Creep.reserveController
+calls=12165 1
+1 2694087371 2433000000 0
+cfn=Room.find
+calls=578 1
+1 3426244 0 0
+
+fn=Creep.reserveController
+1 2664647257 2433000000 0
+cfn=RoomPosition.isNearTo
+calls=12165 1
+1 29440113 0 0
+
+fn=Room.level
+1 122020288 0 0
+
+fn=claim._creepRoomTravel
+1 26756603 0 0
+cfn=Room.level
+calls=1370 1
+1 13527073 0 0
+cfn=Creep.getControlPos
+calls=1370 1
+1 20280147 0 0
+cfn=RoomPosition.offBorderDistance
+calls=1370 1
+1 3355748 0 0
+cfn=Creep.moveToWrapper
+calls=1370 1
+1 519215084 273200000 0
+
+fn=Creep.getControlPos
+1 -1077952537 0 0
+cfn=Creep.getControlRoom
+calls=15763 1
+1 59342119 0 0
+cfn=Creep.getFlagPos
+calls=15763 1
+1 1336708802 0 0
+cfn=Room.getControlPos
+calls=14393 1
+1 52147554 0 0
+
+fn=Creep.getFlagPos
+1 1336708802 0 0
+
+fn=RoomPosition.offBorderDistance
+1 35436042 0 0
+
+fn=claim.creepRoomTravel
+1 17287249 0 0
+cfn=claim._creepRoomTravel
+calls=1370 1
+1 583134655 273200000 0
+
+fn=Flag.getValue
+1 79471201 0 0
+
+fn=Room.breached
+1 74938487 0 0
+
+fn=claim.flagPrepare
+1 241690631 0 0
+cfn=claim._roomCheck
+calls=14711 1
+1 284727227 0 0
+cfn=Room.breached
+calls=14711 1
+1 30136070 0 0
+cfn=Flag.getValue
+calls=15640 1
+1 31034415 0 0
+
+fn=Flag.setSecondaryColor
+1 33405410 0 0
+cfn=Flag.setColor
+calls=48 1
+1 19734505 9600000 0
+
+fn=observe.act
+1 155543933 0 0
+cfn=Flag.getValue
+calls=3910 1
+1 10503009 0 0
+cfn=Room.breached
+calls=3910 1
+1 8231333 0 0
+cfn=observe.flagPrepare
+calls=3910 1
+1 8939706 0 0
+cfn=Flag.resetSecondaryColor
+calls=3910 1
+1 15230899 0 0
+
+fn=observe.flagPrepare
+1 8939706 0 0
+
+fn=Flag.resetSecondaryColor
+1 15230899 0 0
+
+fn=spawn._queueCallPeek
+1 36090166 0 0
+
+fn=spawn._peekOrGet
+1 32159579 0 0
+cfn=spawn._queueCallPeek
+calls=4067 1
+1 36090166 0 0
+cfn=spawn.dismiss
+calls=965 1
+1 5443317 0 0
+
+fn=spawn.dismiss
+1 4989377 0 0
+cfn=spawn._maxEnergyCapacity
+calls=4 1
+1 418155 0 0
+cfn=spawn._bodyCost
+calls=4 1
+1 35785 0 0
+
+fn=spawn.peek
+1 25226877 0 0
+cfn=spawn._peekOrGet
+calls=4067 1
+1 73693062 0 0
+
+fn=spawn.spawnNext
+1 66730888 0 0
+cfn=spawn.peek
+calls=4067 1
+1 98919939 0 0
+cfn=Room.level
+calls=931 1
+1 15540661 0 0
+cfn=spawn._spawnsInRoom
+calls=931 1
+1 43047620 0 0
+cfn=spawn.makeBody
+calls=494 1
+1 15941483 0 0
+cfn=spawn.postpone
+calls=321 1
+1 2648140 0 0
+cfn=StructureSpawn.spawnCreep
+calls=147 1
+1 41024085 29400000 0
+cfn=spawn._spawnsByDistance
+calls=34 1
+1 10544069 0 0
+
+fn=StructureSpawn.Spawning
+1 14386815 0 0
+
+fn=spawn._spawnsInRoom
+1 29090008 0 0
+cfn=StructureSpawn.Spawning
+calls=1576 1
+1 13957612 0 0
+
+fn=spawn._getBodyFunction
+1 1528286 0 0
+
+fn=spawn.makeBody
+1 11944349 0 0
+cfn=spawn._getBodyFunction
+calls=490 1
+1 1528286 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=490 1
+1 2024561 0 0
+cfn=plunder.makeCM
+calls=6 1
+1 280773 0 0
+cfn=claim.makeClaimM
+calls=24 1
+1 163513 0 0
+
+fn=spawn.postpone
+1 2648140 0 0
+
+fn=spawn.act
+1 61179221 0 0
+cfn=spawn.spawnNext
+calls=4067 1
+1 294396885 29400000 0
+
+fn=pixelGenerator.act
+1 12455752 0 0
+
+fn=worldActor.act
+1 1330124186 0 0
+cfn=worldActor.taskControllersControl
+calls=3910 1
+1 18869635924 5394200000 0
+
+fn=link.work
+1 252501493 0 0
+cfn=StructureLink.isSource
+calls=8468 1
+1 97449683 0 0
+cfn=StructureLink.transferEnergy
+calls=2097 1
+1 644614651 419400000 0
+
+fn=StructureLink.transferEnergy
+1 644614651 419400000 0
+
+fn=RoomPosition.findPathTo
+1 238927816 0 0
+cfn=Room.findPath
+calls=12122 1
+1 11233112420 0 0
+
+fn=spawn._eraseFromQueue
+1 9608332 0 0
+cfn=spawn.makeKey
+calls=683 1
+1 1563240 0 0
+
+fn=spawn.myReserved
+1 11276096 0 0
+cfn=spawn.streloks
+calls=652 1
+1 5751697 0 0
+cfn=spawn.restockers
+calls=652 1
+1 68519309 0 0
+cfn=spawn.plunders
+calls=652 1
+1 34552292 0 0
+
+fn=spawn.plunders
+1 16264804 0 0
+cfn=spawn._hasAndPlanned
+calls=1304 1
+1 16640454 0 0
+cfn=spawn.addToQueue
+calls=652 1
+1 1647034 0 0
+
+fn=energy.restock.act
+1 118000601 0 0
+cfn=StructureExtension.demand:get
+calls=2294 1
+1 49244673 0 0
+cfn=energy.restock.wrapIntent
+calls=3384 1
+1 969455711 676400000 2
+cfn=StructureSpawn.demand:get
+calls=365 1
+1 11821605 0 0
+cfn=StructureTerminal.demand:get
+calls=401 1
+1 4931649 0 0
+cfn=StructureTower.demand:get
+calls=375 1
+1 14163699 0 0
+
+fn=Creep.transfer
+1 2526263941 2121000000 2
+cfn=RoomPosition.isNearTo
+calls=10607 1
+1 33209574 0 0
+
+fn=energy.restock.wrapIntent
+1 148921503 0 0
+cfn=Creep.transfer
+calls=3384 1
+1 820534208 676400000 2
+
+fn=Room._markDefaultFiltered
+1 75413653 0 0
+
+fn=energy.take.targets
+1 1135620244 0 0
+cfn=Room.find
+calls=7223 1
+1 74942202 0 0
+cfn=StructureStorage.supply:get
+calls=15056 1
+1 137089038 0 0
+cfn=StructureLink.supply:get
+calls=28004 1
+1 734915687 0 0
+cfn=StructureTerminal.supply:get
+calls=14503 1
+1 108619892 0 0
+cfn=StructureContainer.supply:get
+calls=2176 1
+1 17648617 0 0
+
+fn=StructureStorage.supply:get
+1 142972297 0 0
+
+fn=StructureTerminal.supply:get
+1 108682501 0 0
+
+fn=energy.take._findTargets
+1 75466990 0 0
+cfn=energy.take.targets
+calls=7223 1
+1 2208835680 0 0
+
+fn=energy.take.assignCreeps
+1 275451943 0 0
+cfn=energy.take._findTargets
+calls=4802 1
+1 11179753 0 0
+cfn=energy.take._creepToTargetsAscendingSort
+calls=6581 1
+1 219040619 0 0
+cfn=energy.take.validateTarget
+calls=6901 1
+1 513787656 0 0
+cfn=RoomPosition.inRangeTo
+calls=3291 1
+1 11164406 0 0
+cfn=Room.findPath
+calls=1519 1
+1 2076776788 0 0
+cfn=Room.serializePath
+calls=1519 1
+1 9002501 0 0
+
+fn=energy.take._manhattanDistanceCost
+1 65281294 0 0
+cfn=RoomPosition.manhattanDistance
+calls=8429 1
+1 21676447 0 0
+
+fn=energy.take.creepToTargetCost
+1 55620207 0 0
+cfn=energy.take._manhattanDistanceCost
+calls=8429 1
+1 86957741 0 0
+
+fn=energy.take._creepToTargetsAscendingSort
+1 76462671 0 0
+cfn=energy.take.creepToTargetCost
+calls=8429 1
+1 142577948 0 0
+
+fn=energy.take.validateTarget
+1 153962823 0 0
+cfn=StructureLink.supply:get
+calls=6592 1
+1 146063626 0 0
+cfn=energy.take._allAssignedTo
+calls=6901 1
+1 211862820 0 0
+cfn=StructureStorage.supply:get
+calls=294 1
+1 1797267 0 0
+cfn=StructureTerminal.supply:get
+calls=4 1
+1 20631 0 0
+cfn=StructureContainer.supply:get
+calls=11 1
+1 80490 0 0
+
+fn=energy.take._allAssignedTo
+1 191170340 0 0
+cfn=Room.getRoomControlledCreeps
+calls=6901 1
+1 20692480 0 0
+
+fn=energy.unspecialist.targets
+1 896684572 0 0
+cfn=Room.find
+calls=6974 1
+1 57143901 0 0
+cfn=StructureContainer.demand_restocker:get
+calls=17462 1
+1 441964488 0 0
+cfn=StructureLink.demand_restocker:get
+calls=64537 1
+1 1274687511 0 0
+
+fn=StructureContainer.isSource
+1 118462258 0 0
+cfn=Structure.getFromMemory
+calls=17650 1
+1 57600122 0 0
+
+fn=StructureContainer.demand_restocker:get
+1 268462334 0 0
+cfn=StructureContainer.isSource
+calls=17462 1
+1 173502153 0 0
+
+fn=StructureLink.demand_restocker:get
+1 726555419 0 0
+cfn=StructureLink.isSource
+calls=55336 1
+1 548132092 0 0
+
+fn=energy.unspecialist._findTargets
+1 63224134 0 0
+cfn=energy.unspecialist.targets
+calls=6974 1
+1 2670480472 0 0
+
+fn=energy.specialist.restockTargets
+1 61440861 0 0
+cfn=energy.unspecialist._findTargets
+calls=6983 1
+1 2610724659 0 0
+
+fn=energy.unspecialist.wrapIntent
+1 343371673 0 0
+cfn=Creep.transfer
+calls=6962 1
+1 1673762050 1392400000 0
+
+fn=energy.unspecialist.act
+1 59956066 0 0
+cfn=energy.unspecialist.wrapIntent
+calls=6967 1
+1 2017133723 1392400000 0
+
+fn=energy.specialist.restock
+1 52780490 0 0
+cfn=energy.unspecialist.act
+calls=6862 1
+1 2043119683 1372400000 0
+
+fn=repair.control
+1 128456988 0 0
+cfn=Room._isDefaultFiltered
+calls=9816 1
+1 22887911 0 0
+cfn=repair.filterCreep
+calls=3268 1
+1 101484067 0 0
+cfn=Room._markDefaultFiltered
+calls=1434 1
+1 11735933 0 0
+cfn=repair._findTargets
+calls=1170 1
+1 1009608388 0 0
+cfn=repair.assignCreeps
+calls=453 1
+1 586861506 0 0
+
+fn=repair._hasWCM
+1 10518160 0 0
+
+fn=repair._isWorkAble
+1 35554575 0 0
+cfn=repair._hasWCM
+calls=3268 1
+1 10518160 0 0
+cfn=repair._hasEnergy
+calls=2533 1
+1 12754954 0 0
+
+fn=repair._hasEnergy
+1 12754954 0 0
+
+fn=repair._defaultFilter
+1 21871701 0 0
+cfn=repair._isWorkAble
+calls=3268 1
+1 58827688 0 0
+
+fn=repair.filterCreep
+1 20784678 0 0
+cfn=repair._defaultFilter
+calls=3268 1
+1 80699389 0 0
+
+fn=build.control
+1 95466583 0 0
+cfn=Room._isDefaultFiltered
+calls=9418 1
+1 22782795 0 0
+cfn=build.filterCreep
+calls=1155 1
+1 34707455 0 0
+cfn=build._findTargets
+calls=717 1
+1 32393488 0 0
+
+fn=energy.specialist._hasWCM
+1 13910253 0 0
+
+fn=energy.specialist._isHarvestAble
+1 60612257 0 0
+cfn=energy.specialist._hasWCM
+calls=5250 1
+1 13910253 0 0
+cfn=energy.specialist._isEmpty
+calls=5250 1
+1 20165752 0 0
+
+fn=energy.specialist._isEmpty
+1 20165752 0 0
+
+fn=energy.specialist.targets
+1 69195741 0 0
+cfn=Room.find
+calls=3707 1
+1 28972535 0 0
+
+fn=energy.specialist._findTargets
+1 37743332 0 0
+cfn=energy.specialist.targets
+calls=3707 1
+1 98168275 0 0
+
+fn=energy.specialist.assignCreeps
+1 86420872 0 0
+cfn=energy.specialist._findTargets
+calls=2717 1
+1 5878145 0 0
+cfn=energy.specialist._creepToTargetsAscendingSort
+calls=2861 1
+1 93898230 0 0
+cfn=energy.specialist.validateTarget
+calls=3170 1
+1 224033129 0 0
+cfn=RoomPosition.inRangeTo
+calls=1210 1
+1 3632230 0 0
+cfn=Room.findPath
+calls=745 1
+1 579003296 0 0
+cfn=Room.serializePath
+calls=117 1
+1 740437 0 0
+
+fn=energy.specialist._manhattanDistanceCost
+1 28880123 0 0
+cfn=RoomPosition.manhattanDistance
+calls=3315 1
+1 8480451 0 0
+
+fn=energy.specialist.creepToTargetCost
+1 22072753 0 0
+cfn=energy.specialist._manhattanDistanceCost
+calls=3315 1
+1 37360574 0 0
+
+fn=energy.specialist._creepToTargetsAscendingSort
+1 34464903 0 0
+cfn=energy.specialist.creepToTargetCost
+calls=3315 1
+1 59433327 0 0
+
+fn=energy.specialist._allAssignedTo
+1 92360012 0 0
+cfn=Room.getRoomControlledCreeps
+calls=3170 1
+1 10162395 0 0
+
+fn=energy.specialist.validateTarget
+1 73157699 0 0
+cfn=energy.specialist._allAssignedTo
+calls=3170 1
+1 102522407 0 0
+cfn=energy.specialist._isRestocker
+calls=2417 1
+1 10837362 0 0
+cfn=Room.sourceEnergyCapacity
+calls=2417 1
+1 37515661 0 0
+
+fn=energy.unspecialist._hasCM
+1 13110009 0 0
+
+fn=energy.unspecialist._hasEnergy
+1 20941616 0 0
+
+fn=energy.harvest.targets
+1 81003354 0 0
+cfn=Room.find
+calls=5634 1
+1 30832318 0 0
+
+fn=energy.harvest._findTargets
+1 54389134 0 0
+cfn=energy.harvest.targets
+calls=5634 1
+1 111835672 0 0
+
+fn=energy.harvest.assignCreeps
+1 475908243 0 0
+cfn=energy.harvest._findTargets
+calls=4947 1
+1 10820011 0 0
+cfn=energy.harvest._creepToTargetsAscendingSort
+calls=8382 1
+1 247505114 0 0
+cfn=RoomPosition.inRangeTo
+calls=17673 1
+1 60735646 0 0
+cfn=Room.findPath
+calls=8834 1
+1 14794003711 0 0
+cfn=Room.serializePath
+calls=601 1
+1 3390614 0 0
+
+fn=energy.harvest._manhattanDistanceCost
+1 76514795 0 0
+cfn=RoomPosition.manhattanDistance
+calls=9089 1
+1 22990826 0 0
+
+fn=energy.harvest.creepToTargetCost
+1 59667891 0 0
+cfn=energy.harvest._manhattanDistanceCost
+calls=9089 1
+1 99505622 0 0
+
+fn=energy.harvest._creepToTargetsAscendingSort
+1 88331601 0 0
+cfn=energy.harvest.creepToTargetCost
+calls=9089 1
+1 159173513 0 0
+
+fn=rampup.control
+1 107882841 0 0
+cfn=Room._isDefaultFiltered
+calls=8999 1
+1 32785614 0 0
+cfn=rampup.filterCreep
+calls=2055 1
+1 87585628 0 0
+cfn=rampup._findTargets
+calls=533 1
+1 101658878 0 0
+
+fn=rampup._isRestocker
+1 15087949 0 0
+
+fn=rampup._isNotRestocker
+1 13617895 0 0
+cfn=rampup._isRestocker
+calls=2055 1
+1 15087949 0 0
+
+fn=rampup.filterCreep
+1 21694689 0 0
+cfn=rampup._isNotRestocker
+calls=2055 1
+1 28705845 0 0
+cfn=rampup._defaultFilter
+calls=1700 1
+1 37185095 0 0
+
+fn=rampup._hasWCM
+1 4928173 0 0
+
+fn=rampup._isWorkAble
+1 16387488 0 0
+cfn=rampup._hasWCM
+calls=1700 1
+1 4928173 0 0
+cfn=rampup._hasEnergy
+calls=965 1
+1 5515634 0 0
+
+fn=rampup._hasEnergy
+1 5515634 0 0
+
+fn=rampup._defaultFilter
+1 10353801 0 0
+cfn=rampup._isWorkAble
+calls=1700 1
+1 26831294 0 0
+
+fn=upgrade.control
+1 69761255 0 0
+cfn=Room._isDefaultFiltered
+calls=8674 1
+1 18138619 0 0
+cfn=upgrade.filterCreep
+calls=304 1
+1 8060242 0 0
+cfn=upgrade._findTargets
+calls=157 1
+1 3439825 0 0
+cfn=upgrade.assignCreeps
+calls=142 1
+1 107808914 0 0
+cfn=Room._markDefaultFiltered
+calls=134 1
+1 1360782 0 0
+
+fn=mineral.dump.filterCreep
+1 71560030 0 0
+cfn=mineral.dump._hasCM
+calls=2791 1
+1 7259815 0 0
+cfn=mineral.dump._isEmpty
+calls=2791 1
+1 15516138 0 0
+
+fn=mineral.dump.control
+1 152758338 0 0
+cfn=mineral.dump.filterCreep
+calls=16172 1
+1 94335983 0 0
+cfn=mineral.dump._findTargets
+calls=1846 1
+1 133232801 0 0
+cfn=mineral.dump.assignCreeps
+calls=1846 1
+1 197552616 0 0
+
+fn=StructureContainer.supply:get
+1 17902171 0 0
+
+fn=downgrade.assignCreeps
+1 68862 0 0
+cfn=downgrade._findTargets
+calls=1 1
+1 1288 0 0
+cfn=downgrade._creepToTargetsAscendingSort
+calls=1 1
+1 45781 0 0
+cfn=RoomPosition.inRangeTo
+calls=1 1
+1 1860 0 0
+cfn=downgrade.extra
+calls=1 1
+1 1997 0 0
+
+fn=downgrade._manhattanDistanceCost
+1 14778 0 0
+cfn=RoomPosition.manhattanDistance
+calls=1 1
+1 3450 0 0
+
+fn=downgrade.creepToTargetCost
+1 11978 0 0
+cfn=downgrade._manhattanDistanceCost
+calls=1 1
+1 18229 0 0
+
+fn=downgrade._creepToTargetsAscendingSort
+1 15574 0 0
+cfn=downgrade.creepToTargetCost
+calls=1 1
+1 30207 0 0
+
+fn=downgrade.extra
+1 1997 0 0
+
+fn=Creep.moveWrapper
+1 4324213 0 0
+cfn=Creep.rememberPosition
+calls=145 1
+1 1937040 0 0
+cfn=Creep.move
+calls=145 1
+1 23449290 29000000 0
+
+fn=RoomPosition.getDirectionTo
+1 613393 0 0
+
+fn=StructureSpawn.spawnCreep
+1 41024085 29400000 0
+
+fn=spawn._spawnsCanSpawn
+1 2054546 0 0
+cfn=StructureSpawn.Spawning
+calls=62 1
+1 429203 0 0
+
+fn=spawn._spawnsByDistance
+1 5305197 0 0
+cfn=spawn._spawnsCanSpawn
+calls=34 1
+1 2483749 0 0
+cfn=Room.level
+calls=982 1
+1 2755122 0 0
+
+fn=plunder.makeCM
+1 280773 0 0
+
+fn=plunder._flagCountCreep
+1 79849238 0 0
+
+fn=plunder.creepPrepare
+1 49431212 0 0
+cfn=plunder._flagCountCreep
+calls=7621 1
+1 79849238 0 0
+
+fn=repair.targets
+1 73467317 0 0
+cfn=Room.level
+calls=1704 1
+1 15744190 0 0
+cfn=Room.find
+calls=1170 1
+1 795291068 0 0
+cfn=StructureContainer.isSource
+calls=180 1
+1 2464201 0 0
+
+fn=repair._findTargets
+1 22848137 0 0
+cfn=repair.targets
+calls=1170 1
+1 886966776 0 0
+cfn=repair._filterExcludedTargets
+calls=1170 1
+1 100888132 0 0
+
+fn=repair._filterExcludedTargets
+1 100888132 0 0
+
+fn=repair.assignCreeps
+1 47380640 0 0
+cfn=repair._findTargets
+calls=453 1
+1 1094656 0 0
+cfn=repair._creepToTargetsAscendingSort
+calls=469 1
+1 161322737 0 0
+cfn=RoomPosition.inRangeTo
+calls=783 1
+1 2915662 0 0
+cfn=repair.extra
+calls=469 1
+1 2854345 0 0
+cfn=Room.findPath
+calls=313 1
+1 369396694 0 0
+cfn=Room.serializePath
+calls=312 1
+1 1896773 0 0
+
+fn=repair._manhattanDistanceCost
+1 45115506 0 0
+cfn=RoomPosition.manhattanDistance
+calls=7687 1
+1 16843013 0 0
+
+fn=repair.creepToTargetCost
+1 43836319 0 0
+cfn=repair._manhattanDistanceCost
+calls=7687 1
+1 61958519 0 0
+
+fn=repair._creepToTargetsAscendingSort
+1 55527900 0 0
+cfn=repair.creepToTargetCost
+calls=7687 1
+1 105794837 0 0
+
+fn=repair.extra
+1 2854345 0 0
+
+fn=Creep.pickup
+1 16431869 13200000 0
+cfn=RoomPosition.isNearTo
+calls=66 1
+1 255895 0 0
+
+fn=grab.wrapIntent
+1 9325491 0 0
+cfn=Creep.pickup
+calls=66 1
+1 16687763 13200000 0
+cfn=Creep.withdraw
+calls=86 1
+1 22392512 17200000 0
+
+fn=Creep.repair
+1 3035903813 2604600000 0
+cfn=RoomPosition.inRangeTo
+calls=13023 1
+1 37534803 0 0
+
+fn=repair.wrapIntent
+1 706869032 0 0
+cfn=Creep.repair
+calls=13023 1
+1 3073438616 2604600000 0
+
+fn=repair.act
+1 184174553 0 0
+cfn=repair.wrapIntent
+calls=13024 1
+1 3780307647 2604600000 0
+
+fn=repair._excludeTarget
+1 105850127 0 0
+
+fn=repair.observeMyCreep
+1 124533475 0 0
+cfn=repair._excludeTarget
+calls=17120 1
+1 105850127 0 0
+
+fn=mineral.harvest._hasWCM
+1 5306675 0 0
+
+fn=mineral.harvest._isHarvestAble
+1 21414020 0 0
+cfn=mineral.harvest._hasWCM
+calls=1542 1
+1 5306675 0 0
+cfn=mineral.harvest._isEmpty
+calls=1542 1
+1 15474788 0 0
+
+fn=mineral.harvest._isEmpty
+1 15474788 0 0
+
+fn=mineral.harvest.targets
+1 11637535 0 0
+
+fn=mineral.harvest._findTargets
+1 11916748 0 0
+cfn=mineral.harvest.targets
+calls=1262 1
+1 11637535 0 0
+
+fn=mineral.harvest.assignCreeps
+1 23167910 0 0
+cfn=mineral.harvest._findTargets
+calls=255 1
+1 536462 0 0
+cfn=mineral.harvest._creepToTargetsAscendingSort
+calls=255 1
+1 8254949 0 0
+cfn=RoomPosition.inRangeTo
+calls=510 1
+1 1544314 0 0
+cfn=Room.findPath
+calls=255 1
+1 312425883 0 0
+cfn=Room.serializePath
+calls=255 1
+1 1966913 0 0
+
+fn=mineral.harvest._manhattanDistanceCost
+1 2248535 0 0
+cfn=RoomPosition.manhattanDistance
+calls=255 1
+1 688623 0 0
+
+fn=mineral.harvest.creepToTargetCost
+1 1623207 0 0
+cfn=mineral.harvest._manhattanDistanceCost
+calls=255 1
+1 2937158 0 0
+
+fn=mineral.harvest._creepToTargetsAscendingSort
+1 3694584 0 0
+cfn=mineral.harvest.creepToTargetCost
+calls=255 1
+1 4560365 0 0
+
+fn=plunder._creepRoomTravel
+1 135892257 0 0
+cfn=Room.level
+calls=5497 1
+1 74004198 0 0
+cfn=Creep.getControlPos
+calls=5497 1
+1 147411090 0 0
+cfn=RoomPosition.offBorderDistance
+calls=5497 1
+1 16931223 0 0
+cfn=Creep.moveToWrapper
+calls=5497 1
+1 2309114187 1098000000 0
+
+fn=Room.getControlPos
+1 52147554 0 0
+
+fn=plunder.creepRoomTravel
+1 179948294 0 0
+cfn=plunder._creepRoomTravel
+calls=5497 1
+1 2683352954 1098000000 0
+
+fn=Room.lookForAt
+1 43910411 0 0
+
+fn=RoomPosition.lookFor
+1 54524599 0 0
+cfn=Room.lookForAt
+calls=5027 1
+1 43910411 0 0
+
+fn=mineral.harvest.act
+1 138584065 0 0
+cfn=RoomPosition.lookFor
+calls=2403 1
+1 60161954 0 0
+cfn=mineral.harvest.wrapIntent
+calls=2403 1
+1 893762611 480600000 0
+
+fn=Structure.isActive
+1 30011992 0 0
+
+fn=mineral.harvest.wrapIntent
+1 188676753 0 0
+cfn=Creep.harvest
+calls=2403 1
+1 705085858 480600000 0
+
+fn=plunder.creepAtOtherRooms
+1 83843172 0 0
+cfn=Room.find
+calls=1262 1
+1 6721036 0 0
+cfn=plunder.findTarget
+calls=37 1
+1 1288222 0 0
+cfn=plunder.moveAndLoad
+calls=675 1
+1 304963125 135000000 0
+cfn=plunder.getSomeOwnRoomName
+calls=37 1
+1 2048008 0 0
+cfn=Creep.setControlRoom
+calls=37 1
+1 443182 0 0
+
+fn=plunder.findTarget
+1 1288222 0 0
+
+fn=plunder.moveAndLoad
+1 13737710 0 0
+cfn=RoomPosition.isNearTo
+calls=675 1
+1 2809997 0 0
+cfn=Creep.moveToWrapper
+calls=638 1
+1 276967608 127600000 0
+cfn=Creep.withdraw
+calls=37 1
+1 11447810 7400000 0
+
+fn=plunder.creepAtDestination
+1 13557394 0 0
+cfn=plunder.creepAtOtherRooms
+calls=712 1
+1 399306745 135000000 0
+cfn=plunder.creepAtOwnRoom
+calls=986 1
+1 12178772 0 0
+
+fn=plunder.getSomeOwnRoomName
+1 2048008 0 0
+
+fn=Creep.setControlRoom
+1 681382 0 0
+
+fn=upgrade._isEmpty
+1 24412220 0 0
+
+fn=mineral.dump._hasCM
+1 7259815 0 0
+
+fn=mineral.dump._isEmpty
+1 15516138 0 0
+
+fn=mineral.dump._checkStore
+1 71055289 0 0
+cfn=StructureStorage.demand:get
+calls=3692 1
+1 22855642 0 0
+
+fn=mineral.dump.targets
+1 21225486 0 0
+cfn=mineral.dump._checkStore
+calls=1846 1
+1 93910931 0 0
+
+fn=mineral.dump._findTargets
+1 21939065 0 0
+cfn=mineral.dump.targets
+calls=1846 1
+1 115136418 0 0
+
+fn=mineral.dump.assignCreeps
+1 81788130 0 0
+cfn=mineral.dump._findTargets
+calls=1846 1
+1 3842682 0 0
+cfn=mineral.dump._creepToTargetsAscendingSort
+calls=2791 1
+1 72662581 0 0
+cfn=RoomPosition.inRangeTo
+calls=2815 1
+1 7994892 0 0
+cfn=Room.findPath
+calls=2791 1
+1 31147242 0 0
+cfn=Room.serializePath
+calls=24 1
+1 117090 0 0
+
+fn=mineral.dump._manhattanDistanceCost
+1 21283109 0 0
+cfn=RoomPosition.manhattanDistance
+calls=2791 1
+1 6969658 0 0
+
+fn=mineral.dump.creepToTargetCost
+1 18670357 0 0
+cfn=mineral.dump._manhattanDistanceCost
+calls=2791 1
+1 28252766 0 0
+
+fn=mineral.dump._creepToTargetsAscendingSort
+1 25739458 0 0
+cfn=mineral.dump.creepToTargetCost
+calls=2791 1
+1 46923123 0 0
+
+fn=mineral.restock._checkStore
+1 12778811 0 0
+cfn=StructureTerminal.demand:get
+calls=482 1
+1 4340099 0 0
+
+fn=mineral.restock.targets
+1 2681203 0 0
+cfn=mineral.restock._checkStore
+calls=241 1
+1 17118911 0 0
+
+fn=mineral.restock._findTargets
+1 2581918 0 0
+cfn=mineral.restock.targets
+calls=241 1
+1 19800114 0 0
+
+fn=mineral.restock.assignCreeps
+1 24336253 0 0
+cfn=mineral.restock._findTargets
+calls=241 1
+1 457176 0 0
+cfn=mineral.restock._creepToTargetsAscendingSort
+calls=241 1
+1 7400835 0 0
+cfn=RoomPosition.inRangeTo
+calls=482 1
+1 4648626 0 0
+cfn=Room.findPath
+calls=241 1
+1 303967158 0 0
+cfn=Room.serializePath
+calls=241 1
+1 1277944 0 0
+
+fn=mineral.restock._manhattanDistanceCost
+1 1899918 0 0
+cfn=RoomPosition.manhattanDistance
+calls=241 1
+1 655914 0 0
+
+fn=mineral.restock.creepToTargetCost
+1 1508904 0 0
+cfn=mineral.restock._manhattanDistanceCost
+calls=241 1
+1 2555831 0 0
+
+fn=mineral.restock._creepToTargetsAscendingSort
+1 3336100 0 0
+cfn=mineral.restock.creepToTargetCost
+calls=241 1
+1 4064735 0 0
+
+fn=mineral.restock._wantFunction
+1 9497242 0 0
+cfn=StructureTerminal.demand:get
+calls=237 1
+1 2999422 0 0
+
+fn=mineral.restock.act
+1 9493006 0 0
+cfn=mineral.restock._wantFunction
+calls=237 1
+1 12496665 0 0
+cfn=mineral.restock.wrapIntent
+calls=237 1
+1 73149291 47400000 0
+
+fn=mineral.restock.wrapIntent
+1 13878045 0 0
+cfn=Creep.transfer
+calls=237 1
+1 59271246 47400000 0
+
+fn=StructureTerminal._caclTransactionAmount
+1 4684957 0 0
+
+fn=StructureTerminal.autoSell
+1 214702976 0 0
+cfn=StructureTerminal._caclTransactionAmount
+calls=391 1
+1 4684957 0 0
+
+fn=rampup.targets
+1 5693253 0 0
+cfn=Room.find
+calls=533 1
+1 86680302 0 0
+
+fn=rampup._findTargets
+1 7845486 0 0
+cfn=rampup.targets
+calls=533 1
+1 92373554 0 0
+cfn=rampup._filterExcludedTargets
+calls=533 1
+1 1439838 0 0
+
+fn=rampup._filterExcludedTargets
+1 1439838 0 0
+
+fn=plunder.creepAtOwnRoom
+1 10658099 0 0
+cfn=Creep.viable:set
+calls=36 1
+1 306299 0 0
+cfn=plunder.getTargetRoomName
+calls=36 1
+1 380836 0 0
+cfn=Creep.viable:get
+calls=36 1
+1 300847 0 0
+cfn=Creep.setControlRoom
+calls=33 1
+1 216132 0 0
+cfn=Creep.unlive
+calls=3 1
+1 316558 0 0
+
+fn=build._hasWCM
+1 2995160 0 0
+
+fn=build._isWorkAble
+1 12309315 0 0
+cfn=build._hasWCM
+calls=1155 1
+1 2995160 0 0
+cfn=build._hasEnergy
+calls=1032 1
+1 4382678 0 0
+
+fn=build._hasEnergy
+1 4382678 0 0
+
+fn=build._defaultFilter
+1 7567797 0 0
+cfn=build._isWorkAble
+calls=1155 1
+1 19687153 0 0
+
+fn=build.filterCreep
+1 7452505 0 0
+cfn=build._defaultFilter
+calls=1155 1
+1 27254950 0 0
+
+fn=build._sites
+1 7609709 0 0
+cfn=Room.find
+calls=717 1
+1 13956271 0 0
+
+fn=build.targets
+1 5173264 0 0
+cfn=build._sites
+calls=717 1
+1 21565980 0 0
+
+fn=build._findTargets
+1 5654245 0 0
+cfn=build.targets
+calls=717 1
+1 26739244 0 0
+
+fn=upgrade._hasWCM
+1 697000 0 0
+
+fn=upgrade._isWorkAble
+1 2436090 0 0
+cfn=upgrade._hasWCM
+calls=304 1
+1 697000 0 0
+cfn=upgrade._hasEnergy
+calls=181 1
+1 669748 0 0
+
+fn=upgrade._hasEnergy
+1 669748 0 0
+
+fn=upgrade._defaultFilter
+1 1764893 0 0
+cfn=upgrade._isWorkAble
+calls=304 1
+1 3802838 0 0
+
+fn=upgrade.filterCreep
+1 2492511 0 0
+cfn=upgrade._defaultFilter
+calls=304 1
+1 5567731 0 0
+
+fn=upgrade.targets
+1 2378059 0 0
+
+fn=upgrade._findTargets
+1 1372445 0 0
+cfn=upgrade.targets
+calls=157 1
+1 2378059 0 0
+
+fn=upgrade.assignCreeps
+1 11628239 0 0
+cfn=upgrade._findTargets
+calls=142 1
+1 310679 0 0
+cfn=upgrade._creepToTargetsAscendingSort
+calls=163 1
+1 5164844 0 0
+cfn=upgrade.validateTarget
+calls=163 1
+1 1154435 0 0
+cfn=RoomPosition.inRangeTo
+calls=272 1
+1 979446 0 0
+cfn=Room.findPath
+calls=109 1
+1 87950273 0 0
+cfn=Room.serializePath
+calls=99 1
+1 620998 0 0
+
+fn=upgrade._manhattanDistanceCost
+1 1357299 0 0
+cfn=RoomPosition.manhattanDistance
+calls=163 1
+1 604948 0 0
+
+fn=upgrade.creepToTargetCost
+1 1034860 0 0
+cfn=upgrade._manhattanDistanceCost
+calls=163 1
+1 1962247 0 0
+
+fn=upgrade._creepToTargetsAscendingSort
+1 2167737 0 0
+cfn=upgrade.creepToTargetCost
+calls=163 1
+1 2997107 0 0
+
+fn=upgrade.validateTarget
+1 1154435 0 0
+
+fn=mineral.dump._wantFunction
+1 716801 0 0
+
+fn=mineral.dump.act
+1 713014 0 0
+cfn=mineral.dump._wantFunction
+calls=24 1
+1 716801 0 0
+cfn=mineral.dump.wrapIntent
+calls=24 1
+1 7060982 4800000 0
+
+fn=mineral.dump.wrapIntent
+1 1154972 0 0
+cfn=Creep.transfer
+calls=24 1
+1 5906010 4800000 0
+
+fn=Creep.viable:set
+1 306299 0 0
+
+fn=plunder.getTargetRoomName
+1 380836 0 0
+
+fn=upgrade.wrapIntent
+1 202263655 0 0
+cfn=Creep.upgradeController
+calls=3753 1
+1 919043514 750600000 0
+
+fn=upgrade.act
+1 28693803 0 0
+cfn=upgrade.wrapIntent
+calls=3753 1
+1 1121307169 750600000 0
+
+fn=energy.unspecialist.assignCreeps
+1 8826879 0 0
+cfn=energy.unspecialist._findTargets
+calls=97 1
+1 201830 0 0
+cfn=energy.unspecialist._creepToTargetsAscendingSort
+calls=106 1
+1 4776737 0 0
+cfn=RoomPosition.inRangeTo
+calls=138 1
+1 467189 0 0
+cfn=Room.findPath
+calls=32 1
+1 25876674 0 0
+cfn=Room.serializePath
+calls=32 1
+1 147503 0 0
+
+fn=energy.unspecialist._manhattanDistanceCost
+1 1259682 0 0
+cfn=RoomPosition.manhattanDistance
+calls=172 1
+1 444673 0 0
+
+fn=energy.unspecialist.creepToTargetCost
+1 1282498 0 0
+cfn=energy.unspecialist._manhattanDistanceCost
+calls=172 1
+1 1704355 0 0
+
+fn=energy.unspecialist._creepToTargetsAscendingSort
+1 1789884 0 0
+cfn=energy.unspecialist.creepToTargetCost
+calls=172 1
+1 2986853 0 0
+
+fn=Flag.setColor
+1 19734505 9600000 0
+
+fn=claim.spawnFrom
+1 103009 0 0
+
+fn=claim.spawnPriority
+1 50566 0 0
+
+fn=claim.bodyName
+1 49257 0 0
+
+fn=claim.makeClaimM
+1 163513 0 0
+
+fn=Creep.pc:get
+1 75983649 0 0
+
+fn=StructureTower.attack
+1 1148607938 911400000 0
+
+fn=Creep.ally:get
+1 246991897 0 0
+
+fn=historyActor.getObjectById
+1 35913349 0 0
+cfn=Room.find
+calls=3 1
+1 24562 0 0
+
+fn=historyActor.handle_EVENT_ATTACK
+1 72396006 0 0
+cfn=historyActor.getObjectById
+calls=4691 1
+1 12512482 0 0
+cfn=Room.myOrAlly
+calls=67 1
+1 967818 0 0
+cfn=Room.extendedOwnerUsername
+calls=67 1
+1 827217 0 0
+cfn=Room.myOrMyReserved
+calls=67 1
+1 128547 0 0
+cfn=Creep.pc:get
+calls=67 1
+1 2381833 0 0
+cfn=historyActor.increaseDirectHarm
+calls=67 1
+1 750424 0 0
+
+fn=historyActor.handle_EVENT_HEAL
+1 71623214 0 0
+cfn=historyActor.getObjectById
+calls=4504 1
+1 23425429 0 0
+cfn=historyActor.increaseDirectHarm
+calls=1496 1
+1 20824457 0 0
+
+fn=historyActor._increaseSomeValue
+1 29789319 0 0
+
+fn=historyActor.increaseDirectHarm
+1 14496979 0 0
+cfn=historyActor._increaseSomeValue
+calls=1563 1
+1 7077902 0 0
+
+fn=historyActor.increaseSideHarm
+1 22061876 0 0
+cfn=historyActor._increaseSomeValue
+calls=2989 1
+1 11508445 0 0
+
+fn=historyActor.increaseSideHarmPower
+1 21051681 0 0
+cfn=historyActor._increaseSomeValue
+calls=2989 1
+1 11202972 0 0
+
+fn=Room.myOrAlly
+1 734700 0 0
+cfn=Room.myOrMyReserved
+calls=67 1
+1 233117 0 0
+
+fn=spawn._addToQueue
+1 1992827 0 0
+cfn=spawn.makeKey
+calls=78 1
+1 138087 0 0
+
+fn=Creep.getActiveBodyparts
+1 87763126 0 0
+
+fn=strelok.creepPrepare
+1 142327373 0 0
+cfn=Creep.getActiveBodyparts
+calls=24000 1
+1 87763126 0 0
+
+fn=strelok.creepAtDestination
+1 619526977 0 0
+cfn=Room.find
+calls=3494 1
+1 1043084463 0 0
+cfn=Creep.hostile:get
+calls=21183 1
+1 143979531 0 0
+cfn=Room.aggro
+calls=1747 1
+1 6691019 0 0
+cfn=Creep.myOrAlly
+calls=21183 1
+1 129614057 0 0
+cfn=Creep.allyOrNeutral
+calls=21183 1
+1 385264793 0 0
+cfn=Creep.getControlPos
+calls=7495 1
+1 177011237 0 0
+cfn=RoomPosition.getRangeTo
+calls=13589 1
+1 42716310 0 0
+cfn=RoomPosition.findClosestByRange
+calls=7495 1
+1 144719103 0 0
+cfn=Creep.moveToWrapper
+calls=6090 1
+1 4963871600 1218000000 0
+cfn=Creep.healClosest
+calls=7495 1
+1 18656630 0 0
+cfn=Creep.meleeAdjacent
+calls=6094 1
+1 89222496 0 0
+cfn=Creep.fatigueWrapper
+calls=4 1
+1 47065 0 0
+cfn=strelok._coastToHalt
+calls=1401 1
+1 87587513 23400000 0
+
+fn=OwnedStructure.hostile:get
+1 265035385 0 0
+
+fn=Room.aggro
+1 6691019 0 0
+
+fn=Creep.allyOrNeutral
+1 194386906 0 0
+cfn=Creep.ally:get
+calls=21183 1
+1 103706690 0 0
+cfn=Creep.neutral:get
+calls=21183 1
+1 87171197 0 0
+
+fn=Creep.neutral:get
+1 87197739 0 0
+
+fn=RoomPosition.getRangeTo
+1 78413743 0 0
+
+fn=RoomPosition.findClosestByRange
+1 109021670 0 0
+cfn=RoomPosition.getRangeTo
+calls=12178 1
+1 35697433 0 0
+
+fn=Creep.healClosest
+1 18656630 0 0
+
+fn=Creep.meleeAdjacent
+1 56162406 0 0
+cfn=RoomPosition.isNearTo
+calls=12178 1
+1 33060089 0 0
+
+fn=Creep.toJSON
+1 980596 0 0
+cfn=Creep.ally:get
+calls=1 1
+1 45977 0 0
+cfn=Creep.neutral:get
+calls=1 1
+1 26542 0 0
+cfn=Creep.hostile:get
+calls=1 1
+1 24731 0 0
+cfn=Creep.pc:get
+calls=1 1
+1 18013 0 0
+cfn=Creep.viable:get
+calls=1 1
+1 12479 0 0
+
+fn=Room.toJSON
+1 352318 0 0
+cfn=Room.my:get
+calls=2 1
+1 21285 0 0
+cfn=Room.ally:get
+calls=2 1
+1 14956 0 0
+cfn=Room.neutral:get
+calls=2 1
+1 10390 0 0
+cfn=Room.hostile:get
+calls=2 1
+1 50752 0 0
+cfn=Room.unowned:get
+calls=2 1
+1 16056 0 0
+cfn=Room.pc:get
+calls=2 1
+1 41908 0 0
+
+fn=Room.hostile:get
+1 50752 0 0
+
+fn=Room.unowned:get
+1 16056 0 0
+
+fn=Room.pc:get
+1 41908 0 0
+
+fn=Room.Terrain
+1 631143 0 0
+
+fn=Room.getTerrain
+1 286956 0 0
+cfn=Room.Terrain
+calls=34 1
+1 631143 0 0
+
+fn=roomInfo.harvestLevel
+1 2113407 0 0
+cfn=Room.getTerrain
+calls=18 1
+1 621721 0 0
+cfn=Room.find
+calls=18 1
+1 125113 0 0
+cfn=roomInfo._walkable
+calls=252 1
+1 3087201 0 0
+
+fn=roomInfo._walkable
+1 1594146 0 0
+cfn=RoomPosition.lookFor
+calls=174 1
+1 1680609 0 0
+
+fn=roomInfo.sourceLevel
+1 2956171 0 0
+cfn=Room.find
+calls=34 1
+1 839038 0 0
+cfn=StructureLink.isSource
+calls=88 1
+1 825132 0 0
+cfn=Room.getTerrain
+calls=16 1
+1 296378 0 0
+cfn=RoomPosition.findSharedAdjacentPositions
+calls=40 1
+1 1742432 0 0
+cfn=roomInfo._walkable
+calls=32 1
+1 187554 0 0
+cfn=StructureContainer.isSource
+calls=8 1
+1 96026 0 0
+
+fn=RoomPosition.findSharedAdjacentPositions
+1 1742432 0 0
+
+fn=roomInfo.miningLevel
+1 204564 0 0
+cfn=Room.find
+calls=18 1
+1 279571 0 0
+
+fn=roomInfo.wallLevel
+1 349727 0 0
+cfn=Room.level
+calls=16 1
+1 411472 0 0
+cfn=roomInfo._wallLevel
+calls=16 1
+1 1871142 0 0
+
+fn=roomInfo._wallLevel
+1 1025827 0 0
+cfn=Room.find
+calls=16 1
+1 845315 0 0
+
+fn=Creep.unlive
+1 224121 0 0
+cfn=Room.level
+calls=3 1
+1 37571 0 0
+cfn=Creep.setControlRoom
+calls=3 1
+1 22069 0 0
+cfn=Creep.setFromRoom
+calls=3 1
+1 32796 0 0
+
+fn=Creep.setFromRoom
+1 32796 0 0
+
+fn=unlive.targets
+1 127061 0 0
+
+fn=unlive._findTargets
+1 78946 0 0
+cfn=unlive.targets
+calls=3 1
+1 127061 0 0
+
+fn=unlive.assignCreeps
+1 428035 0 0
+cfn=unlive._findTargets
+calls=3 1
+1 6327 0 0
+cfn=unlive._creepToTargetsAscendingSort
+calls=3 1
+1 262379 0 0
+cfn=RoomPosition.inRangeTo
+calls=6 1
+1 18894 0 0
+cfn=Room.findPath
+calls=3 1
+1 3318215 0 0
+cfn=Room.serializePath
+calls=3 1
+1 17102 0 0
+
+fn=unlive._manhattanDistanceCost
+1 72855 0 0
+cfn=RoomPosition.manhattanDistance
+calls=6 1
+1 14845 0 0
+
+fn=unlive.creepToTargetCost
+1 61257 0 0
+cfn=unlive._manhattanDistanceCost
+calls=6 1
+1 87699 0 0
+
+fn=unlive._creepToTargetsAscendingSort
+1 113422 0 0
+cfn=unlive.creepToTargetCost
+calls=6 1
+1 148957 0 0
+
+fn=StructureSpawn.recycleCreep
+1 864525 600000 0
+cfn=RoomPosition.isNearTo
+calls=3 1
+1 10962 0 0
+
+fn=unlive.act
+1 269847 0 0
+cfn=StructureSpawn.recycleCreep
+calls=3 1
+1 875487 600000 0
+
+fn=spawn._maxEnergyCapacity
+1 275006 0 0
+cfn=Room.extendedAvailableEnergyCapacity
+calls=46 1
+1 143149 0 0
+
+fn=spawn._bodyCost
+1 35785 0 0
+
+fn=strelok._coastToHalt
+1 19748889 0 0
+cfn=Creep.getControlPos
+calls=1401 1
+1 25543465 0 0
+cfn=RoomPosition.offBorderDistance
+calls=1401 1
+1 2912684 0 0
+cfn=RoomPosition.inRangeTo
+calls=1401 1
+1 3437611 0 0
+cfn=Creep.moveToWrapper
+calls=117 1
+1 35944865 23400000 0
+
+fn=(root)
+1 0 0 0
+cfn=(tick)
+calls=3910 1
+1 225699736543 41937200000 2

@@ -12,11 +12,11 @@ const mapUtils = require('./routine.map')
 const intentSolver = require('./routine.intent')
 
 Room.prototype._markDefaultFiltered = function () {
-  this.__markDefaultFiltered = true
+  this.__controllerTemplate_markDefaultFiltered = true
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  return this.__markDefaultFiltered || false
+  return this.__controllerTemplate_markDefaultFiltered || false
 }
 
 function Controller (id) {
@@ -87,7 +87,7 @@ function Controller (id) {
   }
 
   this._roomPrepare = function (room) {
-    this.__targetCache = undefined
+    this.__controllerTemplate_targetCache = undefined
   }
 
   /**
@@ -130,8 +130,8 @@ function Controller (id) {
     @return Possible targets.
     **/
   this._findTargets = function (room) {
-    if (this.__targetCache) {
-      return this.__targetCache
+    if (this.__controllerTemplate_targetCache) {
+      return this.__controllerTemplate_targetCache
     }
 
     let targets = this.targets(room)
@@ -140,17 +140,33 @@ function Controller (id) {
       targets = this._filterExcludedTargets(targets)
     }
 
-    this.__targetCache = targets
+    this.__controllerTemplate_targetCache = targets
 
     return targets
   }
 
-  /**
-    Check if target is take-able.
-    **/
-  this.validateTarget = undefined
+  this._validateRestocker = function (target, creep) {
+    // not a restocker, no special rules
+    if (this._isNotRestocker(creep)) return true
 
-  this._allAssignedTo = function (target, plus = undefined) {
+    // stay stationary
+    if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
+    if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
+
+    return true
+  }
+
+  /**
+  Check if target is take-able.
+  **/
+  this.validateTarget = function (allTargets, target, creep) {
+    return this._validateRestocker(target, creep)
+  }
+
+  this._allAssignedTo = function (target) {
+    // in case when called, e.g. by flag
+    if (target.room === undefined) return []
+
     const roomCreeps = target.room.getRoomControlledCreeps()
     return _.filter(
       roomCreeps,
@@ -159,8 +175,6 @@ function Controller (id) {
         if (target.id !== creep.memory.dest) return false
         // check this controller
         if (this.id === creep.memory.ctrl) return true
-        // check plus controller if given
-        if (plus !== undefined && plus === creep.memory.ctrl) return true
 
         return false
       },
@@ -169,10 +183,12 @@ function Controller (id) {
   }
 
   this._hasCM = function (creep) {
+    bootstrap.activeBodyParts(creep)
     return creep._carry_ > 0 && creep._move_ > 0
   }
 
   this._hasWCM = function (creep) {
+    bootstrap.activeBodyParts(creep)
     return creep._work_ > 0 && creep._carry_ > 0 && creep._move_ > 0
   }
 
@@ -213,8 +229,12 @@ function Controller (id) {
     return creep.memory.rccl || false
   }
 
-  this._isUpgrader = function (creep) {
-    return creep.memory.upgr || false
+  this._universalWantStoreNonEnergy = function (structure) {
+    if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
+      return structure.demand.amount(RESOURCE_POWER) > 0
+    }
+
+    return false
   }
 
   this._usesDefaultFilter = undefined
@@ -251,12 +271,12 @@ function Controller (id) {
 
   this._creepToTargetsAscendingSort = function (creep, targets) {
     for (const target of targets) {
-      target.__tmp_cost = this.creepToTargetCost(creep, target)
+      target.__controllerTemplate_cost = this.creepToTargetCost(creep, target)
     }
 
     targets.sort(
       function (t1, t2) {
-        return t1.__tmp_cost - t2.__tmp_cost
+        return t1.__controllerTemplate_cost - t2.__controllerTemplate_cost
       }
     )
   }
@@ -270,7 +290,9 @@ function Controller (id) {
     const allTargets = this._findTargets(room)
 
     let remainingTargets = allTargets.slice(0)
+
     let unassignedCreeps = []
+    const assignCreeps = []
 
     for (let i = 0; i < roomCreeps.length; ++i) {
       if (remainingTargets.length === 0) {
@@ -348,6 +370,7 @@ function Controller (id) {
         }
 
         bootstrap.assignCreep(this, target, path, creep, extra)
+        assignCreeps.push(creep)
 
         // simulate single assignment logic on small scale
         if (this._creepPerTarget) {
@@ -363,7 +386,7 @@ function Controller (id) {
       }
     } // end of creeps loop
 
-    return unassignedCreeps
+    return [unassignedCreeps, assignCreeps]
   }
 
   /**
@@ -374,12 +397,12 @@ function Controller (id) {
   this.control = function (room, roomCreeps) {
     if (!this.targets) {
       console.log('Controller ' + this.id + 'missing targets method')
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
-        return roomCreeps
+        return [roomCreeps, []]
       }
     }
 
@@ -399,24 +422,23 @@ function Controller (id) {
         room._markDefaultFiltered()
       }
 
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
     if (this._findTargets(room).length === 0) {
-      return roomCreeps
+      return [roomCreeps, []]
     }
 
-    // remainder returned
-    const creepsUnused = this.assignCreeps(room, creepMatch)
+    const [creepsUnused, creepsUsed] = this.assignCreeps(room, creepMatch)
 
     if (creepsUnused.length > 0) {
-      return creepSkip.concat(creepsUnused)
+      return [creepSkip.concat(creepsUnused), creepsUsed]
     } else {
       if (this._doesDefaultFilter) {
         room._markDefaultFiltered()
       }
 
-      return creepSkip
+      return [creepSkip, creepsUsed]
     }
   }
 

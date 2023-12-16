@@ -21,7 +21,7 @@ aggro.act = function () {
 
       if (flag.name.indexOf('!') !== -1) {
         for (const atPosTarget of atPosTargets) {
-          atPosTarget.__aggro = true
+          atPosTarget._aggro_ = true
         }
       }
 

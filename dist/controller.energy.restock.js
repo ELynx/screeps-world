@@ -32,16 +32,21 @@ energyRestockController.act = function (target, creep) {
 
 energyRestockController.targets = function (room) {
   const allStructures = room.find(FIND_STRUCTURES)
-  const withEnergyDemand = _.filter(
+
+  const withActiveEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
+      // TODO unmagic number, 1000+ is passive storage
+      return structure.demand.priority !== null &&
+             structure.demand.priority < 1000 &&
+             structure.demand.amount(RESOURCE_ENERGY) > 0 &&
+             structure.isActiveSimple
     }
   )
 
-  if (withEnergyDemand.length === 0) return []
+  if (withActiveEnergyDemand.length === 0) return []
 
-  withEnergyDemand.sort(
+  withActiveEnergyDemand.sort(
     function (t1, t2) {
       const priority1 = t1.demand.priority
       const priority2 = t2.demand.priority
@@ -50,9 +55,9 @@ energyRestockController.targets = function (room) {
     }
   )
 
-  const priority = withEnergyDemand[0].demand.priority
+  const priority = withActiveEnergyDemand[0].demand.priority
 
-  return _.takeWhile(withEnergyDemand, _.matchesProperty('demand.priority', priority))
+  return _.takeWhile(withActiveEnergyDemand, _.matchesProperty('demand.priority', priority))
 }
 
 energyRestockController.filterCreep = function (creep) {

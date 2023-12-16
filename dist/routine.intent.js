@@ -132,6 +132,7 @@ const intent = {
     if (noLessThan === true && amount && amount > sourceHas) {
       return bootstrap.ERR_INTENDEE_EXHAUSTED
     }
+
     const sourceOut = amount || sourceHas
 
     const targetFree = this._getFreeCapacity(target, type)
@@ -230,7 +231,7 @@ const intent = {
     let rc = OK
 
     // if creep was designed to carry anything at all, check remaining store
-    if (_.some(creep.body, _.matchesProperty('type', CARRY))) {
+    if (creep._has_carry_) {
       const freeCapacity = this._getFreeCapacity(creep, what)
       if (freeCapacity <= 0) {
         return bootstrap.ERR_INTENDEE_EXHAUSTED
@@ -244,7 +245,10 @@ const intent = {
     }
 
     this.subIntended(target, key, toBeHarvested)
-    this.roomEnergyAcquired(creep, 'harvest', toBeHarvested)
+
+    if (what === RESOURCE_ENERGY) {
+      this.roomEnergyAcquired(creep, 'harvest', toBeHarvested)
+    }
 
     if (toBeHarvested >= amount) rc += bootstrap.WARN_INTENDED_EXHAUSTED
 
@@ -468,7 +472,7 @@ const intent = {
 
     const spawnTime = Math.min(body.length, MAX_CREEP_SIZE) * CREEP_SPAWN_TIME
 
-    const planedSpawning = {
+    const plannedSpawning = {
       name,
       needTime: spawnTime,
       remainingTime: spawnTime + 1,
@@ -479,7 +483,7 @@ const intent = {
       setDirections: function (directions) { }
     }
 
-    this.setIntended(spawn, spawningKey, planedSpawning)
+    this.setIntended(spawn, spawningKey, plannedSpawning)
     this.subIntended(spawn.room, energyAvailableKey, bodyCost)
     this.roomEnergySpent(spawn, 'spawnCreep', bodyCost)
 
@@ -556,6 +560,13 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
+  getEnergy: function (something) {
+    const key = '__amount'
+    const value = something.energy
+
+    return this.getWithIntended(something, key, value)
+  },
+
   getSpawnSpawning: function (spawn) {
     const key = '__spawning'
     const value = spawn.spawning
@@ -578,6 +589,8 @@ const intent = {
       console.log('Invalid intent [' + intentName + '] called for creep [' + creep.name + ']')
       return bootstrap.ERR_INVALID_INTENT_NAME
     }
+
+    bootstrap.activeBodyParts(creep)
 
     let rc = OK
 

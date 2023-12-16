@@ -36,7 +36,7 @@ beetle.creepAtDestination = function (creep) {
     }
   }
 
-  // every N ticks refresh situation
+  // every 10 ticks of stall refresh situation
   if (creep.memory._brT) {
     if (Game.time - creep.memory._brT > 10) {
       this.wipeBreach(creep)
@@ -191,7 +191,7 @@ beetle.creepAtDestination = function (creep) {
           break
         }
 
-        const aimAt = structure.__aggro || _.some(OBSTACLE_OBJECT_TYPES, _.matches(structure.structureType))
+        const aimAt = structure._aggro_ || _.some(OBSTACLE_OBJECT_TYPES, _.matches(structure.structureType))
         if (!aimAt) {
           continue
         }
@@ -224,8 +224,8 @@ beetle.creepAtDestination = function (creep) {
       // coordinate effort - ask nearbys to attack
       if (rc === OK) {
         creep.room.visual.circle(target.pos, { fill: '#f00' })
-        if (target.__aggro === undefined) {
-          target.__aggro = true
+        if (target._aggro_ === undefined) {
+          target._aggro_ = true
           creep.room.addAggro([target])
         }
       }

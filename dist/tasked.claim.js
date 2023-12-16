@@ -92,7 +92,7 @@ claim.creepAtDestination = function (creep) {
 
         if (creep.memory.flag.indexOf('CLAIM') !== -1) {
           let myRooms = 0
-          for (const someRoom of Game.__roomValues) {
+          for (const someRoom of Game.rooms_values) {
             if (someRoom._my_) {
               ++myRooms
             }
@@ -191,6 +191,7 @@ claim.flagPrepare = function (flag) {
 }
 
 claim.makeClaimM = function (claim, move) {
+  // move up front to allow crawl even damaged
   const a = new Array(move - 1)
   a.fill(MOVE)
 
@@ -209,20 +210,17 @@ claim.makeBody = function (room) {
 
   if (energy < 850) {
     // on swamp move 1 unit per 2 ticks
-    // move up front to allow crawl even damaged
     // 750
     return this.makeClaimM(1, 3)
   }
 
   if (energy < 1700) {
     // on swamp move 1 unit per 1 tick
-    // move up front to allow crawl even damaged
     // 850
     return this.makeClaimM(1, 5)
   }
 
   // on swamp move 1 unit per 1 tick
-  // move up front to allow crawl even damaged
   // 1700
   return this.makeClaimM(2, 10)
 }

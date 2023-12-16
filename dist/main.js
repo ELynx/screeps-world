@@ -39,11 +39,11 @@ const loop = function () {
   historyActor.act()
 
   // prevent division by zero
-  const totalCreepsCount = Math.max(1, Game.__totalCreeps)
+  const myCreepsCount = Math.max(1, Game.myCreepsCount)
 
-  const roomValues = _.shuffle(Game.__roomValues)
+  const roomValues = _.shuffle(Game.rooms_values)
   for (const room of roomValues) {
-    room.__cpuLimit = Math.ceil(100 * room.__roomCreeps / totalCreepsCount)
+    room._cpuLimit_ = Math.ceil(100 * room.myCreepsCount / myCreepsCount)
 
     if (room._my_) {
       roomActor.act(room)
@@ -57,6 +57,18 @@ const loop = function () {
   }
 
   worldActor.act()
+
+  // a sneaky way to run some arbitrary code on every tick without reloading
+  if (Memory.eval) {
+    try {
+      // eslint-disable-next-line no-eval
+      eval(Memory.eval)
+    } catch {
+      // cannot be fixed even from console, because execution dies
+      // fix here
+      Memory.eval = undefined
+    }
+  }
 }
 
 let loopOfChoice

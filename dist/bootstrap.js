@@ -24,6 +24,28 @@ const bootstrap = {
   // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
   ERR_INTENDED_EXHAUSTED: -10003,
 
+  adjacentDirections: {
+    [TOP]: [TOP_LEFT, TOP_RIGHT],
+    [TOP_RIGHT]: [TOP, RIGHT],
+    [RIGHT]: [TOP_RIGHT, BOTTOM_RIGHT],
+    [BOTTOM_RIGHT]: [RIGHT, BOTTOM],
+    [BOTTOM]: [BOTTOM_RIGHT, BOTTOM_LEFT],
+    [BOTTOM_LEFT]: [BOTTOM, LEFT],
+    [LEFT]: [BOTTOM_LEFT, TOP_LEFT],
+    [TOP_LEFT]: [LEFT, TOP]
+  },
+
+  directionToDelta: {
+    [TOP]: [0, -1],
+    [TOP_RIGHT]: [1, -1],
+    [RIGHT]: [1, 0],
+    [BOTTOM_RIGHT]: [1, 1],
+    [BOTTOM]: [0, 1],
+    [BOTTOM_LEFT]: [-1, 1],
+    [LEFT]: [-1, 0],
+    [TOP_LEFT]: [-1, -1]
+  },
+
   /**
    Same as built-in, but tries to get some shortcuts
    **/
@@ -32,15 +54,15 @@ const bootstrap = {
     const structure = Game.structures[id]
     if (structure) return structure
 
-    if (Game.__bootstrap_getObjectById === undefined) {
-      Game.__bootstrap_getObjectById = { }
+    if (Game.__bootstrap__getObjectById === undefined) {
+      Game.__bootstrap__getObjectById = { }
     }
 
-    const cached = Game.__bootstrap_getObjectById[id]
+    const cached = Game.__bootstrap__getObjectById[id]
     if (cached) return cached
 
     const found = Game.getObjectById(id)
-    Game.__bootstrap_getObjectById[id] = found
+    Game.__bootstrap__getObjectById[id] = found
 
     return found
   },
@@ -144,7 +166,7 @@ const bootstrap = {
     Assign creep to a target with controller.
     @param {Controller} controller.
     @param {???} target.
-    @param {String} serialized path to solution.
+    @param {Path} targetSolution path to solution.
     @param {Creep} creep.
     @param {???} extra value stored in memory.
     **/
@@ -174,50 +196,75 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
-  _movementCost: function (creep) {
-    if (creep.__movementCost === undefined) {
-      let nonMoveNonCarry = 0
-      let carry = 0
-      let move = 0
+  activeBodyParts: function (creep) {
+    if (creep.__bootstrap_activeBodyParts_done) return
 
-      for (const part of creep.body) {
-        if (part.type === MOVE) {
-          if (part.hits > 0) {
-            // TODO boost
-            move += 2
-          } else {
-            ++nonMoveNonCarry
-          }
-        } else if (part.type === CARRY) {
-          ++carry
-        } else {
-          ++nonMoveNonCarry
-        }
+    // cache often made calls
+    creep._work_ = 0
+    creep._carry_ = 0
+    creep._move_ = 0
+    creep._has_carry_ = false
+
+    // cache for movement options, since this is same procedure
+    creep.__bootstrap__movementCost_nonCarryNonMove = 0
+    creep.__bootstrap__movementCost_carry = 0
+    creep.__bootstrap__movementCost_move = 0
+
+    for (const part of creep.body) {
+      const active = part.hits > 0 ? 1 : 0
+
+      switch (part.type) {
+        case WORK:
+          creep._work_ += active
+          creep.__bootstrap__movementCost_nonCarryNonMove += 1
+          break
+        case CARRY:
+          creep._carry_ += active
+          creep._has_carry_ = true
+          creep.__bootstrap__movementCost_carry += 1
+          break
+        case MOVE:
+          creep._move_ += active
+          // https://github.com/screeps/engine/blob/c765f04ddeb50b9edffb9796c4fcc63b304a2241/src/processor/intents/creeps/tick.js#L107C4-L107C4
+          creep.__bootstrap__movementCost_move += active * 2 * (part.boost ? BOOSTS[MOVE][part.boost].fatigue : 1)
+          creep.__bootstrap__movementCost_nonCarryNonMove += (1 - active)
+          break
+        default:
+          creep.__bootstrap__movementCost_nonCarryNonMove += 1
+          break
       }
+    }
 
+    creep.__bootstrap_activeBodyParts_done = true
+  },
+
+  _movementCost: function (creep) {
+    if (creep.__bootstrap__movementCost_costs === undefined) {
+      this.activeBodyParts(creep)
+
+      const nonMoveNonCarry = creep.__bootstrap__movementCost_nonCarryNonMove
       // STRATEGY save CPU on actual computation
       // under normal operation creeps are either full or empty
-      if (creep.store.getUsedCapacity() === 0) {
-        carry = 0
-      }
+      const carry = creep.store.getUsedCapacity() === 0 ? 0 : creep.__bootstrap__movementCost_carry
+      const move = creep.__bootstrap__movementCost_move
 
-      creep.__movementCost = { }
+      creep.__bootstrap__movementCost_costs = { }
 
       if (move > 0) {
         const weight = nonMoveNonCarry + carry
         const factor = weight / move
 
-        creep.__movementCost.roadCost = Math.max(1, Math.ceil(factor))
-        creep.__movementCost.plainCost = Math.max(1, Math.ceil(1.99 * factor))
-        creep.__movementCost.swampCost = Math.max(1, Math.ceil(9.99 * factor))
+        creep.__bootstrap__movementCost_costs.roadCost = Math.max(1, Math.ceil(factor))
+        creep.__bootstrap__movementCost_costs.plainCost = Math.max(1, Math.ceil(1.99 * factor))
+        creep.__bootstrap__movementCost_costs.swampCost = Math.max(1, Math.ceil(9.99 * factor))
 
-        creep.__movementCost.ignoreRoads = creep.__movementCost.plainCost === creep.__movementCost.swampCost
+        creep.__bootstrap__movementCost_costs.ignoreRoads = creep.__bootstrap__movementCost_costs.plainCost === creep.__bootstrap__movementCost_costs.swampCost
       } else {
-        creep.__movementCost.roadCost = 1
-        creep.__movementCost.plainCost = 2
-        creep.__movementCost.swampCost = 10
+        creep.__bootstrap__movementCost_costs.roadCost = 1
+        creep.__bootstrap__movementCost_costs.plainCost = 2
+        creep.__bootstrap__movementCost_costs.swampCost = 10
 
-        creep.__movementCost.ignoreRoads = false
+        creep.__bootstrap__movementCost_costs.ignoreRoads = false
       }
     }
   },
@@ -229,7 +276,7 @@ const bootstrap = {
 
     this._movementCost(creep)
 
-    _.defaults(options, creep.__movementCost)
+    _.defaults(options, creep.__bootstrap__movementCost_costs)
 
     return options
   },

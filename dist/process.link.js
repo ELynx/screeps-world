@@ -51,10 +51,32 @@ linkProcess.work = function (room) {
     }
   )
 
+  if (destinations.length > 1) {
+    const workers = room.getRoomControlledWorkers()
+    if (workers.length > 0) {
+      for (const destination of destinations) {
+        for (const worker of workers) {
+          const distance = destination.pos.manhattanDistance(worker.pos)
+          const proximity = 50 - distance
+          const proximityNow = destination.__process_link_proximity || 0
+          destination.__process_link_proximity = proximityNow + proximity
+        }
+      }
+    }
+  }
+
   destinations.sort(
     function (l1, l2) {
-      // STRATEGY least energy first
-      return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY]
+      const proxL1 = l1.__process_link_proximity || 0
+      const proxL2 = l2.__process_link_proximity || 0
+
+      if (proxL1 === proxL2) {
+        // STRATEGY tie break - least energy
+        return l1.store[RESOURCE_ENERGY] - l2.store[RESOURCE_ENERGY]
+      }
+
+      // STRATEGY link closest to worker clusters
+      return proxL2 - proxL1
     }
   )
 

@@ -77,15 +77,15 @@ const spawn = {
     }
 
     if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend(Memory.spawn_v1.urgent[0], { priority: 'urgent' })
+      return _.extend({ }, Memory.spawn_v1.urgent[0], { priority: 'urgent' })
     }
 
     if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend(Memory.spawn_v1.normal[0], { priority: 'normal' })
+      return _.extend({ }, Memory.spawn_v1.normal[0], { priority: 'normal' })
     }
 
     if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend(Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
+      return _.extend({ }, Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
     }
 
     return undefined
@@ -167,17 +167,17 @@ const spawn = {
 
   // internals of this function should not be used
   __postpone: function (target) {
-    if (Game.__spawnPostponeN === undefined) {
+    if (Game.__spawnRoutine_spawnPostponeN === undefined) {
       // STRATEGY how many shuffles in queue are allowed
-      Game.__spawnPostponeN = Math.floor(target.length / 2)
+      Game.__spawnRoutine_spawnPostponeN = Math.floor(target.length / 2)
     }
 
     // denied
-    if (Game.__spawnPostponeN === 0) {
+    if (Game.__spawnRoutine_spawnPostponeN === 0) {
       return false
     }
 
-    Game.__spawnPostponeN = Game.__spawnPostponeN - 1
+    Game.__spawnRoutine_spawnPostponeN = Game.__spawnRoutine_spawnPostponeN - 1
 
     const taken = target.shift()
     target.push(taken)

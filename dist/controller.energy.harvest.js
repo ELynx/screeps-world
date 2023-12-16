@@ -10,6 +10,8 @@ energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
 
+energyHarvestController.validateTarget = undefined // default validation is specific to Restockers, this is already handled by `filterCreep`
+
 energyHarvestController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => source.energy > 0)
