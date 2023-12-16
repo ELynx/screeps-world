@@ -58,7 +58,7 @@ linkProcess.work = function (room) {
         for (const worker of workers) {
           const distance = destination.pos.manhattanDistance(worker.pos)
           const proximity = 50 - distance
-          const proximityNow = destination.__process_link_proximity ?? 0
+          const proximityNow = destination.__process_link_proximity || 0
           destination.__process_link_proximity = proximityNow + proximity
         }
       }
@@ -67,8 +67,8 @@ linkProcess.work = function (room) {
 
   destinations.sort(
     function (l1, l2) {
-      const proxL1 = l1.__process_link_proximity ?? 0
-      const proxL2 = l2.__process_link_proximity ?? 0
+      const proxL1 = l1.__process_link_proximity || 0
+      const proxL2 = l2.__process_link_proximity || 0
 
       if (proxL1 === proxL2) {
         // STRATEGY tie break - least energy
