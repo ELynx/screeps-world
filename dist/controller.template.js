@@ -16,7 +16,7 @@ Room.prototype._markDefaultFiltered = function () {
 }
 
 Room.prototype._isDefaultFiltered = function () {
-  return this.__controllerTemplate_markDefaultFiltered ?? false
+  return this.__controllerTemplate_markDefaultFiltered || false
 }
 
 function Controller (id) {
@@ -214,7 +214,7 @@ function Controller (id) {
   }
 
   this._isRestocker = function (creep) {
-    return creep.memory.rstk ?? false
+    return creep.memory.rstk || false
   }
 
   this._isNotRestocker = function (creep) {
@@ -222,11 +222,11 @@ function Controller (id) {
   }
 
   this._isMiner = function (creep) {
-    return creep.memory.minr ?? false
+    return creep.memory.minr || false
   }
 
   this._isRecyclee = function (creep) {
-    return creep.memory.rccl ?? false
+    return creep.memory.rccl || false
   }
 
   this._universalWantStoreNonEnergy = function (structure) {
