@@ -2,136 +2,125 @@
 
 const bootstrap = require('./bootstrap')
 
+const intentSolver = require('./routine.intent')
+
 const Controller = require('./controller.template')
 
 const energySpecialistController = new Controller('energy.specialist')
 
-const WaitNearEmptySource = 10
-
-const unspecialistId = 'energy.unspecialist'
-
 energySpecialistController.actRange = 1
 
-energySpecialistController.restockTargets = function (room) {
-  const unspecialist = bootstrap.roomControllers[unspecialistId]
-
-  if (unspecialist === undefined) {
-    console.log('Missing unspecialist')
-    return []
-  }
-
-  return unspecialist._findTargets(room)
+energySpecialistController.roomPrepare = function (room) {
+  this._roomPrepare(room)
+  this._prepareExcludedTargets(room)
 }
 
-energySpecialistController.restock = function (target, creep) {
-  const unspecialist = bootstrap.roomControllers[unspecialistId]
+energySpecialistController.observeMyCreep = function (creep) {
+  this._excludeTarget(creep)
+  // stick creep to source
+  creep.memory._est = creep.memory.dest
+}
 
-  if (unspecialist === undefined) {
-    return bootstrap.ERR_INVALID_INTENT_NAME
-  }
+energySpecialistController.unloadTargets = function (source) {
+  const allStructures = source.room.find(FIND_STRUCTURES)
 
-  return unspecialist.act(target, creep)
+  const aroundSource = _.filter(
+    allStructures,
+    function (structure) {
+      const distance = 2
+      if (Math.abs(structure.pos.x - source.pos.x) > distance) return false
+      if (Math.abs(structure.pos.y - source.pos.y) > distance) return false
+      return true
+    }
+  )
+
+  const withEnergyDemand = _.filter(
+    aroundSource,
+    function (structure) {
+      return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
+    }
+  )
+
+  withEnergyDemand.sort(
+    function (t1, t2) {
+      const priority1 = t1.demand.priority
+      const priority2 = t2.demand.priority
+
+      return priority1 - priority2
+    }
+  )
+
+  return withEnergyDemand
 }
 
 energySpecialistController.act = function (source, creep) {
+  // start by harvesting; if that is OK, keep harvesting
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
+  if (harvestRc === OK) return OK
 
-  // if all is OK then return OK
-  if (harvestRc === OK) {
-    return harvestRc
+  // in remote room, stash some energy for repair
+  if (source.room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+    const inSource = intentSolver.getEnergy(source)
+    const inCreep = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+    // STRATEGY how much energy closer to the end of source
+    if (inSource + inCreep <= 200) {
+      return harvestRc
+    }
   }
 
-  // if this will be a last dig for capacity, search for drop site nearby
-  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
-      harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED ||
-      harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) {
-    const restockTargets = this.restockTargets(creep.room)
+  const targets = this.unloadTargets(source)
 
-    // check if any of targets are in bad shape when harvesting in remote room
-    if (creep.room.__actType === bootstrap.RoomActTypeRemoteHarvest) {
-      const hasLowHits = _.some(
-        restockTargets,
-        function (restockTarget) {
-          return restockTarget.hits < 0.5 * restockTarget.hitsMax
-        }
-      )
+  // nothing to unload to, do other controllers
+  // can happen if all destinations are full
+  if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
 
-      // quit the loop and give repair controller a chance
-      if (hasLowHits) return harvestRc
-    }
-
-    for (const restockTarget of restockTargets) {
-      if (creep.pos.isNearTo(restockTarget)) {
-        if (restockTarget.structureType === STRUCTURE_CONTAINER) {
-          if (creep.pos.x !== restockTarget.pos.x || creep.pos.y !== restockTarget.pos.y) {
-            const direction = creep.pos.getDirectionTo(restockTarget)
-            creep.moveWrapper(direction)
-          }
-        }
-
-        const restockRc = this.restock(restockTarget, creep)
-
-        // on error, such as intended exhausted, check other target
-        if (restockRc < 0) continue
-
-        // restock was OK or warning
-
-        if (harvestRc !== bootstrap.WARN_BOTH_EXHAUSED) {
-          // source will have more energy, and some of current will be offloaded
-          return OK
-        }
-
-        break // from target loop
+  // step on the container, in case not there
+  for (const target of targets) {
+    if (target.structureType === STRUCTURE_CONTAINER) {
+      if ((creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y) && source.pos.isNearTo(target.pos)) {
+        const direction = creep.pos.getDirectionTo(target)
+        creep.moveWrapper(direction, { jiggle: true })
+        break
       }
     }
   }
 
-  // amortize source exhaustion
-  if (harvestRc === bootstrap.WARN_BOTH_EXHAUSED ||
-      harvestRc === bootstrap.WARN_INTENDED_EXHAUSTED ||
-      harvestRc === bootstrap.ERR_INTENDED_EXHAUSTED ||
-      harvestRc === ERR_NOT_ENOUGH_RESOURCES) {
-    if (source.ticksToRegeneration && source.ticksToRegeneration <= WaitNearEmptySource) {
-      return OK
+  // transfer to target
+  for (const target of targets) {
+    if (creep.pos.isNearTo(target.pos)) {
+      const transferRc = this.wrapIntent(creep, 'transfer', target, RESOURCE_ENERGY)
+      if (transferRc >= OK) {
+        break
+      }
     }
   }
 
-  // whatever error transpired, continue
+  // cover conditions when creep stays under controller
+  if (harvestRc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
+  if (harvestRc === bootstrap.ERR_INTENDEE_EXHAUSTED) return OK
+
   return harvestRc
 }
 
 energySpecialistController.validateTarget = function (allTargets, target, creep) {
-  // if there is no one in the room, no collision
-  if (target.room === undefined) {
-    return true
+  // if already sticky
+  if (creep.memory._est !== undefined) {
+    return target.id === creep.memory._est
   }
 
-  let otherRestockersWork = 0
-
-  const others = this._allAssignedTo(target)
-  for (const other of others) {
-    if (this._isRestocker(other)) {
-      otherRestockersWork += _.countBy(other.body, 'type')[WORK] || 0
-    }
-  }
-
-  // no collision
-  if (otherRestockersWork === 0) {
-    return true
-  }
-
-  const workNeeded = target.room.sourceEnergyCapacity() / ENERGY_REGEN_TIME / HARVEST_POWER
-
-  return workNeeded > otherRestockersWork
+  // if not, check that target is not someone else's sticky
+  const others = target.room.getRoomControlledCreeps()
+  return !_.some(others, _.matchesProperty('memory._est', target.id))
 }
 
 energySpecialistController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
-  return _.filter(allSources, source => source.energy > 0)
+  return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
 }
 
 energySpecialistController.filterCreep = function (creep) {
-  return this._isRestocker(creep) && this._isHarvestAble(creep)
+  // does not matter if full or empty, can work => go to loop
+  return this._isRestocker(creep) && this._hasWCM(creep)
 }
 
 energySpecialistController.register()

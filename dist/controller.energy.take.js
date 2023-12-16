@@ -71,6 +71,8 @@ energyTakeController.targets = function (room) {
     }
   }
 
+  // TODO this does not work since there is a sort inside assign op
+  /*
   withEnergySupply.sort(
     function (t1, t2) {
       const priority1 = t1.supply.priority
@@ -79,6 +81,7 @@ energyTakeController.targets = function (room) {
       return priority1 - priority2
     }
   )
+  */
 
   return withEnergySupply
 }

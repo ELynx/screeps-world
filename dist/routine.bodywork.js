@@ -24,7 +24,7 @@ const bodywork = {
     const c = new Array(move)
     c.fill(MOVE)
 
-    return a.concat(b).concat(c)
+    return _.shuffle(a.concat(b).concat(c))
   },
 
   worker: function (room) {
@@ -52,7 +52,7 @@ const bodywork = {
       return this.makeWCM(3, 3)
     }
 
-    if (energy < 3000 || sourceLevel < 3) {
+    if (energy < 3000 || sourceLevel < 2) {
       // 1500
       return this.makeWCM(6, 6)
     }
@@ -61,110 +61,62 @@ const bodywork = {
     return this.makeWCM(12, 12)
   },
 
-  restocker: function (room) {
-    // cannot produce creeps -> no level regulation
-    if (!room._my_) {
-      if (room.ownedOrReserved()) {
-        // target is 3000 / 250 / 2 = 6 WORK body parts
-        // 1000
-        return this.makeWCM(6, 1)
-      }
-
-      if (room.sourceKeeper()) {
-        // target is 4000 / 250 / 2 = 8 WORK body parts
-        // 1300
-        return this.makeWCM(8, 1)
-      }
-
-      // target is 1500 / 250 / 2 = 3 WORK body parts
-      // 550
-      return this.makeWCM(3, 1)
-    }
-
+  restocker_my: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
 
     // call for new room
     if (energy === 0) {
-      // full scale machine
-      return this.makeWCM(5, 1)
+      return this.makeWCM(5, 1, 5)
     }
 
-    if (energy < 550) {
-      // 250
-      return this.makeWCM(1, 1)
+    if (energy < 500) {
+      // 200
+      return this.makeWCM(1, 1, 1)
     }
 
     if (energy < 800) {
-      // 550
-      return this.makeWCM(3, 1)
-    }
-
-    if (energy < 850) {
-      // special case, limp a bit when loaded
-      // 800
-      return this.makeWCM(5, 1, 5)
+      // 500
+      return this.makeWCM(3, 1, 3)
     }
 
     // target is 3000 / 300 / 2 = 5 WORK body parts
-    // 850
-    return this.makeWCM(5, 1)
+    // 800
+    return this.makeWCM(5, 1, 5)
+  },
+
+  restocker_other: function (room) {
+    // target is always 250 ticks, leaving 50 ticks for repairs
+    // w eq c so there are no "odd" numbers on capacity
+
+    if (room.ownedOrReserved()) {
+      // target is 3000 / 250 / 2 = 6 WORK body parts
+      return this.makeWCM(6, 6, 6)
+    }
+
+    if (room.sourceKeeper()) {
+      // target is 4000 / 250 / 2 = 8 WORK body parts
+      return this.makeWCM(8, 8, 8)
+    }
+
+    // target is 1500 / 250 / 2 = 3 WORK body parts
+    return this.makeWCM(3, 3, 3)
   },
 
   miner: function (room) {
-    if (!room._my_) {
-      // if decision is ever made to mide outside, it must be done with superior machines
-      // 3400
-      return this.makeWCM(20, 4)
-    }
-
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
-    if (energy < 550) {
-      // 250
-      return this.makeWCM(1, 1)
-    }
-
-    if (energy < 800) {
-      // 550
-      return this.makeWCM(3, 1)
-    }
-
-    if (energy < 850) {
-      // special case, limp a bit when loaded
-      // 800
-      return this.makeWCM(5, 1, 5)
-    }
-
-    if (energy < 1700) {
-      // 850
-      return this.makeWCM(5, 1)
-    }
-
-    if (energy < 3400 || sourceLevel < 3) {
-      // 1700
-      return this.makeWCM(10, 2)
-    }
-
-    // 3400
-    return this.makeWCM(20, 4)
-  },
-
-  upgrader: function (room) {
-    if (!room._my_) {
+    if (energy < 1250) {
       return []
     }
 
-    const energy = room.extendedAvailableEnergyCapacity()
-
-    if (energy < 2850) {
-      return []
+    if (energy < 2500 || sourceLevel < 2) {
+      // 1250
+      return this.makeWCM(5, 5)
     }
 
-    // 15 -> 15 upgrades per tick
-    // 6 -> 20 ticks upgrade capacity
-    // 2850
-    return this.makeWCM(15, 6)
+    // 2500
+    return this.makeWCM(10, 10)
   }
 }
 

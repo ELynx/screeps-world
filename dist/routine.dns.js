@@ -28,6 +28,25 @@ const fixedDemand = function (__type, __amount, priority) {
   return demand
 }
 
+const fixedDemand2 = function (__type1, __amount1, __type2, __amount2, priority) {
+  const demand =
+  {
+    __type1,
+    __amount1,
+    __type2,
+    __amount2,
+    priority,
+
+    amount: function (type) {
+      if (this.__type1 === type) return this.__amount1
+      if (this.__type2 === type) return this.__amount2
+      return 0
+    }
+  }
+
+  return demand
+}
+
 const fixedSupply = fixedDemand
 
 const singleTypeDemand = function (something, type, priority) {
@@ -40,6 +59,13 @@ const singleTypeSupply = function (something, type, priority) {
   const usedByType = intentSolver.getUsedCapacity(something, type)
   if (usedByType <= 0) return noSupply
   return fixedSupply(type, usedByType, priority)
+}
+
+const singleTypeAndEnergyDemand = function (something, type, priority) {
+  const freeForType = intentSolver.getFreeCapacity(something, type)
+  const freeForEnergy = intentSolver.getFreeCapacity(something, RESOURCE_ENERGY)
+  if (freeForType <= 0 && freeForEnergy <= 0) return noDemand
+  return fixedDemand2(type, freeForType, RESOURCE_ENERGY, freeForEnergy, priority)
 }
 
 const allTypesSupply = function (__something, priority) {
@@ -65,15 +91,19 @@ const storageDemand = function (__storage, priority) {
     priority,
 
     amount: function (type) {
+      const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
+
       const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
+      // TODO move value outside of specific function
+      // TODO do not fill space reserved for energy even this space it is not needed
+      // TODO allow to stash more energy than needed, but prevent transer <-> withdraw loop
       const neededEnergy = this.__storage.room.memory.stre || 0
       const missingEnergy = Math.max(neededEnergy - usedByEnergy, 0)
 
       if (RESOURCE_ENERGY === type) {
-        return missingEnergy
+        return Math.min(missingEnergy, freeForTypeBeforeReserve)
       }
 
-      const freeForTypeBeforeReserve = intentSolver.getFreeCapacity(this.__storage, type)
       const freeForTypeAfterReserve = freeForTypeBeforeReserve - missingEnergy
       if (freeForTypeAfterReserve <= 0) return 0
       return freeForTypeAfterReserve
@@ -215,15 +245,9 @@ const energyDemand = function (something, priority) {
   return getDemandFromIntent(something, tickFunction)
 }
 
-const energyDemandSource = function (something, priority) {
-  if (something.__demand_cache_x) return something.__demand_cache_x
-
-  if (!something.isSource()) {
-    something.__demand_cache_x = noDemand
-    return something.__demand_cache_x
-  }
-
-  return energyDemand(something, priority)
+const energyAndResourceDemand = function (something, type, priority) {
+  const tickFunction = _.bind(singleTypeAndEnergyDemand, null, something, type, priority)
+  return getDemandFromIntent(something, tickFunction)
 }
 
 const energySupply = function (something, priority) {
@@ -231,7 +255,7 @@ const energySupply = function (something, priority) {
   return getSupplyFromIntent(something, tickFunction)
 }
 
-const energySupplyNotSource = function (something, priority) {
+const energySupplyWhenIsSourceEqFalse = function (something, priority) {
   if (something.__supply_cache_x) return something.__supply_cache_x
 
   if (something.isSource()) {
@@ -251,6 +275,7 @@ const Rank1High = 5
 const Rank1Middle = 15
 const Rank1Low = 25
 const Rank2Middle = 75
+const RankPassiveStorage = 1000
 
 Object.defineProperty(
   Structure.prototype,
@@ -274,10 +299,10 @@ Object.defineProperty(
 
 Object.defineProperty(
   StructureContainer.prototype,
-  'demand_restocker',
+  'demand',
   {
     get: function () {
-      return energyDemandSource(this, Rank1Middle + 1)
+      return energyDemand(this, RankPassiveStorage + 1)
     },
     configurable: true,
     enumerable: true
@@ -340,10 +365,10 @@ Object.defineProperty(
 
 Object.defineProperty(
   StructureLink.prototype,
-  'demand_restocker',
+  'demand',
   {
     get: function () {
-      return energyDemandSource(this, Rank1Middle)
+      return energyDemand(this, RankPassiveStorage)
     },
     configurable: true,
     enumerable: true
@@ -355,7 +380,31 @@ Object.defineProperty(
   'supply',
   {
     get: function () {
-      return energySupplyNotSource(this, Rank1Middle)
+      return energySupplyWhenIsSourceEqFalse(this, Rank1Middle)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructureNuker.prototype,
+  'demand',
+  {
+    get: function () {
+      return energyAndResourceDemand(this, RESOURCE_GHODIUM, Rank2Middle)
+    },
+    configurable: true,
+    enumerable: true
+  }
+)
+
+Object.defineProperty(
+  StructurePowerSpawn.prototype,
+  'demand',
+  {
+    get: function () {
+      return energyAndResourceDemand(this, RESOURCE_POWER, Rank2Middle)
     },
     configurable: true,
     enumerable: true
@@ -379,7 +428,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      const tickFunction = _.bind(storageDemand, null, this, Rank2Middle + 1)
+      const tickFunction = _.bind(storageDemand, null, this, RankPassiveStorage)
       return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,
@@ -405,7 +454,7 @@ Object.defineProperty(
   'demand',
   {
     get: function () {
-      const tickFunction = _.bind(terminalDemand, null, this, Rank2Middle)
+      const tickFunction = _.bind(terminalDemand, null, this, RankPassiveStorage + 1)
       return getDemandFromIntent(this, tickFunction)
     },
     configurable: true,

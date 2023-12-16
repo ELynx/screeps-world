@@ -9,12 +9,12 @@ Object.defineProperty(
     get: function () {
       if (this.spawning) return true
 
-      const limit = this.__viable_limit || (this.body.length * CREEP_SPAWN_TIME)
+      const limit = this.__viable_value || (this.body.length * CREEP_SPAWN_TIME)
 
       return this.ticksToLive >= limit
     },
     set: function (value) {
-      this.__viable_limit = value
+      this.__viable_value = value
     },
     configurable: true,
     enumerable: true
@@ -88,14 +88,44 @@ Creep.prototype.fatigueWrapper = function () {
   return OK
 }
 
-Creep.prototype.moveWrapper = function (direction) {
+if (!Creep.prototype.__original_move) {
+  Creep.prototype.__original_move = Creep.prototype.move
+
+  Creep.prototype.move = function (creepOrDirection) {
+    const rc = this.__original_move(creepOrDirection)
+
+    if (rc === OK) {
+      if (_.isFinite(creepOrDirection)) {
+        this._direction_ = creepOrDirection
+        const [dx, dy] = bootstrap.directionToDelta[this._direction_]
+        this._next_pos_ = new RoomPosition(this.pos.x + dx, this.pos.y + dy, this.pos.roomName)
+      } else if (_.isObject(creepOrDirection)) {
+        this._next_pos_ = creepOrDirection.pos
+        this._direction_ = this.pos.getDirectionTo(this._next_pos_)
+      }
+    }
+
+    return rc
+  }
+}
+
+Creep.prototype.moveWrapper = function (direction, options = { }) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
   }
 
+  let actualDirection = direction
+
+  if (options.jiggle === true) {
+    if (this.moved() === false) {
+      const adjacentDirections = bootstrap.adjacentDirections[direction]
+      actualDirection = adjacentDirections[Game.time % 2]
+    }
+  }
+
   this.rememberPosition()
 
-  return this.move(direction)
+  return this.move(actualDirection)
 }
 
 Creep.prototype.moveToWrapper = function (destination, options = { }) {
@@ -116,18 +146,20 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
 
   this.rememberPosition()
 
-  if (options.rememberStop === true) {
-    options.serializeMemory = false
-  }
+  // even if was set, force to false
+  options.serializeMemory = false
 
   const rc = this.moveTo(destination, bootstrap.moveOptionsWrapper(this, options))
 
+  // stash a copy for fast use and serialize
+  if (this.memory._move && _.isArray(this.memory._move.path)) {
+    this._move_path_ = this.memory._move.path.slice(0)
+    this.memory._move.path = Room.serializePath(this.memory._move.path)
+  }
+
   if (options.rememberStop === true) {
-    if (this.memory._move && _.isArray(this.memory._move.path)) {
-      const stop = _.last(this.memory._move.path)
-
-      this.memory._move.path = Room.serializePath(this.memory._move.path)
-
+    if (this._move_path_) {
+      const stop = _.last(this._move_path_)
       if (stop) {
         bootstrap.makeItStop(this, stop)
       }
@@ -223,7 +255,7 @@ OwnedStructure.prototype.myOrAlly = function () {
 Room.prototype.level = function () {
   if (!this._my_) return 0
 
-  if (this.__level) return this.__level
+  if (this.__level_value) return this.__level_value
 
   const totalCapacity = this.energyCapacityAvailable
 
@@ -236,20 +268,20 @@ Room.prototype.level = function () {
     const maxTotalCapacity = canHaveSpawns * SPAWN_ENERGY_CAPACITY + canHaveExtensions * extensionCapacity
 
     if (totalCapacity >= maxTotalCapacity) {
-      this.__level = i
+      this.__level_value = i
     } else {
       break
     }
   }
 
-  return this.__level
+  return this.__level_value
 }
 
 Room.prototype.getRoomControlledCreeps = function () {
-  if (this.__roomCreepsControl === undefined) {
+  if (this.__getRoomControlledCreeps_creeps === undefined) {
     const toFilter = Game.creepsByCrum[this.name] || { }
 
-    this.__roomCreepsControl = _.filter(
+    this.__getRoomControlledCreeps_creeps = _.filter(
       toFilter,
       function (creep) {
         if (creep.spawning) {
@@ -261,42 +293,27 @@ Room.prototype.getRoomControlledCreeps = function () {
           return true
         }
 
-        if (creep.memory.btyp === 'upgrader') {
-          this.__sort_upgrader__ = true
-        }
-
         // control non-tasked
         return creep.shortcut === '__no_flag__'
       },
       this
     )
-
-    // upgrader must come before workers
-    if (this.__sort_upgrader__ && this.__roomCreepsControl.length > 0) {
-      let upgraderAt
-      for (let i = 0; i < this.__roomCreepsControl.length; ++i) {
-        if (this.__roomCreepsControl[i].memory.btyp === 'upgrader') {
-          upgraderAt = i
-          break
-        }
-      }
-
-      if (upgraderAt > 0) {
-        const atZero = this.__roomCreepsControl[0]
-        const upgrader = this.__roomCreepsControl[upgraderAt]
-
-        this.__roomCreepsControl[0] = upgrader
-        this.__roomCreepsControl[upgraderAt] = atZero
-      }
-    }
   }
 
-  return this.__roomCreepsControl
+  return this.__getRoomControlledCreeps_creeps
+}
+
+Room.prototype.getRoomControlledWorkers = function () {
+  if (this.__getRoomControlledWorkers_creeps === undefined) {
+    this.__getRoomControlledWorkers_creeps = _.filter(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))
+  }
+
+  return this.__getRoomControlledWorkers_creeps
 }
 
 Room.prototype.getViableRoomOwnedCreeps = function () {
-  if (this.__roomCreepsOwned === undefined) {
-    this.__roomCreepsOwned = _.filter(
+  if (this.__getViableRoomOwnedCreeps_creeps === undefined) {
+    this.__getViableRoomOwnedCreeps_creeps = _.filter(
       Game.creeps,
       function (creep) {
         return creep.viable && (this.name === (creep.memory.frum || creep.memory.crum))
@@ -305,7 +322,7 @@ Room.prototype.getViableRoomOwnedCreeps = function () {
     )
   }
 
-  return this.__roomCreepsOwned
+  return this.__getViableRoomOwnedCreeps_creeps
 }
 
 Room.prototype.extendedOwnerUsername = function () {
@@ -368,22 +385,22 @@ Room.prototype.sourceEnergyCapacity = function () {
 Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (!this._my_) return 0
 
-  if (this.__extendedAvailableEnergyCapacity) return this.__extendedAvailableEnergyCapacity
+  if (this.__extendedAvailableEnergyCapacity_value) return this.__extendedAvailableEnergyCapacity_value
 
   // if there are no spawns in this room, nothing will help
   if (!_.some(this.spawns)) {
-    this.__extendedAvailableEnergyCapacity = 0
-    return this.__extendedAvailableEnergyCapacity
+    this.__extendedAvailableEnergyCapacity_value = 0
+    return this.__extendedAvailableEnergyCapacity_value
   }
 
   // if there are no workers, only dribble will help
-  if (!_.some(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'worker'))) {
-    this.__extendedAvailableEnergyCapacity = SPAWN_ENERGY_CAPACITY
-    return this.__extendedAvailableEnergyCapacity
+  if (this.getRoomControlledWorkers().length === 0) {
+    this.__extendedAvailableEnergyCapacity_value = SPAWN_ENERGY_CAPACITY
+    return this.__extendedAvailableEnergyCapacity_value
   }
 
-  this.__extendedAvailableEnergyCapacity = this.energyCapacityAvailable
-  return this.__extendedAvailableEnergyCapacity
+  this.__extendedAvailableEnergyCapacity_value = this.energyCapacityAvailable
+  return this.__extendedAvailableEnergyCapacity_value
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
@@ -602,9 +619,9 @@ const extensions = {
       }
     }
 
-    Game.__totalCreeps = 0
+    Game.myCreepsCount = 0
 
-    Game.__roomValues = []
+    Game.rooms_values = []
 
     Game.creepsById = { }
     Game.storages = { }
@@ -621,9 +638,9 @@ const extensions = {
       // cachge property that is actually a function call
       room._my_ = room.my
 
-      Game.__roomValues.push(room)
+      Game.rooms_values.push(room)
 
-      room.__roomCreeps = 0
+      room.myCreepsCount = 0
 
       room.flags = { }
       room.creeps = { }
@@ -646,17 +663,13 @@ const extensions = {
     }
 
     for (const creepName in Game.creeps) {
-      Game.__totalCreeps += 1
+      Game.myCreepsCount += 1
 
       const creep = Game.creeps[creepName]
-      // cache often made calls
-      creep._work_ = creep.getActiveBodyparts(WORK)
-      creep._carry_ = creep.getActiveBodyparts(CARRY)
-      creep._move_ = creep.getActiveBodyparts(MOVE)
 
       Game.creepsById[creep.id] = creep
       creep.room.creeps[creep.id] = creep
-      creep.room.__roomCreeps += 1
+      creep.room.myCreepsCount += 1
 
       if (creep.memory.flag) {
         creep.flag = Game.flags[creep.memory.flag]
@@ -666,12 +679,12 @@ const extensions = {
         creep.shortcut = '__no_flag__'
       }
 
-      creep.__crum_group_by__ = creep.memory.crum || '__no_crum__'
+      creep.__extensions__crumGroupBy_value = creep.memory.crum || '__no_crum__'
     }
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
     Game.creepsByShortcut = _.groupBy(Game.creeps, _.property('shortcut'))
-    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__crum_group_by__'))
+    Game.creepsByCrum = _.groupBy(Game.creeps, _.property('__extensions__crumGroupBy_value'))
 
     for (const id in Game.structures) {
       const structure = Game.structures[id]

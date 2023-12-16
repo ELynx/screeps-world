@@ -17,24 +17,24 @@ PathFinder.CostMatrix.prototype.setStationaryCreepsUnwalkabke = function (roomNa
     this._bits[block.x * 50 + block.y] = 255
     room.visual.circle(block.x, block.y, { fill: 'transparent', radius: 0.55, stroke: 'white' })
   }
+
+  // reset array for re-entry
+  room.blocked = []
 }
 
 const map = {
   costCallback_costMatrixForRoomActivity: function (roomName, costMatrix) {
-    if (Game.__roomActivityCostCallbackCache === undefined) {
-      Game.__roomActivityCostCallbackCache = { }
+    if (Game.__map__costCallback_costMatrixForRoomActivity_cache === undefined) {
+      Game.__map__costCallback_costMatrixForRoomActivity_cache = { }
     }
 
-    const cached = Game.__roomActivityCostCallbackCache[roomName]
-    if (cached) {
-      return cached
-    }
+    const currentState = Game.__map__costCallback_costMatrixForRoomActivity_cache[roomName] || costMatrix
 
-    costMatrix.setStationaryCreepsUnwalkabke(roomName)
+    currentState.setStationaryCreepsUnwalkabke(roomName)
 
-    Game.__roomActivityCostCallbackCache[roomName] = costMatrix
+    Game.__map__costCallback_costMatrixForRoomActivity_cache[roomName] = currentState
 
-    return costMatrix
+    return currentState
   }
 }
 

@@ -30,6 +30,7 @@ const cleanup = {
           'mlvl',
           'nodeAccessed',
           'photo',
+          'sellEverything',
           'slvl',
           'srck',
           'stre',

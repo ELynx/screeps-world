@@ -67,7 +67,7 @@ outlast.creepRoomTravel = function (creep) {
   }
 
   // don't waste CPU
-  if (!creep.__canMove) return
+  if (!creep._can_move_) return
 
   // let room travel do the step
   let autoMove = true

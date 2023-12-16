@@ -34,7 +34,8 @@ towerProcess.work = function (room) {
     )
 
     // STRATEGY periodically attack at random
-    if (harmful.length === 0 && (room.intl % 10 === 0)) {
+    const pewpew = room.memory.intl + Game.time
+    if (harmful.length === 0 && (pewpew % 10 === 0)) {
       harmful = _.sample(hostileCreeps, towers.length)
     }
 
@@ -49,7 +50,7 @@ towerProcess.work = function (room) {
       // STRATEGY what targets to aim first
       harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
 
-      // step 1 - increase size to equal or greater than tower cound
+      // step 1 - increase size to equal or greater than tower count
       while (harmful.length < towers.length) {
         harmful = harmful.concat(harmful)
       }
@@ -67,12 +68,12 @@ towerProcess.work = function (room) {
       for (let i = 0; i < towers.length; ++i) {
         const tower = towers[i]
 
-        if (tower.__acted) continue
+        if (tower.__towerProcess_acted) continue
 
         const target = harmful[i]
 
         const rc = tower.attack(target)
-        if (rc === OK) tower.__acted = true
+        if (rc === OK) tower.__towerProcess_acted = true
       }
     }
   }
@@ -80,7 +81,7 @@ towerProcess.work = function (room) {
   const damagedCreeps = _.filter(
     creeps,
     function (creep) {
-      // callous
+      // do not heal ones with self-heal
       if (creep.memory && creep.memory.shel) return false
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
@@ -89,12 +90,12 @@ towerProcess.work = function (room) {
 
   if (damagedCreeps.length > 0) {
     for (const tower of towers) {
-      if (tower.__acted) continue
+      if (tower.__towerProcess_acted) continue
 
       const closestDamaged = tower.pos.findClosestByRange(damagedCreeps)
       if (closestDamaged) {
         const rc = tower.heal(closestDamaged)
-        if (rc === OK) tower.__acted = true
+        if (rc === OK) tower.__towerProcess_acted = true
       }
     }
   }

@@ -1,6 +1,7 @@
 # Screeps AI
 
 ## LICENSE
+
 Copyright (C) 2023 by Eduard Surovin.
 
 All rights reserved.
@@ -10,6 +11,7 @@ Unauthorized copying via any medium is strictly prohibited.
 Proprietary and confidential.
 
 ## Folders
+
 `.github` - GitHub Action definitions
 
 `dist` - deployment payload
@@ -17,6 +19,7 @@ Proprietary and confidential.
 `history` - historical data worth saving
 
 ## TODO
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -29,9 +32,8 @@ Movement and positioning:
 
 * Worker creeps avoid hostile areas.
 
-Don't send military to enemy safe mode rooms.
-
 ## Intents
+
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
 
 [Flag](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/flags/intents.js)
@@ -53,6 +55,9 @@ Don't send military to enemy safe mode rooms.
 [Tower](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/towers/intents.js)
 
 ## Ideas
+
+### Auto base building
+
 Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
@@ -65,9 +70,27 @@ Some material on autobases:
 
 Fatigue based emergent road building.
 
-Send resources away instead of selling out on panic.
+Source link placement adjacent (and maybe vectored) from source container.
+
+### Economy
 
 Sell off commodities.
+
+Send resources away instead of selling out on panic.
+
+Containers next to Controller to decrease walking to upgrade:
+
+* Grab from Links and Containers inside act.
+
+Do not overfill Labs and Factory to prevent process pollution.
+
+Clean up source and other technical containers.
+
+Cluster restock.
+
+Global Control farm rooms.
+
+### Auto room attack / defense
 
 Room attack definition:
 
@@ -83,6 +106,20 @@ Room attack definition:
 
 Flag to turn verbose naming on and off.
 
+* Auto condition to turn verbose naming on and off.
+
+Instead of healing by towers spawn healers.
+
+Auto create security_ flags based on autobuild.
+
+No firing at things in room safe mode.
+
+Ignore Invader healers if no other Invader creeps exist.
+
+Don't send military to enemy safe mode rooms.
+
+### Technical
+
 Intent queue for withdraw and transfer.
 
 Spawn intent uber-wrapper:
@@ -93,22 +130,6 @@ Spawn intent uber-wrapper:
 
 * Cancel without energy loss.
 
-Instead of healing by towers spawn healers.
-
-Containers next to Controller to decrease walking to upgrade:
-
-* Grab from Links and Containers inside act.
-
-Do not overfill Labs and Factory to prevent process pollution.
-
-Cluster restock.
-
-Global Control farm rooms.
-
 [Creep body part colors](https://github.com/screeps/renderer/blob/a94760f146afd2a299bd13342b83c596d3f10252/engine/src/lib/processors/creepBuildBody.js#L13)
 
-Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far traver!
-
-Mix in worker family bodies to allow useful functions up to the end.
-
-Standing on containers is best for special harvest cases.
+Power Creeps can be [renewed](https://docs.screeps.com/api/#PowerCreep.renew) at Power Banks. Far travel!

@@ -79,7 +79,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   let backupRoomName
   let backupRoomDistance = Number.MAX_SAFE_INTEGER
 
-  for (const room of Game.__roomValues) {
+  for (const room of Game.rooms_values) {
     if (!room._my_) continue
 
     let distance = Game.map.getRoomLinearDistance(creep.room.name, room.name)
@@ -122,7 +122,7 @@ plunder.moveAndLoad = function (creep, target) {
     const resourceTypes = _.shuffle(_.keys(target.store))
     for (const resourceType of resourceTypes) {
       const rc = creep.withdraw(target, resourceType)
-      if (rc !== OK) break
+      if (rc >= OK) break
     }
   } else {
     creep.moveToWrapper(
@@ -291,7 +291,7 @@ plunder.makeBody = function (room) {
     return this.makeCM(8)
   }
 
-  if (energy < 2000 || sourceLevel < 3) {
+  if (energy < 2000 || sourceLevel < 2) {
     // 1200
     return this.makeCM(12)
   }

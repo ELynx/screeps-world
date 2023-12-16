@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Controller = require('./controller.template')
 
 const upgradeController = new Controller('upgrade')
@@ -11,17 +13,19 @@ upgradeController.act = function (controller, creep) {
 }
 
 upgradeController.validateTarget = function (allTargets, target, creep) {
+  // plug the default check as well
+  if (this._validateRestocker(target, creep) === false) return false
+
   // no limit below level 8
   if (target.level < 8) {
     return true
   }
 
   let othersWork = 0
-
-  // accounting for specialist
-  const others = this._allAssignedTo(target, 'upgrade.specialist')
+  const others = this._allAssignedTo(target)
   for (const other of others) {
-    othersWork += _.countBy(other.body, 'type')[WORK] || 0
+    bootstrap.activeBodyParts(other)
+    othersWork += other._work_
   }
 
   return othersWork < CONTROLLER_MAX_UPGRADE_PER_TICK
@@ -29,7 +33,7 @@ upgradeController.validateTarget = function (allTargets, target, creep) {
 
 upgradeController.targets = function (room) {
   // don't upgrade controller in room with active fight
-  if (room.__fight) {
+  if (room._fight_) {
     return []
   }
 

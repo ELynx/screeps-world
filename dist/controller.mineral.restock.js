@@ -24,31 +24,24 @@ mineralRestockController.act = function (structure, creep) {
     const howMuch = (canGive > wantTake) ? wantTake : undefined
 
     const rc = this.wrapIntent(creep, 'transfer', structure, resourceType, howMuch)
-    if (rc !== OK) {
-      return rc
+    if (rc >= OK) {
+      // one transfer per tick
+      // creep will be de-assigned, if more resources are there it will be found again
+      return bootstrap.WARN_INTENDEE_EXHAUSTED
     }
   }
 
-  // if here then all transfers were OK
-  // thus do not keep at target
-  return bootstrap.WARN_INTENDEE_EXHAUSTED
-}
-
-mineralRestockController._checkStore = function (structure) {
-  if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
-    return structure.demand.amount(RESOURCE_POWER) > 0
-  }
-
-  return false
+  // there is something wrong with resources
+  return bootstrap.ERR_INTENDEE_EXHAUSTED
 }
 
 // STRATEGY mineral fill order
 mineralRestockController.targets = function (room) {
-  if (this._checkStore(room.terminal)) {
+  if (this._universalWantStoreNonEnergy(room.terminal)) {
     return [room.terminal]
   }
 
-  if (this._checkStore(room.storage)) {
+  if (this._universalWantStoreNonEnergy(room.storage)) {
     return [room.storage]
   }
 
@@ -70,7 +63,7 @@ mineralDumpController._wantFunction = function (structure, resourceType) {
 }
 
 mineralDumpController.targets = function (room) {
-  if (this._checkStore(room.storage)) {
+  if (this._universalWantStoreNonEnergy(room.storage)) {
     return [room.storage]
   }
 
