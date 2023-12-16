@@ -29,7 +29,7 @@ spawnTasked._bodyCost = function (body) {
   const costArray = _.map(
     usedBody,
     function (type) {
-      return BODYPART_COST[type] || 1000000
+      return BODYPART_COST[type] ?? 1000000
     }
   )
 
