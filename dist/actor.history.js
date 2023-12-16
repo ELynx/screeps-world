@@ -262,6 +262,8 @@ const historyActor =
         case EVENT_HEAL:
           this.handle_EVENT_HEAL(room, eventRecord)
           break
+        default:
+          break
       }
     }
   },

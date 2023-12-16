@@ -732,6 +732,8 @@ const extensions = {
           Game.nukers[structure.id] = structure
           structure.room.nuker = structure
           break
+        default:
+          break
       }
     }
   }
