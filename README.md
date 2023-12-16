@@ -24,8 +24,6 @@ Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
 
-* Visualise green and yellow cases in room actor better.
-
 * Step away.
 
 * Strelok tries to attack unreachable sections.
