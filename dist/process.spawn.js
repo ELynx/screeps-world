@@ -163,7 +163,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   }
 
   const wantWorkersMin = limit ? 0 : 3
-  const wantWorkersMax = limit ?? 12
+  const wantWorkersMax = limit || 12
 
   const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
 
