@@ -408,12 +408,12 @@ RoomPosition.prototype.offBorderDistance = function () {
 }
 
 RoomPosition.prototype.squareArea = function (squareStep) {
-  const t = Math.max(this.y - squareStep, 0)
-  const l = Math.max(this.x - squareStep, 0)
-  const b = Math.min(this.y + squareStep, 49)
-  const r = Math.min(this.x + squareStep, 49)
+  const top___ = Math.max(this.y - squareStep, 0)
+  const left__ = Math.max(this.x - squareStep, 0)
+  const bottom = Math.min(this.y + squareStep, 49)
+  const right_ = Math.min(this.x + squareStep, 49)
 
-  return [t, l, b, r]
+  return [top___, left__, bottom, right_]
 }
 
 RoomPosition.prototype.findInSquareArea = function (lookForType, squareStep, filterFunction = undefined) {
