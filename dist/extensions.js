@@ -88,6 +88,27 @@ Creep.prototype.fatigueWrapper = function () {
   return OK
 }
 
+if (!Creep.prototype.__original_move) {
+  Creep.prototype.__original_move = Creep.prototype.move
+
+  Creep.prototype.move = function(creepOrDirection) {
+    const rc = this.__original_move(creepOrDirection)
+
+    if (rc === OK) {
+      if (_.isFinite(creepOrDirection)) {
+        this._direction_ = creepOrDirection
+        const [dx, dy] = bootstrap.directionToDelta[this._direction_]
+        this._next_pos_ = new RoomPosition(this.pos.x + dx, this.pos.y + dy, this.pos.roomName)
+      } else if (_.isObject(creepOrDirection)) {
+        this._next_pos_ = creepOrDirection.pos
+        this._direction_ = this.pos.getDirectionTo(this._next_pos_)
+      }
+    }
+
+    return rc
+  }
+}
+
 Creep.prototype.moveWrapper = function (direction, options = { }) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
