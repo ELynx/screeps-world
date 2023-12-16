@@ -91,7 +91,7 @@ Creep.prototype.fatigueWrapper = function () {
 if (!Creep.prototype.__original_move) {
   Creep.prototype.__original_move = Creep.prototype.move
 
-  Creep.prototype.move = function(creepOrDirection) {
+  Creep.prototype.move = function (creepOrDirection) {
     const rc = this.__original_move(creepOrDirection)
 
     if (rc === OK) {
