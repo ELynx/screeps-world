@@ -212,6 +212,7 @@ spawnProcess.myReserved = function (room, live) {
 }
 
 spawnProcess.sourceKeeper = function (room, live) {
+  // nothing for sourceKeeper now
 }
 
 spawnProcess.unowned = function (room, live) {
@@ -229,6 +230,7 @@ spawnProcess.neutral = function (room, live) {
 }
 
 spawnProcess.hostile = function (room, live) {
+  // nothing for hostile now
 }
 
 spawnProcess.work = function (room) {

@@ -479,8 +479,12 @@ const intent = {
       directions: options ? options.directions : undefined,
       spawn,
 
-      cancel: function () { },
-      setDirections: function (directions) { }
+      cancel: function () {
+        // keep interface compatible but do not do anything
+      },
+      setDirections: function (directions) {
+        // keep interface compatible but do not do anything
+      }
     }
 
     this.setIntended(spawn, spawningKey, plannedSpawning)
