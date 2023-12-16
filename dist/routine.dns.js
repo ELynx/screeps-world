@@ -97,7 +97,7 @@ const storageDemand = function (__storage, priority) {
       // TODO move value outside of specific function
       // TODO do not fill space reserved for energy even this space it is not needed
       // TODO allow to stash more energy than needed, but prevent transer <-> withdraw loop
-      const neededEnergy = this.__storage.room.memory.stre ?? 0
+      const neededEnergy = this.__storage.room.memory.stre || 0
       const missingEnergy = Math.max(neededEnergy - usedByEnergy, 0)
 
       if (RESOURCE_ENERGY === type) {
@@ -128,7 +128,7 @@ const storageSupply = function (__storage, priority) {
       const usedByEnergy = intentSolver.getUsedCapacity(this.__storage, RESOURCE_ENERGY)
       if (usedByEnergy <= 0) return 0
 
-      const neededEnergy = this.__storage.room.memory.stre ?? 0
+      const neededEnergy = this.__storage.room.memory.stre || 0
 
       const freeEnergy = usedByEnergy - neededEnergy
       if (freeEnergy <= 0) return 0

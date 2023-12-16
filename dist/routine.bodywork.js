@@ -29,7 +29,7 @@ const bodywork = {
 
   worker: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
-    const sourceLevel = room.memory.slvl ?? 0
+    const sourceLevel = room.memory.slvl || 0
 
     // call for new or foreign room
     if (energy === 0) {
@@ -104,7 +104,7 @@ const bodywork = {
 
   miner: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
-    const sourceLevel = room.memory.slvl ?? 0
+    const sourceLevel = room.memory.slvl || 0
 
     if (energy < 1250) {
       return []
