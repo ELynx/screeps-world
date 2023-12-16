@@ -51,21 +51,21 @@ Creep.prototype.forgetPosition = function () {
 
 Creep.prototype.moved = function () {
   // quick reference
-  const p = this.memory._pos
+  const mempos = this.memory._pos
 
-  if (p === undefined) return undefined
+  if (mempos === undefined) return undefined
 
-  if (Game.time > p.time + 1) {
+  if (Game.time > mempos.time + 1) {
     this.forgetPosition()
     return undefined
   }
 
-  if (this.room.name !== p.room) {
+  if (this.room.name !== mempos.room) {
     this.forgetPosition()
     return undefined
   }
 
-  return this.pos.x !== p.from.x || this.pos.y !== p.from.y || this.pos.roomName !== p.from.room
+  return this.pos.x !== mempos.from.x || this.pos.y !== mempos.from.y || this.pos.roomName !== mempos.from.room
 }
 
 Creep.prototype._refreshMove = function () {
