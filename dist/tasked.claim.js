@@ -75,8 +75,8 @@ claimTasked.creepAtDestination = function (creep) {
         rc = creep.attackController(controller)
 
         // see if creep can wait it out
-        const ticksToUnblock = controller.upgradeBlocked || 0
-        const ticksToUnsafe = controller.safeMode || 0
+        const ticksToUnblock = controller.upgradeBlocked ?? 0
+        const ticksToUnsafe = controller.safeMode ?? 0
         const ticksToDowngrade = controller.level === 1 ? controller.ticksToDowngrade : 0
 
         wait = Math.max(ticksToUnblock, ticksToUnsafe, ticksToDowngrade)

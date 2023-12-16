@@ -63,7 +63,7 @@ spawnProcess.addToQueue = function (roomToName, roomFromName, type, body, memory
 }
 
 spawnProcess._hasAndPlanned = function (room, live, type) {
-  const has = live[type] || 0
+  const has = live[type] ?? 0
   const planned = queue.count(this.makeKey(room.name, type))
 
   return has + planned
@@ -74,7 +74,7 @@ spawnProcess._canSpawn = function (room) {
 }
 
 spawnProcess.streloks = function (room, live) {
-  const threat = room.memory.threat || 0
+  const threat = room.memory.threat ?? 0
   if (threat <= bootstrap.ThreatLevelLow) return
 
   const want = threat
@@ -94,7 +94,7 @@ spawnProcess.streloks = function (room, live) {
 }
 
 spawnProcess.restockers = function (room, live) {
-  const want = room.memory.slvl || 0
+  const want = room.memory.slvl ?? 0
   const now = this._hasAndPlanned(room, live, 'restocker')
 
   this.addToQueue(
@@ -111,7 +111,7 @@ spawnProcess.restockers = function (room, live) {
 }
 
 spawnProcess.miners = function (room, live) {
-  const want = room.memory.mlvl || 0
+  const want = room.memory.mlvl ?? 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
   this.addToQueue(
@@ -142,9 +142,9 @@ spawnProcess.workers = function (room, live, limit = undefined) {
 
     if (nowRestockers !== 0) {
       const restockerBody = room._my_ ? bodywork.restocker_my(room) : bodywork.restocker_other(room)
-      const workInRestocker = _.countBy(restockerBody)[WORK] || 0
+      const workInRestocker = _.countBy(restockerBody)[WORK] ?? 0
       if (workInRestocker > 0) {
-        const workInWorker = _.countBy(workerBody)[WORK] || 0
+        const workInWorker = _.countBy(workerBody)[WORK] ?? 0
         if (workInWorker > 0) {
           // STRATEGY harvest to spend ratio
           supportedByRestockers = Math.round(1.2 * HARVEST_POWER * nowRestockers * workInRestocker / workInWorker)

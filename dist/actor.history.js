@@ -62,7 +62,7 @@ const historyActor =
   },
 
   _increaseSomeValue: function (something, valueName, amount) {
-    const now = something[valueName] || 0
+    const now = something[valueName] ?? 0
     something[valueName] = now + amount
   },
 
