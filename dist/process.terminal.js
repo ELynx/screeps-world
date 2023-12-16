@@ -20,7 +20,7 @@ terminalProcess.work = function (room) {
 
   // SELL SELL SELL
   const threatTooHigh = room.memory.threat ? room.memory.threat >= bootstrap.ThreatLevelMax : false
-  const sellEverything = room.memory.sellEverything || Memory.sellEverything || false
+  const sellEverything = room.memory.sellEverything ?? Memory.sellEverything ?? false
 
   const economics = !(threatTooHigh || sellEverything)
 
