@@ -45,7 +45,7 @@ mineralHarvestController.targets = function (room) {
 
   // shortcut for `my`
   if (room._my_) {
-    if (room.extractor && room.extractor.isActiveSimple) {
+    if (room.extractor?.isActiveSimple) {
       return [room.extractor]
     } else {
       return []

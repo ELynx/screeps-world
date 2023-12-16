@@ -60,7 +60,7 @@ plunder.getSomeOwnRoomName = function (creep) {
     }
 
     // recall operation
-    if (creep.flag && creep.flag.memory.hrum) {
+    if (creep.flag?.memory.hrum) {
       return creep.flag.memory.hrum
     }
   }
@@ -71,7 +71,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   }
 
   // backup, recall last room seen by flag
-  if (creep.flag && creep.flag.memory.arum) {
+  if (creep.flag?.memory.arum) {
     return creep.flag.memory.arum
   }
 

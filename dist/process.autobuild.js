@@ -185,8 +185,7 @@ autobuildProcess.actualWork = function (room) {
 
 autobuildProcess.work = function (room) {
   const photoFlag = Game.flags.photo
-  if (photoFlag &&
-      photoFlag.room &&
+  if (photoFlag?.room &&
       photoFlag.room.name === room.name) {
     photoFlag.remove()
     this.takePhoto(room)
@@ -196,8 +195,7 @@ autobuildProcess.work = function (room) {
   const autobuildFlag = Game.flags.autobuild
   let executeAutoBuild = false
 
-  if (autobuildFlag &&
-      autobuildFlag.room &&
+  if (autobuildFlag?.room &&
       autobuildFlag.room.name === room.name) {
     autobuildFlag.remove()
     executeAutoBuild = true

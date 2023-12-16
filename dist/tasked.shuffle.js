@@ -35,7 +35,7 @@ shuffle.creepAtDestination = function (creep) {
         to = creep.room.storage
       }
 
-      if (to && to.demand.priority) {
+      if (to?.demand.priority) {
         const resourceTypes = _.shuffle(_.keys(creep.store))
         for (const resourceType of resourceTypes) {
           const want = to.demand.amount(resourceType)
@@ -54,7 +54,7 @@ shuffle.creepAtDestination = function (creep) {
       const canTakeThisTick = creep.store.getFreeCapacity()
       if (canTakeThisTick <= 0) return // this is ugly code but fast
 
-      if (to && to.demand.priority && from && from.supply.priority) {
+      if (to?.demand.priority && from && from.supply.priority) {
         const resourceTypes = _.shuffle(_.keys(from.store))
         for (const resourceType of resourceTypes) {
           const want = to.demand.amount(resourceType)

@@ -466,7 +466,7 @@ const intent = {
       return ERR_NOT_ENOUGH_ENERGY
     }
 
-    if (options && options.dryRun) {
+    if (options?.dryRun) {
       return OK
     }
 
@@ -505,7 +505,7 @@ const intent = {
   },
 
   backupIntents: function (something) {
-    if (something && something.__intents) {
+    if (something?.__intents) {
       return _.cloneDeep(something.__intents)
     }
 

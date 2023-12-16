@@ -48,7 +48,7 @@ repairController.observeMyCreep = function (creep) {
 
 repairController.act = function (target, creep) {
   let onSpotMultiplier = 1.0
-  if (creep.room.memory && creep.room.memory.threat) {
+  if (creep.room.memory?.threat) {
     onSpotMultiplier = 1.5
   }
 
