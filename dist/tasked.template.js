@@ -286,14 +286,14 @@ function Tasked (id) {
 
     const flag = creep.flag
     if (flag) {
-      const now = flag.memory.fcnt || 0
+      const now = flag.memory.fcnt ?? 0
       flag.memory.fcnt = now + 1
       creep.memory.fcnt = true
     }
   }
 
   this._flagCount = function (flag) {
-    return flag.memory.fcnt || 0
+    return flag.memory.fcnt ?? 0
   }
 
   this._flagCountBasic = function (flag, limit) {
@@ -322,7 +322,7 @@ function Tasked (id) {
 
       // count how many creeps are already going to destination
       if (creep.flag) {
-        const was = creep.flag[creepsCountKey] || 0
+        const was = creep.flag[creepsCountKey] ?? 0
         const now = was + 1
         creep.flag[creepsCountKey] = now
       }
@@ -381,7 +381,7 @@ function Tasked (id) {
         }
       }
 
-      const has = (flag[creepsCountKey] || 0) + spawn.count(flag.name)
+      const has = (flag[creepsCountKey] ?? 0) + spawn.count(flag.name)
 
       if (has < want) {
         flag.setSecondaryColor(COLOR_GREY)

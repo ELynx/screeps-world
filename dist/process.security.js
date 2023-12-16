@@ -22,7 +22,7 @@ secutiryProcess.work = function (room) {
   room.memory.nodeAccessed = Game.time
 
   const threatWas = room.memory.threat
-  let threatLevel = threatWas || 0
+  let threatLevel = threatWas ?? 0
   let threatTimer = room.memory._ttt || (Game.time - ThreatStep)
 
   const hostileCreeps = room.find(

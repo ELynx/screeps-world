@@ -52,7 +52,7 @@ terminalProcess.work = function (room) {
     Memory.prices = { }
   }
 
-  const lastPrice = Memory.prices[sellMineralType] || 0
+  const lastPrice = Memory.prices[sellMineralType] ?? 0
 
   // get average order statistics
   const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: sellMineralType })
