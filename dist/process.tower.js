@@ -42,9 +42,9 @@ towerProcess.work = function (room) {
     if (harmful.length > 0) {
       // assign zeros into empty slots
       for (const x of harmful) {
-        x.sideHarm = x.sideHarm ?? 0
-        x.sideHarmPower = x.sideHarmPower ?? 0
-        x.directHarm = x.directHarm ?? 0
+        x.sideHarm = x.sideHarm || 0
+        x.sideHarmPower = x.sideHarmPower || 0
+        x.directHarm = x.directHarm || 0
       }
 
       // STRATEGY what targets to aim first
@@ -82,7 +82,7 @@ towerProcess.work = function (room) {
     creeps,
     function (creep) {
       // do not heal ones with self-heal
-      if (creep.memory?.shel) return false
+      if (creep.memory && creep.memory.shel) return false
 
       return creep.myOrAlly() && (creep.hits < creep.hitsMax)
     }

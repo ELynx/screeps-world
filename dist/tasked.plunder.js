@@ -60,7 +60,7 @@ plunder.getSomeOwnRoomName = function (creep) {
     }
 
     // recall operation
-    if (creep.flag?.memory.hrum) {
+    if (creep.flag && creep.flag.memory.hrum) {
       return creep.flag.memory.hrum
     }
   }
@@ -71,7 +71,7 @@ plunder.getSomeOwnRoomName = function (creep) {
   }
 
   // backup, recall last room seen by flag
-  if (creep.flag?.memory.arum) {
+  if (creep.flag && creep.flag.memory.arum) {
     return creep.flag.memory.arum
   }
 
@@ -99,14 +99,14 @@ plunder.findTarget = function (creep, targets) {
   for (const target of targets) {
     for (const resourceType in target.store) {
       const stored = target.store.getUsedCapacity(resourceType)
-      target.__stored = (target.__stored ?? 0) + stored
+      target.__stored = (target.__stored || 0) + stored
     }
   }
 
   targets.sort(
     function (t1, t2) {
-      const s1 = t1.__stored ?? 0
-      const s2 = t2.__stored ?? 0
+      const s1 = t1.__stored || 0
+      const s2 = t2.__stored || 0
 
       return s2 - s1
     }
@@ -116,7 +116,7 @@ plunder.findTarget = function (creep, targets) {
 }
 
 plunder.moveAndLoad = function (creep, target) {
-  target.__stored = (target.__stored ?? 0) - creep.store.getFreeCapacity()
+  target.__stored = (target.__stored || 0) - creep.store.getFreeCapacity()
 
   if (creep.pos.isNearTo(target)) {
     const resourceTypes = _.shuffle(_.keys(target.store))
@@ -273,7 +273,7 @@ plunder.makeCM = function (pairs) {
 
 plunder.makeBody = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
-  const sourceLevel = room.memory.slvl ?? 0
+  const sourceLevel = room.memory.slvl || 0
 
   if (energy < 400) {
     // 300
