@@ -1,3 +1,47 @@
+/* global ConstructionSite */
+/* global Creep */
+/* global Deposit */
+/* global Flag */
+/* global Game */
+/* global Memory */
+/* global Mineral */
+/* global Nuke */
+/* global OwnedStructure */
+/* global PathFinder */
+/* global PowerCreep */
+/* global RawMemory */
+/* global Resource */
+/* global Room */
+/* global RoomObject */
+/* global RoomPosition */
+/* global RoomVisual */
+/* global Ruin */
+/* global Source */
+/* global Store */
+/* global Structure */
+/* global StructureContainer */
+/* global StructureController */
+/* global StructureExtension */
+/* global StructureExtractor */
+/* global StructureFactory */
+/* global StructureInvaderCore */
+/* global StructureKeeperLair */
+/* global StructureLab */
+/* global StructureLink */
+/* global StructureNuker */
+/* global StructureObserver */
+/* global StructurePortal */
+/* global StructurePowerBank */
+/* global StructurePowerSpawn */
+/* global StructureRampart */
+/* global StructureRoad */
+/* global StructureSpawn */
+/* global StructureStorage */
+/* global StructureTerminal */
+/* global StructureTower */
+/* global StructureWall */
+/* global Tombstone */
+
 'use strict';
 
 const ROOT_NAME = '(root)';
@@ -62,7 +106,7 @@ function setupProfiler() {
       if (Profiler.isProfiling()) {
         const filter = Memory.profiler.filter;
         let duration = false;
-        if (!!Memory.profiler.disableTick) {
+        if (Memory.profiler.disableTick) {
           // Calculate the original duration, profile is enabled on the tick after the first call,
           // so add 1.
           duration = Memory.profiler.disableTick - Memory.profiler.enabledTick + 1;
