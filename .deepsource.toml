@@ -1,8 +1,9 @@
 version = 1
 
+exclude_patterns = ["/dist/screeps-profiler.js"]
+
 [[analyzers]]
 name = "javascript"
 
   [analyzers.meta]
   environment = ["nodejs"]
-  style_guide = "standard"
