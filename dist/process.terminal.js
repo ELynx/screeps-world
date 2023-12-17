@@ -20,7 +20,7 @@ terminalProcess.work = function (room) {
 
   // SELL SELL SELL
   const threatTooHigh = room.memory.threat ? room.memory.threat >= bootstrap.ThreatLevelMax : false
-  const sellEverything = room.memory.sellEverything ?? Memory.sellEverything ?? false
+  const sellEverything = room.memory.sellEverything || Memory.sellEverything || false
 
   const economics = !(threatTooHigh || sellEverything)
 
@@ -52,7 +52,7 @@ terminalProcess.work = function (room) {
     Memory.prices = { }
   }
 
-  const lastPrice = Memory.prices[sellMineralType] ?? 0
+  const lastPrice = Memory.prices[sellMineralType] || 0
 
   // get average order statistics
   const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: sellMineralType })
@@ -66,7 +66,8 @@ terminalProcess.work = function (room) {
       // if room is not visible then definitely not own order
       // if room has no controller than definitely not own order
       // compare by username, avoid use of "my"
-      if (roomFrom?.controller &&
+      if (roomFrom &&
+          roomFrom.controller &&
           roomFrom.controller.owner &&
           roomFrom.controller.owner.username === room.terminal.owner.username) return false
 
@@ -100,7 +101,8 @@ terminalProcess.work = function (room) {
 
     // don't trade with own orders
     // see above for breakdown
-    if (roomFrom?.controller &&
+    if (roomFrom &&
+        roomFrom.controller &&
         roomFrom.controller.owner &&
         roomFrom.controller.owner.username === room.terminal.owner.username) continue
 

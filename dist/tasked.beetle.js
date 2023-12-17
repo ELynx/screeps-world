@@ -249,7 +249,7 @@ beetle.creepAtDestination = function (creep) {
 }
 
 beetle.flagPrepare = function (flag) {
-  if (flag.room?.breached()) {
+  if (flag.room && flag.room.breached()) {
     return this.FLAG_IGNORE
   }
 

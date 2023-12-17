@@ -679,7 +679,7 @@ const extensions = {
         creep.shortcut = '__no_flag__'
       }
 
-      creep.__extensions__crumGroupBy_value = creep.memory.crum ?? '__no_crum__'
+      creep.__extensions__crumGroupBy_value = creep.memory.crum || '__no_crum__'
     }
 
     Game.flagsByShortcut = _.groupBy(Game.flags, _.property('shortcut'))
