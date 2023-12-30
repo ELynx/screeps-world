@@ -44,7 +44,23 @@ energyRestockController.targets = function (room) {
     }
   )
 
-  if (withActiveEnergyDemand.length === 0) return []
+  // TODO normal energy distribution, code below is haxx
+  // if (withActiveEnergyDemand.length === 0) return []
+  if (withActiveEnergyDemand.length === 0) {
+    if (room.storage.demand.priority !== null &&
+        room.storage.demand.amount(RESOURCE_ENERGY) > 0 &&
+        room.storage.isActiveSimple) {
+      withActiveEnergyDemand.push(room.storage)
+    }
+
+    if (room.terminal.demand.priority !== null &&
+        room.terminal.demand.amount(RESOURCE_ENERGY) > 0 &&
+        room.terminal.isActiveSimple) {
+      withActiveEnergyDemand.push(room.terminal)
+    }
+
+    if (withActiveEnergyDemand.length === 0) return []
+  }
 
   withActiveEnergyDemand.sort(
     function (t1, t2) {
