@@ -1,5 +1,6 @@
 'use strict'
 
+const intentSolver = require('./routine.intent')
 const bootstrap = require('./bootstrap')
 
 const Process = require('./process.template')
@@ -91,6 +92,23 @@ roomInfoProcess.miningLevel = function (room) {
   )
 
   if (minerals.length === 0) return 0
+
+  // stop producing wasted miners
+  if (room._my_) {
+    let totalFree = 0
+
+    for (const mineral of minerals) {
+      if (room.storage) {
+        totalFree += intentSolver.getFreeCapacity(room.storage, mineral.mineralType)
+      }
+
+      if (room.terminal) {
+        totalFree += intentSolver.getFreeCapacity(room.terminal, mineral.mineralType)
+      }
+    }
+
+    if (totalFree <= 0) return 0
+  }
 
   return 1
 }
