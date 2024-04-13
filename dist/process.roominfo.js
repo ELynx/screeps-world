@@ -69,6 +69,12 @@ roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
     if (room.storage === undefined && room.terminal === undefined) return 0
+
+    const storageFree = room.storage ? intentSolver.getFreeCapacity(room.storage, RESOURCE_POWER) : 0
+    const terminalFree = room.terminal ? intentSolver.getFreeCapacity(room.terminal, RESOURCE_POWER) : 0
+
+      // stop producing miners when there is no place to put resources
+    if (storageFree + terminalFree <= 0) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,
@@ -92,32 +98,6 @@ roomInfoProcess.miningLevel = function (room) {
   )
 
   if (minerals.length === 0) return 0
-
-  // stop producing miners when there is no place to put resources
-  if (room._my_) {
-    let hasFreeSpace = false
-
-    for (const mineral of minerals) {
-      if (room.storage) {
-        const stotageFree = intentSolver.getFreeCapacity(room.storage, mineral.mineralType)
-        if (stotageFree > 0) {
-          hasFreeSpace = true
-          break
-        }
-      }
-
-      if (room.terminal) {
-        const terminalFree = intentSolver.getFreeCapacity(room.terminal, mineral.mineralType)
-        if (terminalFree > 0)
-        {
-          hasFreeSpace = true
-          break
-        }
-      }
-    }
-
-    if (!hasFreeSpace) return 0
-  }
 
   return 1
 }
