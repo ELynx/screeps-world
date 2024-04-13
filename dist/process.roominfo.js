@@ -93,21 +93,30 @@ roomInfoProcess.miningLevel = function (room) {
 
   if (minerals.length === 0) return 0
 
-  // stop producing wasted miners
+  // stop producing miners when there is no place to put resources
   if (room._my_) {
-    let totalFree = 0
+    let hasFreeSpace = false
 
     for (const mineral of minerals) {
       if (room.storage) {
-        totalFree += intentSolver.getFreeCapacity(room.storage, mineral.mineralType)
+        const stotageFree = intentSolver.getFreeCapacity(room.storage, mineral.mineralType)
+        if (stotageFree > 0) {
+          hasFreeSpace = true
+          break
+        }
       }
 
       if (room.terminal) {
-        totalFree += intentSolver.getFreeCapacity(room.terminal, mineral.mineralType)
+        const terminalFree = intentSolver.getFreeCapacity(room.terminal, mineral.mineralType)
+        if (terminalFree > 0)
+        {
+          hasFreeSpace = true
+          break
+        }
       }
     }
 
-    if (totalFree <= 0) return 0
+    if (!hasFreeSpace) return 0
   }
 
   return 1
