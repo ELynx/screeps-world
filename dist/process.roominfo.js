@@ -73,7 +73,7 @@ roomInfoProcess.miningLevel = function (room) {
     const storageFree = room.storage ? intentSolver.getFreeCapacity(room.storage, RESOURCE_POWER) : 0
     const terminalFree = room.terminal ? intentSolver.getFreeCapacity(room.terminal, RESOURCE_POWER) : 0
 
-      // stop producing miners when there is no place to put resources
+    // stop producing miners when there is no place to put resources
     if (storageFree + terminalFree <= 0) return 0
   } else {
     const extractors = room.find(
