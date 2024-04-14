@@ -2,7 +2,7 @@
 
 ## LICENSE
 
-Copyright (C) 2023 by Eduard Lynx.
+Copyright (C) 2024 by Eduard Lynx.
 
 All rights reserved.
 
