@@ -4,7 +4,7 @@ const bootstrap = require('./bootstrap')
 
 const Controller = require('./controller.template')
 
-const upgradeController = new Controller('upgrade')
+const upgradeController = new Controller('upgrade.generic')
 
 upgradeController.actRange = 3
 
@@ -14,7 +14,7 @@ upgradeController.act = function (controller, creep) {
 
 upgradeController.validateTarget = function (allTargets, target, creep) {
   // plug the default check as well
-  if (this._validateRestocker(target, creep) === false) return false
+  if (this._validateTarget(allTargets, target, creep) === false) return false
 
   // no limit below level 8
   if (target.level < 8) {
@@ -44,6 +44,20 @@ upgradeController.targets = function (room) {
   return [room.controller]
 }
 
-upgradeController.register()
+// before profiler wrap
+const upgradeControllerSpecialist = _.assign({ }, upgradeController)
 
-module.exports = upgradeController
+upgradeControllerSpecialist.id = 'upgrade.specialist'
+
+upgradeControllerSpecialist.filterCreep = function (creep) {
+  return this._defaultFilter(creep) && this._isUpgrader(creep)
+}
+
+upgradeController.register()
+upgradeControllerSpecialist.register()
+
+module.exports =
+{
+  generic: upgradeController,
+  specialist: upgradeControllerSpecialist
+}
