@@ -264,6 +264,7 @@ spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('restocker_my')
   this._registerBodyFunction('restocker_other')
   this._registerBodyFunction('miner')
+  this._registerBodyFunction('upgrader')
 }
 
 spawnProcess.register = function () {
