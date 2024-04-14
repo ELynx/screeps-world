@@ -127,6 +127,24 @@ spawnProcess.miners = function (room, live) {
   )
 }
 
+spawnProcess.upgraders = function (room, live) {
+  // when can, make one
+  const want = (bodywork.upgrader(room).length > 0) ? 1 : 0
+  const now = this._hasAndPlanned(room, live, 'upgrader')
+
+  this.addToQueue(
+    room.name,
+    room.name,
+    'upgrader',
+    'upgrader',
+    {
+      upgr: true
+    },
+    want - now,
+    'lowkey'
+  )
+}
+
 spawnProcess.workers = function (room, live, limit = undefined) {
   const nowWorkers = this._hasAndPlanned(room, live, 'worker')
 
@@ -137,6 +155,7 @@ spawnProcess.workers = function (room, live, limit = undefined) {
   if (room._my_ && limit === undefined) {
     let standalone = 0
     let supportedByRestockers = 0
+    let replacedByUpgraders = 0
 
     const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
 
@@ -202,6 +221,7 @@ spawnProcess.my = function (room, live) {
   this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
+  this.upgraders(room, live)
   this.workers(room, live)
 }
 
