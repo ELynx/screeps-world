@@ -44,7 +44,8 @@ const controllersBlockStop = [
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
-  upgradeController.id
+  upgradeController.generic.id,
+  upgradeController.specialist.id
 ]
 
 // STRATEGY priority for creep assignment
@@ -55,13 +56,14 @@ const controllersMyAuto = [
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.full.id, // catch anyone with mineral only
   energySpecialistController.id, // catch restockers
+  upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
   energyRestockController.id,
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.id,
+  upgradeController.generic.id,
   mineralRestockController.dump.id
 ]
 
