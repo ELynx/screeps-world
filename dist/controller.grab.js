@@ -66,8 +66,6 @@ grabController.act = function (room, creep) {
   return ERR_NOT_FOUND
 }
 
-grabController.validateTarget = undefined // default validation is specific to Restockers, this is already handled by `filterCreep`
-
 grabController.targets = function (room) {
   this.fastCheck = true
 
@@ -150,10 +148,6 @@ grabController.targets = function (room) {
 }
 
 grabController.filterCreep = function (creep) {
-  // they move trash around otherwise
-  if (this._isRestocker(creep)) return false
-  if (this._isUpgrader(creep)) return false
-
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
     if (this.fastCheckX[creep.pos.x] === undefined) {
