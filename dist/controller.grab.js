@@ -150,8 +150,9 @@ grabController.targets = function (room) {
 }
 
 grabController.filterCreep = function (creep) {
-  // they bring trash to source containers otherwise
+  // they move trash around otherwise
   if (this._isRestocker(creep)) return false
+  if (this._isUpgrader(creep)) return false
 
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
