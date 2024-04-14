@@ -12,10 +12,7 @@ upgradeController.act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller)
 }
 
-upgradeController.validateTarget = function (allTargets, target, creep) {
-  // plug the default check as well
-  if (this._validateTarget(allTargets, target, creep) === false) return false
-
+upgradeController._validateUpgradeLimit = function (target) {
   // no limit below level 8
   if (target.level < 8) {
     return true
@@ -29,6 +26,12 @@ upgradeController.validateTarget = function (allTargets, target, creep) {
   }
 
   return othersWork < CONTROLLER_MAX_UPGRADE_PER_TICK
+}
+
+upgradeController.validateTarget = function (allTargets, target, creep) {
+  if (!this._validateTarget(allTargets, target, creep)) return false
+
+  return this._validateUpgradeLimit(target)
 }
 
 upgradeController.targets = function (room) {
@@ -48,6 +51,8 @@ upgradeController.targets = function (room) {
 const upgradeControllerSpecialist = _.assign({ }, upgradeController)
 
 upgradeControllerSpecialist.id = 'upgrade.specialist'
+
+upgradeController.validateTarget = undefined // just go for it, block all others as well
 
 upgradeControllerSpecialist.filterCreep = function (creep) {
   return this._defaultFilter(creep) && this._isUpgrader(creep)
