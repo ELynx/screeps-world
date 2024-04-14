@@ -13,6 +13,12 @@ TOUGH           10
 CLAIM           600
 **/
 
+/**
+MEMO - constants
+
+CONTROLLER_MAX_UPGRADE_PER_TICK 15
+**/
+
 const bodywork = {
   makeWCM: function (work, carry, move = work + carry) {
     const a = new Array(work)
@@ -117,6 +123,22 @@ const bodywork = {
 
     // 2500
     return this.makeWCM(10, 10)
+  },
+
+  upgrader: function (room) {
+    const energy = room.extendedAvailableEnergyCapacity()
+
+    if (energy < 2400) {
+      return []
+    }
+
+    // this makes sense only as a complete machine
+    // 15 WORK for maximum upgrade
+    // 3 CARRY for 150 capacity to minimize withdraw
+    // 15 MOVE to avoid fatigue on the way to
+
+    // 2400
+    return this.makeWCM(15, 3, 15)
   }
 }
 
