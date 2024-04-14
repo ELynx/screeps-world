@@ -20,6 +20,7 @@ grabController.roomPrepare = function (room) {
 
 grabController.act = function (room, creep) {
   const hasUniversalStore = this._universalWantStoreNonEnergy(room.storage) || this._universalWantStoreNonEnergy(room.terminal)
+  const isEnergyOnly = this._isRestocker(creep) || this._isUpgrader(creep)
 
   const grabs = this._findTargets(room)
 
@@ -31,7 +32,7 @@ grabController.act = function (room, creep) {
     if (!creep.pos.isNearTo(from)) continue
 
     if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
-      const typesToGrab = hasUniversalStore ? _.keys(from.store) : [RESOURCE_ENERGY]
+      const typesToGrab = (hasUniversalStore && !isEnergyOnly) ? _.keys(from.store) : [RESOURCE_ENERGY]
 
       for (const typeToGrab of typesToGrab) {
         if (intentSolver.getUsedCapacity(from, typeToGrab) > 0) {
