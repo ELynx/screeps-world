@@ -35,6 +35,7 @@ const cleanup = {
           'srck',
           'stre',
           'threat',
+          'ulvl',
           'wlvl'
         ]
       )

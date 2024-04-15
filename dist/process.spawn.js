@@ -128,13 +128,12 @@ spawnProcess.miners = function (room, live) {
 }
 
 spawnProcess.upgraders = function (room, live) {
-  // when can, make one
-  const want = (bodywork.upgrader(room).length > 0) ? 1 : 0
+  const want = room.memory.ulvl || 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
     room.name,
-    room.name,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'upgrader',
     'upgrader',
     {
