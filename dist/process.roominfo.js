@@ -175,6 +175,11 @@ roomInfoProcess.wallLevel = function (room) {
   }
 }
 
+roomInfoProcess.upgradeLevel = function (room) {
+  // TODO
+  return 0
+}
+
 roomInfoProcess.work = function (room) {
   room.memory.nodeAccessed = Game.time
 
@@ -192,6 +197,7 @@ roomInfoProcess.work = function (room) {
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
     room.memory.wlvl = this.wallLevel(room)
+    room.memory.ulvl = this.upgradeLevel(room)
 
     // offset regeneration time randomly so multiple rooms don't do it at same tick
     room.memory.intl = Game.time + Math.ceil(Math.random() * 42)
