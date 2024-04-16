@@ -311,6 +311,14 @@ Room.prototype.getRoomControlledWorkers = function () {
   return this.__getRoomControlledWorkers_creeps
 }
 
+Room.prototype.getRoomControlledUpgraders = function () {
+  if (this.__getRoomControlledUpgraders_creeps === undefined) {
+    this.__getRoomControlledUpgraders_creeps = _.filter(this.getRoomControlledCreeps(), _.matchesProperty('memory.btyp', 'upgrader'))
+  }
+
+  return this.__getRoomControlledUpgraders_creeps
+}
+
 Room.prototype.getViableRoomOwnedCreeps = function () {
   if (this.__getViableRoomOwnedCreeps_creeps === undefined) {
     this.__getViableRoomOwnedCreeps_creeps = _.filter(

@@ -53,10 +53,12 @@ linkProcess.work = function (room) {
 
   if (destinations.length > 1) {
     const workers = room.getRoomControlledWorkers()
-    if (workers.length > 0) {
+    const upgraders = room.getRoomControlledUpgraders()
+    const consumers = workers.concat(upgraders)
+    if (consumers.length > 0) {
       for (const destination of destinations) {
-        for (const worker of workers) {
-          const distance = destination.pos.manhattanDistance(worker.pos)
+        for (const consumer of consumers) {
+          const distance = destination.pos.manhattanDistance(consumer.pos)
           const proximity = 50 - distance
           const proximityNow = destination.__process_link_proximity || 0
           destination.__process_link_proximity = proximityNow + proximity
