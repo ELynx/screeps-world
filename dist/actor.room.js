@@ -402,7 +402,7 @@ const roomActor =
           if (creep.__roomActor_target) return false
 
           // plunders with empty cargo will be taken away
-          if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
+          if (creep.shortcut === 'plunder' && upgradeController.generic._isEmpty(creep)) {
             return false
           }
 
