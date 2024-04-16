@@ -3,6 +3,7 @@
 const bootstrap = require('./bootstrap')
 
 const mineralRestockController = require('./controller.mineral.restock')
+const upgradeController = require('./controller.upgrade')
 
 const Process = require('./process.template')
 
@@ -175,8 +176,24 @@ roomInfoProcess.wallLevel = function (room) {
 }
 
 roomInfoProcess.upgradeLevel = function (room) {
-  // TODO
-  return 0
+  if (!room._my_) return 0
+
+  const maxDelta = upgradeController.specialist.actRange + 1
+
+  const links = _.filter(room.find(FIND_STRUCTURES), _.matchesProperty('structureType', STRUCTURE_LINK))
+  const linksWithinActRange = _.filter(
+    links,
+    link => {
+      if (Math.abs(link.pos.x - room.controller.pos.x) > maxDelta) return false
+      if (Math.abs(link.pos.y - room.controller.pos.y) > maxDelta) return false
+
+      return true
+    }
+  )
+
+  if (linksWithinActRange.length === 0) return 0
+
+  return 1
 }
 
 roomInfoProcess.work = function (room) {
