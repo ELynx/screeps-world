@@ -1,7 +1,5 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
 const Controller = require('./controller.template')
 
 const upgradeController = new Controller('upgrade.generic')
