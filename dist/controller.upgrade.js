@@ -44,6 +44,13 @@ upgradeController.targets = function (room) {
     return []
   }
 
+  // keep non specialists away from upgrades
+  if (this.id !== upgradeControllerSpecialist.id) {
+    if (room.getRoomControlledUpgraders().length > 0) {
+      return []
+    }
+  }
+
   return [room.controller]
 }
 
