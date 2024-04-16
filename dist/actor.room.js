@@ -85,10 +85,6 @@ const controllersConsuming = [
   grabController.id
 ]
 
-Creep.prototype.target = function () {
-  return bootstrap.getObjectById(this.memory.dest)
-}
-
 const roomActor =
 {
   roomControllersFind: function (room) {
@@ -300,7 +296,7 @@ const roomActor =
         if (creep.__roomActor_roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          creep.__roomActor_target = creep.target()
+          creep.__roomActor_target = bootstrap.getObjectById(this.memory.dest)
 
           if (creep.__roomActor_target) {
             if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
