@@ -1,7 +1,8 @@
 'use strict'
 
-const intentSolver = require('./routine.intent')
 const bootstrap = require('./bootstrap')
+
+const mineralRestockController = require('./controller.mineral.restock')
 
 const Process = require('./process.template')
 
@@ -70,11 +71,9 @@ roomInfoProcess.miningLevel = function (room) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
     if (room.storage === undefined && room.terminal === undefined) return 0
 
-    const storageFree = room.storage ? intentSolver.getFreeCapacity(room.storage, RESOURCE_POWER) : 0
-    const terminalFree = room.terminal ? intentSolver.getFreeCapacity(room.terminal, RESOURCE_POWER) : 0
-
     // stop producing miners when there is no place to put resources
-    if (storageFree + terminalFree <= 0) return 0
+    const mineralRestockTargets = mineralRestockController.full.targets(room)
+    if (mineralRestockTargets.length === 0) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,
