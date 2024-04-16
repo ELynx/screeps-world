@@ -296,7 +296,7 @@ const roomActor =
         if (creep.__roomActor_roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          creep.__roomActor_target = bootstrap.getObjectById(this.memory.dest)
+          creep.__roomActor_target = bootstrap.getObjectById(creep.memory.dest)
 
           if (creep.__roomActor_target) {
             if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
