@@ -146,36 +146,16 @@ spawnProcess.upgraders = function (room, live) {
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-  const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
-
-  let want = 0
-
-  if (nowRestockers > 0) {
-    const workerBody = bodywork.worker(room)
-    const restockerBody = bodywork.restocker_my(room)
-
-    const workInWorker = _.countBy(workerBody)[WORK] || 0
-    const workInRestocker = _.countBy(restockerBody)[WORK] || 0
-
-    if ((workInWorker > 0) && (workInRestocker > 0)) {
-      // STRATEGY harvest to spend ratio
-      const supportedByRestockers = Math.round(1.2 * HARVEST_POWER * nowRestockers * workInRestocker / workInWorker)
-      want = Math.max(1, supportedByRestockers) // backup plan
-    }
-  } else {
-    want = room.memory.hlvl
-  }
-
-  const roomCanSpawn = this._canSpawn(room)
+  const want = room.memory.wwww || 1 // default to at least one when situation is BS
+  const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
     room.name,
-    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'worker',
     'worker',
     { },
-    want - nowWorkers,
+    want - now,
     'normal'
   )
 }

@@ -25,7 +25,6 @@ const cleanup = {
         [
           '_ttt',
           'abld',
-          'hlvl',
           'intl',
           'mlvl',
           'nodeAccessed',
@@ -36,7 +35,8 @@ const cleanup = {
           'stre',
           'threat',
           'ulvl',
-          'wlvl'
+          'wlvl',
+          'wwww'
         ]
       )
     }

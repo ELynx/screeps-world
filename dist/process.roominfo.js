@@ -9,64 +9,11 @@ const Process = require('./process.template')
 
 const roomInfoProcess = new Process('roomInfo')
 
-roomInfoProcess._walkable = function (terrain, position) {
-  if (terrain.get(position.x, position.y) !== TERRAIN_MASK_WALL) {
-    return true
-  }
-
-  const atPosition = position.lookFor(LOOK_STRUCTURES)
-  for (const structure of atPosition) {
-    if (structure.structureType === STRUCTURE_ROAD) {
-      return true
-    }
-  }
-
-  return false
-}
-
-roomInfoProcess.harvestLevel = function (room) {
-  const terrain = room.getTerrain()
-  const sources = room.find(FIND_SOURCES)
-
-  const positions = { }
-  for (const source of sources) {
-    for (let dx = -1; dx <= 1; ++dx) {
-      for (let dy = -1; dy <= 1; ++dy) {
-        if (dx === 0 && dy === 0) continue
-
-        const x = source.pos.x + dx
-        const y = source.pos.y + dy
-
-        if (x <= 0 || x >= 49 || y <= 0 || y >= 49) {
-          continue
-        }
-
-        positions[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, source.pos.roomName)
-      }
-    }
-  }
-
-  let walkable = 0
-  for (const index in positions) {
-    const position = positions[index]
-    if (this._walkable(terrain, position)) {
-      ++walkable
-    }
-  }
-
-  return walkable
-}
-
 roomInfoProcess.sourceLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
   return sources.length
 }
 
-/**
-Calculate room mining level.
-@param {Room} room.
-@return Mining level of room.
-**/
 roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
@@ -209,7 +156,6 @@ roomInfoProcess.work = function (room) {
       Game.flags.recount.remove()
     }
 
-    room.memory.hlvl = this.harvestLevel(room)
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
     room.memory.wlvl = this.wallLevel(room)
