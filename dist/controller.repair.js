@@ -47,12 +47,9 @@ repairController.observeMyCreep = function (creep) {
 }
 
 repairController.act = function (target, creep) {
-  let onSpotMultiplier = 1.0
-  if (creep.room.memory && creep.room.memory.threat) {
-    onSpotMultiplier = 1.5
-  }
-
-  return this.wrapIntent(creep, 'repair', target, Math.round(creep.memory.xtra * onSpotMultiplier))
+  // fill rampart completely, reduce walking
+  const targetHp = target.structureType === STRUCTURE_RAMPART ? undefined : creep.memory.xtra
+  return this.wrapIntent(creep, 'repair', target, targetHp)
 }
 
 repairController.targets = function (room) {
