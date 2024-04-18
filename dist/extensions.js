@@ -631,15 +631,15 @@ const extensions = {
 
     Game.rooms_values = []
 
-    Game.creepsById = { }
-    Game.storages = { }
-    Game.extractors = { }
-    Game.labs = { }
-    Game.terminals = { }
-    Game.factories = { }
-    Game.observers = { }
-    Game.powerSpawns = { }
-    Game.nukers = { }
+    Game.creepsById = new Map()
+    Game.storages = new Map()
+    Game.extractors = new Map()
+    Game.labs = new Map()
+    Game.terminals = new Map()
+    Game.factories = new Map()
+    Game.observers = new Map()
+    Game.powerSpawns = new Map()
+    Game.nukers = new Map()
 
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
@@ -650,12 +650,12 @@ const extensions = {
 
       room.myCreepsCount = 0
 
-      room.flags = { }
-      room.spawns = { }
-      room.extensions = { }
-      room.towers = { }
-      room.links = { }
-      room.labs = { }
+      room.flags = new Map()
+      room.spawns = new Map()
+      room.extensions = new Map()
+      room.towers = new Map()
+      room.links = new Map()
+      room.labs = new Map()
 
       room.blocked = []
     }
