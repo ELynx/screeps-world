@@ -474,7 +474,7 @@ module.exports = {
   convenience () {
     _prepareHostileNPCMemory()
 
-    _fillOwnUsername();
+    _fillOwnUsername()
 
     Game.iff = {
       ownUsername,
