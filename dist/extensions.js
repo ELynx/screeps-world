@@ -522,6 +522,14 @@ RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
 
 Structure.prototype.isActiveSimple = true
 
+if (!Structure.prototype.__original_isActive) {
+  Structure.prototype.__original_isActive = Structure.prototype.isActive
+
+  Structure.prototype.isActive = function () {
+    return this.isActiveSimple
+  }
+}
+
 Structure.prototype.getFromMemory = function (key) {
   if (!Memory.structures) return undefined
   if (!Memory.structures[this.id]) return undefined
