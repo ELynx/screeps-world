@@ -651,7 +651,6 @@ const extensions = {
       room.myCreepsCount = 0
 
       room.flags = { }
-      room.creeps = { }
       room.spawns = { }
       room.extensions = { }
       room.towers = { }
@@ -676,7 +675,6 @@ const extensions = {
       const creep = Game.creeps[creepName]
 
       Game.creepsById[creep.id] = creep
-      creep.room.creeps[creep.id] = creep
       creep.room.myCreepsCount += 1
 
       if (creep.memory.flag) {
