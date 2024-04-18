@@ -161,7 +161,7 @@ Creep.prototype.moveToWrapper = function (destination, options = { }) {
     if (this._move_path_) {
       const stop = _.last(this._move_path_)
       if (stop) {
-        bootstrap.rememberStop(this, stop)
+        bootstrap.makeItStop(this, stop)
       }
     }
   }
