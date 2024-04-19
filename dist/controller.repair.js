@@ -47,15 +47,11 @@ repairController.observeMyCreep = function (creep) {
 }
 
 repairController.act = function (target, creep) {
-  // fill rampart completely, reduce walking
-  const targetHp = target.structureType === STRUCTURE_RAMPART ? undefined : creep.memory.xtra
-  return this.wrapIntent(creep, 'repair', target, targetHp)
+  return this.wrapIntent(creep, 'repair', target, creep.memory.xtra)
 }
 
 repairController.targets = function (room) {
-  const barrHp = room.memory.wlvl * 1000
-  // STRATEGY some histeresis: 4500 is creep life of 1500 ticks of decay (300 decay every 100 ticks)
-  const rampHp = Math.min(Math.ceil(1.2 * barrHp), barrHp + 4500)
+  const wallTargetHp = room.memory.wlvl * 1000
 
   // STRATEGY in not controlled rooms do only minimal upkeep
   const roadMult = fromArray(TargetRoadHpMultiplier, room.level())
@@ -80,43 +76,30 @@ repairController.targets = function (room) {
     structuresWithHits,
     function (structure) {
       if (structure.structureType === STRUCTURE_WALL) {
-        if (structure.hits < barrHp) {
-          structure.__repairController_targetHp = barrHp
+        if (structure.hits < wallTargetHp) {
+          structure.__repairController_targetHp = wallTargetHp
           return true
         }
       } else if (structure.structureType === STRUCTURE_RAMPART) {
-        // notice, barrHp check, rampHp set
-        if (structure.hits < barrHp) {
-          structure.__repairController_targetHp = rampHp
+        if (structure.hits < wallTargetHp) {
           return true
         }
       } else if (structure.structureType === STRUCTURE_ROAD) {
-        const targetHp = Math.ceil(structure.hitsMax * roadMult)
-        if (structure.hits < targetHp) {
-          structure.__repairController_targetHp = targetHp
+        const targetHits = Math.ceil(structure.hitsMax * roadMult)
+        if (structure.hits < targetHits) {
+          structure.__repairController_targetHp = targetHits
           return true
         }
-      } else {
-        let targetHp = Math.ceil(structure.hitsMax * otherMult)
-
+      } else if (structure.structureType === STRUCTURE_CONTAINER) {
         // remote containers have special rules
-        if (structure.structureType === STRUCTURE_CONTAINER &&
-            room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+        if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
           // ignore random containers
           if (!structure.isSource()) return false
-
-          // mark for fixing with any damage
-          targetHp = structure.hitsMax
         }
-
-        if (structure.hits < targetHp) {
-          // STRATEGY some histeresis, repair to top
-          structure.__repairController_targetHp = structure.hitsMax
-          return true
-        }
+        return true
       }
 
-      return false
+      return structure.hits < structure.hitsMax * otherMult
     }
   )
 }
