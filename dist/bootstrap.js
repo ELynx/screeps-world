@@ -55,7 +55,7 @@ const bootstrap = {
     if (structure) return structure
 
     if (Game.__bootstrap__getObjectById === undefined) {
-      Game.__bootstrap__getObjectById = { }
+      Game.__bootstrap__getObjectById = new Map()
     }
 
     const cached = Game.__bootstrap__getObjectById[id]

@@ -44,7 +44,8 @@ const controllersBlockStop = [
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
-  upgradeController.id
+  upgradeController.generic.id,
+  upgradeController.specialist.id
 ]
 
 // STRATEGY priority for creep assignment
@@ -55,13 +56,14 @@ const controllersMyAuto = [
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.full.id, // catch anyone with mineral only
   energySpecialistController.id, // catch restockers
+  upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestController.id,
   energyRestockController.id,
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.id,
+  upgradeController.generic.id,
   mineralRestockController.dump.id
 ]
 
@@ -82,10 +84,6 @@ const controllersHelpAuto = [
 const controllersConsuming = [
   grabController.id
 ]
-
-Creep.prototype.target = function () {
-  return bootstrap.getObjectById(this.memory.dest)
-}
 
 const roomActor =
 {
@@ -298,7 +296,7 @@ const roomActor =
         if (creep.__roomActor_roomChange) continue
 
         if (bootstrap.creepAssigned(creep)) {
-          creep.__roomActor_target = creep.target()
+          creep.__roomActor_target = bootstrap.getObjectById(creep.memory.dest)
 
           if (creep.__roomActor_target) {
             if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
@@ -400,7 +398,7 @@ const roomActor =
           if (creep.__roomActor_target) return false
 
           // plunders with empty cargo will be taken away
-          if (creep.shortcut === 'plunder' && upgradeController._isEmpty(creep)) {
+          if (creep.shortcut === 'plunder' && upgradeController.generic._isEmpty(creep)) {
             return false
           }
 

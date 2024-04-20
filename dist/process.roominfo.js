@@ -2,72 +2,26 @@
 
 const bootstrap = require('./bootstrap')
 
+const mineralRestockController = require('./controller.mineral.restock')
+const upgradeController = require('./controller.upgrade')
+
 const Process = require('./process.template')
 
 const roomInfoProcess = new Process('roomInfo')
-
-roomInfoProcess._walkable = function (terrain, position) {
-  if (terrain.get(position.x, position.y) !== TERRAIN_MASK_WALL) {
-    return true
-  }
-
-  const atPosition = position.lookFor(LOOK_STRUCTURES)
-  for (const structure of atPosition) {
-    if (structure.structureType === STRUCTURE_ROAD) {
-      return true
-    }
-  }
-
-  return false
-}
-
-roomInfoProcess.harvestLevel = function (room) {
-  const terrain = room.getTerrain()
-  const sources = room.find(FIND_SOURCES)
-
-  const positions = { }
-  for (const source of sources) {
-    for (let dx = -1; dx <= 1; ++dx) {
-      for (let dy = -1; dy <= 1; ++dy) {
-        if (dx === 0 && dy === 0) continue
-
-        const x = source.pos.x + dx
-        const y = source.pos.y + dy
-
-        if (x <= 0 || x >= 49 || y <= 0 || y >= 49) {
-          continue
-        }
-
-        positions[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, source.pos.roomName)
-      }
-    }
-  }
-
-  let walkable = 0
-  for (const index in positions) {
-    const position = positions[index]
-    if (this._walkable(terrain, position)) {
-      ++walkable
-    }
-  }
-
-  return walkable
-}
 
 roomInfoProcess.sourceLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
   return sources.length
 }
 
-/**
-Calculate room mining level.
-@param {Room} room.
-@return Mining level of room.
-**/
 roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
     if (room.storage === undefined && room.terminal === undefined) return 0
+
+    // stop producing miners when there is no place to put resources
+    const mineralRestockTargets = mineralRestockController.full.targets(room)
+    if (mineralRestockTargets.length === 0) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,
@@ -168,6 +122,27 @@ roomInfoProcess.wallLevel = function (room) {
   }
 }
 
+roomInfoProcess.upgradeLevel = function (room) {
+  if (!room._my_) return 0
+
+  const maxDelta = upgradeController.specialist.actRange + 1
+
+  const links = _.filter(room.find(FIND_STRUCTURES), _.matchesProperty('structureType', STRUCTURE_LINK))
+  const linksWithinActRange = _.filter(
+    links,
+    link => {
+      if (Math.abs(link.pos.x - room.controller.pos.x) > maxDelta) return false
+      if (Math.abs(link.pos.y - room.controller.pos.y) > maxDelta) return false
+
+      return true
+    }
+  )
+
+  if (linksWithinActRange.length === 0) return 0
+
+  return 1
+}
+
 roomInfoProcess.work = function (room) {
   room.memory.nodeAccessed = Game.time
 
@@ -181,10 +156,10 @@ roomInfoProcess.work = function (room) {
       Game.flags.recount.remove()
     }
 
-    room.memory.hlvl = this.harvestLevel(room)
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
     room.memory.wlvl = this.wallLevel(room)
+    room.memory.ulvl = this.upgradeLevel(room)
 
     // offset regeneration time randomly so multiple rooms don't do it at same tick
     room.memory.intl = Game.time + Math.ceil(Math.random() * 42)

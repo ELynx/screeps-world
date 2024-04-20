@@ -78,6 +78,7 @@ spawnProcess.streloks = function (room, live) {
   if (threat <= bootstrap.ThreatLevelLow) return
 
   const want = threat
+  // TODO coordinate with room service
   const now = this._hasAndPlanned(room, live, 'strelok')
 
   this.addToQueue(
@@ -111,12 +112,12 @@ spawnProcess.restockers = function (room, live) {
 }
 
 spawnProcess.miners = function (room, live) {
-  const want = room.memory.mlvl || 0
+  const want = this._canSpawn(room) ? (room.memory.mlvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
   this.addToQueue(
     room.name,
-    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    room.name,
     'miner',
     'miner',
     {
@@ -127,55 +128,51 @@ spawnProcess.miners = function (room, live) {
   )
 }
 
-spawnProcess.workers = function (room, live, limit = undefined) {
-  const nowWorkers = this._hasAndPlanned(room, live, 'worker')
-
-  const workerBody = bodywork.worker(room)
-
-  let wantWorkers
-
-  if (room._my_ && limit === undefined) {
-    let standalone = 0
-    let supportedByRestockers = 0
-
-    const nowRestockers = this._hasAndPlanned(room, live, 'restocker')
-
-    if (nowRestockers !== 0) {
-      const restockerBody = room._my_ ? bodywork.restocker_my(room) : bodywork.restocker_other(room)
-      const workInRestocker = _.countBy(restockerBody)[WORK] || 0
-      if (workInRestocker > 0) {
-        const workInWorker = _.countBy(workerBody)[WORK] || 0
-        if (workInWorker > 0) {
-          // STRATEGY harvest to spend ratio
-          supportedByRestockers = Math.round(1.2 * HARVEST_POWER * nowRestockers * workInRestocker / workInWorker)
-        }
-      }
-    }
-
-    if (supportedByRestockers <= 0) {
-      standalone = room.memory.hlvl
-    }
-
-    wantWorkers = Math.max(standalone, supportedByRestockers)
-  } else {
-    // demand until limit is reached
-    wantWorkers = nowWorkers + 1
-  }
-
-  const wantWorkersMin = limit ? 0 : 3
-  const wantWorkersMax = limit || 12
-
-  const want = Math.max(wantWorkersMin, Math.min(wantWorkers, wantWorkersMax))
-
-  const roomCanSpawn = this._canSpawn(room)
+spawnProcess.upgraders = function (room, live) {
+  const want = this._canSpawn(room) ? (room.memory.ulvl || 0) : 0
+  const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
     room.name,
-    roomCanSpawn ? room.name : queue.FROM_CLOSEST_ROOM,
+    room.name,
+    'upgrader',
+    'upgrader',
+    {
+      upgr: true
+    },
+    want - now,
+    'lowkey'
+  )
+}
+
+spawnProcess.workers_my = function (room, live) {
+  const want = room.memory.wwww || 1 // default to at least one when situation is BS
+  const now = this._hasAndPlanned(room, live, 'worker')
+
+  this.addToQueue(
+    room.name,
+    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'worker',
-    roomCanSpawn ? 'worker' : workerBody,
+    'worker',
     { },
-    want - nowWorkers,
+    want - now,
+    'normal'
+  )
+}
+
+spawnProcess.workers_remote = function (room, live, limit) {
+  const now = this._hasAndPlanned(room, live, 'worker')
+
+  // demand until limit is reached
+  const want = (now < limit) ? (now + 1) : limit
+
+  this.addToQueue(
+    room.name,
+    queue.FROM_CLOSEST_ROOM,
+    'worker',
+    bodywork.worker(room),
+    { },
+    want - now,
     'normal'
   )
 }
@@ -202,7 +199,8 @@ spawnProcess.my = function (room, live) {
   this.streloks(room, live)
   this.restockers(room, live)
   this.miners(room, live)
-  this.workers(room, live)
+  this.upgraders(room, live)
+  this.workers_my(room, live)
 }
 
 spawnProcess.myReserved = function (room, live) {
@@ -222,11 +220,11 @@ spawnProcess.unowned = function (room, live) {
 }
 
 spawnProcess.ally = function (room, live) {
-  this.workers(room, live, 1)
+  this.workers_remote(room, live, 1)
 }
 
 spawnProcess.neutral = function (room, live) {
-  this.workers(room, live, 1)
+  this.workers_remote(room, live, 1)
 }
 
 spawnProcess.hostile = function (room, live) {
@@ -264,6 +262,7 @@ spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('restocker_my')
   this._registerBodyFunction('restocker_other')
   this._registerBodyFunction('miner')
+  this._registerBodyFunction('upgrader')
 }
 
 spawnProcess.register = function () {

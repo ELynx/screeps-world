@@ -135,7 +135,7 @@ spawnTasked._spawnsByLevel = function () {
 
   spawns.sort(
     function (spawn1, spawn2) {
-      return spawn2.room.level() - spawn1.room.level()
+      return spawn2.room.extendedAvailableEnergyCapacity() - spawn1.room.extendedAvailableEnergyCapacity()
     }
   )
 
@@ -156,7 +156,7 @@ spawnTasked._spawnsByDistance = function (roomName) {
       }
 
       // if distance is same, sort by power inside
-      return spawn2.room.level() - spawn1.room.level()
+      return spawn2.room.extendedAvailableEnergyCapacity() - spawn1.room.extendedAvailableEnergyCapacity()
     }
   )
 
@@ -229,7 +229,7 @@ spawnTasked.spawnNext = function () {
   } else {
     // important check - can room spawn anything?
     const room = Game.rooms[nextModel.from]
-    if (room && room._my_ && room.level() > 0) {
+    if (room && room.extendedAvailableEnergyCapacity() > 0) {
       spawns = _.shuffle(this._spawnsInRoom(room))
     } else {
       // fall back to closest
