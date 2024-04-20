@@ -12,6 +12,12 @@ energyHarvestController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
 
+energyHarvestController.validateTarget = function (allTargets, target, creep) {
+  // check that target is not someone else's sticky
+  const others = target.room.getRoomControlledCreeps()
+  return !_.some(others, _.matchesProperty('memory._est', target.id))
+}
+
 energyHarvestController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
