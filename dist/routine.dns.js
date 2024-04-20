@@ -142,6 +142,11 @@ const storageSupply = function (__storage, priority) {
 // STRATEGY terminal energy reserve for transfer of minerals
 const TerminalEnergyRatio = 0.1
 const TerminalMineralCapacity = Math.floor(TERMINAL_CAPACITY * (1.0 - TerminalEnergyRatio))
+const TerminalEnergyCapacity = Math.floor(TERMINAL_CAPACITY * TerminalEnergyRatio)
+
+if (TerminalMineralCapacity + TerminalEnergyCapacity !== TERMINAL_CAPACITY) {
+  console.log('Terminal energy ratio broken ' + TerminalMineralCapacity + ' + ' + TerminalEnergyCapacity + ' !== ' + TERMINAL_CAPACITY)
+}
 
 const roundUpToNearestMultiple = function (value, roundTo) {
   return Math.ceil(value / roundTo) * roundTo
@@ -150,7 +155,9 @@ const roundUpToNearestMultiple = function (value, roundTo) {
 const prognosisTerminalNeedEnergy = function (usedByNotEnergy) {
   if (usedByNotEnergy <= 0) return 0
   const prognosisUsedByNotEnergy = roundUpToNearestMultiple(usedByNotEnergy, 10000)
-  return Math.floor(prognosisUsedByNotEnergy * TerminalEnergyRatio)
+  const percentageUsedByNotEnergy = usedByNotEnergy / TerminalMineralCapacity
+  const shouldBeUsedByEnergy = TerminalEnergyCapacity * percentageUsedByNotEnergy
+  return shouldBeUsedByEnergy
 }
 
 const terminalDemand = function (__terminal, priority) {
