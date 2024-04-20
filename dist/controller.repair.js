@@ -76,20 +76,14 @@ repairController.targets = function (room) {
     structuresWithHits,
     function (structure) {
       if (structure.structureType === STRUCTURE_WALL) {
-        if (structure.hits < wallTargetHp) {
-          structure.__repairController_targetHp = wallTargetHp
-          return true
-        }
+        structure.__repairController_targetHp = wallTargetHp
+        return structure.hits < wallTargetHp
       } else if (structure.structureType === STRUCTURE_RAMPART) {
-        if (structure.hits < wallTargetHp) {
-          return true
-        }
+          return structure.hits < wallTargetHp
       } else if (structure.structureType === STRUCTURE_ROAD) {
         const targetHits = Math.ceil(structure.hitsMax * roadMult)
-        if (structure.hits < targetHits) {
-          structure.__repairController_targetHp = targetHits
-          return true
-        }
+        structure.__repairController_targetHp = targetHits
+        return structure.hits < targetHits
       } else if (structure.structureType === STRUCTURE_CONTAINER) {
         // remote containers have special rules
         if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
