@@ -79,7 +79,7 @@ repairController.targets = function (room) {
         structure.__repairController_targetHp = wallTargetHp
         return structure.hits < wallTargetHp
       } else if (structure.structureType === STRUCTURE_RAMPART) {
-          return structure.hits < wallTargetHp
+        return structure.hits < wallTargetHp
       } else if (structure.structureType === STRUCTURE_ROAD) {
         const targetHits = Math.ceil(structure.hitsMax * roadMult)
         structure.__repairController_targetHp = targetHits
