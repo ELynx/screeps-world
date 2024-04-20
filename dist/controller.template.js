@@ -152,11 +152,15 @@ function Controller (id) {
     return false
   }
 
-  this._isTargetWithinActingRange = function (target, creep) {
-    if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
-    if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
+  this._isTargetWithinRange = function (target, creep, range) {
+    if (Math.abs(target.pos.x - creep.pos.x) > range) return false
+    if (Math.abs(target.pos.y - creep.pos.y) > range) return false
 
     return true
+  }
+
+  this._isTargetWithinActingRange = function (target, creep) {
+    return this._isTargetWithinRange(target, creep, this.actRange)
   }
 
   /**
