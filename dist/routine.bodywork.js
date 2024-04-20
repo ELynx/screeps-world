@@ -127,12 +127,22 @@ const bodywork = {
 
   upgrader: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
+    const sourceLevel = room.memory.slvl || 0
+
+    // reduced size to not overload by spawning
+    if (sourceLevel < 2) {
+      if (energy < 1600) {
+        return []
+      }
+
+      // 1600
+      return this.makeWCM(10, 2, 10)
+    }
 
     if (energy < 2400) {
       return []
     }
 
-    // this makes sense only as a complete machine
     // 15 WORK for maximum upgrade
     // 3 CARRY for 150 capacity to minimize withdraw
     // 15 MOVE to avoid fatigue on the way to
