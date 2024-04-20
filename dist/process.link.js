@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const Process = require('./process.template')
 
 const linkProcess = new Process('link')
@@ -53,12 +55,23 @@ linkProcess.work = function (room) {
 
   if (destinations.length > 1) {
     const workers = room.getRoomControlledWorkers()
-    const upgraders = room.getRoomControlledUpgraders()
-    const consumers = workers.concat(upgraders)
-    if (consumers.length > 0) {
+    if (workers.length > 0) {
       for (const destination of destinations) {
-        for (const consumer of consumers) {
-          const distance = destination.pos.manhattanDistance(consumer.pos)
+        for (const worker of workers) {
+          let pos
+
+          if (worker.memory.dest) {
+            const target = bootstrap.getObjectById(worker.memory.dest)
+            if (target && target.pos) {
+              pos = target.pos
+            }
+          }
+
+          if (pos === undefined) {
+            pos = worker.pos
+          }
+
+          const distance = destination.pos.manhattanDistance(pos)
           const proximity = 50 - distance
           const proximityNow = destination.__process_link_proximity || 0
           destination.__process_link_proximity = proximityNow + proximity
