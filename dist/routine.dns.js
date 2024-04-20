@@ -155,7 +155,7 @@ const roundUpToNearestMultiple = function (value, roundTo) {
 const prognosisTerminalNeedEnergy = function (usedByNotEnergy) {
   if (usedByNotEnergy <= 0) return 0
   const prognosisUsedByNotEnergy = roundUpToNearestMultiple(usedByNotEnergy, 10000)
-  const percentageUsedByNotEnergy = usedByNotEnergy / TerminalMineralCapacity
+  const percentageUsedByNotEnergy = prognosisUsedByNotEnergy / TerminalMineralCapacity
   const shouldBeUsedByEnergy = TerminalEnergyCapacity * percentageUsedByNotEnergy
   return shouldBeUsedByEnergy
 }
