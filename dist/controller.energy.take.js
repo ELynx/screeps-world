@@ -22,9 +22,9 @@ energyTakeController.act = function (structure, creep) {
 }
 
 energyTakeController.validateTarget = function (allTargets, target, creep) {
-  if (this._isUpgrader(creep)) {
-    // prevent upgrades from going on adventures
-    if (!this._isTargetWithinRange(target, creep, 3)) return false
+  // prevent upgrades from going on adventures
+  if (creep.room.controller && this._isUpgrader(creep)) {
+    if (!this._isTargetWithinRange(target, creep.room.controller, 3)) return false
   }
 
   const wantGive = target.supply.amount(RESOURCE_ENERGY)
