@@ -145,13 +145,31 @@ function Controller (id) {
     return targets
   }
 
-  this._validateRestocker = function (target, creep) {
-    // not a restocker, no special rules
-    if (this._isNotRestocker(creep)) return true
+  this._isStationarySpecialist = function (creep) {
+    if (this._isRestocker(creep)) return true
+    if (this._isUpgrader(creep)) return true
 
-    // stay stationary
-    if (Math.abs(target.pos.x - creep.pos.x) > this.actRange) return false
-    if (Math.abs(target.pos.y - creep.pos.y) > this.actRange) return false
+    return false
+  }
+
+  this._isTargetWithinRange = function (target, creep, range) {
+    if (Math.abs(target.pos.x - creep.pos.x) > range) return false
+    if (Math.abs(target.pos.y - creep.pos.y) > range) return false
+
+    return true
+  }
+
+  this._isTargetWithinActingRange = function (target, creep) {
+    return this._isTargetWithinRange(target, creep, this.actRange)
+  }
+
+  /**
+  Check if target is take-able.
+  **/
+  this._validateTarget = function (allTargets, target, creep) {
+    if (this._isStationarySpecialist(creep)) {
+      return this._isTargetWithinActingRange(target, creep)
+    }
 
     return true
   }
@@ -160,7 +178,7 @@ function Controller (id) {
   Check if target is take-able.
   **/
   this.validateTarget = function (allTargets, target, creep) {
-    return this._validateRestocker(target, creep)
+    return this._validateTarget(allTargets, target, creep)
   }
 
   this._allAssignedTo = function (target) {
@@ -223,6 +241,14 @@ function Controller (id) {
 
   this._isMiner = function (creep) {
     return creep.memory.minr || false
+  }
+
+  this._isUpgrader = function (creep) {
+    return creep.memory.upgr || false
+  }
+
+  this._isNotUpgrader = function (creep) {
+    return !this._isUpgrader(creep)
   }
 
   this._isRecyclee = function (creep) {

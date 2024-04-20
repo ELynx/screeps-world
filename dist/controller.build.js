@@ -63,31 +63,31 @@ buildController._sites = function (room) {
   }
 
   const spawns = _.filter(
-    allSites,
+    usedSites,
     {
       structureType: STRUCTURE_SPAWN
     }
   )
 
-  // for bootstrap
   const containers = _.filter(
-    allSites,
+    usedSites,
     {
       structureType: STRUCTURE_CONTAINER
     }
   )
 
+  // for bootstrap
   if (spawns.length > 0) return spawns.concat(containers)
 
   const extensions = _.filter(
-    allSites,
+    usedSites,
     {
       structureType: STRUCTURE_EXTENSION
     }
   )
   if (extensions.length > 0) return extensions
 
-  return allSites
+  return usedSites
 }
 
 buildController.targets = function (room) {

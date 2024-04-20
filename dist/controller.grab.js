@@ -20,6 +20,8 @@ grabController.roomPrepare = function (room) {
 
 grabController.act = function (room, creep) {
   const hasUniversalStore = this._universalWantStoreNonEnergy(room.storage) || this._universalWantStoreNonEnergy(room.terminal)
+  const isEnergyOnly = this._isRestocker(creep) || this._isUpgrader(creep)
+  const allowNonEnergy = hasUniversalStore && !isEnergyOnly
 
   const grabs = this._findTargets(room)
 
@@ -31,7 +33,7 @@ grabController.act = function (room, creep) {
     if (!creep.pos.isNearTo(from)) continue
 
     if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
-      const typesToGrab = hasUniversalStore ? _.keys(from.store) : [RESOURCE_ENERGY]
+      const typesToGrab = allowNonEnergy ? _.keys(from.store) : [RESOURCE_ENERGY]
 
       for (const typeToGrab of typesToGrab) {
         if (intentSolver.getUsedCapacity(from, typeToGrab) > 0) {
@@ -45,7 +47,7 @@ grabController.act = function (room, creep) {
     }
 
     if (didPickup === false && grab.type === LOOK_RESOURCES) {
-      if (hasUniversalStore || from.resourceType === RESOURCE_ENERGY) {
+      if (allowNonEnergy || from.resourceType === RESOURCE_ENERGY) {
         if (intentSolver.getAmount(from) > 0) {
           const rc = this.wrapIntent(creep, 'pickup', from)
           if (rc >= OK) {
@@ -65,8 +67,6 @@ grabController.act = function (room, creep) {
 
   return ERR_NOT_FOUND
 }
-
-grabController.validateTarget = undefined // default validation is specific to Restockers, this is already handled by `filterCreep`
 
 grabController.targets = function (room) {
   this.fastCheck = true
@@ -150,9 +150,6 @@ grabController.targets = function (room) {
 }
 
 grabController.filterCreep = function (creep) {
-  // they bring trash to source containers otherwise
-  if (this._isRestocker(creep)) return false
-
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
     if (this.fastCheckX[creep.pos.x] === undefined) {

@@ -514,6 +514,14 @@ RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
 
 Structure.prototype.isActiveSimple = true
 
+if (!Structure.prototype.__original_isActive) {
+  Structure.prototype.__original_isActive = Structure.prototype.isActive
+
+  Structure.prototype.isActive = function () {
+    return this.isActiveSimple
+  }
+}
+
 Structure.prototype.getFromMemory = function (key) {
   if (!Memory.structures) return undefined
   if (!Memory.structures[this.id]) return undefined
@@ -623,15 +631,15 @@ const extensions = {
 
     Game.rooms_values = []
 
-    Game.creepsById = { }
-    Game.storages = { }
-    Game.extractors = { }
-    Game.labs = { }
-    Game.terminals = { }
-    Game.factories = { }
-    Game.observers = { }
-    Game.powerSpawns = { }
-    Game.nukers = { }
+    Game.creepsById = new Map()
+    Game.storages = new Map()
+    Game.extractors = new Map()
+    Game.labs = new Map()
+    Game.terminals = new Map()
+    Game.factories = new Map()
+    Game.observers = new Map()
+    Game.powerSpawns = new Map()
+    Game.nukers = new Map()
 
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName]
@@ -642,13 +650,12 @@ const extensions = {
 
       room.myCreepsCount = 0
 
-      room.flags = { }
-      room.creeps = { }
-      room.spawns = { }
-      room.extensions = { }
-      room.towers = { }
-      room.links = { }
-      room.labs = { }
+      room.flags = new Map()
+      room.spawns = new Map()
+      room.extensions = new Map()
+      room.towers = new Map()
+      room.links = new Map()
+      room.labs = new Map()
 
       room.blocked = []
     }
@@ -668,7 +675,6 @@ const extensions = {
       const creep = Game.creeps[creepName]
 
       Game.creepsById[creep.id] = creep
-      creep.room.creeps[creep.id] = creep
       creep.room.myCreepsCount += 1
 
       if (creep.memory.flag) {

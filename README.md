@@ -2,7 +2,7 @@
 
 ## LICENSE
 
-Copyright (C) 2023 by Eduard Surovin.
+Copyright (C) 2024 by Eduard Surovin.
 
 All rights reserved.
 
