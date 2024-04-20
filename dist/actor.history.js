@@ -3,11 +3,11 @@
 const historyActor =
 {
   clearCaches: function () {
-    Game.__historyActor_getObjectById = { }
-    Game.__historyActor_skipActors = { }
-    Game.__historyActor_skipAttackTargets = { }
-    Game.__historyActor_skipHealTargets = { }
-    Game.__historyActor_healers = { }
+    Game.__historyActor_getObjectById = new Map()
+    Game.__historyActor_skipActors = new Map()
+    Game.__historyActor_skipAttackTargets = new Map()
+    Game.__historyActor_skipHealTargets = new Map()
+    Game.__historyActor_healers = new Map()
   },
 
   getObjectById: function (room, id) {
