@@ -118,7 +118,7 @@ const bootstrap = {
     this.processControllers[processController.id] = processController
   },
 
-  makeItStop: function (creep, stop) {
+  rememberPositionAsStop: function (creep, stop) {
     creep.memory._stop =
     {
       stop: { x: stop.x, y: stop.y, room: stop.roomName },
@@ -140,7 +140,7 @@ const bootstrap = {
     }
 
     const stop = _.last(path)
-    this.makeItStop(creep, stop)
+    this.rememberPositionAsStop(creep, stop)
   },
 
   imitateMoveErase: function (creep) {
