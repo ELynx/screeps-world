@@ -159,26 +159,6 @@ roomInfoProcess.work = function (room) {
     // offset regeneration time randomly so multiple rooms don't do it at same tick
     room.memory.intl = Game.time + Math.ceil(Math.random() * 42)
   }
-
-  // STRATEGY how much energy to keep in storage as backup
-  room.memory.stre = 10000
-
-  // STRATEGY stored energy in store per threat level
-  const threat = room.memory.threat
-  if (threat) {
-    if (threat === bootstrap.ThreatLevelMax) {
-      room.memory.stre = 0
-    } else if (threat >= bootstrap.ThreatLevelMedium) {
-      room.memory.stre = 5000
-    } else if (threat > bootstrap.ThreatLevelLow) {
-      room.memory.stre = 9000
-    }
-  }
-
-  // STRATEGY when there is no other way, use reserves
-  if (room.extendedAvailableEnergyCapacity() === 0) {
-    room.memory.stre = 0
-  }
 }
 
 roomInfoProcess.register()
