@@ -9,7 +9,6 @@ const linkProcess = require('./process.link')
 const roomInfoProcess = require('./process.roominfo')
 const secutiryProcess = require('./process.security')
 const spawnProcess = require('./process.spawn')
-const terminalProcess = require('./process.terminal')
 const towerProcess = require('./process.tower')
 
 const buildController = require('./controller.build')
@@ -239,15 +238,15 @@ const roomActor =
     towerProcess.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
-    const processKey = (room.memory.intl + Game.time) % 12
+    const processKey = (room.memory.intl + Game.time) % 10
 
     if (processKey === 0 ||
-        processKey === 6 ||
+        processKey === 5 ||
         room._threatEscalated_) {
       spawnProcess.work(room)
     }
 
-    if (processKey === 3) {
+    if (processKey === 9) {
       linkProcess.work(room)
     }
 
@@ -427,10 +426,6 @@ const roomActor =
 
     if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
       autobuildProcess.work(room)
-    }
-
-    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
-      terminalProcess.work(room)
     }
   } // end of act method
 }

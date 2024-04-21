@@ -32,6 +32,8 @@ Movement and positioning:
 
 * Worker creeps avoid hostile areas.
 
+Because moveTo does not check for reached range.
+
 ## Intents
 
 [Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
@@ -73,16 +75,6 @@ Fatigue based emergent road building.
 Source link placement adjacent (and maybe vectored) from source container.
 
 ### Economy
-
-Sell off commodities.
-
-Send resources away instead of selling out on panic.
-
-Containers next to Controller to decrease walking to upgrade:
-
-* Grab from Links and Containers inside act.
-
-Do not overfill Labs and Factory to prevent process pollution.
 
 Clean up source and other technical containers.
 
