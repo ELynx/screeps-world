@@ -31,40 +31,37 @@ energyRestockController.act = function (target, creep) {
 }
 
 energyRestockController.targets = function (room) {
+  // TODO unmagic number, 1000+ is passive storage
+  const PassiveDemand = 1000
+
   const allStructures = room.find(FIND_STRUCTURES)
 
-  const withActiveEnergyDemand = _.filter(
+  let withEnergyDemand = _.filter(
     allStructures,
     function (structure) {
-      // TODO unmagic number, 1000+ is passive storage
+
       return structure.demand.priority !== null &&
-             structure.demand.priority < 1000 &&
+             structure.demand.priority < PassiveDemand &&
              structure.demand.amount(RESOURCE_ENERGY) > 0 &&
              structure.isActiveSimple
     }
   )
 
-  // TODO normal energy distribution, code below is haxx
-  // if (withActiveEnergyDemand.length === 0) return []
-  if (withActiveEnergyDemand.length === 0) {
-    if (room.storage &&
-        room.storage.demand.priority !== null &&
-        room.storage.demand.amount(RESOURCE_ENERGY) > 0 &&
-        room.storage.isActiveSimple) {
-      withActiveEnergyDemand.push(room.storage)
-    }
-
-    if (room.terminal &&
-        room.terminal.demand.priority !== null &&
-        room.terminal.demand.amount(RESOURCE_ENERGY) > 0 &&
-        room.terminal.isActiveSimple) {
-      withActiveEnergyDemand.push(room.terminal)
-    }
-
-    if (withActiveEnergyDemand.length === 0) return []
+  if (withEnergyDemand.length === 0) {
+    withEnergyDemand = _.filter(
+      allStructures,
+      function (structure) {
+        return structure.demand.priority !== null &&
+               structure.demand.priority >= PassiveDemand &&
+               structure.demand.amount(RESOURCE_ENERGY) > 0 &&
+               structure.isActiveSimple
+      }
+    )
   }
 
-  withActiveEnergyDemand.sort(
+  if (withEnergyDemand.length === 0) return []
+
+  withEnergyDemand.sort(
     function (t1, t2) {
       const priority1 = t1.demand.priority
       const priority2 = t2.demand.priority
@@ -73,9 +70,9 @@ energyRestockController.targets = function (room) {
     }
   )
 
-  const priority = withActiveEnergyDemand[0].demand.priority
+  const priority = withEnergyDemand[0].demand.priority
 
-  return _.takeWhile(withActiveEnergyDemand, _.matchesProperty('demand.priority', priority))
+  return _.takeWhile(withEnergyDemand, _.matchesProperty('demand.priority', priority))
 }
 
 energyRestockController.filterCreep = function (creep) {
