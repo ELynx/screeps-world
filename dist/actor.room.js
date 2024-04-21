@@ -19,9 +19,9 @@ const energyRestockController = require('./controller.energy.restock')
 const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
-const mineralRestockController = require('./controller.mineral.restock')
 const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
+const resourceRestockController = require('./controller.resouce.restock')
 const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
@@ -53,7 +53,7 @@ const controllersMyAuto = [
   downgradeController.id, // always on top
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.full.id, // catch anyone with mineral only
+  resourceRestockController.id, // catch anyone with resources
   energyHarvestSpecialistController.id, // catch restockers
   upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
@@ -62,8 +62,7 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id,
-  mineralRestockController.dump.id
+  upgradeController.generic.id // try to dump end of energy 
 ]
 
 const controllersRemoteHarvestAuto = [

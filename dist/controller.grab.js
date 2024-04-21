@@ -22,7 +22,7 @@ grabController.roomPrepare = function (room) {
 }
 
 grabController.act = function (room, creep) {
-  const energyOnlyCreep = this._isRestocker(creep) || this._isUpgrader(creep)
+  const energyOnlyCreep = this._isStationarySpecialist(creep)
   const energyOnlyRoom = !cookActor.roomCanHandleNonEnergy(room)
 
   const allowNonEnergy = !(energyOnlyCreep || energyOnlyRoom)

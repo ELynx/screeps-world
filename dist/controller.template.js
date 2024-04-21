@@ -214,6 +214,10 @@ function Controller (id) {
     return intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) > 0
   }
 
+  this._hasNonEnergy = function (creep) {
+    return intentSolver.getUsedCapacity(creep) > intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+  }
+
   this._isEmpty = function (creep) {
     return intentSolver.getUsedCapacity(creep) === 0
   }
@@ -253,14 +257,6 @@ function Controller (id) {
 
   this._isRecyclee = function (creep) {
     return creep.memory.rccl || false
-  }
-
-  this._universalWantStoreNonEnergy = function (structure) {
-    if (structure && structure.demand.priority !== null && structure.isActiveSimple) {
-      return structure.demand.amount(RESOURCE_POWER) > 0
-    }
-
-    return false
   }
 
   this._usesDefaultFilter = undefined
