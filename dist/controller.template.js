@@ -230,7 +230,7 @@ function Controller (id) {
     }
 
     targets.sort(
-      function (t1, t2) {
+      (t1, t2) => {
         return t1.__controllerTemplate_cost - t2.__controllerTemplate_cost
       }
     )
