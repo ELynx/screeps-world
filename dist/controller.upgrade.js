@@ -2,15 +2,15 @@
 
 const Controller = require('./controller.template')
 
-const upgradeController = new Controller('upgrade.generic')
+const upgradeGenericController = new Controller('upgrade.generic')
 
-upgradeController.actRange = 3
+upgradeGenericController.actRange = 3
 
-upgradeController.act = function (controller, creep) {
+upgradeGenericController.act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller)
 }
 
-upgradeController._roomQualified = function (room) {
+upgradeGenericController._roomQualified = function (room) {
   // don't upgrade controller in room with active fight
   if (room._fight_) {
     return false
@@ -23,7 +23,7 @@ upgradeController._roomQualified = function (room) {
   return true
 }
 
-upgradeController.targets = function (room) {
+upgradeGenericController.targets = function (room) {
   if (!this._roomQualified(room)) {
     return []
   }
@@ -37,13 +37,13 @@ upgradeController.targets = function (room) {
 }
 
 // before profiler wrap
-const upgradeControllerSpecialist = _.assign({ }, upgradeController)
+const upgradeSpecialistController = _.assign({ }, upgradeGenericController)
 
-upgradeControllerSpecialist.id = 'upgrade.specialist'
+upgradeSpecialistController.id = 'upgrade.specialist'
 
-upgradeControllerSpecialist.validateTarget = undefined // TODO actually bypass range check only, not all checks
+upgradeSpecialistController.validateTarget = undefined // TODO actually bypass range check only, not all checks
 
-upgradeControllerSpecialist.targets = function (room) {
+upgradeSpecialistController.targets = function (room) {
   if (!this._roomQualified(room)) {
     return []
   }
@@ -51,15 +51,15 @@ upgradeControllerSpecialist.targets = function (room) {
   return [room.controller]
 }
 
-upgradeControllerSpecialist.filterCreep = function (creep) {
+upgradeSpecialistController.filterCreep = function (creep) {
   return this._defaultFilter(creep) && this._isUpgrader(creep)
 }
 
-upgradeController.register()
-upgradeControllerSpecialist.register()
+upgradeGenericController.register()
+upgradeSpecialistController.register()
 
 module.exports =
 {
-  generic: upgradeController,
-  specialist: upgradeControllerSpecialist
+  generic: upgradeGenericController,
+  specialist: upgradeSpecialistController
 }
