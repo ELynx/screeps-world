@@ -1,6 +1,7 @@
 'use strict'
 
 const intentSolver = require('./routine.intent')
+const cookActor = require('./actor.cook')
 
 const Controller = require('./controller.template')
 const bootstrap = require('./bootstrap')
@@ -19,9 +20,10 @@ grabController.roomPrepare = function (room) {
 }
 
 grabController.act = function (room, creep) {
-  const hasUniversalStore = this._universalWantStoreNonEnergy(room.storage) || this._universalWantStoreNonEnergy(room.terminal)
-  const isEnergyOnly = this._isRestocker(creep) || this._isUpgrader(creep)
-  const allowNonEnergy = hasUniversalStore && !isEnergyOnly
+  const energyOnlyCreep = this._isRestocker(creep) || this._isUpgrader(creep)
+  const energyOnlyRoom = !cookActor.roomCanHandleNonEnergy(room)
+
+  const allowNonEnergy = !(energyOnlyCreep || energyOnlyRoom)
 
   const grabs = this._findTargets(room)
 
@@ -71,7 +73,7 @@ grabController.act = function (room, creep) {
 grabController.targets = function (room) {
   this.fastCheck = true
 
-  const hasUniversalStore = this._universalWantStoreNonEnergy(room.storage) || this._universalWantStoreNonEnergy(room.terminal)
+  const canHandleNonEnergy = cookActor.roomCanHandleNonEnergy(room)
 
   const tombstones = room.find(FIND_TOMBSTONES)
   const ruins = room.find(FIND_RUINS)
@@ -80,7 +82,7 @@ grabController.targets = function (room) {
   const grabs = []
 
   for (const tombstone of tombstones) {
-    const typesToGrab = hasUniversalStore ? _.keys(tombstone.store) : [RESOURCE_ENERGY]
+    const typesToGrab = canHandleNonEnergy ? _.keys(tombstone.store) : [RESOURCE_ENERGY]
 
     for (const typeToGrab of typesToGrab) {
       if (tombstone.store.getUsedCapacity(typeToGrab) > 0) {
@@ -103,7 +105,7 @@ grabController.targets = function (room) {
   }
 
   for (const ruin of ruins) {
-    const typesToGrab = hasUniversalStore ? _.keys(ruin.store) : [RESOURCE_ENERGY]
+    const typesToGrab = canHandleNonEnergy ? _.keys(ruin.store) : [RESOURCE_ENERGY]
 
     for (const typeToGrab of typesToGrab) {
       if (ruin.store.getUsedCapacity(typeToGrab) > 0) {
@@ -126,7 +128,7 @@ grabController.targets = function (room) {
   }
 
   for (const resource of resources) {
-    if (hasUniversalStore || resource.resourceType === RESOURCE_ENERGY) {
+    if (canHandleNonEnergy || resource.resourceType === RESOURCE_ENERGY) {
       if (resource.amount > 0) {
         grabs.push(
           {
