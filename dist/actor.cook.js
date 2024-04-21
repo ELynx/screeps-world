@@ -4,16 +4,21 @@ const cookActor =
 {
   roomCanHandleNonEnergy: function (room) {
     console.log('TODO roomCanHandleNonEnergy => true')
-    return room !== undefined
+    return true
+  },
+
+  validateRoomStructuresWithResouceDemand: function (allTargets, target, creep) {
+    console.log('TODO validateRoomStructuresWithResouceDemand => true')
+    return true
   },
 
   roomStructuresWithResouceDemand: function (room) {
-    console.log('TODO roomCanHandleNonEnergy => true')
-    return room !== undefined ? [] : []
+    console.log('TODO roomStructuresWithResouceDemand => true')
+    return []
   },
 
   act: function () {
-    console.log('We need to cook')
+    console.log('TODO act => We need to cook')
   }
 }
 
