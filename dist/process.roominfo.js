@@ -1,7 +1,5 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
 const cookActor = require('./actor.cook')
 
 const Process = require('./process.template')
@@ -21,7 +19,7 @@ roomInfoProcess.miningLevel = function (room) {
     const extractors = room.find(
       FIND_STRUCTURES,
       {
-        filter: function (structure) {
+        filter: structure => {
           return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
         }
       }
@@ -33,7 +31,7 @@ roomInfoProcess.miningLevel = function (room) {
   const minerals = room.find(
     FIND_MINERALS,
     {
-      filter: function (mineral) {
+      filter: mineral => {
         return mineral.mineralAmount > 0
       }
     }
@@ -48,8 +46,8 @@ roomInfoProcess._wallLevel = function (room) {
   const walls = room.find(
     FIND_STRUCTURES,
     {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_WALL && structure.hits
+      filter: structure => {
+        return structure.structureType === STRUCTURE_WALL && structure.hits && structure.hitsMax
       }
     }
   )
@@ -65,7 +63,7 @@ roomInfoProcess._wallLevel = function (room) {
   }
 
   hits.sort(
-    function (hits1, hits2) {
+    (hits1, hits2) => {
       return hits1 - hits2
     }
   )
@@ -120,14 +118,14 @@ roomInfoProcess.wallLevel = function (room) {
 roomInfoProcess.upgradeLevel = function (room) {
   if (!room._my_) return 0
 
-  const maxDelta = 3
+  const MaxDistance = 3
 
   const links = _.filter(room.find(FIND_STRUCTURES), _.matchesProperty('structureType', STRUCTURE_LINK))
   const linksWithinActRange = _.filter(
     links,
     link => {
-      if (Math.abs(link.pos.x - room.controller.pos.x) > maxDelta) return false
-      if (Math.abs(link.pos.y - room.controller.pos.y) > maxDelta) return false
+      if (Math.abs(link.pos.x - room.controller.pos.x) > MaxDistance) return false
+      if (Math.abs(link.pos.y - room.controller.pos.y) > MaxDistance) return false
 
       return true
     }

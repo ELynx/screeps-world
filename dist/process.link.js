@@ -47,7 +47,7 @@ linkProcess.work = function (room) {
   }
 
   sources.sort(
-    function (l1, l2) {
+    (l1, l2) => {
       // STRATEGY most energy first
       return l2.store[RESOURCE_ENERGY] - l1.store[RESOURCE_ENERGY]
     }
@@ -81,7 +81,7 @@ linkProcess.work = function (room) {
   }
 
   destinations.sort(
-    function (l1, l2) {
+    (l1, l2) => {
       const proxL1 = l1.__process_link_proximity || 0
       const proxL2 = l2.__process_link_proximity || 0
 

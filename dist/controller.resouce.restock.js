@@ -3,8 +3,6 @@
 const intentSolver = require('./routine.intent')
 const bootstrap = require('./bootstrap')
 
-const cookActor = require('./actor.cook')
-
 const Controller = require('./controller.template')
 
 const resourceRestockController = new Controller('resource.restock')
