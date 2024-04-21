@@ -4,29 +4,29 @@ const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
 
-const energyHarvestController = new Controller('energy.harvest')
+const energyHarvestGenericController = new Controller('energy.harvest.generic')
 
-energyHarvestController.actRange = 1
+energyHarvestGenericController.actRange = 1
 
-energyHarvestController.act = function (source, creep) {
+energyHarvestGenericController.act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
 
-energyHarvestController.validateTarget = function (allTargets, target, creep) {
+energyHarvestGenericController.validateTarget = function (allTargets, target, creep) {
   // check that target is not someone else's sticky
   const others = target.room.getRoomControlledCreeps()
   return !_.some(others, _.matchesProperty('memory._est', target.id))
 }
 
-energyHarvestController.targets = function (room) {
+energyHarvestGenericController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
 }
 
-energyHarvestController.filterCreep = function (creep) {
+energyHarvestGenericController.filterCreep = function (creep) {
   return this._isNotRestocker(creep) && this._isNotUpgrader(creep) && this._isHarvestAble(creep)
 }
 
-energyHarvestController.register()
+energyHarvestGenericController.register()
 
-module.exports = energyHarvestController
+module.exports = energyHarvestGenericController

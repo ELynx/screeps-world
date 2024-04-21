@@ -1,10 +1,12 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const intentSolver = require('./routine.intent')
+
 const cookActor = require('./actor.cook')
 
 const Controller = require('./controller.template')
-const bootstrap = require('./bootstrap')
 
 const grabController = new Controller('grab')
 

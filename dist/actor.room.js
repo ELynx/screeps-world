@@ -13,9 +13,9 @@ const towerProcess = require('./process.tower')
 
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
-const energyHarvestController = require('./controller.energy.harvest')
+const energyHarvestGenericController = require('./controller.energy.harvest.generic')
+const energyHarvestSpecialistController = require('./controller.energy.harvest.specialist')
 const energyRestockController = require('./controller.energy.restock')
-const energySpecialistController = require('./controller.energy.specialist')
 const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
@@ -27,8 +27,8 @@ const upgradeController = require('./controller.upgrade')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
-  energyHarvestController.id,
-  energySpecialistController.id,
+  energyHarvestGenericController.id,
+  energyHarvestSpecialistController.id,
   energyTakeController.id,
   grabController.id,
   mineralHarvestController.id
@@ -38,8 +38,8 @@ const controllersFreeCapacity = [
 const controllersBlockStop = [
   buildController.id,
   downgradeController.id,
-  energyHarvestController.id,
-  energySpecialistController.id,
+  energyHarvestGenericController.id,
+  energyHarvestSpecialistController.id,
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
@@ -54,10 +54,10 @@ const controllersMyAuto = [
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners to mineral
   mineralRestockController.full.id, // catch anyone with mineral only
-  energySpecialistController.id, // catch restockers
+  energyHarvestSpecialistController.id, // catch restockers
   upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
-  energyHarvestController.id,
+  energyHarvestGenericController.id,
   energyRestockController.id,
   rampupController.id,
   repairController.id,
@@ -69,7 +69,7 @@ const controllersMyAuto = [
 const controllersRemoteHarvestAuto = [
   repairController.id,
   buildController.id,
-  energySpecialistController.id
+  energyHarvestSpecialistController.id
 ]
 
 const controllersHelpAuto = [
