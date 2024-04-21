@@ -13,7 +13,7 @@ const cookActor =
   },
 
   work: function (room) {
-    console.log('TODO act => We need to cook / room')
+    console.log('TODO work => We need to cook / room')
   },
 
   act: function () {
