@@ -44,21 +44,16 @@ energyTakeController.targets = function (room) {
     return []
   }
 
-  const allStructures = room.find(FIND_STRUCTURES)
-
-  let withEnergySupply = _.filter(
-    allStructures,
-    function (structure) {
-      return structure.supply.priority !== null && structure.supply.amount(RESOURCE_ENERGY) > 0
-    }
-  )
+  let withEnergySupply = room.supply.all(RESOURCE_ENERGY)
 
   if (withEnergySupply.length === 0) return []
 
   if (!room._my_) {
+    const allStructures = room.find(FIND_STRUCTURES)
+
     const ramparts = _.filter(
       allStructures,
-      function (structure) {
+      structure => {
         return structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
       }
     )
@@ -67,8 +62,8 @@ energyTakeController.targets = function (room) {
       const isTakeable = function (structure) {
         return !_.some(
           ramparts,
-          function (ramp) {
-            return ramp.pos.x === structure.pos.x && ramp.pos.y === structure.pos.y
+          rampart => {
+            return rampart.pos.x === structure.pos.x && rampart.pos.y === structure.pos.y
           }
         )
       }
@@ -80,7 +75,7 @@ energyTakeController.targets = function (room) {
   // TODO sort does not work since there is a sort inside assign op
   /*
   withEnergySupply.sort(
-    function (t1, t2) {
+    t1, t2 => {
       const priority1 = t1.supply.priority
       const priority2 = t2.supply.priority
 

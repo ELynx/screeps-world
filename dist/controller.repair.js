@@ -62,7 +62,7 @@ repairController.targets = function (room) {
   const structuresWithHits = room.find(
     FIND_STRUCTURES,
     {
-      filter: function (structure) {
+      filter: structure => {
         return structure.hits &&
                structure.hitsMax &&
                structure.isActiveSimple &&
@@ -72,9 +72,11 @@ repairController.targets = function (room) {
     }
   )
 
+  // no assignment of extra means fix until creep has energy
+
   return _.filter(
     structuresWithHits,
-    function (structure) {
+    structure => {
       if (structure.structureType === STRUCTURE_WALL) {
         structure.__repairController_targetHp = wallTargetHp
         return structure.hits < wallTargetHp

@@ -22,27 +22,28 @@ energyHarvestSpecialistController.observeMyCreep = function (creep) {
 }
 
 energyHarvestSpecialistController.unloadTargets = function (source) {
+  const Distance = 2
+
   const allStructures = source.room.find(FIND_STRUCTURES)
 
   const aroundSource = _.filter(
     allStructures,
-    function (structure) {
-      const distance = 2
-      if (Math.abs(structure.pos.x - source.pos.x) > distance) return false
-      if (Math.abs(structure.pos.y - source.pos.y) > distance) return false
+    structure => {
+      if (Math.abs(structure.pos.x - source.pos.x) > Distance) return false
+      if (Math.abs(structure.pos.y - source.pos.y) > Distance) return false
       return true
     }
   )
 
   const withEnergyDemand = _.filter(
     aroundSource,
-    function (structure) {
+    structure => {
       return structure.demand.priority !== null && structure.demand.amount(RESOURCE_ENERGY) > 0 && structure.isActiveSimple
     }
   )
 
   withEnergyDemand.sort(
-    function (t1, t2) {
+    t1, t2 => {
       const priority1 = t1.demand.priority
       const priority2 = t2.demand.priority
 

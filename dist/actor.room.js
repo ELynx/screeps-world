@@ -395,7 +395,7 @@ const roomActor =
 
       const unassignedCreeps = _.filter(
         roomCreeps,
-        function (creep) {
+        creep => {
           if (creep.__roomActor_target) return false
 
           // plunders with empty cargo will be taken away
