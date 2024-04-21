@@ -23,8 +23,8 @@ energyTakeController.act = function (structure, creep) {
 
 energyTakeController.validateTarget = function (allTargets, target, creep) {
   // prevent upgrades from going on adventures
-  if (creep.room.controller && this._isUpgrader(creep)) {
-    if (!this._isTargetWithinRange(target, creep.room.controller, 3)) return false
+  if (target.room.controller && this._isUpgrader(creep)) {
+    if (!this._isTargetWithinRange(target, target.room.controller, 3)) return false
   }
 
   const wantGive = target.supply.amount(RESOURCE_ENERGY)
@@ -45,6 +45,7 @@ energyTakeController.targets = function (room) {
   }
 
   const allStructures = room.find(FIND_STRUCTURES)
+
   let withEnergySupply = _.filter(
     allStructures,
     function (structure) {
@@ -76,7 +77,7 @@ energyTakeController.targets = function (room) {
     }
   }
 
-  // TODO this does not work since there is a sort inside assign op
+  // TODO sort does not work since there is a sort inside assign op
   /*
   withEnergySupply.sort(
     function (t1, t2) {
