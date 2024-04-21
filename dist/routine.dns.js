@@ -139,10 +139,11 @@ const storageSupply = function (__storage, priority) {
   return supply
 }
 
-// STRATEGY terminal energy reserve for transfer of minerals
+// STRATEGY terminal balance
 const TerminalEnergyRatio = 0.1
 const TerminalMineralCapacity = Math.floor(TERMINAL_CAPACITY * (1.0 - TerminalEnergyRatio))
 const TerminalEnergyCapacity = Math.floor(TERMINAL_CAPACITY * TerminalEnergyRatio)
+const TerminalManeuverCapacity = 20000 // to cook G for nukes
 
 if (TerminalMineralCapacity + TerminalEnergyCapacity !== TERMINAL_CAPACITY) {
   console.log('Terminal energy ratio broken ' + TerminalMineralCapacity + ' + ' + TerminalEnergyCapacity + ' !== ' + TERMINAL_CAPACITY)
@@ -182,7 +183,7 @@ const terminalDemand = function (__terminal, priority) {
         return Math.min(missingEnergy, freeCapacity)
       }
 
-      const freeForMineral = TerminalMineralCapacity - usedByNotEnergy
+      const freeForMineral = TerminalMineralCapacity - TerminalManeuverCapacity - usedByNotEnergy
       if (freeForMineral <= 0) return 0
       return Math.min(freeForMineral, freeCapacity)
     }
