@@ -120,7 +120,7 @@ energyHarvestSpecialistController.targets = function (room) {
 
 energyHarvestSpecialistController.filterCreep = function (creep) {
   // does not matter if full or empty, can work => go to loop
-  return this._isRestocker(creep) && this._hasWCM(creep)
+  return this._isHarvester(creep) && this._hasWCM(creep)
 }
 
 energyHarvestSpecialistController.register()

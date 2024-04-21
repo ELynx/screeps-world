@@ -24,7 +24,7 @@ energyHarvestGenericController.targets = function (room) {
 }
 
 energyHarvestGenericController.filterCreep = function (creep) {
-  return this._isNotRestocker(creep) && this._isNotUpgrader(creep) && this._isHarvestAble(creep)
+  return this._isNotHarvester(creep) && this._isNotUpgrader(creep) && this._isHarvestAble(creep)
 }
 
 energyHarvestGenericController.register()

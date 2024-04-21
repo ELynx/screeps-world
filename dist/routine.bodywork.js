@@ -67,7 +67,7 @@ const bodywork = {
     return this.makeWCM(12, 12)
   },
 
-  restocker_my: function (room) {
+  harvester_my: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
 
     // call for new room
@@ -90,7 +90,7 @@ const bodywork = {
     return this.makeWCM(5, 1, 5)
   },
 
-  restocker_other: function (room) {
+  harvester_other: function (room) {
     // target is always 250 ticks, leaving 50 ticks for repairs
     // w eq c so there are no "odd" numbers on capacity
 

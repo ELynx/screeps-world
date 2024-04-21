@@ -38,8 +38,7 @@ energyRestockController.targets = function (room) {
 
   let withEnergyDemand = _.filter(
     allStructures,
-    function (structure) {
-
+    structure => {
       return structure.demand.priority !== null &&
              structure.demand.priority < PassiveDemand &&
              structure.demand.amount(RESOURCE_ENERGY) > 0 &&
@@ -50,7 +49,7 @@ energyRestockController.targets = function (room) {
   if (withEnergyDemand.length === 0) {
     withEnergyDemand = _.filter(
       allStructures,
-      function (structure) {
+      structure => {
         return structure.demand.priority !== null &&
                structure.demand.priority >= PassiveDemand &&
                structure.demand.amount(RESOURCE_ENERGY) > 0 &&
@@ -62,7 +61,7 @@ energyRestockController.targets = function (room) {
   if (withEnergyDemand.length === 0) return []
 
   withEnergyDemand.sort(
-    function (t1, t2) {
+    (t1, t2) => {
       const priority1 = t1.demand.priority
       const priority2 = t2.demand.priority
 
