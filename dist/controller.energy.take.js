@@ -94,7 +94,7 @@ energyTakeController.targets = function (room) {
 
 energyTakeController.filterCreep = function (creep) {
   // STRATEGY take with empty only, reduce runs to containers
-  return this._isNotRestocker(creep) && this._hasCM(creep) && this._isEmpty(creep)
+  return this._isNotHarvester(creep) && this._hasCM(creep) && this._isEmpty(creep)
 }
 
 energyTakeController.register()

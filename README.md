@@ -16,11 +16,13 @@ Proprietary and confidential.
 
 `dist` - deployment payload
 
-`history` - historical data worth saving
+`history` - historical data and code worth saving
 
 ## TODO
 
-In emergency release stored energy.
+In emergency, release stored energy.
+
+Plunders and other creepshas some place to dump resources.
 
 Spawn blocked in one room starves other rooms.
 
@@ -32,9 +34,9 @@ Movement and positioning:
 
 * Plunder tries to plunder unreachable sections.
 
-* Worker creeps avoid hostile areas.
+* Because moveTo does not check for reached range.
 
-Because moveTo does not check for reached range.
+* Worker creeps avoid hostile areas.
 
 ## Intents
 

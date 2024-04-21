@@ -51,10 +51,10 @@ const controllersBlockStop = [
 
 const controllersMyAuto = [
   downgradeController.id, // always on top
-  unliveController.id, // catch recyclees
-  mineralHarvestController.id, // catch miners to mineral
   resourceRestockController.id, // catch anyone with resources
-  energyHarvestSpecialistController.id, // catch restockers
+  unliveController.id, // catch recyclees
+  mineralHarvestController.id, // catch miners when empty
+  energyHarvestSpecialistController.id, // catch harvesters
   upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
   energyHarvestGenericController.id,
@@ -62,7 +62,7 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id // try to dump end of energy 
+  upgradeController.generic.id // try to dump end of energy
 ]
 
 const controllersRemoteHarvestAuto = [

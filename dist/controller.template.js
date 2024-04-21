@@ -146,7 +146,7 @@ function Controller (id) {
   }
 
   this._isStationarySpecialist = function (creep) {
-    if (this._isRestocker(creep)) return true
+    if (this._isHarvester(creep)) return true
     if (this._isUpgrader(creep)) return true
 
     return false
@@ -235,12 +235,12 @@ function Controller (id) {
     return this._hasWCM(creep) && this._isEmpty(creep)
   }
 
-  this._isRestocker = function (creep) {
-    return creep.memory.rstk || false
+  this._isHarvester = function (creep) {
+    return creep.memory.hvst || false
   }
 
-  this._isNotRestocker = function (creep) {
-    return !this._isRestocker(creep)
+  this._isNotHarvester = function (creep) {
+    return !this._isHarvester(creep)
   }
 
   this._isMiner = function (creep) {
