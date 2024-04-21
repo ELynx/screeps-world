@@ -440,47 +440,6 @@ RoomPosition.prototype.hasInSquareArea = function (lookForType, squareStep, filt
   return id !== undefined
 }
 
-RoomPosition.prototype.findSharedAdjacentPositions = function (otherRoomPosition) {
-  if (this.roomName !== otherRoomPosition.roomName) return []
-
-  const adx = this.x - otherRoomPosition.x
-  const ady = this.y - otherRoomPosition.y
-
-  // there are no adjacent positions if positions are too far away
-  if (Math.abs(adx) > 2 || Math.abs(ady) > 2) return []
-
-  const aroundAsMap = function (pos) {
-    const result = { }
-
-    for (let dx = -1; dx <= 1; ++dx) {
-      for (let dy = -1; dy <= 1; ++dy) {
-        if (dx === 0 && dy === 0) continue
-
-        const x = pos.x + dx
-        const y = pos.y + dy
-
-        if (x <= 0 || x >= 49 || y <= 0 || y >= 49) continue
-
-        result[(x + 1) + 100 * (y + 1)] = new RoomPosition(x, y, pos.roomName)
-      }
-    }
-
-    return result
-  }
-
-  const fromThis = aroundAsMap(this)
-  const fromOther = aroundAsMap(otherRoomPosition)
-
-  const intersections = _.intersection(_.keys(fromThis), _.keys(fromOther))
-
-  const result = []
-  for (const intersection of intersections) {
-    result.push(fromThis[intersection])
-  }
-
-  return result
-}
-
 RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
   let color = COLOR_WHITE
 
