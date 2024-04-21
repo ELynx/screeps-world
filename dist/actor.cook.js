@@ -12,18 +12,12 @@ const cookActor =
     return true
   },
 
-  validateRoomStructuresWithResouceDemand: function (allStructures, structure, creep) {
-    console.log('TODO validateRoomStructuresWithResouceDemand => true')
-    return true
-  },
-
-  roomStructuresWithResouceDemand: function (room) {
-    console.log('TODO roomStructuresWithResouceDemand => true')
-    return []
+  work: function (room) {
+    console.log('TODO act => We need to cook / room')
   },
 
   act: function () {
-    console.log('TODO act => We need to cook')
+    console.log('TODO act => We need to cook / global')
   }
 }
 

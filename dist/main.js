@@ -4,12 +4,12 @@
 const iff = require('./iff')
 
 const cleanup = require('./routine.cleanup')
-const extensions = require('./extensions')
+const cookActor = require('./actor.cook')
 const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
+const extensions = require('./extensions')
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')
-const cookActor = require('./actor.cook')
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)

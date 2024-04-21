@@ -11,6 +11,8 @@ const secutiryProcess = require('./process.security')
 const spawnProcess = require('./process.spawn')
 const towerProcess = require('./process.tower')
 
+const cookActor = require('./actor.cook')
+
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
 const energyHarvestGenericController = require('./controller.energy.harvest.generic')
@@ -235,6 +237,7 @@ const roomActor =
     secutiryProcess.work(room)
     roomInfoProcess.work(room)
     towerProcess.work(room)
+    cookActor.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10

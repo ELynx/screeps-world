@@ -13,6 +13,8 @@ resourceRestockController.actRange = 1
 
 resourceRestockController.act = function (structure, creep) {
   for (const resourceType in creep.store) {
+    // OK if energy, save some trips
+
     const wantTake = structure.demand.amount(resourceType)
     if (wantTake <= 0) continue
 
@@ -34,7 +36,20 @@ resourceRestockController.act = function (structure, creep) {
 }
 
 resourceRestockController.validateTarget = function (allTargets, target, creep) {
-  return cookActor.validateRoomStructuresWithResouceDemand(allTargets, target, creep)
+  for (const resourceType in creep.store) {
+    // do not go specifically for energy
+    if (resourceType === RESOURCE_ENERGY) continue
+
+    const wantTake = target.demand.amount(resourceType)
+    if (wantTake <= 0) continue
+
+    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+    if (canGive <= 0) continue
+
+    return true
+  }
+
+  return false
 }
 
 resourceRestockController.targets = function (room) {
@@ -65,7 +80,7 @@ resourceRestockController.targets = function (room) {
     )
   }
 
-  return returnwithAnyResourceDemand
+  return withAnyResourceDemand
 }
 
 resourceRestockController.filterCreep = function (creep) {
