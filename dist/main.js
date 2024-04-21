@@ -9,6 +9,7 @@ const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unuse
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')
+const cookActor = require('./actor.cook')
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
@@ -27,6 +28,7 @@ if (Game.flags.profiler) {
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
+  profiler.registerObject(cookActor, 'cookActor')
 
   profiler.enable()
 }
@@ -57,6 +59,8 @@ const loop = function () {
   }
 
   worldActor.act()
+
+  cookActor.act()
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {
