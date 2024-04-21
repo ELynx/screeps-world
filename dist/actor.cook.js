@@ -3,13 +3,13 @@
 const cookActor =
 {
   roomCanHandleNonEnergy: function (room) {
-    console.log('TODO roomCanHandleNonEnergy => true')
-    return true
+    console.log('TODO roomCanHandleNonEnergy => false')
+    return false
   },
 
   roomCanMine: function (room) {
-    console.log('TODO roomCanMine => true')
-    return true
+    console.log('TODO roomCanMine => false')
+    return false
   },
 
   work: function (room) {
