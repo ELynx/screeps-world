@@ -2,8 +2,7 @@
 
 const bootstrap = require('./bootstrap')
 
-const mineralRestockController = require('./controller.mineral.restock')
-const upgradeController = require('./controller.upgrade')
+const cookActor = require('./actor.cook')
 
 const Process = require('./process.template')
 
@@ -17,11 +16,7 @@ roomInfoProcess.sourceLevel = function (room) {
 roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
-    if (room.storage === undefined && room.terminal === undefined) return 0
-
-    // stop producing miners when there is no place to put resources
-    const mineralRestockTargets = mineralRestockController.full.targets(room)
-    if (mineralRestockTargets.length === 0) return 0
+    if (!cookActor.roomCanMine(room)) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,
@@ -125,7 +120,7 @@ roomInfoProcess.wallLevel = function (room) {
 roomInfoProcess.upgradeLevel = function (room) {
   if (!room._my_) return 0
 
-  const maxDelta = upgradeController.specialist.actRange + 1
+  const maxDelta = 3
 
   const links = _.filter(room.find(FIND_STRUCTURES), _.matchesProperty('structureType', STRUCTURE_LINK))
   const linksWithinActRange = _.filter(

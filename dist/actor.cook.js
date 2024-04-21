@@ -7,7 +7,12 @@ const cookActor =
     return true
   },
 
-  validateRoomStructuresWithResouceDemand: function (allTargets, target, creep) {
+  roomCanMine: function (room) {
+    console.log('TODO roomCanMine => true')
+    return true
+  },
+
+  validateRoomStructuresWithResouceDemand: function (allStructures, structure, creep) {
     console.log('TODO validateRoomStructuresWithResouceDemand => true')
     return true
   },
