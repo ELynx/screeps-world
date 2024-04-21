@@ -283,7 +283,7 @@ Room.prototype.getRoomControlledCreeps = function () {
 
     this.__getRoomControlledCreeps_creeps = _.filter(
       toFilter,
-      function (creep) {
+      creep => {
         if (creep.spawning) {
           return false
         }
@@ -315,7 +315,7 @@ Room.prototype.getViableRoomOwnedCreeps = function () {
   if (this.__getViableRoomOwnedCreeps_creeps === undefined) {
     this.__getViableRoomOwnedCreeps_creeps = _.filter(
       Game.creeps,
-      function (creep) {
+      creep => {
         return creep.viable && (this.name === (creep.memory.frum || creep.memory.crum))
       },
       this

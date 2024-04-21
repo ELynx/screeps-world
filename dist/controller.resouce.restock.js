@@ -53,34 +53,7 @@ resourceRestockController.validateTarget = function (allTargets, target, creep) 
 }
 
 resourceRestockController.targets = function (room) {
-  // TODO unmagic number, 1000+ is passive storage
-  const PassiveDemand = 1000
-
-  const allStructures = room.find(FIND_STRUCTURES)
-
-  let withAnyResourceDemand = _.filter(
-    allStructures,
-    structure => {
-      return structure.demand.priority !== null &&
-             structure.demand.priority < PassiveDemand &&
-             structure.demand.amount() > 0 &&
-             structure.isActiveSimple
-    }
-  )
-
-  if (withAnyResourceDemand.length === 0) {
-    withAnyResourceDemand = _.filter(
-      allStructures,
-      structure => {
-        return structure.demand.priority !== null &&
-               structure.demand.priority >= PassiveDemand &&
-               structure.demand.amount() > 0 &&
-               structure.isActiveSimple
-      }
-    )
-  }
-
-  return withAnyResourceDemand
+  return room.demand.all()
 }
 
 resourceRestockController.filterCreep = function (creep) {
