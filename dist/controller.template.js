@@ -350,6 +350,8 @@ function Controller (id) {
       let path
       let pathLength
 
+      let pathCache
+
       for (const currentTarget of targets) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
@@ -359,34 +361,59 @@ function Controller (id) {
           }
         } // to next target
 
+        let usedPathCache = false
+
         if (creep.pos.inRangeTo(currentTarget.pos, this.actRange)) {
           target = currentTarget
         } else {
-          const solution = room.findPath(
-            creep.pos,
-            currentTarget.pos,
-            bootstrap.moveOptionsWrapper(
-              creep,
-              {
-                costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
-                ignoreCreeps: true,
-                maxRooms: 1,
-                range: this.actRange
-              }
+          let solution
+
+          // see if path can be reused
+          if (pathCache && pathCache.length > 0) {
+            const last = _.last(pathCache)
+            // see if path brings creep to act range of
+            if (currentTarget.pos.inRangeTo(last.x, last.y, this.actRange)) {
+              solution = pathCache
+              usedPathCache = true
+            }
+          }
+
+          if (solution === undefined) {
+            solution = room.findPath(
+              creep.pos,
+              currentTarget.pos,
+              bootstrap.moveOptionsWrapper(
+                creep,
+                {
+                  costCallback: mapUtils.costCallback_costMatrixForRoomActivity,
+                  ignoreCreeps: true,
+                  maxRooms: 1,
+                  range: this.actRange
+                }
+              )
             )
-          )
+          }
 
           if (solution.length > 0) {
             const last = _.last(solution)
             const found = currentTarget.pos.inRangeTo(last.x, last.y, this.actRange)
             if (found) {
-              const manhattanDistance = this._manhattanDistanceCost(creep, currentTarget)
-              // check case when manhattan is very close but walk is very long
+              // a lot of targets are clustered together
+              pathCache = solution
+
               // STRATEGY coefficient to reconsider target
-              if (susTarget === undefined && solution.length > manhattanDistance * 2) {
-                susTarget = currentTarget
-                susPath = solution
-                susPathLength = solution.length
+              const RethinkCoefficient = 2
+              // check case when manhattan is very close but walk is very long
+              const maxAcceptableSolutionLength = this._manhattanDistanceCost(creep, currentTarget) * RethinkCoefficient
+
+              // if suspicion is triggered
+              if (solution.length > maxAcceptableSolutionLength) {
+                // keep information about first target
+                if (susTarget === undefined) {
+                  susTarget = currentTarget
+                  susPath = solution
+                  susPathLength = solution.length
+                }
               } else {
                 target = currentTarget
                 path = solution
@@ -396,12 +423,13 @@ function Controller (id) {
           }
         }
 
+        // normal target was found
         if (target) {
           break // out of target loop
         }
 
-        // if following option was not possible, choose first
-        if (susTarget && susTarget.id !== currentTarget.id) {
+        // sus target check caused a recalculation
+        if (susTarget && susTarget.id !== currentTarget.id && !usedPathCache) {
           break // out of target loop
         }
       } // end of target loop
@@ -409,14 +437,15 @@ function Controller (id) {
       // check for sus
 
       if (target === undefined && susTarget !== undefined) {
+        // nothing better than sus was found
         target = susTarget
         path = susPath
-        pathLength = susPathLength
       } else if (pathLength !== undefined && susPathLength !== undefined) {
+        // there are competing sus and non-sus targets
         if (pathLength >= susPathLength) {
+          // if actual movement to target is not shorter than more priority earlier
           target = susTarget
           path = susPath
-          pathLength = susPathLength
         }
       }
 
