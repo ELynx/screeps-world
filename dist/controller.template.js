@@ -342,8 +342,13 @@ function Controller (id) {
       // sort targets in order of increased effort
       this._creepToTargetsAscendingSort(creep, targets)
 
+      let susTarget
+      let susPath
+      let susPathLength
+
       let target
       let path
+      let pathLength
 
       for (const currentTarget of targets) {
         // more expensive check that sort
@@ -375,8 +380,18 @@ function Controller (id) {
             const last = _.last(solution)
             const found = currentTarget.pos.inRangeTo(last.x, last.y, this.actRange)
             if (found) {
-              target = currentTarget
-              path = solution
+              const manhattanDistance = this._manhattanDistanceCost(creep, currentTarget)
+              // check case when manhattan is very close but walk is very long
+              // STRATEGY coefficient to reconsider target
+              if (susTarget === undefined && solution.length > manhattanDistance * 2) {
+                susTarget = currentTarget
+                susPath = solution
+                susPathLength = solution.length
+              } else {
+                target = currentTarget
+                path = solution
+                pathLength = solution.length
+              }
             }
           }
         }
@@ -384,7 +399,26 @@ function Controller (id) {
         if (target) {
           break // out of target loop
         }
+
+        // if following option was not possible, choose first
+        if (susTarget && susTarget.id !== currentTarget.id) {
+          break // out of target loop
+        }
       } // end of target loop
+
+      // check for sus
+
+      if (target === undefined && susTarget !== undefined) {
+        target = susTarget
+        path = susPath
+        pathLength = susPathLength
+      } else if (pathLength !== undefined && susPathLength !== undefined) {
+        if (pathLength >= susPathLength) {
+          target = susTarget
+          path = susPath
+          pathLength = susPathLength
+        }
+      }
 
       if (target) {
         let extra
