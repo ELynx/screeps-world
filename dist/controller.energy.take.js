@@ -92,6 +92,13 @@ energyTakeController.filterCreep = function (creep) {
   return this._isNotHarvester(creep) && this._hasCM(creep) && this._isEmpty(creep)
 }
 
+energyTakeController.creepToTargetCost = function (creep, target) {
+  // STRATEGY give links slight disadvantage compared to other places
+  // a. trigger more picks from containers
+  // b. hack to trigger 'sus' assignment logic for containers early and reuse path
+  return this._manhattanDistanceCost(creep, target) + (target.structureType === STRUCTURE_LINK ? 2 : 1)
+}
+
 energyTakeController.register()
 
 module.exports = energyTakeController
