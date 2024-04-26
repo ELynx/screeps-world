@@ -158,7 +158,7 @@ const prognosisTerminalNeedEnergy = function (usedByNotEnergy) {
   const prognosisUsedByNotEnergy = roundUpToNearestMultiple(usedByNotEnergy, 10000)
   const percentageUsedByNotEnergy = prognosisUsedByNotEnergy / TerminalMineralCapacity
   const shouldBeUsedByEnergy = TerminalEnergyCapacity * percentageUsedByNotEnergy
-  return shouldBeUsedByEnergy
+  return roundUpToNearestMultiple(shouldBeUsedByEnergy, 1000)
 }
 
 const terminalDemand = function (__terminal, priority) {
