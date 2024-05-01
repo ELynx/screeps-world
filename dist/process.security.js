@@ -28,9 +28,7 @@ secutiryProcess.work = function (room) {
   const hostileCreeps = room.find(
     FIND_CREEPS,
     {
-      filter: function (creep) {
-        return creep.hostile
-      }
+      filter: creep => creep.hostile
     }
   )
 
@@ -71,7 +69,7 @@ secutiryProcess.work = function (room) {
 
         const trigger = _.some(
           hostilePCs,
-          function (someCreep) {
+          someCreep => {
             return someCreep.pos.inRangeTo(flag.pos, range)
           }
         )
