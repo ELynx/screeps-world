@@ -72,7 +72,7 @@ linkProcess.work = function (room) {
           }
 
           const distance = destination.pos.manhattanDistance(pos)
-          const proximity = 50 - distance
+          const proximity = 100 - distance
           const proximityNow = destination.__process_link_proximity || 0
           destination.__process_link_proximity = proximityNow + proximity
         }
