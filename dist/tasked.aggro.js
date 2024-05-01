@@ -14,7 +14,7 @@ aggro.act = function () {
 
       const atPosTargets = _.filter(
         atPos,
-        function (structure) {
+        structure => {
           return structure.hits && structure.structureType !== STRUCTURE_ROAD
         }
       )

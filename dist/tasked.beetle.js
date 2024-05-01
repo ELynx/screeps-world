@@ -6,6 +6,8 @@ const beetle = new Tasked('beetle')
 
 const BreachCompleteDistance = 1
 
+const Buildable = _.keys(CONSTRUCTION_COST)
+
 beetle.breachLength = function (breach) {
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
   return breach.length - 4
@@ -172,8 +174,6 @@ beetle.creepAtDestination = function (creep) {
         true // as array
       )
 
-      const buildable = _.keys(CONSTRUCTION_COST)
-
       for (const itemInfo of around) {
         const structure = itemInfo.structure
 
@@ -196,7 +196,7 @@ beetle.creepAtDestination = function (creep) {
           continue
         }
 
-        structure.__buildable = _.some(buildable, _.matches(structure.structureType))
+        structure.__buildable = _.some(Buildable, _.matches(structure.structureType))
 
         if (creep.__canMelee || (structure.__buildable && creep.__canDismantle)) {
           target = structure
