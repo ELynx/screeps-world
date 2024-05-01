@@ -104,7 +104,8 @@ spawnProcess.harvesters = function (room, live) {
     'harvester',
     room._my_ ? 'harvester_my' : 'harvester_other',
     {
-      hvst: true
+      hvst: true,
+      blok: true
     },
     want - now,
     'normal'
