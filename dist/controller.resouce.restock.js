@@ -51,7 +51,7 @@ resourceRestockController.validateTarget = function (allTargets, target, creep) 
 }
 
 resourceRestockController.targets = function (room) {
-  return room.demand.all()
+  return room.withDemand()
 }
 
 resourceRestockController.filterCreep = function (creep) {

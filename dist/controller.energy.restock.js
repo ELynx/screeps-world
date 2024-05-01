@@ -31,7 +31,7 @@ energyRestockController.act = function (target, creep) {
 }
 
 energyRestockController.targets = function (room) {
-  const withEnergyDemand = room.demand.all(RESOURCE_ENERGY)
+  const withEnergyDemand = room.withDemand(RESOURCE_ENERGY)
 
   if (withEnergyDemand.length === 0) return []
 
