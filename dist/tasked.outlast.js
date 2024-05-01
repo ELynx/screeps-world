@@ -18,7 +18,7 @@ outlast._defaultAction = function (creep) {
       FIND_CREEPS,
       {
         filter: _.bind(
-          function (someCreep) {
+          someCreep => {
             return someCreep.myOrAlly() &&
                    someCreep.hits < someCreep.hitsMax &&
                    someCreep.pos.inRangeTo(this, 3)
@@ -35,9 +35,7 @@ outlast._defaultAction = function (creep) {
     const creeps = creep.room.find(
       FIND_CREEPS,
       {
-        filter: function (someCreep) {
-          return someCreep.hostile
-        }
+        filter: someCreep => someCreep.hostile
       }
     )
 

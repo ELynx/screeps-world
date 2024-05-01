@@ -43,15 +43,13 @@ strelok.creepAtDestination = function (creep) {
 
     const targetCreeps = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.hostile
-      }
+      creep1 => creep1.hostile
     )
 
     const targetStructures = creep.room.find(
       FIND_STRUCTURES,
       {
-        filter: function (structure) {
+        filter: structure => {
           // ignore everything without hit points
           if (!structure.hits) return false
 
@@ -90,16 +88,12 @@ strelok.creepAtDestination = function (creep) {
 
     const wounded = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.myOrAlly() && (creep1.hits < creep1.hitsMax)
-      }
+      creep1 => creep1.myOrAlly() && (creep1.hits < creep1.hitsMax)
     )
 
     const noHurt = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.allyOrNeutral()
-      }
+      creep1 => creep1.allyOrNeutral()
     )
 
     this.roomTargets[dest] = targets
@@ -112,7 +106,7 @@ strelok.creepAtDestination = function (creep) {
 
   const targets = _.filter(
     this.roomTargets[dest],
-    function (hostile) {
+    hostile => {
       if (hostile._aggro_) {
         return true
       }
@@ -131,9 +125,7 @@ strelok.creepAtDestination = function (creep) {
   let moveTarget
   const prio = _.filter(
     targets,
-    function (target) {
-      return target.pos.x === rushPos.x && target.pos.y === rushPos.y
-    }
+    target => target.pos.x === rushPos.x && target.pos.y === rushPos.y
   )
 
   if (prio.length > 0) {

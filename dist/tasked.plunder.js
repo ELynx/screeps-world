@@ -104,7 +104,7 @@ plunder.findTarget = function (creep, targets) {
   }
 
   targets.sort(
-    function (t1, t2) {
+    (t1, t2) => {
       const s1 = t1.__stored || 0
       const s2 = t2.__stored || 0
 
@@ -143,7 +143,7 @@ plunder.creepAtOtherRooms = function (creep) {
 
     const ramparts = _.filter(
       allStructures,
-      function (structure) {
+      structure => {
         return structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
       }
     )
@@ -152,7 +152,7 @@ plunder.creepAtOtherRooms = function (creep) {
 
     targets = _.filter(
       candidateTargets,
-      function (candiadate) {
+      candiadate => {
         if (candiadate.store === undefined) return false
         // nuker is no-withdraw
         if (candiadate.structureType && candiadate.structureType === STRUCTURE_NUKER) return false
@@ -171,7 +171,7 @@ plunder.creepAtOtherRooms = function (creep) {
 
         const hasRamp = _.some(
           ramparts,
-          function (ramp) {
+          ramp => {
             return ramp.pos.x === candiadate.pos.x && ramp.pos.y === candiadate.pos.y
           }
         )

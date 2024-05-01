@@ -28,9 +28,7 @@ spawnTasked._bodyCost = function (body) {
 
   const costArray = _.map(
     usedBody,
-    function (type) {
-      return BODYPART_COST[type] || 1000000
-    }
+    type => BODYPART_COST[type] || 1000000
   )
 
   return _.sum(costArray)
@@ -123,7 +121,7 @@ spawnTasked.postpone = function () {
 spawnTasked._spawnsCanSpawn = function () {
   return _.filter(
     Game.spawns,
-    function (spawn) {
+    spawn => {
       const spawning = intent.getSpawnSpawning(spawn)
       return spawning === null && spawn.isActiveSimple
     }
@@ -134,7 +132,7 @@ spawnTasked._spawnsByLevel = function () {
   const spawns = this._spawnsCanSpawn()
 
   spawns.sort(
-    function (spawn1, spawn2) {
+    (spawn1, spawn2) => {
       return spawn2.room.extendedAvailableEnergyCapacity() - spawn1.room.extendedAvailableEnergyCapacity()
     }
   )
@@ -146,7 +144,7 @@ spawnTasked._spawnsByDistance = function (roomName) {
   const spawns = this._spawnsCanSpawn()
 
   spawns.sort(
-    function (spawn1, spawn2) {
+    (spawn1, spawn2) => {
       const d1 = Game.map.getRoomLinearDistance(spawn1.room.name, roomName)
       const d2 = Game.map.getRoomLinearDistance(spawn2.room.name, roomName)
 
@@ -166,7 +164,7 @@ spawnTasked._spawnsByDistance = function (roomName) {
 spawnTasked._spawnsInRoom = function (room) {
   return _.filter(
     room.spawns,
-    function (spawn) {
+    spawn => {
       const spawning = intent.getSpawnSpawning(spawn)
       return spawning === null && spawn.isActiveSimple
     }
