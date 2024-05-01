@@ -484,3 +484,13 @@ Object.defineProperty(
     enumerable: true
   }
 )
+
+Room.prototype.withDemand = function (resourceType = undefined) {
+  console.log('TODO Room.withDemand => [] / ' + resourceType)
+  return []
+}
+
+Room.prototype.withSupply = function (resourceType = undefined) {
+  console.log('TODO Room.withSupply => [] / ' + resourceType)
+  return []
+}

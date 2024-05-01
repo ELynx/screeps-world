@@ -44,7 +44,7 @@ energyTakeController.targets = function (room) {
     return []
   }
 
-  let withEnergySupply = room.supply.all(RESOURCE_ENERGY)
+  let withEnergySupply = room.withSupply(RESOURCE_ENERGY)
 
   if (withEnergySupply.length === 0) return []
 
