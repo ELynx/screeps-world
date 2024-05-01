@@ -138,7 +138,8 @@ spawnProcess.upgraders = function (room, live) {
     'upgrader',
     'upgrader',
     {
-      upgr: true
+      upgr: true,
+      blok: true
     },
     want - now,
     'lowkey'
