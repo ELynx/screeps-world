@@ -15,15 +15,13 @@ towerProcess.work = function (room) {
 
   const hostileCreeps = _.filter(
     creeps,
-    function (creep) {
-      return creep.hostile
-    }
+    creep => creep.hostile
   )
 
   if (hostileCreeps.length > 0) {
     let harmful = _.filter(
       hostileCreeps,
-      function (creep) {
+      creep => {
         if (creep.ticksToLive <= 1) return false
 
         if (creep.directHarm || creep.sideHarm) return true
@@ -80,7 +78,7 @@ towerProcess.work = function (room) {
 
   const damagedCreeps = _.filter(
     creeps,
-    function (creep) {
+    creep => {
       // do not heal ones with self-heal
       if (creep.memory && creep.memory.shel) return false
 

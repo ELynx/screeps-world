@@ -110,9 +110,7 @@ const cleanup = {
 
       const controllerFound = _.some(
         flagKeys,
-        function (id) {
-          return flagName.startsWith(id)
-        }
+        id => flagName.startsWith(id)
       )
 
       if (controllerFound) continue
