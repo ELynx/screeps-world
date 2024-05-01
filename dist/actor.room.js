@@ -312,6 +312,11 @@ const roomActor =
               }
             }
           }
+        } else {
+          // some creeps hog the spot in inactive state
+          if (creep.memory.blok) {
+            creep.blockPosition()
+          }
         }
       }
 
