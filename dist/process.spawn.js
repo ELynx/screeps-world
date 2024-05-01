@@ -104,7 +104,8 @@ spawnProcess.restockers = function (room, live) {
     'restocker',
     room._my_ ? 'restocker_my' : 'restocker_other',
     {
-      rstk: true
+      rstk: true,
+      blok: true
     },
     want - now,
     'normal'
