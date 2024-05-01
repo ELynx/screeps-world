@@ -15,8 +15,6 @@ const cookActor = require('./actor.cook')
 
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
-const energyHarvestGenericController = require('./controller.energy.harvest.generic')
-const energyHarvestSpecialistController = require('./controller.energy.harvest.specialist')
 const energyRestockController = require('./controller.energy.restock')
 const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
@@ -24,27 +22,29 @@ const mineralHarvestController = require('./controller.mineral.harvest')
 const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
 const resourceRestockController = require('./controller.resouce.restock')
+const sourceHarvestGenericController = require('./controller.source.harvest.generic')
+const sourceHarvestSpecialistController = require('./controller.source.harvest.specialist')
 const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
-  energyHarvestGenericController.id,
-  energyHarvestSpecialistController.id,
   energyTakeController.id,
   grabController.id,
-  mineralHarvestController.id
+  mineralHarvestController.id,
+  sourceHarvestGenericController.id,
+  sourceHarvestSpecialistController.id
 ]
 
 // all controllers that will keep creep in place for more than one tick
 const controllersBlockStop = [
   buildController.id,
   downgradeController.id,
-  energyHarvestGenericController.id,
-  energyHarvestSpecialistController.id,
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
+  sourceHarvestGenericController.id,
+  sourceHarvestSpecialistController.id,
   upgradeController.generic.id,
   upgradeController.specialist.id
 ]
@@ -56,10 +56,10 @@ const controllersMyAuto = [
   resourceRestockController.id, // catch anyone with resources
   unliveController.id, // catch recyclees
   mineralHarvestController.id, // catch miners when empty
-  energyHarvestSpecialistController.id, // catch harvesters
+  sourceHarvestSpecialistController.id, // catch harvesters
   upgradeController.specialist.id, // catch upgraders
   energyTakeController.id, // above harvest, decrease harvest work
-  energyHarvestGenericController.id,
+  sourceHarvestGenericController.id,
   energyRestockController.id,
   rampupController.id,
   repairController.id,
@@ -70,7 +70,7 @@ const controllersMyAuto = [
 const controllersRemoteHarvestAuto = [
   repairController.id,
   buildController.id,
-  energyHarvestSpecialistController.id
+  sourceHarvestSpecialistController.id
 ]
 
 const controllersHelpAuto = [

@@ -6,22 +6,22 @@ const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
 
-const energyHarvestSpecialistController = new Controller('energy.harvest.specialist')
+const sourceHarvestSpecialistController = new Controller('source.harvest.specialist')
 
-energyHarvestSpecialistController.actRange = 1
+sourceHarvestSpecialistController.actRange = 1
 
-energyHarvestSpecialistController.roomPrepare = function (room) {
+sourceHarvestSpecialistController.roomPrepare = function (room) {
   this._roomPrepare(room)
   this._prepareExcludedTargets(room)
 }
 
-energyHarvestSpecialistController.observeMyCreep = function (creep) {
+sourceHarvestSpecialistController.observeMyCreep = function (creep) {
   this._excludeTarget(creep)
   // stick creep to source
   creep.memory._est = creep.memory.dest
 }
 
-energyHarvestSpecialistController.unloadTargets = function (source) {
+sourceHarvestSpecialistController.unloadTargets = function (source) {
   const Distance = 2
 
   const allStructures = source.room.withDemand(RESOURCE_ENERGY)
@@ -47,7 +47,7 @@ energyHarvestSpecialistController.unloadTargets = function (source) {
   return aroundSource
 }
 
-energyHarvestSpecialistController.act = function (source, creep) {
+sourceHarvestSpecialistController.act = function (source, creep) {
   // start by harvesting; if that is OK, keep harvesting
   const harvestRc = this.wrapIntent(creep, 'harvest', source)
   if (harvestRc === OK) return OK
@@ -96,7 +96,7 @@ energyHarvestSpecialistController.act = function (source, creep) {
   return harvestRc
 }
 
-energyHarvestSpecialistController.validateTarget = function (allTargets, target, creep) {
+sourceHarvestSpecialistController.validateTarget = function (allTargets, target, creep) {
   // if already sticky
   if (creep.memory._est !== undefined) {
     return target.id === creep.memory._est
@@ -107,16 +107,16 @@ energyHarvestSpecialistController.validateTarget = function (allTargets, target,
   return !_.some(others, _.matchesProperty('memory._est', target.id))
 }
 
-energyHarvestSpecialistController.targets = function (room) {
+sourceHarvestSpecialistController.targets = function (room) {
   const allSources = room.find(FIND_SOURCES)
   return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
 }
 
-energyHarvestSpecialistController.filterCreep = function (creep) {
+sourceHarvestSpecialistController.filterCreep = function (creep) {
   // does not matter if full or empty, can work => go to loop
   return this._isHarvester(creep) && this._hasWCM(creep)
 }
 
-energyHarvestSpecialistController.register()
+sourceHarvestSpecialistController.register()
 
-module.exports = energyHarvestSpecialistController
+module.exports = sourceHarvestSpecialistController
