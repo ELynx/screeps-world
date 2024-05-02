@@ -13,6 +13,9 @@ sourceHarvestGenericController.act = function (source, creep) {
 }
 
 sourceHarvestGenericController.validateTarget = function (allTargets, target, creep) {
+  // for room hot start
+  if (target.room.spawns && target.room.spawns.size === 0) return true
+
   // check that target is not someone else's sticky
   const others = target.room.getRoomControlledCreeps()
   return !_.some(others, _.matchesProperty('memory._est', target.id))
