@@ -58,11 +58,11 @@ const bootstrap = {
       Game.__bootstrap__getObjectById = new Map()
     }
 
-    const cached = Game.__bootstrap__getObjectById[id]
+    const cached = Game.__bootstrap__getObjectById.get(id)
     if (cached) return cached
 
     const found = Game.getObjectById(id)
-    Game.__bootstrap__getObjectById[id] = found
+    Game.__bootstrap__getObjectById.set(id, found)
 
     return found
   },
