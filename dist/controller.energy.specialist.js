@@ -62,9 +62,9 @@ energySpecialistController.act = function (source, creep) {
   if (source.room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
     const inSource = intentSolver.getEnergy(source)
     const inCreep = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
-    // STRATEGY how much energy closer to the end of source
+    // STRATEGY energy not transferred to targets in remote rooms
     if (inSource + inCreep <= 200) {
-      return harvestRc
+      return bootstrap.WARN_INTENDEE_EXHAUSTED
     }
   }
 
@@ -75,12 +75,24 @@ energySpecialistController.act = function (source, creep) {
   if (targets.length === 0) return bootstrap.WARN_INTENDED_EXHAUSTED
 
   // step on the container, in case not there
+  let onContainer = false
   for (const target of targets) {
     if (target.structureType === STRUCTURE_CONTAINER) {
-      if ((creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y) && source.pos.isNearTo(target.pos)) {
-        const direction = creep.pos.getDirectionTo(target)
-        creep.moveWrapper(direction, { jiggle: true })
+      if (creep.pos.x === target.pos.x && creep.pos.y === target.pos.y) {
+        onContainer = true
         break
+      }
+    }
+  }
+
+  if (!onContainer) {
+    for (const target of targets) {
+      if (target.structureType === STRUCTURE_CONTAINER) {
+        if ((creep.pos.x !== target.pos.x || creep.pos.y !== target.pos.y) && source.pos.isNearTo(target.pos)) {
+          const direction = creep.pos.getDirectionTo(target)
+          creep.moveWrapper(direction, { jiggle: true })
+          break
+        }
       }
     }
   }
