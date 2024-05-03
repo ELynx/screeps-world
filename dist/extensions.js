@@ -665,7 +665,7 @@ const extensions = {
       flag.shortcut = cutShort(flag.name)
 
       if (flag.room) {
-        flag.room.flags[flagName] = flag
+        flag.room.flags.set(flagName, flag)
       }
     }
 
@@ -674,7 +674,7 @@ const extensions = {
 
       const creep = Game.creeps[creepName]
 
-      Game.creepsById[creep.id] = creep
+      Game.creepsById.set(creep.id, creep)
       creep.room.myCreepsCount += 1
 
       if (creep.memory.flag) {
@@ -697,45 +697,45 @@ const extensions = {
 
       switch (structure.structureType) {
         case STRUCTURE_SPAWN:
-          structure.room.spawns[structure.id] = structure
+          structure.room.spawns.set(structure.id, structure)
           break
         case STRUCTURE_EXTENSION:
-          structure.room.extensions[structure.id] = structure
+          structure.room.extensions.set(structure.id, structure)
           break
         case STRUCTURE_TOWER:
-          structure.room.towers[structure.id] = structure
+          structure.room.towers.set(structure.id, structure)
           break
         case STRUCTURE_STORAGE:
-          Game.storages[structure.id] = structure
+          Game.storages.set(structure.id, structure)
           break
         case STRUCTURE_LINK:
-          structure.room.links[structure.id] = structure
+          structure.room.links.set(structure.id, structure)
           break
         case STRUCTURE_EXTRACTOR:
-          Game.extractors[structure.id] = structure
+          Game.extractors.set(structure.id, structure)
           structure.room.extractor = structure
           break
         case STRUCTURE_LAB:
-          Game.labs[structure.id] = structure
-          structure.room.labs[structure.id] = structure
+          Game.labs.set(structure.id, structure)
+          structure.room.labs.set(structure.id, structure)
           break
         case STRUCTURE_TERMINAL:
-          Game.terminals[structure.id] = structure
+          Game.terminals.set(structure.id, structure)
           break
         case STRUCTURE_FACTORY:
-          Game.factories[structure.id] = structure
+          Game.factories.set(structure.id, structure)
           structure.room.factory = structure
           break
         case STRUCTURE_OBSERVER:
-          Game.observers[structure.id] = structure
+          Game.observers.set(structure.id, structure)
           structure.room.observer = structure
           break
         case STRUCTURE_POWER_SPAWN:
-          Game.powerSpawns[structure.id] = structure
+          Game.powerSpawns.set(structure.id, structure)
           structure.room.powerSpawn = structure
           break
         case STRUCTURE_NUKER:
-          Game.nukers[structure.id] = structure
+          Game.nukers.set(structure.id, structure)
           structure.room.nuker = structure
           break
         default:
