@@ -388,7 +388,7 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (this.__extendedAvailableEnergyCapacity_value) return this.__extendedAvailableEnergyCapacity_value
 
   // if there are no spawns in this room, nothing will help
-  if (!_.some(this.spawns)) {
+  if (this.spawns.size === 0) {
     this.__extendedAvailableEnergyCapacity_value = 0
     return this.__extendedAvailableEnergyCapacity_value
   }
