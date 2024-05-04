@@ -11,7 +11,7 @@ const Treshold = 50
 linkProcess.work = function (room) {
   if (!room._my_) return
 
-  const allLinks = _.filter(room.links, _.property('isActiveSimple'))
+  const allLinks = _.filter(Array.from(room.links.values()), _.property('isActiveSimple'))
 
   if (allLinks.length === 0) {
     return

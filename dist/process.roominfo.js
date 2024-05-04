@@ -120,7 +120,7 @@ roomInfoProcess.upgradeLevel = function (room) {
 
   const MaxDistance = 3
 
-  const links = _.filter(room.links, _.property('isActiveSimple'))
+  const links = _.filter(Array.from(room.links.values()), _.property('isActiveSimple'))
   const linksWithinActRange = _.filter(
     links,
     link => {

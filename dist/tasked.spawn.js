@@ -12,8 +12,8 @@ spawnTasked._maxEnergyCapacity = function () {
 
   Game.__maxEnergyCapacity = 0
 
-  for (const name in Game.spawns) {
-    const roomCapacity = Game.spawns[name].room.extendedAvailableEnergyCapacity()
+  for (const room of Game.rooms_values) {
+    const roomCapacity = room.extendedAvailableEnergyCapacity()
 
     if (Game.__maxEnergyCapacity < roomCapacity) {
       Game.__maxEnergyCapacity = roomCapacity
@@ -163,7 +163,7 @@ spawnTasked._spawnsByDistance = function (roomName) {
 
 spawnTasked._spawnsInRoom = function (room) {
   return _.filter(
-    room.spawns,
+    Array.from(room.spawns.values()),
     spawn => {
       const spawning = intent.getSpawnSpawning(spawn)
       return spawning === null && spawn.isActiveSimple
