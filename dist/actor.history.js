@@ -12,7 +12,7 @@ const historyActor =
 
   getObjectById: function (room, id) {
     // most likely case, own creep
-    const ownCreep = Game.creepsById[id]
+    const ownCreep = Game.creepsById.get(id)
     if (ownCreep) return ownCreep
 
     const ownStructure = Game.structures[id]
