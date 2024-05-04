@@ -1,6 +1,6 @@
 'use strict'
 
-const cookActor = require('./actor.cook')
+const cook = require('./cook')
 
 const Process = require('./process.template')
 
@@ -14,7 +14,7 @@ roomInfoProcess.sourceLevel = function (room) {
 roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
-    if (!cookActor.roomCanMine(room)) return 0
+    if (!cook.roomCanMine(room)) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,

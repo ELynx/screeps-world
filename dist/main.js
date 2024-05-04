@@ -4,7 +4,7 @@
 const iff = require('./iff')
 
 const cleanup = require('./routine.cleanup')
-const cookActor = require('./actor.cook')
+const cook = require('./cook')
 const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
 const extensions = require('./extensions')
 const historyActor = require('./actor.history')
@@ -28,7 +28,7 @@ if (Game.flags.profiler) {
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
-  profiler.registerObject(cookActor, 'cookActor')
+  profiler.registerObject(cook, 'cook')
 
   profiler.enable()
 }
@@ -60,7 +60,7 @@ const loop = function () {
 
   worldActor.act()
 
-  cookActor.act()
+  cook.act()
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {

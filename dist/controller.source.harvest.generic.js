@@ -27,7 +27,7 @@ sourceHarvestGenericController.targets = function (room) {
 }
 
 sourceHarvestGenericController.filterCreep = function (creep) {
-  return this._isNotHarvester(creep) && this._isNotUpgrader(creep) && this._isHarvestAble(creep)
+  return this._isNotHarvester(creep) && this._isNotUpgrader(creep) && this._hasWCM(creep)
 }
 
 sourceHarvestGenericController.register()

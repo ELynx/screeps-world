@@ -4,7 +4,7 @@ const bootstrap = require('./bootstrap')
 
 const intentSolver = require('./routine.intent')
 
-const cookActor = require('./actor.cook')
+const cook = require('./cook')
 
 const Controller = require('./controller.template')
 
@@ -23,7 +23,7 @@ grabController.roomPrepare = function (room) {
 
 grabController.act = function (room, creep) {
   const energyOnlyCreep = this._isStationarySpecialist(creep)
-  const energyOnlyRoom = !cookActor.roomCanHandleNonEnergy(room)
+  const energyOnlyRoom = !cook.roomCanHandleNonEnergy(room)
 
   const allowNonEnergy = !(energyOnlyCreep || energyOnlyRoom)
 
@@ -75,7 +75,7 @@ grabController.act = function (room, creep) {
 grabController.targets = function (room) {
   this.fastCheck = true
 
-  const canHandleNonEnergy = cookActor.roomCanHandleNonEnergy(room)
+  const canHandleNonEnergy = cook.roomCanHandleNonEnergy(room)
 
   const tombstones = room.find(FIND_TOMBSTONES)
   const ruins = room.find(FIND_RUINS)

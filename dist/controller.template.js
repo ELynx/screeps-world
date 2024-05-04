@@ -120,30 +120,6 @@ function Controller (id) {
     return this._validateTarget(allTargets, target, creep)
   }
 
-  this._allAssignedTo = function (target) {
-    // in case when called, e.g. by flag
-    if (target.room === undefined) return []
-
-    const roomCreeps = target.room.getRoomControlledCreeps()
-    return _.filter(
-      roomCreeps,
-      creep => {
-        // check target in general
-        if (target.id !== creep.memory.dest) return false
-        // check this controller
-        if (this.id === creep.memory.ctrl) return true
-
-        return false
-      },
-      this
-    )
-  }
-
-  this._hasCM = function (creep) {
-    bootstrap.activeBodyParts(creep)
-    return creep._carry_ > 0 && creep._move_ > 0
-  }
-
   this._hasWCM = function (creep) {
     bootstrap.activeBodyParts(creep)
     return creep._work_ > 0 && creep._carry_ > 0 && creep._move_ > 0
@@ -151,10 +127,6 @@ function Controller (id) {
 
   this._hasEnergy = function (creep) {
     return intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) > 0
-  }
-
-  this._hasNonEnergy = function (creep) {
-    return intentSolver.getUsedCapacity(creep) > intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
   }
 
   this._isEmpty = function (creep) {
@@ -167,11 +139,6 @@ function Controller (id) {
 
   this._isWorkAble = function (creep) {
     return this._hasWCM(creep) && this._hasEnergy(creep)
-  }
-
-  this._isHarvestAble = function (creep) {
-    // STRATEGY harvest with empty only, reduce runs to sources
-    return this._hasWCM(creep) && this._isEmpty(creep)
   }
 
   this._isHarvester = function (creep) {

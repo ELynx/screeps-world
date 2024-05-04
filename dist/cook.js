@@ -1,7 +1,11 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const cookActor =
 {
+  id: "cook",
+
   roomCanHandleNonEnergy: function (room) {
     console.log('TODO roomCanHandleNonEnergy => false')
     return false
@@ -20,5 +24,7 @@ const cookActor =
     console.log('TODO act => We need to cook / global')
   }
 }
+
+bootstrap.registerRoomController(cookActor)
 
 module.exports = cookActor
