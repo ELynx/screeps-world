@@ -13,8 +13,9 @@ unliveController.act = function (spawn, creep) {
 }
 
 unliveController.targets = function (room) {
-  // since works only in `my` rooms, save CPU on filter
-  return _.values(room.spawns)
+  if (!room._my_) return []
+
+  return Array.from(room.spawns.values())
 }
 
 unliveController.filterCreep = function (creep) {

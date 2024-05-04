@@ -7,7 +7,7 @@ const towerProcess = new Process('tower')
 towerProcess.work = function (room) {
   if (!room._my_) return
 
-  const towers = _.filter(room.towers, _.property('isActiveSimple'))
+  const towers = _.filter(Array.from(room.towers.values()), _.property('isActiveSimple'))
 
   if (towers.length === 0) return
 
