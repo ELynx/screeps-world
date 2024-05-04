@@ -2,7 +2,18 @@
 
 const bootstrap = require('./bootstrap')
 
-const mapUtils = require('./routine.map')
+const buildController = require('./controller.build')
+const downgradeController = require('./controller.downgrade')
+const grabController = require('./controller.grab')
+const mineralHarvestController = require('./controller.mineral.harvest')
+const rampupController = require('./controller.rampup')
+const repairController = require('./controller.repair')
+const sourceHarvestGenericController = require('./controller.source.harvest.generic')
+const sourceHarvestSpecialistController = require('./controller.source.harvest.specialist')
+const unliveController = require('./controller.unlive')
+const upgradeController = require('./controller.upgrade')
+
+const cook = require('./cook')
 
 const autobuildProcess = require('./process.autobuild')
 const linkProcess = require('./process.link')
@@ -11,25 +22,10 @@ const secutiryProcess = require('./process.security')
 const spawnProcess = require('./process.spawn')
 const towerProcess = require('./process.tower')
 
-const cookActor = require('./actor.cook')
-
-const buildController = require('./controller.build')
-const downgradeController = require('./controller.downgrade')
-const energyRestockController = require('./controller.energy.restock')
-const energyTakeController = require('./controller.energy.take')
-const grabController = require('./controller.grab')
-const mineralHarvestController = require('./controller.mineral.harvest')
-const rampupController = require('./controller.rampup')
-const repairController = require('./controller.repair')
-const resourceRestockController = require('./controller.resouce.restock')
-const sourceHarvestGenericController = require('./controller.source.harvest.generic')
-const sourceHarvestSpecialistController = require('./controller.source.harvest.specialist')
-const unliveController = require('./controller.unlive')
-const upgradeController = require('./controller.upgrade')
+const mapUtils = require('./routine.map')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
-  energyTakeController.id,
   grabController.id,
   mineralHarvestController.id,
   sourceHarvestGenericController.id,
@@ -50,21 +46,18 @@ const controllersBlockStop = [
 ]
 
 // STRATEGY priority for creep assignment
-
 const controllersMyAuto = [
   downgradeController.id, // always on top
-  resourceRestockController.id, // catch anyone with resources
-  unliveController.id, // catch recyclees
-  mineralHarvestController.id, // catch miners when empty
-  sourceHarvestSpecialistController.id, // catch harvesters
-  upgradeController.specialist.id, // catch upgraders
-  energyTakeController.id, // above harvest, decrease harvest work
+  cook.id, // trust in intelligence
+  unliveController.id, // after demonstrated to cook, before takes other tasks
+  mineralHarvestController.id,
+  sourceHarvestSpecialistController.id,
+  upgradeController.specialist.id,
   sourceHarvestGenericController.id,
-  energyRestockController.id,
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id // try to dump end of energy
+  upgradeController.generic.id
 ]
 
 const controllersRemoteHarvestAuto = [
@@ -74,8 +67,7 @@ const controllersRemoteHarvestAuto = [
 ]
 
 const controllersHelpAuto = [
-  energyTakeController.id,
-  energyRestockController.id,
+  cook.id,
   rampupController.id,
   repairController.id,
   buildController.id
@@ -237,7 +229,7 @@ const roomActor =
     secutiryProcess.work(room)
     roomInfoProcess.work(room)
     towerProcess.work(room)
-    cookActor.work(room)
+    cook.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10
