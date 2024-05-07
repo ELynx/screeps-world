@@ -222,10 +222,8 @@ const roomActor =
     secutiryProcess.work(room)
     // misc constants that govern other stuff
     roomInfoProcess.work(room)
-    // passive defense
+    // stationary defense
     towerProcess.work(room)
-    // set d&s before others act
-    cook.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
     const processKey = (room.memory.intl + Game.time) % 10
@@ -415,6 +413,8 @@ const roomActor =
           else if (pos.y === 49) creep.moveWrapper(TOP)
         }
       }
+
+      cook.roomPost(room)
     }
 
     if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {

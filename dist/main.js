@@ -60,7 +60,7 @@ const loop = function () {
 
   worldActor.act()
 
-  cook.actGlobal()
+  cook.globalPost()
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {

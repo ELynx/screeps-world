@@ -68,19 +68,18 @@ const cookActor =
     return this._terminalHasSpaceFor(room.terminal, mineralType)
   },
 
-  // called from room actor before controllers
-  work: function (room) {
+  // called from room actor after controllers
+  roomPost: function (room) {
     // TODO links
     // TODO harvester unload
-    // TODO assign demands
-    console.log('TODO work')
+    console.log('TODO roomPost')
   },
 
   // called from main after other actors
-  actGlobal: function () {
+  globalPost: function () {
     // TODO send resources across rooms
     // TODO send energy across rooms
-    console.log('TODO actGlobal')
+    console.log('TODO globalPost')
   }
 }
 

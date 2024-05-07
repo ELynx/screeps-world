@@ -61,7 +61,12 @@ sourceHarvestSpecialistController.observeMyCreep = function (creep) {
 sourceHarvestSpecialistController.act = function (source, creep) {
   // stick to position
   creep.memory.atds = true
-  return this._act(source, creep)
+  
+  // remember the rc for cook
+  const rc = this._act(source, creep)
+  creep._source_harvest_specialist_rc_ = rc
+
+  return rc
 }
 
 sourceHarvestSpecialistController.validateTarget = function (allTargets, target, creep) {
