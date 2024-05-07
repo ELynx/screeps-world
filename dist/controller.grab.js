@@ -91,13 +91,13 @@ grabController.targets = function (room) {
           }
         )
 
-        this.fastCheckX[(tombstone.pos.x - 1)] = true
-        this.fastCheckX[(tombstone.pos.x)] = true
-        this.fastCheckX[(tombstone.pos.x + 1)] = true
+        this.fastCheckX.set((tombstone.pos.x - 1), true)
+        this.fastCheckX.set((tombstone.pos.x), true)
+        this.fastCheckX.set((tombstone.pos.x + 1), true)
 
-        this.fastCheckY[(tombstone.pos.y - 1)] = true
-        this.fastCheckY[(tombstone.pos.y)] = true
-        this.fastCheckY[(tombstone.pos.y + 1)] = true
+        this.fastCheckY.set((tombstone.pos.y - 1), true)
+        this.fastCheckY.set((tombstone.pos.y), true)
+        this.fastCheckY.set((tombstone.pos.y + 1), true)
       }
     }
   }
@@ -114,13 +114,13 @@ grabController.targets = function (room) {
           }
         )
 
-        this.fastCheckX[(ruin.pos.x - 1)] = true
-        this.fastCheckX[(ruin.pos.x)] = true
-        this.fastCheckX[(ruin.pos.x + 1)] = true
+        this.fastCheckX.set((ruin.pos.x - 1), true)
+        this.fastCheckX.set((ruin.pos.x), true)
+        this.fastCheckX.set((ruin.pos.x + 1), true)
 
-        this.fastCheckY[(ruin.pos.y - 1)] = true
-        this.fastCheckY[(ruin.pos.y)] = true
-        this.fastCheckY[(ruin.pos.y + 1)] = true
+        this.fastCheckY.set((ruin.pos.y - 1), true)
+        this.fastCheckY.set((ruin.pos.y), true)
+        this.fastCheckY.set((ruin.pos.y + 1), true)
       }
     }
   }
@@ -135,13 +135,13 @@ grabController.targets = function (room) {
           }
         )
 
-        this.fastCheckX[(resource.pos.x - 1)] = true
-        this.fastCheckX[(resource.pos.x)] = true
-        this.fastCheckX[(resource.pos.x + 1)] = true
+        this.fastCheckX.set((resource.pos.x - 1), true)
+        this.fastCheckX.set((resource.pos.x), true)
+        this.fastCheckX.set((resource.pos.x + 1), true)
 
-        this.fastCheckY[(resource.pos.y - 1)] = true
-        this.fastCheckY[(resource.pos.y)] = true
-        this.fastCheckY[(resource.pos.y + 1)] = true
+        this.fastCheckY.set((resource.pos.y - 1), true)
+        this.fastCheckY.set((resource.pos.y), true)
+        this.fastCheckY.set((resource.pos.y + 1), true)
       }
     }
   }
@@ -152,11 +152,11 @@ grabController.targets = function (room) {
 grabController.filterCreep = function (creep) {
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
-    if (this.fastCheckX[creep.pos.x] === undefined) {
+    if (!this.fastCheckX.has(creep.pos.x)) {
       return false
     }
 
-    if (this.fastCheckY[creep.pos.y] === undefined) {
+    if (!this.fastCheckY.has(creep.pos.y)) {
       return false
     }
   }
