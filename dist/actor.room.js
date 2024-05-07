@@ -49,7 +49,6 @@ const controllersMyAuto = [
   cook.id, // trust in intelligence
   unliveController.id, // after demonstrated to cook, before takes other tasks
   mineralHarvestController.id,
-  sourceHarvestSpecialistController.id,
   sourceHarvestController.specialist.id,
   sourceHarvestController.generic.id,
   rampupController.id,
