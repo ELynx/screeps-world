@@ -52,7 +52,7 @@ function Controller (id) {
     }
 
     return _.filter(targets,
-      function (target) {
+      target => {
         return !_.some(exclude, _.matches(target.id))
       }
     )
