@@ -21,16 +21,16 @@ CONTROLLER_MAX_UPGRADE_PER_TICK 15
 
 const bodywork = {
   makeWCM: function (work, carry, move = work + carry) {
-    const a = new Array(work)
-    a.fill(WORK)
+    const partsWork = new Array(work)
+    partsWork.fill(WORK)
 
-    const b = new Array(carry)
-    b.fill(CARRY)
+    const partsCarry = new Array(carry)
+    partsCarry.fill(CARRY)
 
-    const c = new Array(move)
-    c.fill(MOVE)
+    const partsMove = new Array(move)
+    partsMove.fill(MOVE)
 
-    return _.shuffle(a.concat(b).concat(c))
+    return _.shuffle(partsWork.concat(partsCarry).concat(partsMove))
   },
 
   worker: function (room) {
