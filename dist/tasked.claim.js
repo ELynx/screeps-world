@@ -148,6 +148,11 @@ claimTasked.creepAtDestination = function (creep) {
     return
   }
 
+  // plug for waiting out safe mode
+  if (rc === ERR_NO_BODYPART && controller.safeMode) {
+    rc = ERR_TIRED
+  }
+
   // be sure that creep will not survive the wait
   if (rc === ERR_TIRED && creep.ticksToLive < wait) {
     const ticksToArrive = creep.memory._clt ? CREEP_CLAIM_LIFE_TIME - creep.memory._clt : 0
