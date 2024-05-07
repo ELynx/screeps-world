@@ -351,6 +351,25 @@ Room.prototype.ownedOrReserved = function () {
   return this.controller && (this.controller.owner || this.controller.reservation)
 }
 
+Room.prototype.mineralType = function () {
+  this.memory.nodeAccessed = Game.time
+
+  if (this.memory.mnrl !== undefined) {
+    return this.memory.mnrl
+  }
+
+  const minerals = this.find(FIND_MINERALS)
+  for (const mineral of minerals) {
+    this.memory.mnrl = mineral.mineralType
+  }
+
+  if (this.memory.mnrl === undefined) {
+    this.memory.mnrl = ''
+  }
+
+  return this.memory.mnrl
+}
+
 Room.prototype.sourceKeeper = function () {
   this.memory.nodeAccessed = Game.time
 
