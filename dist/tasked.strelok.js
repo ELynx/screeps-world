@@ -379,22 +379,22 @@ strelok.makeBody = function (room) {
     budget = budget - 10
   }
 
-  const a = new Array(tough)
-  a.fill(TOUGH)
+  const partsTough = new Array(tough)
+  partsTough.fill(TOUGH)
 
-  const b = new Array(move)
-  b.fill(MOVE)
+  const partsMove = new Array(move)
+  partsMove.fill(MOVE)
 
-  const c = new Array(ranged)
-  c.fill(RANGED_ATTACK)
+  const partsRanged = new Array(ranged)
+  partsRanged.fill(RANGED_ATTACK)
 
-  const d = new Array(melee)
-  d.fill(ATTACK)
+  const partsMelee = new Array(melee)
+  partsMelee.fill(ATTACK)
 
-  const e = new Array(heal)
-  e.fill(HEAL)
+  const partsHeal = new Array(heal)
+  partsHeal.fill(HEAL)
 
-  const body = a.concat(b).concat(c).concat(d).concat(e)
+  const body = partsTough.concat(partsMove).concat(partsRanged).concat(partsMelee).concat(partsHeal)
 
   this.__bodyCache[elvl] = body
 
@@ -406,13 +406,13 @@ strelok.makeBody_2 = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
   const pairs = Math.min(Math.floor(energy / 130), 25)
 
-  const a = new Array(pairs)
-  a.fill(MOVE)
+  const partsMove = new Array(pairs)
+  partsMove.fill(MOVE)
 
-  const b = new Array(pairs)
-  b.fill(ATTACK)
+  const partsMelee = new Array(pairs)
+  partsMelee.fill(ATTACK)
 
-  const body = a.concat(b)
+  const body = partsMove.concat(partsMelee)
 
   return body
 }

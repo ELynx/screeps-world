@@ -284,14 +284,14 @@ beetle.makeBody = function (room) {
   const budget = 300 + 150 * elvl
   const pairs = Math.min(Math.floor(budget / 150), 25)
 
-  const a = new Array(pairs)
-  a.fill(MOVE)
+  const partsMove = new Array(pairs)
+  partsMove.fill(MOVE)
 
-  // one spot for withdraw
-  const b = new Array(pairs - 1)
-  b.fill(WORK)
+  // one spot for CARRY / withdraw
+  const partsWork = new Array(pairs - 1)
+  partsWork.fill(WORK)
 
-  const body = a.concat([CARRY]).concat(b)
+  const body = partsMove.concat([CARRY]).concat(partsWork)
 
   this.__bodyCache[elvl] = body
 
