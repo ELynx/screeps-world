@@ -1,18 +1,18 @@
 'use strict'
 
-// standalone
-const iff = require('./iff')
-
-const cleanup = require('./routine.cleanup')
-const cook = require('./cook')
-const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
-const extensions = require('./extensions')
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
 const worldActor = require('./actor.world')
 
+const cook = require('./cook')
+const extensions = require('./extensions')
+const iff = require('./iff')
+
+const cleanup = require('./routine.cleanup')
+const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
+
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
-console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
+// console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
 
 let profiler
 
@@ -22,13 +22,13 @@ if (Game.flags.profiler) {
 
   profiler = require('./screeps-profiler')
 
-  profiler.registerObject(iff, 'iff')
-  profiler.registerObject(cleanup, 'cleanup')
-  profiler.registerObject(extensions, 'extensions')
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(worldActor, 'worldActor')
   profiler.registerObject(cook, 'cook')
+  profiler.registerObject(extensions, 'extensions')
+  profiler.registerObject(iff, 'iff')
+  profiler.registerObject(cleanup, 'cleanup')
 
   profiler.enable()
 }
@@ -60,7 +60,7 @@ const loop = function () {
 
   worldActor.act()
 
-  cook.act()
+  cook.actGlobal()
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {

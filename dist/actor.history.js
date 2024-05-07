@@ -158,6 +158,8 @@ const historyActor =
     if (attacker.room) {
       attacker.room._fight_ = true
     }
+
+    Game._fight_ = true
   },
 
   handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {

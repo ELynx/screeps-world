@@ -34,12 +34,12 @@ mineralHarvestController.act = function (extractor, creep) {
 }
 
 mineralHarvestController.targets = function (room) {
-  if (room.memory.mlvl === 0) {
+  // don't mine while there is a fight
+  if (Game._fight_ || room._fight_) {
     return []
   }
 
-  // don't mine in room with fight
-  if (room._fight_) {
+  if (room.memory.mlvl === 0) {
     return []
   }
 
@@ -63,7 +63,7 @@ mineralHarvestController.targets = function (room) {
 }
 
 mineralHarvestController.filterCreep = function (creep) {
-  return this._isMiner(creep) && this._hasWCM(creep)
+  return this._isMiner(creep) && this._hasWCM(creep) && this._isEmpty(creep)
 }
 
 mineralHarvestController.register()

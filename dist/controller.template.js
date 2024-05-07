@@ -97,6 +97,10 @@ function Controller (id) {
     return false
   }
 
+  this._isAtDestination = function (creep) {
+    return creep.memory.atds || false
+  },
+
   this._isTargetWithinRange = function (target, creep, range) {
     if (Math.abs(target.pos.x - creep.pos.x) > range) return false
     if (Math.abs(target.pos.y - creep.pos.y) > range) return false
@@ -109,7 +113,7 @@ function Controller (id) {
   }
 
   this._validateTarget = function (allTargets, target, creep) {
-    if (this._isStationarySpecialist(creep)) {
+    if (this._isStationarySpecialist(creep) && this._isAtDestination(creep)) {
       return this._isTargetWithinActingRange(target, creep)
     }
 
@@ -246,7 +250,7 @@ function Controller (id) {
       for (const currentTarget of targets) {
         // more expensive check that sort
         // see if assignment breaks some specific creep-target
-        if (this.validateTarget) {
+        if (_.isFunction(this.validateTarget)) {
           if (this.validateTarget(allTargets, currentTarget, creep) === false) {
             continue // to next target
           }
@@ -351,6 +355,13 @@ function Controller (id) {
 
         bootstrap.assignCreep(this, target, path, creep, extra)
         assignedCreeps.push(creep)
+
+        const circleOptions = { stroke: 'white', fill: 'white', radius: 0.15 }
+        room.visual.circle(creep.pos.x, creep.pos.y, circleOptions)
+        room.visual.circle(target.pos.x, target.pos.y, circleOptions)
+        if (path) {
+          room.visual.poly(path, { stroke: 'white' })
+        }
 
         // simulate single assignment logic on small scale
         if (this._creepPerTarget) {
