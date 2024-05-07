@@ -39,7 +39,7 @@ sourceHarvestGenericController.targets = function (room) {
 }
 
 sourceHarvestGenericController.filterCreep = function (creep) {
-  return this._isNotHarvester(creep) && this._isNotUpgrader(creep) && this._hasWCM(creep) && this._isEmpty(creep)
+  return !this._isStationarySpecialist(creep) && this._hasWCM(creep) && this._isEmpty(creep)
 }
 
 // before profiler wrap
