@@ -27,6 +27,7 @@ const cleanup = {
           'abld',
           'intl',
           'mlvl',
+          'mnrl',
           'nodeAccessed',
           'photo',
           'sellEverything',
@@ -58,7 +59,8 @@ const cleanup = {
         Memory.structures[id] = _.pick(
           Memory.structures[id],
           [
-            'isSource'
+            'isSource',
+            'nodeAccessed'
           ]
         )
       }
