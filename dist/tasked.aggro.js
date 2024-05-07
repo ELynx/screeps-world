@@ -15,7 +15,7 @@ aggro.act = function () {
       const atPosTargets = _.filter(
         atPos,
         structure => {
-          return structure.hits && structure.structureType !== STRUCTURE_ROAD
+          return structure.hits && structure.structureType !== STRUCTURE_ROAD // false positive skipcq: JS-0073
         }
       )
 
