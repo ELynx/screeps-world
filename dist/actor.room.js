@@ -48,23 +48,24 @@ const controllersMyAuto = [
   downgradeController.id, // always on top
   cook.id, // trust in intelligence
   unliveController.id, // after demonstrated to cook, before takes other tasks
-  mineralHarvestController.id,
-  sourceHarvestController.specialist.id,
-  sourceHarvestController.generic.id,
+  mineralHarvestController.id, // narrow filter
+  sourceHarvestController.specialist.id, // narrow filter
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id
+  upgradeController.generic.id,
+  sourceHarvestController.generic.id
 ]
 
 const controllersRemoteHarvestAuto = [
+  cook.id, // controls unload
   repairController.id,
   buildController.id,
   sourceHarvestController.specialist.id
 ]
 
 const controllersHelpAuto = [
-  cook.id,
+  cook.id, // controls energy withdraw for help
   rampupController.id,
   repairController.id,
   buildController.id
