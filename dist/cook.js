@@ -5,7 +5,7 @@ const bootstrap = require('./bootstrap')
 const cookActor =
 {
   // << imitate controller
-  id: "cook",
+  id: 'cook',
 
   actRange: 1,
 
