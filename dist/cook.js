@@ -4,6 +4,16 @@ const bootstrap = require('./bootstrap')
 
 const cookActor =
 {
+  _terminalHasSpaceFor: function (terminal, type = undefined) {
+    // TODO
+    return false
+  },
+
+  _storageHasSpaceFor: function (storage, type = undefined) {
+    // TODO
+    return false
+  },
+
   // << imitate controller
   id: 'cook',
 
@@ -28,25 +38,48 @@ const cookActor =
   },
   // >>
 
-  // if room can accept (more) resources that are not energy
+  // if room can accept resources that are not energy
   roomCanHandleNonEnergy: function (room) {
-    console.log('TODO roomCanHandleNonEnergy => false')
+    if (!room._my_) return false
+
+    if (room.storage) {
+      if (this._storageHasSpaceFor(room.storage)) return true
+    }
+
+    if (room.terminal) {
+      if (this._terminalHasSpaceFor(room.terminal)) return true
+    }
+
     return false
   },
 
-  // if room can start and do mining
+  // if room can do mining
   roomCanMine: function (room) {
-    console.log('TODO roomCanMine => false')
-    return false
+    if (!room._my_) {
+      console.log('Unexpected call to cook::roomCanMine for room [' + room.name + '] => false')
+      return false
+    }
+
+    if (room.terminal === undefined) return false
+
+    const mineralType = room.mineralType()
+    if (mineralType === '') return false
+
+    return this._terminalHasSpaceFor(room.terminal, mineralType)
   },
 
   // called from room actor before controllers
   work: function (room) {
+    // TODO links
+    // TODO harvester unload
+    // TODO assign demands
     console.log('TODO work')
   },
 
   // called from main after other actors
   actGlobal: function () {
+    // TODO send resources across rooms
+    // TODO send energy across rooms
     console.log('TODO actGlobal')
   }
 }
