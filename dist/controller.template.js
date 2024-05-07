@@ -99,7 +99,7 @@ function Controller (id) {
 
   this._isAtDestination = function (creep) {
     return creep.memory.atds || false
-  },
+  }
 
   this._isTargetWithinRange = function (target, creep, range) {
     if (Math.abs(target.pos.x - creep.pos.x) > range) return false
