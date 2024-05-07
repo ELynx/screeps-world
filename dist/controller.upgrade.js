@@ -6,14 +6,14 @@ const upgradeGenericController = new Controller('upgrade.generic')
 
 upgradeGenericController.actRange = 3
 
-upgradeGenericController.act = function (controller, creep) {
+upgradeGenericController._act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller)
 }
 
-upgradeGenericController._roomQualified = function (room) {
-  // don't upgrade controller in room with active fight
-  if (room._fight_) {
-    return false
+upgradeGenericController._check = function (room) {
+  // don't upgrade while there is a fight
+  if (Game._fight_ || room._fight_) {
+    return []
   }
 
   if (room.controller.upgradeBlocked) {
@@ -23,12 +23,15 @@ upgradeGenericController._roomQualified = function (room) {
   return true
 }
 
+upgradeGenericController.act = function (controller, creep) {
+  return this._act(controller, creep)
+}
+
 upgradeGenericController.targets = function (room) {
-  if (!this._roomQualified(room)) {
+  if (!this._check(room)) {
     return []
   }
 
-  // leave 8 and above :) to specialists
   if (room.controller.level >= 8) {
     return []
   }
@@ -41,10 +44,14 @@ const upgradeSpecialistController = _.assign({ }, upgradeGenericController)
 
 upgradeSpecialistController.id = 'upgrade.specialist'
 
-upgradeSpecialistController.validateTarget = undefined // TODO actually bypass range check only, not all checks
+upgradeSpecialistController.act = function (controller, creep) {
+  // stick to position
+  creep.memory.atds = true
+  return this._act(controller, creep)
+}
 
 upgradeSpecialistController.targets = function (room) {
-  if (!this._roomQualified(room)) {
+  if (!this._check(room)) {
     return []
   }
 
