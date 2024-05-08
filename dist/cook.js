@@ -34,11 +34,8 @@ const cookActor =
     return false
   },
 
-  _labHasSpaceFor: function (lab, resourceType) {
-    if (resourceType === RESOURCE_ENERGY || resourceType === lab.resourceType()) {
-      return this._genericHasSpaceFor(lab, resourceType)
-    }
-
+  _labClusterHasSpaceFor: function (labs, resourceType) {
+    // TODO
     return false
   },
 
@@ -95,17 +92,15 @@ const cookActor =
 
     // in order of likelihood of having space for random resource
 
-    // has space for "sell stuff out"
+    // has space for "stuff"
     if (room.terminal) {
       if (this._terminalHasSpaceFor(room.terminal, resourceType)) return withCache(room, resourceType, true)
     }
 
-    // likely can pick up reaction spill
-    for (const lab of room.labs.values()) {
-      if (this._labHasSpaceFor(lab, resourceType)) return withCache(room, resourceType, true)
-    }
+    // for reagents lost in transport
+    if (this._labClusterHasSpaceFor(Array.from(room.labs.values()), resourceType)) return withCache(room, resourceType, true)
 
-    // likely can pick up transit spill
+    // for ghodium lost in transport
     if (room.nuker) {
       if (this._genericHasSpaceFor(room.nuker, resourceType)) return withCache(room, resourceType, true)
     }
@@ -120,6 +115,7 @@ const cookActor =
       if (this._genericHasSpaceFor(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
     }
 
+    // if somehow packed resources of interest
     if (room.factory) {
       if (this._factoryHasSpaceFor(room.factory, resourceType)) return withCache(room, resourceType, true)
     }
@@ -138,7 +134,7 @@ const cookActor =
     const mineralType = room.mineralType()
     if (mineralType === '') return false
 
-    return this._terminalHasSpaceFor(room.terminal, mineralType)
+    return this._terminalHasSpaceFor(room.terminal, mineralType) || this._labClusterHasSpaceFor(Array.from(room.labs.values()), mineralType)
   },
 
   _operateHarvesters: function (room) {
