@@ -2,6 +2,9 @@
 
 const bootstrap = require('./bootstrap')
 
+// STRATEGY CPU reservation strategy
+const PostCPUTarget = Game.cpu.limit - 0.5
+
 const cookActor =
 {
   __used: function (structure, resourceType) {
@@ -145,6 +148,26 @@ const cookActor =
     console.log('TODO roomPost')
   },
 
+  __outOfCpu: function () {
+    return Game.cpu.getUsed() >= PostCPUTarget
+  },
+
+  __operatePowerSpawn: function (powerSpawn) {
+    if (powerSpawn.store.getUsedCapacity(RESOURCE_POWER) >= 1 &&
+        powerSpawn.store.getUsedCapacity(RESOURCE_ENERGY) >= 50) {
+      return powerSpawn.processPower()
+    }
+
+    return ERR_NOT_ENOUGH_RESOURCES
+  },
+
+  _operatePowerSpawns: function () {
+    for (const powerSpawn of Game.powerSpawns.values()) {
+      if (this.__outOfCpu()) break
+      this.__operatePowerSpawn(powerSpawn)
+    }
+  },
+
   __operateFactory: function (factory) {
     if (factory.cooldown && factory.cooldown > 0) {
       return ERR_TIRED
@@ -169,14 +192,16 @@ const cookActor =
 
   _operateFactories: function () {
     for (const factory of Game.factories.values()) {
+      if (this.__outOfCpu()) break
       this.__operateFactory(factory)
     }
   },
 
   // called from main after other actors
   globalPost: function () {
-    // TODO exchange across rooms
-    // TODO sell of excess from terminals
+    if (this.__outOfCpu()) return
+
+    this._operatePowerSpawns()
     this._operateFactories()
   }
 }
