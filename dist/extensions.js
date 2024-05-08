@@ -517,8 +517,8 @@ Structure.prototype.setToMemory = function (key, value) {
   Memory.structures[this.id][key] = value
 }
 
-const _resourceType_Key_ = 'resourceType'
 const _isSource_Key_ = 'isSource'
+const _resourceType_Key_ = 'resourceType'
 
 StructureContainer.prototype.isSource = function () {
   let result = this.getFromMemory(_isSource_Key_)
