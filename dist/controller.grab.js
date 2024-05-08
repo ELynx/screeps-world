@@ -23,45 +23,46 @@ grabController.roomPrepare = function (room) {
 
 grabController.act = function (room, creep) {
   const energyOnlyCreep = this._isStationarySpecialist(creep)
-  const energyOnlyRoom = !cook.roomCanHandleNonEnergy(room)
-
-  const allowNonEnergy = !(energyOnlyCreep || energyOnlyRoom)
 
   const grabs = this._findTargets(room)
 
   let didWithdraw = false
   let didPickup = false
+
   for (const grab of grabs) {
     const from = grab[grab.type]
 
     if (!creep.pos.isNearTo(from)) continue
 
     if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
-      const typesToGrab = allowNonEnergy ? _.keys(from.store) : [RESOURCE_ENERGY]
+      for (const resourceType of _.keys(from.store)) {
+        if (energyOnlyCreep && resourceType !== RESOURCE_ENERGY) continue // to next type
+        if (!cook.roomCanHandle(room, resourceType)) continue // to next type
 
-      for (const typeToGrab of typesToGrab) {
-        if (intentSolver.getUsedCapacity(from, typeToGrab) > 0) {
-          const rc = this.wrapIntent(creep, 'withdraw', from, typeToGrab)
+        if (intentSolver.getUsedCapacity(from, resourceType) > 0) {
+          const rc = this.wrapIntent(creep, 'withdraw', from, resourceType)
           if (rc >= OK) {
             didWithdraw = true
-            break // from types cycle
+            break // from types loop
           }
         }
       }
     }
 
     if (didPickup === false && grab.type === LOOK_RESOURCES) {
-      if (allowNonEnergy || from.resourceType === RESOURCE_ENERGY) {
-        if (intentSolver.getAmount(from) > 0) {
-          const rc = this.wrapIntent(creep, 'pickup', from)
-          if (rc >= OK) {
-            didPickup = true
+      if (!energyOnlyCreep || from.resourceType === RESOURCE_ENERGY) {
+        if (cook.roomCanHandle(room, from.resouceType)) {
+          if (intentSolver.getAmount(from) > 0) {
+            const rc = this.wrapIntent(creep, 'pickup', from)
+            if (rc >= OK) {
+              didPickup = true
+            }
           }
         }
       }
     }
 
-    if (didWithdraw && didPickup) break
+    if (didWithdraw && didPickup) break // from grabs loop
   }
 
   // STRATEGY withdraw is reported as warning, because it is widely used
@@ -75,20 +76,13 @@ grabController.act = function (room, creep) {
 grabController.targets = function (room) {
   this.fastCheck = true
 
-  const canHandleNonEnergy = cook.roomCanHandleNonEnergy(room)
+  const result = []
 
   const tombstones = room.find(FIND_TOMBSTONES)
-  const ruins = room.find(FIND_RUINS)
-  const resources = room.find(FIND_DROPPED_RESOURCES)
-
-  const grabs = []
-
   for (const tombstone of tombstones) {
-    const typesToGrab = canHandleNonEnergy ? _.keys(tombstone.store) : [RESOURCE_ENERGY]
-
-    for (const typeToGrab of typesToGrab) {
-      if (tombstone.store.getUsedCapacity(typeToGrab) > 0) {
-        grabs.push(
+    for (const resouceType of _.keys(tombstone.store)) {
+      if (cook.roomCanHandle(room, resouceType)) {
+        result.push(
           {
             type: LOOK_TOMBSTONES,
             [LOOK_TOMBSTONES]: tombstone
@@ -106,12 +100,11 @@ grabController.targets = function (room) {
     }
   }
 
+  const ruins = room.find(FIND_RUINS)
   for (const ruin of ruins) {
-    const typesToGrab = canHandleNonEnergy ? _.keys(ruin.store) : [RESOURCE_ENERGY]
-
-    for (const typeToGrab of typesToGrab) {
-      if (ruin.store.getUsedCapacity(typeToGrab) > 0) {
-        grabs.push(
+    for (const resouceType of _.keys(ruin.store)) {
+      if (cook.roomCanHandle(room, resouceType)) {
+        result.push(
           {
             type: LOOK_RUINS,
             [LOOK_RUINS]: ruin
@@ -129,28 +122,27 @@ grabController.targets = function (room) {
     }
   }
 
+  const resources = room.find(FIND_DROPPED_RESOURCES)
   for (const resource of resources) {
-    if (canHandleNonEnergy || resource.resourceType === RESOURCE_ENERGY) {
-      if (resource.amount > 0) {
-        grabs.push(
-          {
-            type: LOOK_RESOURCES,
-            [LOOK_RESOURCES]: resource
-          }
-        )
+    if (cook.roomCanHandle(room, resource.resouceType)) {
+      result.push(
+        {
+          type: LOOK_RESOURCES,
+          [LOOK_RESOURCES]: resource
+        }
+      )
 
-        this.fastCheckX.set((resource.pos.x - 1), true)
-        this.fastCheckX.set((resource.pos.x), true)
-        this.fastCheckX.set((resource.pos.x + 1), true)
+      this.fastCheckX.set((resource.pos.x - 1), true)
+      this.fastCheckX.set((resource.pos.x), true)
+      this.fastCheckX.set((resource.pos.x + 1), true)
 
-        this.fastCheckY.set((resource.pos.y - 1), true)
-        this.fastCheckY.set((resource.pos.y), true)
-        this.fastCheckY.set((resource.pos.y + 1), true)
-      }
+      this.fastCheckY.set((resource.pos.y - 1), true)
+      this.fastCheckY.set((resource.pos.y), true)
+      this.fastCheckY.set((resource.pos.y + 1), true)
     }
   }
 
-  return grabs
+  return result
 }
 
 grabController.filterCreep = function (creep) {
