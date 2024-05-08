@@ -517,15 +517,15 @@ Structure.prototype.setToMemory = function (key, value) {
   Memory.structures[this.id][key] = value
 }
 
-const _isSource_Key_ = 'isSource'
-const _resourceType_Key_ = 'resourceType'
+const _isSourceKey_ = 'isSource'
+const _resourceTypeKey_ = 'resourceType'
 
 StructureContainer.prototype.isSource = function () {
-  let result = this.getFromMemory(_isSource_Key_)
+  let result = this.getFromMemory(_isSourceKey_)
 
   if (result === undefined) {
     result = this.pos.hasInSquareArea(LOOK_SOURCES, 1)
-    this.setToMemory(_isSource_Key_, result)
+    this.setToMemory(_isSourceKey_, result)
   }
 
   return result
@@ -540,7 +540,7 @@ StructureController.prototype.canActivateSafeMode = function () {
 }
 
 StructureLab.prototype.resourceType = function () {
-  const result = this.getFromMemory(_resourceType_Key_)
+  const result = this.getFromMemory(_resourceTypeKey_)
 
   if (result === undefined) {
     return ''
@@ -550,19 +550,19 @@ StructureLab.prototype.resourceType = function () {
 }
 
 StructureLab.prototype.setResourceType = function (resourceType) {
-  this.setToMemory(_resourceType_Key_, resourceType)
+  this.setToMemory(_resourceTypeKey_, resourceType)
 }
 
 StructureLab.prototype.resetResourceType = function () {
-  this.setResourceType(_resourceType_Key_, undefined)
+  this.setResourceType(_resourceTypeKey_, undefined)
 }
 
 StructureLink.prototype.isSource = function () {
-  let result = this.getFromMemory(_isSource_Key_)
+  let result = this.getFromMemory(_isSourceKey_)
 
   if (result === undefined) {
     result = this.pos.hasInSquareArea(LOOK_SOURCES, 2)
-    this.setToMemory(_isSource_Key_, result)
+    this.setToMemory(_isSourceKey_, result)
   }
 
   return result
