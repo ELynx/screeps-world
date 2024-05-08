@@ -177,7 +177,7 @@ const cookActor =
   globalPost: function () {
     // TODO exchange across rooms
     // TODO sell of excess from terminals
-    this._operateFactories();
+    this._operateFactories()
   }
 }
 
