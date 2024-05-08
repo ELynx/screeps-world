@@ -89,7 +89,7 @@ const cookActor =
       if (this._storageHasSpaceFor(room.storage, resourceType)) return withCache(room, resourceType, true)
     }
 
-    for (const lab of Array.from(room.labs)) {
+    for (const lab of Array.from(room.labs.values())) {
       if (this._labHasSpaceFor(lab, resourceType)) return withCache(room, resourceType, true)
     }
 
