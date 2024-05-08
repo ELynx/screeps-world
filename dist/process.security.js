@@ -60,7 +60,7 @@ secutiryProcess.work = function (room) {
     }
 
     if (hostilePCs.length > 0 && room.controller && room.controller.my && room.controller.canActivateSafeMode()) {
-      const flags = _.filter(room.flags, _.matchesProperty('shortcut', this.id))
+      const flags = _.filter(Array.from(room.flags.values()), _.matchesProperty('shortcut', this.id))
 
       for (const flag of flags) {
         const range = flag.getValue()
