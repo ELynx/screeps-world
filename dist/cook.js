@@ -18,18 +18,17 @@ const cookActor =
     return fromApi || 0
   },
 
-  _terminalHasSpaceFor: function (terminal, resourceType) {
-    // TODO
-    return false
+  _genericHasSpaceFor: function (structure, resourceType, reserve = 0) {
+    return this.__free(structure, resourceType) > reserve
   },
 
-  _storageHasSpaceFor: function (storage, resourceType) {
-    // TODO
-    return false
-  },
+  _factoryHasSpaceFor: function (factory, resourceType) {
+    // STRATEGY items processed in factory, store reserve
+    if (resourceType === RESOURCE_BATTERY || resourceType === RESOURCE_GHODIUM_MELT) {
+      return this._genericHasSpaceFor(factory, resourceType, 5000)
+    }
 
-  _genericHasSpaceFor: function (structure, resourceType) {
-    return this.__free(structure, resourceType) > 0
+    return false
   },
 
   _labHasSpaceFor: function (lab, resourceType) {
@@ -38,6 +37,16 @@ const cookActor =
     }
 
     return false
+  },
+
+  _storageHasSpaceFor: function (storage, resourceType) {
+    // TODO logic
+    return this._rgenericHasSpaceFor(storage, resourceType)
+  },
+
+  _terminalHasSpaceFor: function (terminal, resourceType) {
+    // TODO logic
+    return this._genericHasSpaceFor(terminal, resourceType)
   },
 
   // << imitate controller
@@ -81,24 +90,35 @@ const cookActor =
       return value
     }
 
+    // in order of likelihood of having space for random resource
+
+    // has space for "sell stuff out"
     if (room.terminal) {
       if (this._terminalHasSpaceFor(room.terminal, resourceType)) return withCache(room, resourceType, true)
     }
 
-    if (room.storage) {
-      if (this._storageHasSpaceFor(room.storage, resourceType)) return withCache(room, resourceType, true)
-    }
-
+    // likely can pick up reaction spill
     for (const lab of Array.from(room.labs.values())) {
       if (this._labHasSpaceFor(lab, resourceType)) return withCache(room, resourceType, true)
     }
 
+    // likely can pick up transit spill
     if (room.nuker) {
       if (this._genericHasSpaceFor(room.nuker, resourceType)) return withCache(room, resourceType, true)
     }
 
+    // for "shiny" things only
+    if (room.storage) {
+      if (this._storageHasSpaceFor(room.storage, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    // for power lost in transport
     if (room.powerSpawn) {
       if (this._genericHasSpaceFor(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    if (room.factory) {
+      if (this._factoryHasSpaceFor(room.factory, resourceType)) return withCache(room, resourceType, true)
     }
 
     return withCache(room, resourceType, false)
