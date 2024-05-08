@@ -9,7 +9,6 @@ const extensions = require('./extensions')
 const iff = require('./iff')
 
 const cleanup = require('./routine.cleanup')
-const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 // console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
