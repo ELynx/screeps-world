@@ -98,7 +98,7 @@ const cookActor =
     }
 
     // likely can pick up reaction spill
-    for (const lab of Array.from(room.labs.values())) {
+    for (const lab of room.labs.values()) {
       if (this._labHasSpaceFor(lab, resourceType)) return withCache(room, resourceType, true)
     }
 
@@ -145,11 +145,39 @@ const cookActor =
     console.log('TODO roomPost')
   },
 
+  __operateFactory: function (factory) {
+    if (factory.cooldown && factory.cooldown > 0) {
+      return ERR_TIRED
+    }
+
+    // fast check to cover any recepies
+    if (factory.store.getUsedCapacity() <= 0) {
+      return ERR_NOT_ENOUGH_RESOURCES
+    }
+
+    if (factory.store.getUsedCapacity(RESOURCE_GHODIUM_MELT) >= 100 &&
+        factory.store.getUsedCapacity(RESOURCE_ENERGY) >= 200) {
+      return factory.produce(RESOURCE_GHODIUM)
+    }
+
+    if (factory.store.getUsedCapacity(RESOURCE_BATTERY) >= 50) {
+      return factory.produce(RESOURCE_ENERGY)
+    }
+
+    return ERR_NOT_ENOUGH_RESOURCES
+  },
+
+  _operateFactories: function () {
+    for (const factory of Game.factories.values()) {
+      this.__operateFactory(factory)
+    }
+  },
+
   // called from main after other actors
   globalPost: function () {
     // TODO exchange across rooms
     // TODO sell of excess from terminals
-    console.log('TODO globalPost')
+    this._operateFactories();
   }
 }
 
