@@ -4,6 +4,20 @@ const bootstrap = require('./bootstrap')
 
 const cookActor =
 {
+  __used: function (structure, resourceType) {
+    // TODO smarter
+    const fromApi = structure.store.getUsedCapacity(resourceType)
+    if (fromApi === null) return 0
+    return fromApi || 0
+  },
+
+  __free: function (structure, resourceType) {
+    // TODO smarter
+    const fromApi = structure.store.getFreeCapacity(resourceType)
+    if (fromApi === null) return 0
+    return fromApi || 0
+  },
+
   _terminalHasSpaceFor: function (terminal, resourceType) {
     // TODO
     return false
@@ -14,13 +28,15 @@ const cookActor =
     return false
   },
 
-  _labHasSpaceFor: function (structure, resourceType) {
-    // TODO
-    return false
+  _genericHasSpaceFor: function (structure, resourceType) {
+    return this.__free(structure, resourceType) > 0
   },
 
-  _genericHasSpaceFor: function (structure, resourceType) {
-    // TODO
+  _labHasSpaceFor: function (lab, resourceType) {
+    if (resourceType === RESOURCE_ENERGY || resourceType === lab.resourceType()) {
+      return this._genericHasSpaceFor(lab, resourceType)
+    }
+
     return false
   },
 

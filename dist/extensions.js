@@ -518,6 +518,7 @@ Structure.prototype.setToMemory = function (key, value) {
   Memory.structures[this.id][key] = value
 }
 
+const _resourceTypeKey_ = 'resourceType'
 const _isSourceKey_ = 'isSource'
 
 StructureContainer.prototype.isSource = function () {
@@ -537,6 +538,24 @@ StructureController.prototype.canActivateSafeMode = function () {
   if (this.upgradeBlocked) return false
 
   return this.safeModeAvailable > 0
+}
+
+StructureLab.prototype.resourceType = function () {
+  let result = this.getFromMemory(_resourceTypeKey_)
+
+  if (result === undefined) {
+    return ''
+  }
+
+  return result
+}
+
+StructureLab.prototype.setResourceType = function (resourceType) {
+  this.setToMemory(_resourceTypeKey_, resourceType)
+}
+
+StructureLab.prototype.resetResourceType = function () {
+  this.setResourceType(_resourceTypeKey_, undefined)
 }
 
 StructureLink.prototype.isSource = function () {
