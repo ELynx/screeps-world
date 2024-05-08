@@ -25,7 +25,7 @@ const taskedAuto = [
   taskedSpawn.id
 ]
 
-const worldActor =
+const taskedActor =
 {
   taskControllersControl: function () {
     for (const id of taskedAuto) {
@@ -41,4 +41,4 @@ const worldActor =
   }
 }
 
-module.exports = worldActor
+module.exports = taskedActor

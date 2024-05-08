@@ -2,7 +2,7 @@
 
 const historyActor = require('./actor.history')
 const roomActor = require('./actor.room')
-const worldActor = require('./actor.world')
+const taskedActor = require('./actor.tasked')
 
 const cook = require('./cook')
 const extensions = require('./extensions')
@@ -24,7 +24,7 @@ if (Game.flags.profiler) {
 
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
-  profiler.registerObject(worldActor, 'worldActor')
+  profiler.registerObject(taskedActor, 'taskedActor')
   profiler.registerObject(cook, 'cook')
   profiler.registerObject(extensions, 'extensions')
   profiler.registerObject(iff, 'iff')
@@ -58,7 +58,7 @@ const loop = function () {
     }
   }
 
-  worldActor.act()
+  taskedActor.act()
 
   cook.globalPost()
 
