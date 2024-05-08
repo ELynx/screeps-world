@@ -58,7 +58,8 @@ const cleanup = {
           Memory.structures[id],
           [
             'isSource',
-            'nodeAccessed'
+            'nodeAccessed',
+            'resourceType'
           ]
         )
       }
