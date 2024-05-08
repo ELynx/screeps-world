@@ -4,12 +4,12 @@ const bootstrap = require('./bootstrap')
 
 const cookActor =
 {
-  _terminalHasSpaceFor: function (terminal, type = undefined) {
+  _storageHasSpaceFor: function (storage, resourceType) {
     // TODO
     return false
   },
 
-  _storageHasSpaceFor: function (storage, type = undefined) {
+  _terminalHasSpaceFor: function (terminal, resourceType) {
     // TODO
     return false
   },
@@ -38,22 +38,22 @@ const cookActor =
   },
   // >>
 
-  // if room can accept resources that are not energy
-  roomCanHandleNonEnergy: function (room) {
+  roomCanHandle: function (room, resourceType) {
+    if (resourceType === RESOURCE_ENERGY) return true
+
     if (!room._my_) return false
 
     if (room.storage) {
-      if (this._storageHasSpaceFor(room.storage)) return true
+      if (this._storageHasSpaceFor(room.storage, resourceType)) return true
     }
 
     if (room.terminal) {
-      if (this._terminalHasSpaceFor(room.terminal)) return true
+      if (this._terminalHasSpaceFor(room.terminal, resourceType)) return true
     }
 
     return false
   },
 
-  // if room can do mining
   roomCanMine: function (room) {
     if (!room._my_) {
       console.log('Unexpected call to cook::roomCanMine for room [' + room.name + '] => false')
