@@ -141,15 +141,26 @@ const cookActor =
     return this._terminalHasSpaceFor(room.terminal, mineralType)
   },
 
+  _operateHarvesters: function (room) {
+    // TODO
+  },
+
+  _operateLinks: function (room) {
+    // TODO
+  },
+
   // called from room actor after controllers
   roomPost: function (room) {
-    // TODO links
-    // TODO harvester unload
-    console.log('TODO roomPost')
+    this._operateHarvesters(room)
+    this._operateLinks(room)
   },
 
   __outOfCpu: function () {
     return Game.cpu.getUsed() >= PostCPUTarget
+  },
+
+  _performTerminalExchange: function () {
+    // TODO
   },
 
   __operatePowerSpawn: function (powerSpawn) {
@@ -197,12 +208,25 @@ const cookActor =
     }
   },
 
+  __sellTerminalExcess: function (terminal) {
+    // TODO
+  },
+
+  _sellTerminalsExcess: function () {
+    for (const terminal of Game.terminals.values()) {
+      if (this.__outOfCpu()) break
+      this._sellTerminalsExcess(terminal)
+    }
+  },
+
   // called from main after other actors
   globalPost: function () {
     if (this.__outOfCpu()) return
 
+    this._performTerminalExchange()
     this._operatePowerSpawns()
     this._operateFactories()
+    this._sellTerminalsExcess()
   }
 }
 
