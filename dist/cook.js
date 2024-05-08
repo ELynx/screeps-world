@@ -4,12 +4,22 @@ const bootstrap = require('./bootstrap')
 
 const cookActor =
 {
+  _terminalHasSpaceFor: function (terminal, resourceType) {
+    // TODO
+    return false
+  },
+
   _storageHasSpaceFor: function (storage, resourceType) {
     // TODO
     return false
   },
 
-  _terminalHasSpaceFor: function (terminal, resourceType) {
+  _labHasSpaceFor: function (structure, resourceType) {
+    // TODO
+    return false
+  },
+
+  _genericHasSpaceFor: function (structure, resourceType) {
     // TODO
     return false
   },
@@ -43,15 +53,39 @@ const cookActor =
 
     if (!room._my_) return false
 
-    if (room.storage) {
-      if (this._storageHasSpaceFor(room.storage, resourceType)) return true
+    if (room.__cook__roomCanHandle === undefined) {
+      room.__cook__roomCanHandle = new Map()
+    }
+
+    const cached = room.__cook__roomCanHandle.get(resourceType)
+    if (cached !== undefined) return cached
+
+    withCache = (x, key, value) => {
+      x.__cook__roomCanHandle.set(key, value)
+      return value
     }
 
     if (room.terminal) {
-      if (this._terminalHasSpaceFor(room.terminal, resourceType)) return true
+      if (this._terminalHasSpaceFor(room.terminal, resourceType)) return withCache(room, resourceType, true)
     }
 
-    return false
+    if (room.storage) {
+      if (this._storageHasSpaceFor(room.storage, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    for (const lab of Array.from(room.labs)) {
+      if (this._labHasSpaceFor(lab, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    if (room.nuker) {
+      if (this._genericHasSpaceFor(room.nuker, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    if (room.powerSpawn) {
+      if (this._genericHasSpaceFor(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
+    }
+
+    return withCache(room, resourceType, false)
   },
 
   roomCanMine: function (room) {
@@ -77,8 +111,8 @@ const cookActor =
 
   // called from main after other actors
   globalPost: function () {
-    // TODO send resources across rooms
-    // TODO send energy across rooms
+    // TODO exchange across rooms
+    // TODO sell of excess from terminals
     console.log('TODO globalPost')
   }
 }
