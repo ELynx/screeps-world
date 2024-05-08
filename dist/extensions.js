@@ -50,22 +50,21 @@ Creep.prototype.forgetPosition = function () {
 }
 
 Creep.prototype.moved = function () {
-  // quick reference
-  const mempos = this.memory._pos
+  const _pos = this.memory._pos
 
-  if (mempos === undefined) return undefined
+  if (_pos === undefined) return undefined
 
-  if (Game.time > mempos.time + 1) {
+  if (Game.time > _pos.time + 1) {
     this.forgetPosition()
     return undefined
   }
 
-  if (this.room.name !== mempos.room) {
+  if (this.room.name !== _pos.room) {
     this.forgetPosition()
     return undefined
   }
 
-  return this.pos.x !== mempos.from.x || this.pos.y !== mempos.from.y || this.pos.roomName !== mempos.from.room
+  return this.pos.x !== _pos.from.x || this.pos.y !== _pos.from.y || this.pos.roomName !== _pos.from.room
 }
 
 Creep.prototype._refreshMove = function () {
@@ -412,9 +411,9 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
     return this.__extendedAvailableEnergyCapacity_value
   }
 
-  // if there are no workers, only dribble will help
+  // if there are no workers, dribble or what is left
   if (this.getRoomControlledWorkers().length === 0) {
-    this.__extendedAvailableEnergyCapacity_value = SPAWN_ENERGY_CAPACITY
+    this.__extendedAvailableEnergyCapacity_value = Math.max(SPAWN_ENERGY_CAPACITY, this.energyAvailable)
     return this.__extendedAvailableEnergyCapacity_value
   }
 
@@ -479,11 +478,11 @@ RoomPosition.prototype.createFlagWithValue = function (flagName, flagValue) {
   return this.createFlag(flagName, color)
 }
 
-RoomPosition.prototype.manhattanDistance = function (otherRoomPosition) {
-  // with a twist
-  const dx = Math.abs(this.x - otherRoomPosition.x)
-  const dy = Math.abs(this.y - otherRoomPosition.y)
+RoomPosition.prototype.manhattanDistance = function (other) {
+  const dx = Math.abs(this.x - other.x)
+  const dy = Math.abs(this.y - other.y)
 
+  // with a twist
   // in screeps geometry center and adjacent positions are reachable
   if (dx <= 1 && dy <= 1) return 1
 
@@ -518,15 +517,15 @@ Structure.prototype.setToMemory = function (key, value) {
   Memory.structures[this.id][key] = value
 }
 
-const _resourceTypeKey_ = 'resourceType'
-const _isSourceKey_ = 'isSource'
+const _resourceType_Key_ = 'resourceType'
+const _isSource_Key_ = 'isSource'
 
 StructureContainer.prototype.isSource = function () {
-  let result = this.getFromMemory(_isSourceKey_)
+  let result = this.getFromMemory(_isSource_Key_)
 
   if (result === undefined) {
     result = this.pos.hasInSquareArea(LOOK_SOURCES, 1)
-    this.setToMemory(_isSourceKey_, result)
+    this.setToMemory(_isSource_Key_, result)
   }
 
   return result
@@ -541,7 +540,7 @@ StructureController.prototype.canActivateSafeMode = function () {
 }
 
 StructureLab.prototype.resourceType = function () {
-  const result = this.getFromMemory(_resourceTypeKey_)
+  const result = this.getFromMemory(_resourceType_Key_)
 
   if (result === undefined) {
     return ''
@@ -551,19 +550,19 @@ StructureLab.prototype.resourceType = function () {
 }
 
 StructureLab.prototype.setResourceType = function (resourceType) {
-  this.setToMemory(_resourceTypeKey_, resourceType)
+  this.setToMemory(_resourceType_Key_, resourceType)
 }
 
 StructureLab.prototype.resetResourceType = function () {
-  this.setResourceType(_resourceTypeKey_, undefined)
+  this.setResourceType(_resourceType_Key_, undefined)
 }
 
 StructureLink.prototype.isSource = function () {
-  let result = this.getFromMemory(_isSourceKey_)
+  let result = this.getFromMemory(_isSource_Key_)
 
   if (result === undefined) {
     result = this.pos.hasInSquareArea(LOOK_SOURCES, 2)
-    this.setToMemory(_isSourceKey_, result)
+    this.setToMemory(_isSource_Key_, result)
   }
 
   return result
