@@ -140,6 +140,7 @@
       "StructureContainer",
       "StructureController",
       "StructureExtension",
+      "StructureLab",
       "StructureLink",
       "StructureNuker",
       "StructurePowerSpawn",
