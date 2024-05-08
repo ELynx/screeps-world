@@ -41,7 +41,7 @@ const cookActor =
 
   _storageHasSpaceFor: function (storage, resourceType) {
     // TODO logic
-    return this._rgenericHasSpaceFor(storage, resourceType)
+    return this._genericHasSpaceFor(storage, resourceType)
   },
 
   _terminalHasSpaceFor: function (terminal, resourceType) {
