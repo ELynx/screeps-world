@@ -16,7 +16,7 @@ Proprietary and confidential.
 
 `dist` - deployment payload
 
-`history` - historical data and code worth saving
+`history` - historical data worth saving
 
 ## TODO
 
