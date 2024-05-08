@@ -60,7 +60,7 @@ const cookActor =
     const cached = room.__cook__roomCanHandle.get(resourceType)
     if (cached !== undefined) return cached
 
-    withCache = (x, key, value) => {
+    const withCache = (x, key, value) => {
       x.__cook__roomCanHandle.set(key, value)
       return value
     }
