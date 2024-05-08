@@ -22,7 +22,7 @@ Proprietary and confidential.
 
 In emergency, release stored energy.
 
-Plunders and other creepshas some place to dump resources.
+Plunders and other creeps has some place to dump resources.
 
 Spawn blocked in one room starves other rooms.
 
@@ -78,6 +78,8 @@ Fatigue based emergent road building.
 
 Source link placement adjacent (and maybe vectored) from source container.
 
+Auto create security_ flags based on autobuild.
+
 ### Economy
 
 Clean up source and other technical containers.
@@ -105,8 +107,6 @@ Flag to turn verbose naming on and off.
 * Auto condition to turn verbose naming on and off.
 
 Instead of healing by towers spawn healers.
-
-Auto create security_ flags based on autobuild.
 
 No firing at things in room safe mode.
 
