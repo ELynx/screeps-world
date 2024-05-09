@@ -78,20 +78,26 @@ repairController.targets = function (room) {
       const structureType = structure.structureType
       if (!Repairable.has(structureType)) return false
 
+      const hits = structure.hits
+      const hitsMax = structure.hitsMax
+
       if (structureType === STRUCTURE_WALL) {
-        structure.__repairController_targetHp = wallTargetHp
-        return structure.hits < wallTargetHp
+        if (hits < wallTargetHp) {
+          structure.__repairController_targetHp = wallTargetHp
+          return true
+        }
+        return false
       } else if (structureType === STRUCTURE_RAMPART) {
-        return structure.hits < wallTargetHp
-      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp1) {
+        return hits < wallTargetHp
+      } else if (structureType === STRUCTURE_ROAD && hitsMax === RoadMaxHp1) {
         structure.__repairController_targetHp = roadTargetHp1
-        return structure.hits < roadTargetHp1
-      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp2) {
+        return hits < roadTargetHp1
+      } else if (structureType === STRUCTURE_ROAD && hitsMax === RoadMaxHp2) {
         structure.__repairController_targetHp = roadTargetHp2
-        return structure.hits < roadTargetHp2
-      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp3) {
+        return hits < roadTargetHp2
+      } else if (structureType === STRUCTURE_ROAD && hitsMax === RoadMaxHp3) {
         structure.__repairController_targetHp = roadTargetHp3
-        return structure.hits < roadTargetHp3
+        return hits < roadTargetHp3
       } else if (structureType === STRUCTURE_CONTAINER) {
         // remote containers have special rules
         if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
