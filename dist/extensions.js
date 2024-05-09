@@ -654,6 +654,7 @@ const extensions = {
       room.labs = new Map()
 
       room.blocked = []
+      room.traps = []
     }
 
     for (const flagName in Game.flags) {
