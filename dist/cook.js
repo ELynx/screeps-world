@@ -55,20 +55,36 @@ const cookActor =
   actRange: 1,
 
   roomPrepare: function (room) {
-    console.log('TODO roomPrepare')
+    room.__cook_pass = 0
   },
 
   observeMyCreep: function (creep) {
-    console.log('TODO observeMyCreep')
+    // TODO account resources in transit and reserves
   },
 
   act: function (target, creep) {
-    console.log('TODO act => -1')
+    // TODO withdraw and transfer
+    // return < OK to skip observe
     return -1
   },
 
+  _controlPass1: function (room, creeps) {
+    // TODO
+    return [creeps, []]
+  },
+
+  _controlPass2: function (room, creeps) {
+    // TODO
+    return [creeps, []]
+  },
+
   control: function (room, creeps) {
-    console.log('TODO control => [[as-is],[]]')
+    ++room.__cook_pass
+
+    if (room.__cook_pass === 1) return this._controlPass1(room, creeps)
+    if (room.__cook_pass === 2) return this._controlPass2(room, creeps)
+
+    console.log('Unexpected call to cook::control for room [' + room.name + '] with pass [' + room.__cook_pass + ']')
     return [creeps, []]
   },
   // >>
