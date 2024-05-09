@@ -74,7 +74,7 @@ repairController.targets = function (room) {
 
   return _.filter(
     structuresWithHits,
-    function (structure) {
+    structure => {
       const structureType = structure.structureType
       if (!Repairable.has(structureType)) return false
 
