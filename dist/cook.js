@@ -21,8 +21,18 @@ const cookActor =
     return fromApi || 0
   },
 
-  _genericHasSpaceFor: function (structure, resourceType, reserve = 0) {
-    return this.__free(structure, resourceType) > reserve
+  __structureToCreep: function (structure, creep, resourceType) {
+    // TODO
+    return -1
+  },
+
+  __creepToStructure: function (structure, creep) {
+    // TODO
+    return -1
+  },
+
+  _genericHasSpaceFor: function (structure, resourceType, freeSpaceReserve = 0) {
+    return this.__free(structure, resourceType) > freeSpaceReserve
   },
 
   _factoryHasSpaceFor: function (factory, resourceType) {
@@ -62,10 +72,12 @@ const cookActor =
     // TODO account resources in transit and reserves
   },
 
-  act: function (target, creep) {
-    // TODO withdraw and transfer
-    // return < OK to skip observe
-    return -1
+  act: function (structure, creep) {
+    if (creep.memory.xtra) {
+      return this.__structureToCreep(structure, creep, creep.memory.xtra)
+    } else {
+      return this.__creepToStructure(structure, creep)
+    }
   },
 
   _controlPass1: function (room, creeps) {
