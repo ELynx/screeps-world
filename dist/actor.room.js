@@ -46,15 +46,16 @@ const controllersBlockStop = [
 // STRATEGY priority for creep assignment
 const controllersMyAuto = [
   downgradeController.id, // always on top
-  cook.id, // trust in intelligence
-  unliveController.id, // after demonstrated to cook, before takes other tasks
+  cook.id, // 1st pass, set traps, unload
+  unliveController.id, // after unload, before takes other tasks
   mineralHarvestController.id, // narrow filter
   sourceHarvestController.specialist.id, // narrow filter
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id,
-  sourceHarvestController.generic.id
+  cook.id, // 2nd pass, check traps, load accordingly
+  upgradeController.generic.id, // nothing to do - maybe upgrade
+  sourceHarvestController.generic.id // nothing to do - maybe harvest
 ]
 
 const controllersRemoteHarvestAuto = [
