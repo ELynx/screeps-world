@@ -7,6 +7,7 @@ const Controller = require('./controller.template')
 const repairController = new Controller('repair')
 
 // STRATEGY hits to initiate repair
+// STRATEGY in not controlled rooms do only minimal upkeep
 
 const TargetRoadHpMultiplier = [
   0.0,
@@ -20,12 +21,11 @@ const TargetRoadHpMultiplier = [
   0.9
 ]
 
-const TargetStructureHpMultiplier = [
-  0.75,
-  0.8,
-  0.85,
-  0.9
-]
+const Repairable = new Set(_.keys(CONSTRUCTION_COST))
+
+const RoadMaxHp1 = ROAD_HITS
+const RoadMaxHp2 = ROAD_HITS * CONSTRUCTION_COST_ROAD_SWAMP_RATIO
+const RoadMaxHp3 = ROAD_HITS * CONSTRUCTION_COST_ROAD_WALL_RATIO
 
 const fromArray = function (from, index) {
   return from[Math.min(index, from.length - 1)]
@@ -53,11 +53,10 @@ repairController.act = function (target, creep) {
 repairController.targets = function (room) {
   const wallTargetHp = room.memory.wlvl * 1000
 
-  // STRATEGY in not controlled rooms do only minimal upkeep
   const roadMult = fromArray(TargetRoadHpMultiplier, room.level())
-  const otherMult = fromArray(TargetStructureHpMultiplier, room._my_ ? room.level() : 1)
-
-  const repairable = _.keys(CONSTRUCTION_COST)
+  const roadTargetHp1 = Math.ceil(RoadMaxHp1 * roadMult)
+  const roadTargetHp2 = Math.ceil(RoadMaxHp2 * roadMult)
+  const roadTargetHp3 = Math.ceil(RoadMaxHp3 * roadMult)
 
   const structuresWithHits = room.find(
     FIND_STRUCTURES,
@@ -66,8 +65,7 @@ repairController.targets = function (room) {
         return structure.hits &&
                structure.hitsMax &&
                structure.isActiveSimple &&
-               structure.hits < structure.hitsMax &&
-               _.some(repairable, _.matches(structure.structureType))
+               structure.hits < structure.hitsMax
       }
     }
   )
@@ -76,26 +74,33 @@ repairController.targets = function (room) {
 
   return _.filter(
     structuresWithHits,
-    structure => {
-      if (structure.structureType === STRUCTURE_WALL) {
+    function (structure) {
+      const structureType = structure.structureType
+      if (!Repairable.has(structureType)) return false
+
+      if (structureType === STRUCTURE_WALL) {
         structure.__repairController_targetHp = wallTargetHp
         return structure.hits < wallTargetHp
-      } else if (structure.structureType === STRUCTURE_RAMPART) {
+      } else if (structureType === STRUCTURE_RAMPART) {
         return structure.hits < wallTargetHp
-      } else if (structure.structureType === STRUCTURE_ROAD) {
-        const targetHits = Math.ceil(structure.hitsMax * roadMult)
-        structure.__repairController_targetHp = targetHits
-        return structure.hits < targetHits
-      } else if (structure.structureType === STRUCTURE_CONTAINER) {
+      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp1) {
+        structure.__repairController_targetHp = roadTargetHp1
+        return structure.hits < roadTargetHp1
+      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp2) {
+        structure.__repairController_targetHp = roadTargetHp2
+        return structure.hits < roadTargetHp2
+      } else if (structureType === STRUCTURE_ROAD && structure.hitsMax === RoadMaxHp3) {
+        structure.__repairController_targetHp = roadTargetHp3
+        return structure.hits < roadTargetHp3
+      } else if (structureType === STRUCTURE_CONTAINER) {
         // remote containers have special rules
         if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
           // ignore random containers
           if (!structure.isSource()) return false
         }
-        return true
       }
 
-      return structure.hits < structure.hitsMax * otherMult
+      return true
     }
   )
 }
