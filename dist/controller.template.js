@@ -130,6 +130,7 @@ function Controller (id) {
   }
 
   this._hasEnergy = function (creep) {
+    if (creep._trap_ === RESOURCE_ENERGY) return true
     return intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) > 0
   }
 
@@ -410,7 +411,28 @@ function Controller (id) {
       return [allCreeps, []]
     }
 
-    const [unassignedCreeps, assignedCreeps] = this.assignCreeps(room, compatibleCreeps)
+    const untrappedCreeps = []
+
+    // targets found, check for traps
+    for (const creep of compatibleCreeps) {
+      if (creep._trap_) {
+        room.traps.push(creep._trap_)
+        creep._trap_ = undefined
+        incompatibleCreeps.push(creep)
+      } else {
+        untrappedCreeps.push(creep)
+      }
+    }
+
+    if (untrappedCreeps.length === 0) {
+      if (this._doesDefaultFilter) {
+        room._markDefaultFiltered()
+      }
+
+      return [allCreeps, []]
+    }
+
+    const [unassignedCreeps, assignedCreeps] = this.assignCreeps(room, untrappedCreeps)
 
     if (unassignedCreeps.length > 0) {
       return [incompatibleCreeps.concat(unassignedCreeps), assignedCreeps]
