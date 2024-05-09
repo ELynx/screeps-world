@@ -14,8 +14,8 @@ grabController.roomPrepare = function (room) {
 
   // cache of room coordinates where creeps can maybe reach something
   this.fastCheck = false
-  this.fastCheckX = { }
-  this.fastCheckY = { }
+  this.fastCheckX = new Map()
+  this.fastCheckY = new Map()
 }
 
 grabController.act = function (room, creep) {
