@@ -21,12 +21,20 @@ const cookActor =
     return fromApi || 0
   },
 
-  __structureToCreep: function (structure, creep, resourceType) {
+  __reserveFromStructureToCreep: function (structure, creep, resourceType) {
+    // TODO
+  },
+
+  __expectFromCreepToStructure: function (structure, creep, resourceType) {
+    // TODO
+  },
+
+  __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
     // TODO
     return -1
   },
 
-  __creepToStructure: function (structure, creep) {
+  __transferFromCreepToStructure: function (structure, creep) {
     // TODO
     return -1
   },
@@ -44,7 +52,7 @@ const cookActor =
     return false
   },
 
-  _labClusterHasSpaceFor: function (labs, resourceType) {
+  _labClusterHasSpaceFor: function (labsIterator, resourceType) {
     // TODO
     return false
   },
@@ -69,14 +77,18 @@ const cookActor =
   },
 
   observeMyCreep: function (creep) {
-    // TODO account resources in transit and reserves
+    if (creep.memory.xtra) {
+      this.__reserveFromStructureToCreep(structure, creep, creep.memory.xtra)
+    } else {
+      this.__expectFromCreepToStructure(structure, creep)
+    }
   },
 
   act: function (structure, creep) {
     if (creep.memory.xtra) {
-      return this.__structureToCreep(structure, creep, creep.memory.xtra)
+      return this.__withdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
-      return this.__creepToStructure(structure, creep)
+      return this.__transferFromcreepToStructure(structure, creep)
     }
   },
 
@@ -126,7 +138,7 @@ const cookActor =
     }
 
     // for reagents lost in transport
-    if (this._labClusterHasSpaceFor(Array.from(room.labs.values()), resourceType)) return withCache(room, resourceType, true)
+    if (this._labClusterHasSpaceFor(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
 
     // for ghodium lost in transport
     if (room.nuker) {
@@ -157,12 +169,13 @@ const cookActor =
       return false
     }
 
+    // no cooking without ingredient exchange
     if (room.terminal === undefined) return false
 
     const mineralType = room.mineralType()
     if (mineralType === '') return false
 
-    return this._terminalHasSpaceFor(room.terminal, mineralType) || this._labClusterHasSpaceFor(Array.from(room.labs.values()), mineralType)
+    return this._terminalHasSpaceFor(room.terminal, mineralType) || this._labClusterHasSpaceFor(room.labs.values(), mineralType)
   },
 
   _operateHarvesters: function (room) {
