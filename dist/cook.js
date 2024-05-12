@@ -77,6 +77,9 @@ const cookActor =
   },
 
   observeMyCreep: function (creep) {
+    const structure = bootstrap.getObjectById(creep.memory.dest)
+    if (!structure) return
+
     if (creep.memory.xtra) {
       this.__reserveFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
