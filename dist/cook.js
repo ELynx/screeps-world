@@ -2,45 +2,73 @@
 
 const bootstrap = require('./bootstrap')
 
+const intentSolver = require('./routine.intent')
+
 // STRATEGY CPU reservation strategy
 const PostCPUTarget = Game.cpu.limit - 0.5
 
 const cookActor =
 {
-  __used: function (structure, resourceType) {
-    // TODO smarter
-    const fromApi = structure.store.getUsedCapacity(resourceType)
-    if (fromApi === null) return 0
-    return fromApi || 0
+  ____prepareDeltaMap: function (something) {
+    if (something.__cook__deltaMap === undefined) {
+      something.__cook__deltaMap = new Map()
+    }
   },
 
-  __free: function (structure, resourceType) {
-    // TODO smarter
-    const fromApi = structure.store.getFreeCapacity(resourceType)
-    if (fromApi === null) return 0
-    return fromApi || 0
+  ___adjustPlannedDelta: function (something, resourceType, delta) {
+    this.____prepareDeltaMap(something)
+    const now = something.__cook__deltaMap.get(resourceType) || 0
+    something.__cook__deltaMap.set(resourceType, now + delta)
+  },
+
+  ___plannedDelta: function (something, resourceType) {
+    if (something.__cook__deltaMap) {
+      return something.__cook__deltaMap.get(resourceType) || 0
+    }
+
+    return 0
+  },
+
+  __plannedUsedCapacity: function (something, resourceType) {
+    const actualWithIntents = intentSolver.getUsedCapacity(something, resourceType)
+    const planned = this.___plannedDelta(something, resourceType)
+
+    return actualWithIntents + planned
+  },
+
+  __plannedFreeCapacity: function (something, resourceType) {
+    const actualWithIntents = intentSolver.getFreeCapacity(something, resourceType)
+    const planned = this.___plannedDelta(something, resourceType)
+
+    return actualWithIntents + planned
   },
 
   __reserveFromStructureToCreep: function (structure, creep, resourceType) {
-    // TODO
+    const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
+    if (freeSpace <= 0) return
+
+    this.___adjustPlannedDelta(structure, resourceType, -freeSpace)
   },
 
   __expectFromCreepToStructure: function (structure, creep, resourceType) {
-    // TODO
+    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+    if (usedSpace <= 0) return
+
+    this.___adjustPlannedDelta(structure, resourceType, usedSpace)
   },
 
   __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
-    // TODO
-    return -1
+    // TODO -1 to avoid observe
+    return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType)
   },
 
   __transferFromCreepToStructure: function (structure, creep) {
-    // TODO
-    return -1
+    // TODO -1 to avoid observe
+    return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType)
   },
 
   _genericHasSpaceFor: function (structure, resourceType, freeSpaceReserve = 0) {
-    return this.__free(structure, resourceType) > freeSpaceReserve
+    return this.__plannedFreeCapacity(structure, resourceType) > freeSpaceReserve
   },
 
   _factoryHasSpaceFor: function (factory, resourceType) {
@@ -73,7 +101,7 @@ const cookActor =
   actRange: 1,
 
   roomPrepare: function (room) {
-    room.__cook_pass = 0
+    room.__cook__pass = 0
   },
 
   observeMyCreep: function (creep) {
@@ -106,10 +134,10 @@ const cookActor =
   },
 
   control: function (room, creeps) {
-    ++room.__cook_pass
+    ++room.__cook__pass
 
-    if (room.__cook_pass === 1) return this._controlPass1(room, creeps)
-    if (room.__cook_pass === 2) return this._controlPass2(room, creeps)
+    if (room.__cook__pass === 1) return this._controlPass1(room, creeps)
+    if (room.__cook__pass === 2) return this._controlPass2(room, creeps)
 
     console.log('Unexpected call to cook::control for room [' + room.name + '] with pass [' + room.__cook_pass + ']')
     return [creeps, []]
