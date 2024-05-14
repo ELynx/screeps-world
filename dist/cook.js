@@ -50,21 +50,34 @@ const cookActor =
     this.___adjustPlannedDelta(structure, resourceType, -freeSpace)
   },
 
-  __expectFromCreepToStructure: function (structure, creep, resourceType) {
-    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
-    if (usedSpace <= 0) return
+  __expectFromCreepToStructure: function (structure, creep) {
+    for (const resourceType in creep.store) {
+      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+      if (usedSpace <= 0) return
 
-    this.___adjustPlannedDelta(structure, resourceType, usedSpace)
+      this.___adjustPlannedDelta(structure, resourceType, usedSpace)
+    }
   },
 
   __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
-    // TODO -1 to avoid observe
-    return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType)
+    const rc = intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType)
+    // to avoid observe calls
+    if (rc >= OK) return bootstrap.ERR_TERMINATED
+
+    return rc
   },
 
   __transferFromCreepToStructure: function (structure, creep) {
-    // TODO -1 to avoid observe
-    return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType)
+    for (const resourceType in creep.store) {
+      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+      if (usedSpace <= 0) continue
+
+      const rc = intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType)
+      // to avoid observe calls
+      if (rc >= OK) return bootstrap.ERR_TERMINATED
+    }
+
+    return ERR_NOT_ENOUGH_RESOURCES
   },
 
   _genericHasSpaceFor: function (structure, resourceType, freeSpaceReserve = 0) {
@@ -119,7 +132,7 @@ const cookActor =
     if (creep.memory.xtra) {
       return this.__withdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
-      return this.__transferFromcreepToStructure(structure, creep)
+      return this.__transferFromCreepToStructure(structure, creep)
     }
   },
 
@@ -139,7 +152,7 @@ const cookActor =
     if (room.__cook__pass === 1) return this._controlPass1(room, creeps)
     if (room.__cook__pass === 2) return this._controlPass2(room, creeps)
 
-    console.log('Unexpected call to cook::control for room [' + room.name + '] with pass [' + room.__cook_pass + ']')
+    console.log('Unexpected call to cook::control for room [' + room.name + '] with pass [' + room.__cook__pass + ']')
     return [creeps, []]
   },
   // >>

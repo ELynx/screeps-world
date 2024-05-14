@@ -23,6 +23,8 @@ const bootstrap = {
   ERR_INTENDEE_EXHAUSTED: -10002,
   // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
   ERR_INTENDED_EXHAUSTED: -10003,
+  // terminated by decision
+  ERR_TERMINATED: -10004,
 
   adjacentDirections: {
     [TOP]: [TOP_LEFT, TOP_RIGHT],
