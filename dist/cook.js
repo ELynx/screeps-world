@@ -47,7 +47,7 @@ const cookActor =
     const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
     if (freeSpace <= 0) return
 
-    this.___adjustPlannedDelta(structure, resourceType, -freeSpace)
+    this.___adjustPlannedDelta(structure, resourceType, -1 * freeSpace)
   },
 
   __expectFromCreepToStructure: function (structure, creep) {
@@ -223,7 +223,64 @@ const cookActor =
   },
 
   _operateHarvesters: function (room) {
-    // TODO
+    const roomCreeps = room.getRoomControlledCreeps()
+    const harvesters = _.filter(roomCreeps, _.matchesProperty('memory.btyp', 'harvester'))
+
+    if (harvesters.length === 0) return
+
+    const atDestination = _.filter(harvesters, _.property('memory.atds'))
+
+    if (atDestination.length === 0) return
+
+    const containers = room.find(
+      FIND_STRUCTURES,
+      {
+        filter: structure => {
+          return structure.structureType === STRUCTURE_CONTAINER
+        }
+      }
+    )
+
+    const links = Array.from(room.links.values())
+
+    if (containers.length === 0 && links.length === 0) return
+
+    const notMaxHits = structure => structure.hits < structure.hitsMax
+
+    for (const harvester in atDestination) {
+      // keep harvesting
+      if (harvester._source_harvest_specialist_rc_ === OK) continue
+
+      // TODO containers near
+      const clusterContainers = containers
+      if (_.some(clusterContainers, notMaxHits)) continue
+
+      // TODO links near + source
+      const clusterLinks = links
+      if (_.some(clusterLinks, notMaxHits)) continue
+
+      let transferred = false
+      const canGive = harvester.store.getUsedCapacity(RESOURCE_ENERGY)
+      if (canGive > 0) {
+        for (const link of clusterLinks) {
+          const rc = intentSolver.wrapCreepIntent(creep, 'transfer', link, RESOURCE_ENERGY)
+          if (rc >= OK) {
+            transferred = true
+            break // from links loop
+          }
+        }
+
+        if (!transferred) {
+          for (const container of clusterContainers) {
+            const rc = intentSolver.wrapCreepIntent(creep, 'transfer', container, RESOURCE_ENERGY)
+            if (rc >= OK) {
+              transferred = true
+              break // from containers loop
+            }
+          }
+        }
+      }
+    }
   },
 
   _operateLinks: function (room) {
