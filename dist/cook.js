@@ -30,17 +30,17 @@ const cookActor =
   },
 
   __plannedUsedCapacity: function (something, resourceType) {
-    const actualWithIntents = intentSolver.getUsedCapacity(something, resourceType)
+    const actualAndIntents = intentSolver.getUsedCapacity(something, resourceType)
     const planned = this.___plannedDelta(something, resourceType)
 
-    return actualWithIntents + planned
+    return actualAndIntents + planned
   },
 
   __plannedFreeCapacity: function (something, resourceType) {
-    const actualWithIntents = intentSolver.getFreeCapacity(something, resourceType)
+    const actualAndIntents = intentSolver.getFreeCapacity(something, resourceType)
     const planned = this.___plannedDelta(something, resourceType)
 
-    return actualWithIntents + planned
+    return actualAndIntents + planned
   },
 
   __reserveFromStructureToCreep: function (structure, creep, resourceType) {
