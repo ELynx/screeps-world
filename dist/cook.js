@@ -263,7 +263,7 @@ const cookActor =
       const canGive = harvester.store.getUsedCapacity(RESOURCE_ENERGY)
       if (canGive > 0) {
         for (const link of clusterLinks) {
-          const rc = intentSolver.wrapCreepIntent(creep, 'transfer', link, RESOURCE_ENERGY)
+          const rc = intentSolver.wrapCreepIntent(harvester, 'transfer', link, RESOURCE_ENERGY)
           if (rc >= OK) {
             transferred = true
             break // from links loop
@@ -272,7 +272,7 @@ const cookActor =
 
         if (!transferred) {
           for (const container of clusterContainers) {
-            const rc = intentSolver.wrapCreepIntent(creep, 'transfer', container, RESOURCE_ENERGY)
+            const rc = intentSolver.wrapCreepIntent(harvester, 'transfer', container, RESOURCE_ENERGY)
             if (rc >= OK) {
               transferred = true
               break // from containers loop
