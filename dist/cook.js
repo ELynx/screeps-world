@@ -81,16 +81,16 @@ const cookActor =
   },
 
   ___transferFromCreepToStructure: function (structure, creep, resourceType) {
-      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
-      if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
+    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+    if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-      // TODO demand
-      const freeSpace = intentSolver.getFreeCapacity(structure, resourceType)
-      if (freeSpace <= 0) return ERR_FULL
+    // TODO demand
+    const freeSpace = intentSolver.getFreeCapacity(structure, resourceType)
+    if (freeSpace <= 0) return ERR_FULL
 
-      const amount = Math.min(usedSpace, freeSpace)
+    const amount = Math.min(usedSpace, freeSpace)
 
-      return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
+    return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
   },
 
   __transferFromCreepToStructure: function (structure, creep) {
