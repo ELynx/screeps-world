@@ -287,10 +287,52 @@ const cookActor =
     // TODO
   },
 
+  _operateLabs: function (room) {
+    const inputLabs = []
+    const outputLabs = []
+
+    for (const lab of room.labs.values()) {
+      if (lab.resourceType() === '') {
+        outputLabs.push(lab)
+      } else {
+        inputLabs.push(lab)
+      }
+    }
+
+    if (inputLabs.length < 2) return
+    if (inputLabs.length > 2) {
+      console.log('Unexpected number of input labs in room [' + room.name + ']. Found [' + inputLabs.length + '] input labs')
+      return
+    }
+
+    // detect when no reaction possible
+    for (const lab of inputLabs) {
+      if (lab.mineralType === undefined) return
+      if (lab.store.getUsedCapacity(lab.mineralType) <= 0) return
+    }
+
+    // STRATEGY how much labs can fire at the same tick by default
+    const cookedMax = room.memory.cook || 1
+    let cooked = 0
+    for (const lab of outputLabs) {
+      if (lab.cooldown && lab.cooldown > 0) continue
+
+      if (lab.mineralType) {
+        if (lab.store.getFreeCapacity(lab.mineralType) <= 0) continue
+      }
+
+      const rc = lab.runReaction(inputLabs[0], inputLabs[1])
+      if (rc >= OK) ++cooked
+
+      if (cooked >= cookedMax) return
+    }
+  },
+
   // called from room actor after controllers
   roomPost: function (room) {
     this._operateHarvesters(room)
     this._operateLinks(room)
+    this._operateLabs(room)
   },
 
   __outOfCpu: function () {
@@ -325,6 +367,10 @@ const cookActor =
     // fast check to cover any recepies
     if (factory.store.getUsedCapacity() <= 0) {
       return ERR_NOT_ENOUGH_RESOURCES
+    }
+
+    if (factory.store.getFreeCapacity() <= 0) {
+      return ERR_FULL
     }
 
     if (factory.store.getUsedCapacity(RESOURCE_GHODIUM_MELT) >= 100 &&
