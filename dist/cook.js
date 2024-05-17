@@ -53,26 +53,49 @@ const cookActor =
   __expectFromCreepToStructure: function (structure, creep) {
     for (const resourceType in creep.store) {
       const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
-      if (usedSpace <= 0) return
+      if (usedSpace <= 0) continue
 
       this.___adjustPlannedDelta(structure, resourceType, usedSpace)
     }
   },
 
+  ___withdrawFromStructureToCreep: function (structure, creep, resourceType) {
+    const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
+    if (freeSpace <= 0) return ERR_FULL
+
+    // TODO supply
+    const usedSpace = intentSolver.getUsedCapacity(structure, resourceType)
+    if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
+
+    const amount = Math.min(freeSpace, usedSpace)
+
+    return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType, amount)
+  },
+
   __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
-    const rc = intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType)
+    const rc = this.___withdrawFromStructureToCreep(structure, creep, resourceType)
     // to avoid observe calls
     if (rc >= OK) return bootstrap.ERR_TERMINATED
 
     return rc
   },
 
+  ___transferFromCreepToStructure: function (structure, creep, resourceType) {
+      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+      if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
+
+      // TODO demand
+      const freeSpace = intentSolver.getFreeCapacity(structure, resourceType)
+      if (freeSpace <= 0) return ERR_FULL
+
+      const amount = Math.min(usedSpace, freeSpace)
+
+      return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
+  },
+
   __transferFromCreepToStructure: function (structure, creep) {
     for (const resourceType in creep.store) {
-      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
-      if (usedSpace <= 0) continue
-
-      const rc = intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType)
+      const rc = this.___transferFromCreepToStructure(structure, creep, resourceType)
       // to avoid observe calls
       if (rc >= OK) return bootstrap.ERR_TERMINATED
     }
@@ -263,7 +286,7 @@ const cookActor =
       const canGive = harvester.store.getUsedCapacity(RESOURCE_ENERGY)
       if (canGive > 0) {
         for (const link of clusterLinks) {
-          const rc = intentSolver.wrapCreepIntent(harvester, 'transfer', link, RESOURCE_ENERGY)
+          const rc = this.___transferFromCreepToStructure(link, harvester, RESOURCE_ENERGY)
           if (rc >= OK) {
             transferred = true
             break // from links loop
@@ -272,7 +295,7 @@ const cookActor =
 
         if (!transferred) {
           for (const container of clusterContainers) {
-            const rc = intentSolver.wrapCreepIntent(harvester, 'transfer', container, RESOURCE_ENERGY)
+            const rc = this.___transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
             if (rc >= OK) {
               transferred = true
               break // from containers loop
