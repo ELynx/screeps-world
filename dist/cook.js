@@ -108,15 +108,15 @@ const cookActor =
   },
 
   __transferFromCreepToStructure: function (structure, creep, resourceType) {
-      const canGive = intentSolver.getUsedCapacity(creep, resourceType)
-      if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
+    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+    if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-      const wantTake = this.___demand(structure, resourceType)
-      if (wantTake <= 0) return ERR_FULL
+    const wantTake = this.___demand(structure, resourceType)
+    if (wantTake <= 0) return ERR_FULL
 
-      const amount = Math.min(canGive, wantTake)
+    const amount = Math.min(canGive, wantTake)
 
-      return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
+    return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
   },
 
   _controllerTransferFromCreepToStructure: function (structure, creep) {
