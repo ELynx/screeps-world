@@ -39,6 +39,11 @@ const cookActor =
     return structure.store.getFreeCapacity(resourceType)
   },
 
+  ___excess: function (structure, resourceType) {
+    // TODO
+    return this.___supply(structure, resourceType) - 5000
+  },
+
   __labClusterDemand: function (labsIterator, resourceType) {
     // TODO
     return false
@@ -311,6 +316,8 @@ const cookActor =
           return new RoomPosition(x2, y, room.name)
         }
       }
+
+      console.log('Could not find harvest spot for ' + some1.pos + ' and ' + some2.pos)
 
       return undefined
     }
