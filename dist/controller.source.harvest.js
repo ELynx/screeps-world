@@ -62,9 +62,11 @@ sourceHarvestSpecialistController.act = function (source, creep) {
   // stick to position
   creep.memory.atds = true
 
-  // remember the rc for cook
   const rc = this._act(source, creep)
+
+  // remember for cook
   creep._source_harvest_specialist_rc_ = rc
+  creep._source_ = source
 
   return rc
 }
