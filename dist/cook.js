@@ -323,10 +323,10 @@ const cookActor =
     }
 
     for (const harvester in harvesters) {
-      const clusterContainers = _.filter(containers, container => container.isNearTo(harvester._source_))
+      let clusterContainers = _.filter(containers, container => container.isNearTo(harvester._source_))
       if (_.some(clusterContainers, notMaxHits)) continue
 
-      const clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
+      let clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
       if (_.some(clusterLinks, notMaxHits)) continue
 
       if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
@@ -367,7 +367,7 @@ const cookActor =
 
         if (harvestSpot.x !== harvester.pos.x || harvestSpot.y !== harvester.pos.y) {
           const direction = harvester.pos.getDirectionTo(harvestSpot)
-          creep.moveWrapper(direction, { jiggle: true })
+          harvester.moveWrapper(direction, { jiggle: true })
         }
       }
 
