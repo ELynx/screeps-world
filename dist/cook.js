@@ -29,6 +29,29 @@ const cookActor =
     return 0
   },
 
+  __supply: function (structure, resourceType) {
+    // TODO
+    return structure.store.getUsedCapacity(resourceType)
+  },
+
+  _____demand: function (structure, resourceType) {
+    // TODO
+    return structure.store.getFreeCapacity(resourceType)
+  },
+
+  _______labClusterDemand: function (labsIterator, resourceType) {
+    // TODO
+    return false
+  },
+
+  _hasDemand: function (structure, resourceType) {
+    return this._____demand(structure, resourceType) > 0
+  },
+
+  _labClusterHasDemand: function (labsIterator, resourceType) {
+    return this._______labClusterDemand(labsIterator, resourceType) > 0
+  },
+
   __plannedUsedCapacity: function (something, resourceType) {
     const actualAndIntents = intentSolver.getUsedCapacity(something, resourceType)
     const planned = this.___plannedDelta(something, resourceType)
@@ -60,19 +83,18 @@ const cookActor =
   },
 
   ___withdrawFromStructureToCreep: function (structure, creep, resourceType) {
-    const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
-    if (freeSpace <= 0) return ERR_FULL
+    const canTake = creep.store.getFreeCapacity(resourceType)
+    if (canTake <= 0) return ERR_FULL
 
-    // TODO supply
-    const usedSpace = intentSolver.getUsedCapacity(structure, resourceType)
-    if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
+    const wantGive = this.__supply(structure, resourceType)
+    if (wantGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-    const amount = Math.min(freeSpace, usedSpace)
+    const amount = Math.min(canTake, wantGive)
 
     return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType, amount)
   },
 
-  __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
+  __controllerWithdrawFromStructureToCreep: function (structure, creep, resourceType) {
     const rc = this.___withdrawFromStructureToCreep(structure, creep, resourceType)
     // to avoid observe calls
     if (rc >= OK) return bootstrap.ERR_TERMINATED
@@ -80,55 +102,26 @@ const cookActor =
     return rc
   },
 
-  ___transferFromCreepToStructure: function (structure, creep, resourceType) {
-      const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
-      if (usedSpace <= 0) return ERR_NOT_ENOUGH_RESOURCES
+  __transferFromCreepToStructure: function (structure, creep, resourceType) {
+      const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+      if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-      // TODO demand
-      const freeSpace = intentSolver.getFreeCapacity(structure, resourceType)
-      if (freeSpace <= 0) return ERR_FULL
+      const wantTake = this._____demand(structure, resourceType)
+      if (wantTake <= 0) return ERR_FULL
 
-      const amount = Math.min(usedSpace, freeSpace)
+      const amount = Math.min(canGive, wantTake)
 
       return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
   },
 
-  __transferFromCreepToStructure: function (structure, creep) {
+  __controllerTransferFromCreepToStructure: function (structure, creep) {
     for (const resourceType in creep.store) {
-      const rc = this.___transferFromCreepToStructure(structure, creep, resourceType)
+      const rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
       // to avoid observe calls
       if (rc >= OK) return bootstrap.ERR_TERMINATED
     }
 
     return ERR_NOT_ENOUGH_RESOURCES
-  },
-
-  _genericHasSpaceFor: function (structure, resourceType, freeSpaceReserve = 0) {
-    return this.__plannedFreeCapacity(structure, resourceType) > freeSpaceReserve
-  },
-
-  _factoryHasSpaceFor: function (factory, resourceType) {
-    // STRATEGY items processed in factory, store reserve
-    if (resourceType === RESOURCE_BATTERY || resourceType === RESOURCE_GHODIUM_MELT) {
-      return this._genericHasSpaceFor(factory, resourceType, 5000)
-    }
-
-    return false
-  },
-
-  _labClusterHasSpaceFor: function (labsIterator, resourceType) {
-    // TODO
-    return false
-  },
-
-  _storageHasSpaceFor: function (storage, resourceType) {
-    // TODO logic
-    return this._genericHasSpaceFor(storage, resourceType)
-  },
-
-  _terminalHasSpaceFor: function (terminal, resourceType) {
-    // TODO logic
-    return this._genericHasSpaceFor(terminal, resourceType)
   },
 
   // << imitate controller
@@ -153,9 +146,9 @@ const cookActor =
 
   act: function (structure, creep) {
     if (creep.memory.xtra) {
-      return this.__withdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
+      return this.__controllerWithdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
-      return this.__transferFromCreepToStructure(structure, creep)
+      return this.__controllerTransferFromCreepToStructure(structure, creep)
     }
   },
 
@@ -205,7 +198,7 @@ const cookActor =
     }
 
     // for reagents lost in transport
-    if (this._labClusterHasSpaceFor(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
+    if (this._______labClusterDemand(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
 
     // for ghodium lost in transport
     if (room.nuker) {
@@ -236,24 +229,32 @@ const cookActor =
       return false
     }
 
-    // no cooking without ingredient exchange
+    // STRATEGY no mining if no terminal
     if (room.terminal === undefined) return false
 
     const mineralType = room.mineralType()
     if (mineralType === '') return false
 
-    return this._terminalHasSpaceFor(room.terminal, mineralType) || this._labClusterHasSpaceFor(room.labs.values(), mineralType)
+    return this._hasDemand(room.terminal, mineralType) || this._labClusterHasDemand(room.labs.values(), mineralType)
   },
 
   _operateHarvesters: function (room) {
     const roomCreeps = room.getRoomControlledCreeps()
-    const harvesters = _.filter(roomCreeps, _.matchesProperty('memory.btyp', 'harvester'))
+
+    const harvesters = _.filter(
+      roomCreeps,
+      creep => {
+        if (creep._source_harvest_specialist_rc_ === OK) return false
+        if (creep._source_ === undefined) return false
+        if (creep.memory.atds !== true) return false
+        if (creep.memory.btyp !== 'harvester') return false
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) return false
+
+        return true
+      }
+    )
 
     if (harvesters.length === 0) return
-
-    const atDestination = _.filter(harvesters, _.property('memory.atds'))
-
-    if (atDestination.length === 0) return
 
     const containers = room.find(
       FIND_STRUCTURES,
@@ -270,36 +271,75 @@ const cookActor =
 
     const notMaxHits = structure => structure.hits < structure.hitsMax
 
-    for (const harvester in atDestination) {
-      // keep harvesting
-      if (harvester._source_harvest_specialist_rc_ === OK) continue
+    const terrain = new Room.Terrain(room.name)
+    const calculateHarvestSpot = (some1, some2) => {
+      
+    }
 
-      // TODO containers near
-      const clusterContainers = containers
+    for (const harvester in harvesters) {
+      const clusterContainers = _.filter(containers, container => container.isNearTo(harvester._source_))
       if (_.some(clusterContainers, notMaxHits)) continue
 
-      // TODO links near + source
-      const clusterLinks = links
+      const clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
       if (_.some(clusterLinks, notMaxHits)) continue
 
-      let transferred = false
-      const canGive = harvester.store.getUsedCapacity(RESOURCE_ENERGY)
-      if (canGive > 0) {
-        for (const link of clusterLinks) {
-          const rc = this.___transferFromCreepToStructure(link, harvester, RESOURCE_ENERGY)
-          if (rc >= OK) {
-            transferred = true
-            break // from links loop
-          }
+      if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
+
+      // placement
+      let harvestSpot
+
+      if (harvester.memory.sptx !== undefined && harvester.memory.spty !== undefined) {
+        harvestSpot = new RoomPosition(harvester.memory.sptx, harvester.memory.spty, room.name)
+      }
+
+      if (harvestSpot === undefined && clusterLinks.length > 0) {
+        if (clusterLinks.length > 1) {
+          clusterLinks = _.sortBy(clusterLinks, 'id')
         }
 
-        if (!transferred) {
-          for (const container of clusterContainers) {
-            const rc = this.___transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
-            if (rc >= OK) {
-              transferred = true
-              break // from containers loop
-            }
+        const link = clusterLinks[0]
+        harvestSpot = calculateHarvestSpot(harvester._source_, link)
+      }
+
+      if (harvestSpot === undefined && clusterContainers.length > 0) {
+        clusterContainers = _.sortByAll(
+          clusterContainers,
+          container => {
+            const absDx = Math.abs(container.pos.x - harvester._source_.pos.x)
+            const absDy = Math.abs(container.pos.y - harvester._source_.pos.y)
+            return absDx + absDy
+          },
+          'id'
+        )
+
+        harvestSpot = clusterContainers[0].pos
+      }
+
+      if (harvestSpot) {
+        harvester.memory.sptx = harvestSpot.x
+        harvester.memory.spty = harvestSpot.y
+
+        if (harvestSpot.x !== harvester.pos.x || harvestSpot.y !== harvester.pos.y) {
+          const direction = harvester.pos.getDirectionTo(harvestSpot)
+          creep.moveWrapper(direction, { jiggle: true })
+        }
+      }
+
+      let transferred = false
+      for (const link of clusterLinks) {
+        const rc = this.__transferFromCreepToStructure(link, harvester, RESOURCE_ENERGY)
+        if (rc >= OK) {
+          transferred = true
+          break // from links loop
+        }
+      }
+
+      if (!transferred) {
+        for (const container of clusterContainers) {
+          const rc = this.__transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
+          if (rc >= OK) {
+            transferred = true
+            break // from containers loop
           }
         }
       }
@@ -358,7 +398,7 @@ const cookActor =
     this._operateLabs(room)
   },
 
-  __outOfCpu: function () {
+  _outOfCpu: function () {
     return Game.cpu.getUsed() >= PostCPUTarget
   },
 
@@ -377,7 +417,7 @@ const cookActor =
 
   _operatePowerSpawns: function () {
     for (const powerSpawn of Game.powerSpawns.values()) {
-      if (this.__outOfCpu()) break
+      if (this._outOfCpu()) break
       this.__operatePowerSpawn(powerSpawn)
     }
   },
@@ -410,7 +450,7 @@ const cookActor =
 
   _operateFactories: function () {
     for (const factory of Game.factories.values()) {
-      if (this.__outOfCpu()) break
+      if (this._outOfCpu()) break
       this.__operateFactory(factory)
     }
   },
@@ -421,14 +461,14 @@ const cookActor =
 
   _sellTerminalsExcess: function () {
     for (const terminal of Game.terminals.values()) {
-      if (this.__outOfCpu()) break
-      this._sellTerminalsExcess(terminal)
+      if (this._outOfCpu()) break
+      this.__sellTerminalExcess(terminal)
     }
   },
 
   // called from main after other actors
   globalPost: function () {
-    if (this.__outOfCpu()) return
+    if (this._outOfCpu()) return
 
     this._performTerminalExchange()
     this._operatePowerSpawns()
