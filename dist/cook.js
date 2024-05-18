@@ -9,14 +9,14 @@ const PostCPUTarget = Game.cpu.limit - 0.5
 
 const cookActor =
 {
-  ____prepareDeltaMap: function (something) {
+  ___prepareDeltaMap: function (something) {
     if (something.__cook__deltaMap === undefined) {
       something.__cook__deltaMap = new Map()
     }
   },
 
-  ___adjustPlannedDelta: function (something, resourceType, delta) {
-    this.____prepareDeltaMap(something)
+  __adjustPlannedDelta: function (something, resourceType, delta) {
+    this.___prepareDeltaMap(something)
     const now = something.__cook__deltaMap.get(resourceType) || 0
     something.__cook__deltaMap.set(resourceType, now + delta)
   },
@@ -29,27 +29,27 @@ const cookActor =
     return 0
   },
 
-  __supply: function (structure, resourceType) {
+  ___supply: function (structure, resourceType) {
     // TODO
     return structure.store.getUsedCapacity(resourceType)
   },
 
-  _____demand: function (structure, resourceType) {
+  ___demand: function (structure, resourceType) {
     // TODO
     return structure.store.getFreeCapacity(resourceType)
   },
 
-  _______labClusterDemand: function (labsIterator, resourceType) {
+  __labClusterDemand: function (labsIterator, resourceType) {
     // TODO
     return false
   },
 
   _hasDemand: function (structure, resourceType) {
-    return this._____demand(structure, resourceType) > 0
+    return this.___demand(structure, resourceType) > 0
   },
 
   _labClusterHasDemand: function (labsIterator, resourceType) {
-    return this._______labClusterDemand(labsIterator, resourceType) > 0
+    return this.__labClusterDemand(labsIterator, resourceType) > 0
   },
 
   __plannedUsedCapacity: function (something, resourceType) {
@@ -66,27 +66,27 @@ const cookActor =
     return actualAndIntents + planned
   },
 
-  __reserveFromStructureToCreep: function (structure, creep, resourceType) {
+  _reserveFromStructureToCreep: function (structure, creep, resourceType) {
     const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
     if (freeSpace <= 0) return
 
-    this.___adjustPlannedDelta(structure, resourceType, -1 * freeSpace)
+    this.__adjustPlannedDelta(structure, resourceType, -1 * freeSpace)
   },
 
-  __expectFromCreepToStructure: function (structure, creep) {
+  _expectFromCreepToStructure: function (structure, creep) {
     for (const resourceType in creep.store) {
       const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
       if (usedSpace <= 0) continue
 
-      this.___adjustPlannedDelta(structure, resourceType, usedSpace)
+      this.__adjustPlannedDelta(structure, resourceType, usedSpace)
     }
   },
 
-  ___withdrawFromStructureToCreep: function (structure, creep, resourceType) {
+  __withdrawFromStructureToCreep: function (structure, creep, resourceType) {
     const canTake = creep.store.getFreeCapacity(resourceType)
     if (canTake <= 0) return ERR_FULL
 
-    const wantGive = this.__supply(structure, resourceType)
+    const wantGive = this.___supply(structure, resourceType)
     if (wantGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
     const amount = Math.min(canTake, wantGive)
@@ -94,8 +94,8 @@ const cookActor =
     return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType, amount)
   },
 
-  __controllerWithdrawFromStructureToCreep: function (structure, creep, resourceType) {
-    const rc = this.___withdrawFromStructureToCreep(structure, creep, resourceType)
+  _controllerWithdrawFromStructureToCreep: function (structure, creep, resourceType) {
+    const rc = this.__withdrawFromStructureToCreep(structure, creep, resourceType)
     // to avoid observe calls
     if (rc >= OK) return bootstrap.ERR_TERMINATED
 
@@ -106,7 +106,7 @@ const cookActor =
       const canGive = intentSolver.getUsedCapacity(creep, resourceType)
       if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-      const wantTake = this._____demand(structure, resourceType)
+      const wantTake = this.___demand(structure, resourceType)
       if (wantTake <= 0) return ERR_FULL
 
       const amount = Math.min(canGive, wantTake)
@@ -114,7 +114,7 @@ const cookActor =
       return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
   },
 
-  __controllerTransferFromCreepToStructure: function (structure, creep) {
+  _controllerTransferFromCreepToStructure: function (structure, creep) {
     for (const resourceType in creep.store) {
       const rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
       // to avoid observe calls
@@ -138,17 +138,17 @@ const cookActor =
     if (!structure) return
 
     if (creep.memory.xtra) {
-      this.__reserveFromStructureToCreep(structure, creep, creep.memory.xtra)
+      this._reserveFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
-      this.__expectFromCreepToStructure(structure, creep)
+      this._expectFromCreepToStructure(structure, creep)
     }
   },
 
   act: function (structure, creep) {
     if (creep.memory.xtra) {
-      return this.__controllerWithdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
+      return this._controllerWithdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
     } else {
-      return this.__controllerTransferFromCreepToStructure(structure, creep)
+      return this._controllerTransferFromCreepToStructure(structure, creep)
     }
   },
 
@@ -194,30 +194,30 @@ const cookActor =
 
     // has space for "stuff"
     if (room.terminal) {
-      if (this._terminalHasSpaceFor(room.terminal, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
     }
 
     // for reagents lost in transport
-    if (this._______labClusterDemand(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
+    if (this._labClusterHasDemand(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
 
     // for ghodium lost in transport
     if (room.nuker) {
-      if (this._genericHasSpaceFor(room.nuker, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
     }
 
     // for "shiny" things only
     if (room.storage) {
-      if (this._storageHasSpaceFor(room.storage, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
     }
 
     // for power lost in transport
     if (room.powerSpawn) {
-      if (this._genericHasSpaceFor(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
     }
 
     // if somehow packed resources of interest
     if (room.factory) {
-      if (this._factoryHasSpaceFor(room.factory, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
     }
 
     return withCache(room, resourceType, false)
@@ -273,7 +273,46 @@ const cookActor =
 
     const terrain = new Room.Terrain(room.name)
     const calculateHarvestSpot = (some1, some2) => {
-      
+      const dx = some2.pos.x - some1.pos.x
+      const dy = some2.pos.y - some1.pos.y
+      const absDx = Math.abs(dx)
+      const absDy = Math.abs(dy)
+      const evenDx = absDx % 2 === 0
+      const evenDy = absDy % 2 === 0
+
+      if (evenDx && evenDy) {
+        return new RoomPosition(some1.pos.x + (dx / 2), some1.pos.y + (dy / 2), room.name)
+      }
+
+      if (evenDx) {
+        const x = some1.pos + (dx / 2)
+        const y1 = some1.pos.y
+        const y2 = some2.pos.y
+
+        if (terrain.get(x, y1) !== TERRAIN_MASK_WALL) {
+          return new RoomPosition(x, y1, room.name)
+        }
+
+        if (terrain.get(x, y2) !== TERRAIN_MASK_WALL) {
+          return new RoomPosition(x, y2, room.name)
+        }
+      }
+
+      if (evenDy) {
+        const y = some1.pos + (dy / 2)
+        const x1 = some1.pos.x
+        const x2 = some2.pos.x
+
+        if (terrain.get(x1, y) !== TERRAIN_MASK_WALL) {
+          return new RoomPosition(x1, y, room.name)
+        }
+
+        if (terrain.get(x2, y) !== TERRAIN_MASK_WALL) {
+          return new RoomPosition(x2, y, room.name)
+        }
+      }
+
+      return undefined
     }
 
     for (const harvester in harvesters) {
