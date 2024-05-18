@@ -586,25 +586,26 @@ StructureTerminal.prototype._caclTransactionAmount = function (roomTo) {
 /**
 Try to sell as much as possible for order.
 @param {Order} order to be sold to.
-@param {integer} keep = 0 how many to keep at terminal.
+@param {integer} amount to be sold
 @return result of deal or other error codes.
 **/
-StructureTerminal.prototype.autoSell = function (order, keep = 0) {
+StructureTerminal.prototype.autoSell = function (order, amount) {
   if (order.type === ORDER_BUY) {
-    const has = this.store[order.resourceType]
-    if (has === undefined || has <= keep) {
+    const has = this.store.getUsedCapacity(order.resourceType)
+
+    if (has === undefined || has <= 0) {
       return ERR_NOT_ENOUGH_RESOURCES
     }
 
-    const maxAmount = this._caclTransactionAmount(order.roomName)
+    const canBeTransferred = this._caclTransactionAmount(order.roomName)
 
-    if (maxAmount < 1) {
+    if (canBeTransferred < 1) {
       return ERR_NOT_ENOUGH_ENERGY
     }
 
-    const amount = Math.min(has - keep, maxAmount, order.amount)
+    const actualAmount = Math.min(amount, has, canBeTransferred, order.amount)
 
-    return Game.market.deal(order.id, amount, this.room.name)
+    return Game.market.deal(order.id, actualAmount, this.room.name)
   }
 
   return ERR_INVALID_ARGS
