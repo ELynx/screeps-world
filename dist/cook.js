@@ -501,8 +501,29 @@ const cookActor =
     }
   },
 
+  ___findBuyOrder: function (resourceType) {
+    const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType })
+    // STRATEGY just sell at random
+    return _.sample(allBuyOrders)
+  },
+
   __sellTerminalExcess: function (terminal) {
-    // TODO
+    if (terminal.cooldown && terminal.cooldown > 0) {
+      return ERR_TIRED
+    }
+
+    for (const resourceType in terminal.store) {
+      const excess = this.___excess(terminal, resourceType)
+      if (excess > 0) {
+        const order = this.___findBuyOrder(resourceType)
+        if (order) {
+          const rc = terminal.autoSell(order, excess)
+          if (rc >= OK) return rc
+        }
+      }
+    }
+
+    return ERR_NOT_ENOUGH_RESOURCES
   },
 
   _sellTerminalsExcess: function () {
