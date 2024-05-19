@@ -74,6 +74,7 @@
       "HEAL_POWER",
       "HEAL",
       "LEFT",
+      "LINK_CAPACITY",
       "LOOK_CONSTRUCTION_SITES",
       "LOOK_MINERALS",
       "LOOK_RESOURCES",
