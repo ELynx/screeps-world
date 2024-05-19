@@ -108,11 +108,12 @@ const cookActor =
   },
 
   __transferFromCreepToStructure: function (structure, creep, resourceType) {
-    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
-    if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
-
+    // check first because dump mode
     const wantTake = this.___demand(structure, resourceType)
     if (wantTake <= 0) return ERR_FULL
+
+    const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+    if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
     const amount = Math.min(canGive, wantTake)
 
@@ -317,7 +318,7 @@ const cookActor =
         }
       }
 
-      console.log('Could not find harvest spot for ' + some1.pos + ' and ' + some2.pos)
+      console.log('Could not find harvest spot for [' + some1.pos + '] and [' + some2.pos + ']')
 
       return undefined
     }
@@ -331,7 +332,6 @@ const cookActor =
 
       if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
 
-      // placement
       let harvestSpot
 
       if (harvester.memory.sptx !== undefined && harvester.memory.spty !== undefined) {
@@ -473,7 +473,6 @@ const cookActor =
       return ERR_TIRED
     }
 
-    // fast check to cover any recepies
     if (factory.store.getUsedCapacity() <= 0) {
       return ERR_NOT_ENOUGH_RESOURCES
     }
@@ -508,6 +507,10 @@ const cookActor =
   },
 
   __sellTerminalExcess: function (terminal) {
+    if (terminal._operated_) {
+      return ERR_TIRED
+    }
+
     if (terminal.cooldown && terminal.cooldown > 0) {
       return ERR_TIRED
     }
@@ -519,7 +522,10 @@ const cookActor =
         const order = this.___findBuyOrder(resourceType)
         if (order) {
           const rc = terminal.autoSell(order, excess)
-          if (rc >= OK) return rc
+          if (rc >= OK) {
+            terminal._operated_ = true
+            return rc
+          }
         }
       }
     }
