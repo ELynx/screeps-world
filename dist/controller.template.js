@@ -423,6 +423,7 @@ function Controller (id) {
     for (const creep of compatibleCreeps) {
       if (creep._trap_) {
         room.traps.push(creep._trap_)
+        creep._was_trap_ = creep._trap_
         creep._trap_ = undefined
         incompatibleCreeps.push(creep)
       } else {
