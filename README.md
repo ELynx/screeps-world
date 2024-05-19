@@ -88,6 +88,8 @@ Cluster restock.
 
 Global Control farm rooms.
 
+Unlive old miners.
+
 ### Auto room attack / defense
 
 Room attack definition:

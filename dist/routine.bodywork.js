@@ -37,6 +37,8 @@ const bodywork = {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
+    // target is zero fatigue under full load
+
     // call for new or foreign room
     if (energy === 0) {
       // 750
@@ -73,39 +75,47 @@ const bodywork = {
 
     // call for new room
     if (energy === 0) {
-      return this.makeWCM(5, 1, 5)
+      // target is "default" speed
+      // target is zero fatigue empty, fast arrival
+      return this.makeWCM(6, 1, 6)
     }
 
-    if (energy < 500) {
-      // 200
-      return this.makeWCM(1, 1, 1)
+    if (energy < 550) {
+      // target is half speed empty
+      // 300
+      return this.makeWCM(2, 1, 1)
     }
 
     if (energy < 800) {
-      // 500
-      return this.makeWCM(3, 1, 3)
+      // 550
+      return this.makeWCM(4, 1, 2)
     }
 
     if (energy < 1600) {
-      // target is 3000 / 300 / 2 = 5 WORK body parts
+      // target is a bit above optimal harvest speed
+      // target is half speed empty
       // 800
-      return this.makeWCM(5, 1, 5)
+      return this.makeWCM(6, 1, 3)
     }
 
     if (energy < 2400 || sourceLevel < 2) {
-      // target is double speed
+      // target is double of above
+      // target is half speed empty
       // 1600
-      return this.makeWCM(10, 2, 10)
+      return this.makeWCM(12, 2, 6)
     }
 
-    // target is triple speed
+    // target is triple of above
+    // target is half speed empty
     // 2400
-    return this.makeWCM(15, 3, 15)
+    return this.makeWCM(18, 3, 9)
   },
 
   harvester_other: function (room) {
     // target is always 250 ticks, leaving 50 ticks for repairs
     // w eq c so there are no "odd" numbers on capacity
+
+    // target is zero fatigue empty
 
     if (room.ownedOrReserved()) {
       // target is 3000 / 250 / 2 = 6 WORK body parts
@@ -125,17 +135,22 @@ const bodywork = {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
+    // N work to N move -> 50 ticks
+    // N work fills 2N carry in 2c * 50space * 1power * 5cooldown -> 500 ticks
+    // N work + 2N carry to N move -> 150 ticks back
+    // 700 ticks + bs -> 2 trips per cycle
+
     if (energy < 1250) {
       return []
     }
 
     if (energy < 2500 || sourceLevel < 2) {
       // 1250
-      return this.makeWCM(5, 5)
+      return this.makeWCM(5, 10, 5)
     }
 
     // 2500
-    return this.makeWCM(10, 10)
+    return this.makeWCM(10, 20, 10)
   },
 
   upgrader: function (room) {
@@ -144,24 +159,25 @@ const bodywork = {
 
     // reduced size to not overload by spawning
     if (sourceLevel < 2) {
-      if (energy < 1600) {
+      if (energy < 1300) {
         return []
       }
 
-      // 1600
-      return this.makeWCM(10, 2, 10)
+      // target is third speed
+      // 1300
+      return this.makeWCM(10, 2, 4)
     }
 
-    if (energy < 2400) {
+    if (energy < 1950) {
       return []
     }
 
     // 15 WORK for maximum upgrade
     // 3 CARRY for 150 capacity to minimize withdraw
-    // 15 MOVE to avoid fatigue on the way to
+    // target is third speed
 
-    // 2400
-    return this.makeWCM(15, 3, 15)
+    // 1950
+    return this.makeWCM(15, 3, 6)
   }
 }
 
