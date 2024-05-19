@@ -59,7 +59,13 @@ cook.___roomDemand = function (structure, resourceType) {
 }
 
 cook._hasDemand = function (structure, resourceType) {
-  return this.___roomDemand(structure, resourceType) > 0
+  // save typing down the line
+  if (structure === undefined) return false
+
+  const demand = this.___roomDemand(structure, resourceType)
+  const planned = this.___plannedDelta(structure, resourceType)
+
+  return demand > planned
 }
 
 cook.___roomSpace = function (structure, resourceType) {
@@ -67,17 +73,24 @@ cook.___roomSpace = function (structure, resourceType) {
   return this.___roomDemand(structure, resourceType)
 }
 
+// expected that if this returns true, _hasDemand returns true as well
 cook._hasSpace = function (structure, resourceType) {
-  return this.___roomSpace(structure, resourceType) > 0
+  // save typing down the line
+  if (structure === undefined) return false
+
+  const space = this.___roomSpace(structure, resourceType)
+  const planned = this.___plannedDelta(structure, resourceType)
+
+  return space > planned
 }
 
-cook.__labClusterDemand = function (labsIterator, resourceType) {
+cook.__labClusterDemand = function (room, resourceType) {
   // TODO
   return false
 }
 
-cook._labClusterHasDemand = function (labsIterator, resourceType) {
-  return this.__labClusterDemand(labsIterator, resourceType) > 0
+cook._labClusterHasDemand = function (room, resourceType) {
+  return this.__labClusterDemand(room, resourceType) > 0
 }
 
 cook.___worldDemand = function (structure, resourceType) {
@@ -88,20 +101,6 @@ cook.___worldDemand = function (structure, resourceType) {
 cook.__worldDemandTypes = function (structure) {
   // TODO
   return []
-}
-
-cook.___plannedUsedCapacity = function (something, resourceType) {
-  const actualAndIntents = intentSolver.getUsedCapacity(something, resourceType)
-  const planned = this.___plannedDelta(something, resourceType)
-
-  return actualAndIntents + planned
-}
-
-cook.___plannedFreeCapacity = function (something, resourceType) {
-  const actualAndIntents = intentSolver.getFreeCapacity(something, resourceType)
-  const planned = this.___plannedDelta(something, resourceType)
-
-  return actualAndIntents + planned
 }
 
 cook._reserveFromStructureToCreep = function (structure, creep, resourceType) {
@@ -187,8 +186,8 @@ cook.act = function (structure, creep) {
   }
 }
 
-cook.__needRestockEnergy = function (structure) {
-  return this.___plannedFreeCapacity(structure, RESOURCE_ENERGY) > 0
+cook.__hasEnergyDemand = function (structure) {
+  return this._hasDemand(structure, RESOURCE_ENERGY)
 }
 
 cook._energyRestockPass1 = function (room, creeps) {
@@ -199,13 +198,13 @@ cook._energyRestockPass1 = function (room, creeps) {
   const prio1 = []
 
   for (const spawn of room.spawns.values()) {
-    if (this.__needRestockEnergy(spawn)) {
+    if (this.__hasEnergyDemand(spawn)) {
       prio1.push(spawn)
     }
   }
 
   for (const extension of room.extensions.values()) {
-    if (this.__needRestockEnergy(extension)) {
+    if (this.__hasEnergyDemand(extension)) {
       prio1.push(extension)
     }
   }
@@ -230,7 +229,7 @@ cook._energyRestockPass1 = function (room, creeps) {
     const prio2 = []
 
     for (const tower of room.towers.values()) {
-      if (this.__needRestockEnergy(tower)) {
+      if (this.__hasEnergyDemand(tower)) {
         prio2.push(tower)
       }
     }
@@ -244,9 +243,39 @@ cook._energyRestockPass1 = function (room, creeps) {
   return [unused, used]
 }
 
-cook.__resourceRestockCreep = function (room, creep) {
+cook.__labClusterResourceRestockTargetForCreep = function (room, resourceType) {
   // TODO
-  return false
+  return undefined
+}
+
+cook.__resourceRestockTargetForCreep = function (room, creep) {
+  let resourceType
+  const resourceTypes = _.shuffle(_.keys(creep.store))
+  for (const resourceType1 of resourceTypes) {
+    if (resourceType1 === RESOURCE_ENERGY) continue
+    resourceType = resourceType1
+    break
+  }
+
+  if (resourceType === undefined) {
+    console.log('Unexpected creep [' + creep.name + '] for resource restock')
+    return undefined
+  }
+
+  // keep in sync with "can handle" check to avoid lock on resources
+
+  // purposeful
+  if (this._hasDemand(room.powerSpawn, resourceType)) return room.powerSpawn
+  if (this._hasDemand(room.nuker, resourceType)) return room.nuker
+  if (this._labClusterHasDemand(room, resourceType)) return this.__labClusterResourceRestockTargetForCreep(room, resourceType)
+  if (this._hasDemand(room.terminal, resourceType)) return room.terminal
+
+  // just unload
+  if (this._hasSpace(room.storage)) return room.storage
+  if (this._hasSpace(room.factory)) return room.factory
+  if (this._hasSpace(room.terminal)) return room.terminal
+
+  return undefined
 }
 
 cook._resourceRestock = function (room, creeps) {
@@ -254,7 +283,10 @@ cook._resourceRestock = function (room, creeps) {
   const used = []
 
   for (const creep of creeps) {
-    if (this.__resourceRestockCreep(room, creep)) {
+    const target = this.__resourceRestockTargetForCreep(room, creep)
+    if (target) {
+      bootstrap.assignCreep(this, target, undefined, creep)
+      target.__cook__resourceRestock__assigned = true
       used.push(creep)
     } else {
       unused.push(creep)
@@ -350,32 +382,22 @@ cook.roomCanHandle = function (room, resourceType) {
   // some are on-demand, some are showe-in
 
   // has space for "stuff"
-  if (room.terminal) {
-    if (this._hasSpace(room.terminal, resourceType)) return withCache(room, resourceType, true)
-  }
+  if (this._hasSpace(room.terminal, resourceType)) return withCache(room, resourceType, true)
 
   // for reagents lost in transport
-  if (this._labClusterHasDemand(room.labs.values(), resourceType)) return withCache(room, resourceType, true)
+  if (this._labClusterHasDemand(room)) return withCache(room, resourceType, true)
 
   // for ghodium lost in transport
-  if (room.nuker) {
-    if (this._hasDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
-  }
+  if (this._hasDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
 
   // for "shiny" things only
-  if (room.storage) {
-    if (this._hasSpace(room.storage, resourceType)) return withCache(room, resourceType, true)
-  }
+  if (this._hasSpace(room.storage, resourceType)) return withCache(room, resourceType, true)
 
   // for power lost in transport
-  if (room.powerSpawn) {
-    if (this._hasDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
-  }
+  if (this._hasDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
 
   // if somehow packed resources of interest
-  if (room.factory) {
-    if (this._hasSpace(room.factory, resourceType)) return withCache(room, resourceType, true)
-  }
+  if (this._hasSpace(room.factory, resourceType)) return withCache(room, resourceType, true)
 
   return withCache(room, resourceType, false)
 }
@@ -392,7 +414,7 @@ cook.roomCanMine = function (room) {
   const mineralType = room.mineralType()
   if (mineralType === '') return false
 
-  return this._hasSpace(room.terminal, mineralType) || this._labClusterHasDemand(room.labs.values(), mineralType)
+  return this._hasSpace(room.terminal, mineralType) || this._labClusterHasDemand(room, mineralType)
 }
 
 cook._operateHarvesters = function (room) {
