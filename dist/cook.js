@@ -185,6 +185,11 @@ cook._controllerTransferFromCreepToStructure = function (structure, creep) {
 // << controller
 cook.roomPrepare = function (room) {
   room.__cook__pass = 0
+
+  room.__cook__containers = _.filter(
+    room.find(FIND_STRUCTURES),
+    structure => structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple
+  )
 }
 
 cook.observeMyCreep = function (creep) {
@@ -460,15 +465,7 @@ cook._operateHarvesters = function (room) {
 
   if (harvesters.length === 0) return
 
-  const containers = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: structure => {
-        return structure.structureType === STRUCTURE_CONTAINER
-      }
-    }
-  )
-
+  const containers = room.__cook__containers
   const links = Array.from(room.links.values())
 
   if (containers.length === 0 && links.length === 0) return
