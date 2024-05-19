@@ -14,6 +14,8 @@ const PostCPUTarget = Game.cpu.limit - 0.5
 const LinkSourceTreshold = LINK_CAPACITY / 2
 const LinkDestinationTreshold = LINK_CAPACITY / 16
 
+cook.actRange = 1
+
 cook.___prepareDeltaMap = function (something) {
   if (something.__cook__deltaMap === undefined) {
     something.__cook__deltaMap = new Map()
@@ -183,9 +185,61 @@ cook.act = function (structure, creep) {
   }
 }
 
-cook._controlPass1 = function (room, creeps) {
-  // TODO
+cook._energyRestockPass1 = function (room, creeps) {
   return [creeps, []]
+}
+
+cook._resourceRestock = function (room, creeps) {
+  return [creeps, []]
+}
+
+cook._controlPass1 = function (room, creeps) {
+  // qualify
+  const empty = []
+  const creepsWithOnlyEnergy = []
+  const creepsWithNonEnergy = []
+
+  for (const creep of creeps) {
+    const energy = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+    const total = intentSolver.getUsedCapacity(creep)
+
+    if (total <= 0) {
+      empty.push(creep)
+      continue
+    }
+
+    if (total > energy) {
+      creepsWithNonEnergy.push(creep)
+    } else {
+      creepsWithOnlyEnergy.push(creep)
+    }
+  }
+
+  // unload
+  const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
+  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
+  const unused = empty.concat(energyUnused).concat(resourceUnused)
+  const used = energyUsed.concat(resourceUsed)
+
+  // assign traps
+  // STRATEGY trap only workers for energy
+  let hasUnusedWorkerWithEnergy = false
+  for (const creep of energyUnused) {
+    if (creep.memory.btyp === 'worker') {
+      hasUnusedWorkerWithEnergy = true
+      break
+    }
+  }
+
+  if (!hasUnusedWorkerWithEnergy) {
+    for (const creep of unused) {
+      if (creep.memory.btyp === 'worker') {
+        creep._trap_ = RESOURCE_ENERGY
+      }
+    }
+  }
+
+  return [unused, used]
 }
 
 cook._controlPass2 = function (room, creeps) {
