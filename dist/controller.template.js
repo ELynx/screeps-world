@@ -208,9 +208,7 @@ function Controller (id) {
     )
   }
 
-  this.assignCreeps = function (room, roomCreeps) {
-    const allTargets = this._findTargets(room)
-
+  this.assignCreeps = function (room, roomCreeps, allTargets) {
     let remainingTargets = allTargets.slice(0)
 
     let unassignedCreeps = []
@@ -414,7 +412,8 @@ function Controller (id) {
       return [allCreeps, []]
     }
 
-    if (this._findTargets(room).length === 0) {
+    const allTargets = this._findTargets(room)
+    if (allTargets.length === 0) {
       return [allCreeps, []]
     }
 
@@ -439,7 +438,7 @@ function Controller (id) {
       return [allCreeps, []]
     }
 
-    const [unassignedCreeps, assignedCreeps] = this.assignCreeps(room, untrappedCreeps)
+    const [unassignedCreeps, assignedCreeps] = this.assignCreeps(room, untrappedCreeps, allTargets)
 
     if (unassignedCreeps.length > 0) {
       return [incompatibleCreeps.concat(unassignedCreeps), assignedCreeps]

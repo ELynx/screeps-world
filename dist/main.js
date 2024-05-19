@@ -24,7 +24,6 @@ if (Game.flags.profiler) {
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
   profiler.registerObject(taskedActor, 'taskedActor')
-  profiler.registerObject(cook, 'cook')
   profiler.registerObject(extensions, 'extensions')
   profiler.registerObject(iff, 'iff')
   profiler.registerObject(cleanup, 'cleanup')
