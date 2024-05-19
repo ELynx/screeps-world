@@ -69,6 +69,7 @@ const bodywork = {
 
   harvester_my: function (room) {
     const energy = room.extendedAvailableEnergyCapacity()
+    const sourceLevel = room.memory.slvl || 0
 
     // call for new room
     if (energy === 0) {
@@ -85,9 +86,21 @@ const bodywork = {
       return this.makeWCM(3, 1, 3)
     }
 
-    // target is 3000 / 300 / 2 = 5 WORK body parts
-    // 800
-    return this.makeWCM(5, 1, 5)
+    if (energy < 1600) {
+      // target is 3000 / 300 / 2 = 5 WORK body parts
+      // 800
+      return this.makeWCM(5, 1, 5)
+    }
+
+    if (energy < 2400 || sourceLevel < 2) {
+      // target is double speed
+      // 1600
+      return this.makeWCM(10, 2, 10)
+    }
+
+    // target is triple speed
+    // 2400
+    return this.makeWCM(15, 3, 15)
   },
 
   harvester_other: function (room) {
