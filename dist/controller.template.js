@@ -382,6 +382,13 @@ function Controller (id) {
   }
 
   this.control = function (room, allCreeps) {
+    if (this.period !== undefined) {
+      const periodKey = (room.memory.intl + Game.time) % this.period
+      if (periodKey !== 0) {
+        return [allCreeps, []]
+      }
+    }
+
     if (this._usesDefaultFilter) {
       if (room._isDefaultFiltered()) {
         return [allCreeps, []]
