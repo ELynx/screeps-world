@@ -8,24 +8,26 @@ const Controller = require('./controller.template')
 
 const cook = new Controller('cook')
 
-// STRATEGY CPU reservation strategy
-const PostCPUTarget = Game.cpu.limit - 0.5
+// made up value that is used to plug planned capacity on first assignment
+const MadeUpLargeNumber = 1000000
 
+// STRATEGY link send values
 const LinkSourceTreshold = LINK_CAPACITY / 2
 const LinkDestinationTreshold = LINK_CAPACITY / 16
 
+// STRATEGY CPU reservation strategy
+const PostCPUTarget = Game.cpu.limit - 0.5
+
 cook.actRange = 1
 
+// when doing "matrix" assignment with function from base class, assign once
 cook._creepPerTarget = true
 
-cook.___prepareDeltaMap = function (something) {
+cook.__adjustPlannedDelta = function (something, resourceType, delta) {
   if (something.__cook__deltaMap === undefined) {
     something.__cook__deltaMap = new Map()
   }
-}
 
-cook.__adjustPlannedDelta = function (something, resourceType, delta) {
-  this.___prepareDeltaMap(something)
   const now = something.__cook__deltaMap.get(resourceType) || 0
   something.__cook__deltaMap.set(resourceType, now + delta)
 }
@@ -93,13 +95,28 @@ cook._labClusterHasDemand = function (room, resourceType) {
   return this.__labClusterDemand(room, resourceType) > 0
 }
 
+cook.___addWorldDemand = function (structure, resourceType, amount) {
+  if (structure.__cook__worldDemandMap === undefined) {
+    structure.__cook__worldDemandMap = new Map()
+  }
+
+  const now = structure.__cook__worldDemandMap.get(resourceType) || 0
+  structure.__cook__worldDemandMap.set(resourceType, now + amount)
+}
+
 cook.___worldDemand = function (structure, resourceType) {
-  // TODO
-  return this.___roomDemand(structure, resourceType)
+  if (structure.__cook__worldDemandMap) {
+    return structure.__cook__worldDemandMap.get(resourceType) || 0
+  }
+
+  return 0
 }
 
 cook.__worldDemandTypes = function (structure) {
-  // TODO
+  if (structure.__cook__worldDemandMap) {
+    return Array.from(structure.__cook__worldDemandMap.keys())
+  }
+
   return []
 }
 
@@ -259,34 +276,39 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
 
   if (resourceType === undefined) {
     console.log('Unexpected creep [' + creep.name + '] for resource restock')
-    return undefined
+    return [undefined, undefined]
   }
 
   // keep in sync with "can handle" check to avoid lock on resources
 
   // purposeful
-  if (this._hasDemand(room.powerSpawn, resourceType)) return room.powerSpawn
-  if (this._hasDemand(room.nuker, resourceType)) return room.nuker
-  if (this._labClusterHasDemand(room, resourceType)) return this.__labClusterResourceRestockTargetForCreep(room, resourceType)
-  if (this._hasDemand(room.terminal, resourceType)) return room.terminal
+  if (this._hasDemand(room.powerSpawn, resourceType)) return [room.powerSpawn, resourceType]
+  if (this._hasDemand(room.nuker, resourceType)) return [room.nuker, resourceType]
+  if (this._labClusterHasDemand(room, resourceType)) return [this.__labClusterResourceRestockTargetForCreep(room, resourceType), resourceType]
+  if (this._hasDemand(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   // just unload
-  if (this._hasSpace(room.storage)) return room.storage
-  if (this._hasSpace(room.factory)) return room.factory
-  if (this._hasSpace(room.terminal)) return room.terminal
+  if (this._hasSpace(room.storage)) return [room.storage, resourceType]
+  if (this._hasSpace(room.factory)) return [room.factory, resourceType]
+  if (this._hasSpace(room.terminal)) return [room.terminal, resourceType]
 
-  return undefined
+  return [undefined, undefined]
 }
 
 cook._resourceRestock = function (room, creeps) {
+  if (creeps.length === 0) {
+    return [[], []]
+  }
+
   const unused = []
   const used = []
 
   for (const creep of creeps) {
-    const target = this.__resourceRestockTargetForCreep(room, creep)
+    const [target, resourceType] = this.__resourceRestockTargetForCreep(room, creep)
     if (target) {
       bootstrap.assignCreep(this, target, undefined, creep)
-      target.__cook__resourceRestock__assigned = true
+      // since non-"matrix" assignment is used, force _hasDemand to false
+      this.__adjustPlannedDelta(target, resourceType, MadeUpLargeNumber)
       used.push(creep)
     } else {
       unused.push(creep)
