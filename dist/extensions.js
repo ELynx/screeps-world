@@ -611,6 +611,24 @@ StructureTerminal.prototype.autoSell = function (order, amount) {
   return ERR_INVALID_ARGS
 }
 
+StructureTerminal.prototype.autoSend = function (resourceType, amount, destination, description = undefined) {
+  const has = this.store.getUsedCapacity(resourceType)
+
+  if (has === undefined || has <= 0) {
+    return ERR_NOT_ENOUGH_RESOURCES
+  }
+
+  const canBeTransferred = this._caclTransactionAmount(destination)
+
+  if (canBeTransferred < 1) {
+    return ERR_NOT_ENOUGH_ENERGY
+  }
+
+  const actualAmount = Math.min(amount, canBeTransferred)
+
+  return this.send(resourceType, actualAmount, destination, description)
+}
+
 const extensions = {
   shortcuts: function () {
     const cutShort = function (name) {
