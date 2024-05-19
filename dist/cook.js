@@ -29,19 +29,34 @@ const cookActor =
     return 0
   },
 
-  ___supply: function (structure, resourceType) {
+  ___roomSupply: function (structure, resourceType) {
     // TODO
     return structure.store.getUsedCapacity(resourceType)
   },
 
-  ___demand: function (structure, resourceType) {
+  ___worldSupply: function (structure, resourceType) {
+    // TODO
+    return this.___roomSupply(structure, resourceType)
+  },
+
+  ___roomDemand: function (structure, resourceType) {
     // TODO
     return structure.store.getFreeCapacity(resourceType)
   },
 
-  ___excess: function (structure, resourceType) {
+  ___worldDemand: function (structure, resourceType) {
     // TODO
-    return this.___supply(structure, resourceType) - 5000
+    return this.___roomDemand(structure, resourceType)
+  },
+
+  ___worldExcess: function (structure, resourceType) {
+    // TODO
+    return this.___worldSupply(structure, resourceType) - 5000
+  },
+
+  __worldDemandTypes: function (structure) {
+    // TODO
+    return []
   },
 
   __labClusterDemand: function (labsIterator, resourceType) {
@@ -50,7 +65,7 @@ const cookActor =
   },
 
   _hasDemand: function (structure, resourceType) {
-    return this.___demand(structure, resourceType) > 0
+    return this.___roomDemand(structure, resourceType) > 0
   },
 
   _labClusterHasDemand: function (labsIterator, resourceType) {
@@ -91,7 +106,7 @@ const cookActor =
     const canTake = creep.store.getFreeCapacity(resourceType)
     if (canTake <= 0) return ERR_FULL
 
-    const wantGive = this.___supply(structure, resourceType)
+    const wantGive = this.___roomSupply(structure, resourceType)
     if (wantGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
     const amount = Math.min(canTake, wantGive)
@@ -109,7 +124,7 @@ const cookActor =
 
   __transferFromCreepToStructure: function (structure, creep, resourceType) {
     // check first because dump mode
-    const wantTake = this.___demand(structure, resourceType)
+    const wantTake = this.___roomDemand(structure, resourceType)
     if (wantTake <= 0) return ERR_FULL
 
     const canGive = intentSolver.getUsedCapacity(creep, resourceType)
@@ -449,7 +464,72 @@ const cookActor =
   },
 
   _performTerminalExchange: function () {
-    // TODO
+    const allTerminals = _.shuffle(Array.from(Game.terminals.values()))
+
+    let targetTerminal
+    let demandTypes
+    for (const terminal of allTerminals) {
+      const demandTypes1 = this.__worldDemandTypes(terminal)
+      if (demandTypes1.length > 0) {
+        targetTerminal = terminal
+        demandTypes = _.shuffle(demandTypes1)
+        break
+      }
+    }
+
+    if (targetTerminal === undefined) {
+      return ERR_FULL
+    }
+
+    // TODO sort by proximity
+
+    let sourceTerminal
+    let sourceType
+    let sourceSupply
+
+    for (const terminal of allTerminals) {
+      if (terminal.id === targetTerminal.id) continue
+
+      for (const resourceType of demandTypes) {
+        const excessAmount = this.___worldExcess(terminal, resourceType)
+        if (excessAmount > 0) {
+          sourceTerminal = terminal
+          sourceType = resourceType
+          sourceSupply = excessAmount
+          break
+        }
+      }
+    }
+
+    if (sourceTerminal === undefined) {
+      for (const terminal of allTerminals) {
+        if (terminal.id === targetTerminal.id) continue
+
+        for (const resourceType of demandTypes) {
+          const supplyAmount = this.___worldSupply(terminal, resourceType)
+          if (supplyAmount > 0) {
+            sourceTerminal = terminal
+            sourceType = resourceType
+            sourceSupply = supplyAmount
+            break
+          }
+        }
+      }
+    }
+
+    if (sourceTerminal === undefined) {
+      return ERR_NOT_ENOUGH_RESOURCES
+    }
+
+    const targetDemand = this.___worldDemand(targetTerminal, sourceType)
+    if (targetDemand <= 0) {
+      console.log('Unexpected world demant for terminal at [' + targetTerminal.pos + '] for resource type [' + sourceType + ']')
+      return ERR_INVALID_TARGET
+    }
+
+    const amount = Math.min(sourceSupply, targetDemand)
+
+    return sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
   },
 
   __operatePowerSpawn: function (powerSpawn) {
@@ -517,7 +597,7 @@ const cookActor =
 
     const resourceTypes = _.shuffle(_.keys(terminal.store))
     for (const resourceType of resourceTypes) {
-      const excess = this.___excess(terminal, resourceType)
+      const excess = this.___worldExcess(terminal, resourceType)
       if (excess > 0) {
         const order = this.___findBuyOrder(resourceType)
         if (order) {
