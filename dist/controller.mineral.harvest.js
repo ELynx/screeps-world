@@ -35,7 +35,7 @@ mineralHarvestController.act = function (extractor, creep) {
 
 mineralHarvestController.targets = function (room) {
   // don't mine while there is a fight
-  if (Game._fight_ || room._fight_) {
+  if (Game._war_ || Game._fight_ || room._fight_) {
     return []
   }
 
