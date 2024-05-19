@@ -262,7 +262,7 @@ cook._energyRestockPass1 = function (room, creeps) {
 
 cook.__labClusterResourceRestockTargetForCreep = function (room, resourceType) {
   // TODO
-  return undefined
+  return [undefined, undefined]
 }
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
@@ -284,7 +284,7 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   // purposeful
   if (this._hasDemand(room.powerSpawn, resourceType)) return [room.powerSpawn, resourceType]
   if (this._hasDemand(room.nuker, resourceType)) return [room.nuker, resourceType]
-  if (this._labClusterHasDemand(room, resourceType)) return [this.__labClusterResourceRestockTargetForCreep(room, resourceType), resourceType]
+  if (this._labClusterHasDemand(room, resourceType)) return this.__labClusterResourceRestockTargetForCreep(room, resourceType)
   if (this._hasDemand(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   // just unload
