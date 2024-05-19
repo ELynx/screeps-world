@@ -16,6 +16,8 @@ const LinkDestinationTreshold = LINK_CAPACITY / 16
 
 cook.actRange = 1
 
+cook._creepPerTarget = true
+
 cook.___prepareDeltaMap = function (something) {
   if (something.__cook__deltaMap === undefined) {
     something.__cook__deltaMap = new Map()
@@ -88,14 +90,14 @@ cook.__worldDemandTypes = function (structure) {
   return []
 }
 
-cook.__plannedUsedCapacity = function (something, resourceType) {
+cook.___plannedUsedCapacity = function (something, resourceType) {
   const actualAndIntents = intentSolver.getUsedCapacity(something, resourceType)
   const planned = this.___plannedDelta(something, resourceType)
 
   return actualAndIntents + planned
 }
 
-cook.__plannedFreeCapacity = function (something, resourceType) {
+cook.___plannedFreeCapacity = function (something, resourceType) {
   const actualAndIntents = intentSolver.getFreeCapacity(something, resourceType)
   const planned = this.___plannedDelta(something, resourceType)
 
@@ -185,12 +187,81 @@ cook.act = function (structure, creep) {
   }
 }
 
+cook.__needRestockEnergy = function (structure) {
+  return this.___plannedFreeCapacity(structure, RESOURCE_ENERGY) > 0
+}
+
 cook._energyRestockPass1 = function (room, creeps) {
-  return [creeps, []]
+  if (creeps.length === 0) {
+    return [[], []]
+  }
+
+  const prio1 = []
+
+  for (const spawn of room.spawns.values()) {
+    if (this.__needRestockEnergy(spawn)) {
+      prio1.push(spawn)
+    }
+  }
+
+  for (const extension of room.extensions.values()) {
+    if (this.__needRestockEnergy(extension)) {
+      prio1.push(extension)
+    }
+  }
+
+  let unused
+  let used
+
+  if (prio1.length > 0) {
+    const [prio1Unused, prio1Used] = this.assignCreeps(room, creeps, prio1)
+    if (prio1Unused.length === 0) {
+      return [prio1Unused, prio1Used]
+    }
+
+    unused = prio1Unused
+    used = prio1Used
+  } else {
+    unused = creeps
+    used = []
+  }
+
+  if (unused.length > 0) {
+    const prio2 = []
+
+    for (const tower of room.towers.values()) {
+      if (this.__needRestockEnergy(tower)) {
+        prio2.push(tower)
+      }
+    }
+
+    if (prio2.length > 0) {
+      const [prio2Unused, prio2Used] = this.assignCreeps(room, unused, prio2)
+      return [prio2Unused, used.concat(prio2Used)]
+    }
+  }
+
+  return [unused, used]
+}
+
+cook.__resourceRestockCreep = function (room, creep) {
+  // TODO
+  return false
 }
 
 cook._resourceRestock = function (room, creeps) {
-  return [creeps, []]
+  const unused = []
+  const used = []
+
+  for (const creep of creeps) {
+    if (this.__resourceRestockCreep(room, creep)) {
+      used.push(creep)
+    } else {
+      unused.push(creep)
+    }
+  }
+
+  return [unused, used]
 }
 
 cook._controlPass1 = function (room, creeps) {
