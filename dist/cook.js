@@ -512,7 +512,8 @@ const cookActor =
       return ERR_TIRED
     }
 
-    for (const resourceType in terminal.store) {
+    const resourceTypes = _.shuffle(_.keys(terminal.store))
+    for (const resourceType of resourceTypes) {
       const excess = this.___excess(terminal, resourceType)
       if (excess > 0) {
         const order = this.___findBuyOrder(resourceType)
