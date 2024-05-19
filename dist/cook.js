@@ -68,6 +68,11 @@ const cookActor =
     return this.___roomDemand(structure, resourceType) > 0
   },
 
+  _hasSpace: function (structure, resourceType) {
+    // TODO
+    return this._hasDemand(structure, resourceType)
+  },
+
   _labClusterHasDemand: function (labsIterator, resourceType) {
     return this.__labClusterDemand(labsIterator, resourceType) > 0
   },
@@ -212,10 +217,11 @@ const cookActor =
     }
 
     // in order of likelihood of having space for random resource
+    // some are on-demand, some are showe-in
 
     // has space for "stuff"
     if (room.terminal) {
-      if (this._hasDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasSpace(room.terminal, resourceType)) return withCache(room, resourceType, true)
     }
 
     // for reagents lost in transport
@@ -228,7 +234,7 @@ const cookActor =
 
     // for "shiny" things only
     if (room.storage) {
-      if (this._hasDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasSpace(room.storage, resourceType)) return withCache(room, resourceType, true)
     }
 
     // for power lost in transport
@@ -238,7 +244,7 @@ const cookActor =
 
     // if somehow packed resources of interest
     if (room.factory) {
-      if (this._hasDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
+      if (this._hasSpace(room.factory, resourceType)) return withCache(room, resourceType, true)
     }
 
     return withCache(room, resourceType, false)
@@ -256,7 +262,7 @@ const cookActor =
     const mineralType = room.mineralType()
     if (mineralType === '') return false
 
-    return this._hasDemand(room.terminal, mineralType) || this._labClusterHasDemand(room.labs.values(), mineralType)
+    return this._hasSpace(room.terminal, mineralType) || this._labClusterHasDemand(room.labs.values(), mineralType)
   },
 
   _operateHarvesters: function (room) {
@@ -489,6 +495,8 @@ const cookActor =
 
     for (const terminal of allTerminals) {
       if (terminal.id === targetTerminal.id) continue
+      if (terminal._operated_) continue
+      if (terminal.cooldown && terminal.cooldown > 0) continue
 
       for (const resourceType of demandTypes) {
         const excessAmount = this.___worldExcess(terminal, resourceType)
@@ -504,6 +512,8 @@ const cookActor =
     if (sourceTerminal === undefined) {
       for (const terminal of allTerminals) {
         if (terminal.id === targetTerminal.id) continue
+        if (terminal._operated_) continue
+        if (terminal.cooldown && terminal.cooldown > 0) continue
 
         for (const resourceType of demandTypes) {
           const supplyAmount = this.___worldSupply(terminal, resourceType)
@@ -529,7 +539,11 @@ const cookActor =
 
     const amount = Math.min(sourceSupply, targetDemand)
 
-    return sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
+    const rc = sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
+    if (rc >= OK) {
+      sourceTerminal._operated_ = true
+    }
+    return rc
   },
 
   __operatePowerSpawn: function (powerSpawn) {
