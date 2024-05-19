@@ -39,6 +39,15 @@ const loop = function () {
 
   historyActor.act()
 
+  if (Game.flags.war) {
+    Game._fight_ = true
+    Game._war_ = true
+
+    if (Game.time % 100 === 0) {
+      console.log('War enabled by flag at ' + Game.flags.war.pos)
+    }
+  }
+
   // prevent division by zero
   const myCreepsCount = Math.max(1, Game.myCreepsCount)
 
