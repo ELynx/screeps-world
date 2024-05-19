@@ -539,6 +539,14 @@ StructureController.prototype.canActivateSafeMode = function () {
   return this.safeModeAvailable > 0
 }
 
+StructureLab.prototype.isSource = function () {
+  return this.getFromMemory(_isSourceKey_) || false
+}
+
+StructureLab.prototype.setSource = function (flag) {
+  this.setToMemory(_isSourceKey_, flag)
+}
+
 StructureLab.prototype.resourceType = function () {
   const result = this.getFromMemory(_resourceTypeKey_)
 

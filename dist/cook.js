@@ -8,6 +8,9 @@ const Controller = require('./controller.template')
 
 const cook = new Controller('cook')
 
+// STRATEGY lab batch size
+const LabBatchSize = Math.min(NUKER_GHODIUM_CAPACITY / 2, LAB_MINERAL_CAPACITY)
+
 // made up value that is used to plug planned capacity on first assignment
 const MadeUpLargeNumber = 1000000
 
@@ -88,7 +91,7 @@ cook._hasSpace = function (structure, resourceType) {
 
 cook.__labClusterDemand = function (room, resourceType) {
   // TODO
-  return false
+  return 0
 }
 
 cook._labClusterHasDemand = function (room, resourceType) {
@@ -695,10 +698,10 @@ cook._operateLabs = function (room) {
   const outputLabs = []
 
   for (const lab of room.labs.values()) {
-    if (lab.resourceType() === '') {
-      outputLabs.push(lab)
-    } else {
+    if (lab.isSource()) {
       inputLabs.push(lab)
+    } else {
+      outputLabs.push(lab)
     }
   }
 
