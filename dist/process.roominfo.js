@@ -118,6 +118,8 @@ roomInfoProcess.wallLevel = function (room) {
 roomInfoProcess.upgradeLevel = function (room) {
   if (!room._my_) return 0
 
+  if (room.level() < 8) return 0
+
   const MaxDistance = 3
 
   const links = _.filter(Array.from(room.links.values()), _.property('isActiveSimple'))
