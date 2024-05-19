@@ -41,24 +41,27 @@ cook.___worldSupply = function (structure, resourceType) {
   return this.___roomSupply(structure, resourceType)
 }
 
-cook.___roomDemand = function (structure, resourceType) {
-  // TODO
-  return structure.store.getFreeCapacity(resourceType)
-}
-
-cook.___worldDemand = function (structure, resourceType) {
-  // TODO
-  return this.___roomDemand(structure, resourceType)
-}
-
 cook.___worldExcess = function (structure, resourceType) {
   // TODO
   return this.___worldSupply(structure, resourceType) - 5000
 }
 
-cook.__worldDemandTypes = function (structure) {
+cook.___roomDemand = function (structure, resourceType) {
   // TODO
-  return []
+  return structure.store.getFreeCapacity(resourceType)
+}
+
+cook._hasDemand = function (structure, resourceType) {
+  return this.___roomDemand(structure, resourceType) > 0
+}
+
+cook.___roomSpace = function (structure, resourceType) {
+  // TODO
+  return this.___roomDemand(structure, resourceType)
+}
+
+cook._hasSpace = function (structure, resourceType) {
+  return this.___roomSpace(structure, resourceType) > 0
 }
 
 cook.__labClusterDemand = function (labsIterator, resourceType) {
@@ -66,17 +69,18 @@ cook.__labClusterDemand = function (labsIterator, resourceType) {
   return false
 }
 
-cook._hasDemand = function (structure, resourceType) {
-  return this.___roomDemand(structure, resourceType) > 0
-}
-
-cook._hasSpace = function (structure, resourceType) {
-  // TODO
-  return this._hasDemand(structure, resourceType)
-}
-
 cook._labClusterHasDemand = function (labsIterator, resourceType) {
   return this.__labClusterDemand(labsIterator, resourceType) > 0
+}
+
+cook.___worldDemand = function (structure, resourceType) {
+  // TODO
+  return this.___roomDemand(structure, resourceType)
+}
+
+cook.__worldDemandTypes = function (structure) {
+  // TODO
+  return []
 }
 
 cook.__plannedUsedCapacity = function (something, resourceType) {
@@ -118,7 +122,7 @@ cook.__withdrawFromStructureToCreep = function (structure, creep, resourceType) 
 
   const amount = Math.min(canTake, wantGive)
 
-  return intentSolver.wrapCreepIntent(creep, 'withdraw', structure, resourceType, amount)
+  return this.wrapIntent(creep, 'withdraw', structure, resourceType, amount)
 }
 
 cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resourceType) {
@@ -131,15 +135,15 @@ cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resou
 
 cook.__transferFromCreepToStructure = function (structure, creep, resourceType) {
   // check first because dump mode
-  const wantTake = this.___roomDemand(structure, resourceType)
-  if (wantTake <= 0) return ERR_FULL
+  const canTake = this.___roomSpace(structure, resourceType)
+  if (canTake <= 0) return ERR_FULL
 
   const canGive = intentSolver.getUsedCapacity(creep, resourceType)
   if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-  const amount = Math.min(canGive, wantTake)
+  const amount = Math.min(canGive, canTake)
 
-  return intentSolver.wrapCreepIntent(creep, 'transfer', structure, resourceType, amount)
+  return this.wrapIntent(creep, 'transfer', structure, resourceType, amount)
 }
 
 cook._controllerTransferFromCreepToStructure = function (structure, creep) {
