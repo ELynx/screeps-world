@@ -376,6 +376,27 @@ cook._controlPass1 = function (room, creeps) {
 }
 
 cook._controlPass2 = function (room, creeps) {
+  const unused = []
+  const usedHarvesters = []
+
+  for (const creep of creeps) {
+    if (creep.memory.btyp === 'harvester') {
+      for (const link of room.links.values()) {
+        if (link.isSource() && link.isNearTo(creep)) {
+          const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY)
+          if (canTake <= 0) continue
+
+          const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+          if (canGive <= 0) {
+
+          } else {
+            
+          }
+        }
+      }
+    }
+  }
+
   // TODO
   return [creeps, []]
 }
@@ -576,6 +597,14 @@ cook._operateHarvesters = function (room) {
     }
 
     if (!transferred) {
+      // unload to containers only when there is more energy in source
+      // otherwise continue to next harvester
+      const hrc = harvester._source_harvest_specialist_rc_
+      if (hrc === bootstrap.WARN_BOTH_EXHAUSED) continue
+      if (hrc === bootstrap.WARN_INTENDED_EXHAUSTED) continue
+      if (hrc === bootstrap.ERR_INTENDED_EXHAUSTED) continue
+      if (hrc === ERR_NOT_ENOUGH_RESOURCES) continue
+
       for (const container of clusterContainers) {
         const rc = this.__transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
         if (rc >= OK) {
