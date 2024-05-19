@@ -149,6 +149,11 @@ roomInfoProcess.work = function (room) {
       Game.flags.recount.remove()
     }
 
+    if (Game._war_ && !force) {
+      console.log('Skipping room info')
+      return
+    }
+
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
     room.memory.wlvl = this.wallLevel(room)

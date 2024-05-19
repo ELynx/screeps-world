@@ -33,6 +33,7 @@ secutiryProcess.work = function (room) {
   )
 
   if (hostileCreeps.length > 0) {
+    // TODO filter by bodypart
     const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
 
     if (threatTimer + ThreatStep <= Game.time) {

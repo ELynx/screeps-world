@@ -12,7 +12,7 @@ upgradeGenericController._act = function (controller, creep) {
 
 upgradeGenericController._check = function (room) {
   // don't upgrade while there is a fight
-  if (Game._fight_ || room._fight_) {
+  if (Gamepad._war_ || Game._fight_ || room._fight_) {
     return []
   }
 
