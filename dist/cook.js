@@ -38,7 +38,7 @@ cook.___plannedDelta = function (something, resourceType) {
 }
 
 cook.___roomSupply = function (structure, resourceType) {
-  // TODO
+  // TODO ___roomSupply
   return structure.store.getUsedCapacity(resourceType)
 }
 
@@ -53,17 +53,17 @@ cook.__hasSupply = function (structure, resourceType) {
 }
 
 cook.___worldSupply = function (structure, resourceType) {
-  // TODO
+  // TODO ___worldSupply
   return this.___roomSupply(structure, resourceType)
 }
 
 cook.___worldExcess = function (structure, resourceType) {
-  // TODO
+  // TODO ___worldExcess
   return this.___worldSupply(structure, resourceType) - 5000
 }
 
 cook.___roomDemand = function (structure, resourceType) {
-  // TODO
+  // TODO ___roomDemand
   return structure.store.getFreeCapacity(resourceType)
 }
 
@@ -78,7 +78,7 @@ cook._hasDemand = function (structure, resourceType) {
 }
 
 cook.___roomSpace = function (structure, resourceType) {
-  // TODO
+  // TODO ___roomSpace
   return this.___roomDemand(structure, resourceType)
 }
 
@@ -94,7 +94,7 @@ cook._hasSpace = function (structure, resourceType) {
 }
 
 cook.__labClusterDemand = function (room, resourceType) {
-  // TODO
+  // TODO __labClusterDemand
   return 0
 }
 
@@ -312,7 +312,7 @@ cook._energyRestockPass1 = function (room, creeps) {
 }
 
 cook.__labClusterResourceRestockTargetForCreep = function (room, resourceType) {
-  // TODO
+  // TODO __labClusterResourceRestockTargetForCreep
   return [undefined, undefined]
 }
 
@@ -445,17 +445,17 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
 }
 
 cook.__energyRestockSources = function (room) {
-  // TODO
+  // TODO __energyRestockSources
   return []
 }
 
 cook.__resourceRestockSources = function (room, count) {
-  // TODO
+  // TODO __resourceRestockSources
   return []
 }
 
 cook.__prio3EnergyRestockTargets = function (room, count) {
-  // TODO
+  // TODO __prio3EnergyRestockTargets
   return []
 }
 
@@ -998,7 +998,7 @@ cook._performTerminalExchange = function () {
     return ERR_FULL
   }
 
-  // TODO sort by proximity
+  // TODO? sort by proximity
 
   let sourceTerminal
   let sourceType

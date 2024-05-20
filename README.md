@@ -22,7 +22,7 @@ Proprietary and confidential.
 
 In emergency, release stored energy.
 
-Plunders and other creeps has some place to dump resources.
+Plunders and other creeps have some place to dump resources.
 
 Spawn blocked in one room starves other rooms.
 
@@ -34,7 +34,7 @@ Movement and positioning:
 
 * Plunder tries to plunder unreachable sections.
 
-* Because moveTo does not check for reached range.
+* -> Because moveTo does not check for reached range.
 
 * Worker creeps avoid hostile areas.
 
@@ -94,6 +94,8 @@ Unlive old miners.
 
 Room attack definition:
 
+* War flag
+
 * Breached only Streloks on towers and spawns.
 
 * Outlasts.
@@ -108,6 +110,8 @@ Flag to turn verbose naming on and off.
 
 * Auto condition to turn verbose naming on and off.
 
+* -> War?
+
 Instead of healing by towers spawn healers.
 
 No firing at things in room safe mode.
@@ -118,9 +122,9 @@ Don't send military to enemy safe mode rooms.
 
 ### Technical
 
-Intent queue for withdraw and transfer.
+? Intent queue for withdraw and transfer.
 
-Spawn intent uber-wrapper:
+? Spawn intent uber-wrapper:
 
 * Delayed call to spawn
 
