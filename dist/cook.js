@@ -231,7 +231,7 @@ cook.onAssign = function (target, creep) {
 
   if (creep.memory.xtra) {
     this._reserveFromStructureToCreep(target, creep, creep.memory.xtra)
-    target.__cook__recheckSupply
+    target.__cook__recheckSupply = true
   }
 }
 
