@@ -60,7 +60,7 @@ towerProcess.work = function (room) {
         harmful = _.take(harmful, towers.length)
       }
 
-      // TODO matrix solution?
+      // TODO? matrix solution
       harmful = _.shuffle(harmful)
 
       for (let i = 0; i < towers.length; ++i) {
