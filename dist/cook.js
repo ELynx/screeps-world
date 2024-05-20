@@ -478,8 +478,32 @@ cook.__resourceRestockSources = function (room, count) {
 }
 
 cook.__prio3EnergyRestockTargets = function (room, count) {
-  // TODO __prio3EnergyRestockTargets
-  return []
+  if (count === 0) return []
+
+  const targets = []
+
+  if (this.__hasEnergyDemand(room.terminal)) targets.push(room.terminal)
+  if (targets.length >= count) return targets
+
+  for (const lab of room.labs.values()) {
+    if (this.__hasEnergyDemand(lab)) {
+      sources.push(lab)
+      if (targets.length >= count) return targets
+    }
+  }
+
+  if (this.__hasEnergyDemand(room.nuker)) targets.push(room.nuker)
+  if (targets.length >= count) return targets
+
+  if (this.__hasEnergyDemand(room.powerSpawn)) targets.push(room.powerSpawn)
+  if (targets.length >= count) return targets
+
+  if (this.__hasEnergyDemand(room.factory)) targets.push(room.factory)
+  if (targets.length >= count) return targets
+
+  if (this.__hasEnergyDemand(room.storage)) targets.push(room.storage)
+
+  return targets
 }
 
 cook.extra = function (target) {
