@@ -5,6 +5,7 @@ const bootstrap = require('./bootstrap')
 const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
+const intent = require('./routine.intent')
 
 const cook = new Controller('cook')
 
@@ -39,7 +40,7 @@ cook.___plannedDelta = function (something, resourceType) {
 
 cook.___roomSupply = function (structure, resourceType) {
   // TODO ___roomSupply
-  return structure.store.getUsedCapacity(resourceType)
+  return intent.getUsedCapacity(structure, resourceType)
 }
 
 cook.__hasSupply = function (structure, resourceType) {
@@ -75,7 +76,11 @@ cook.___worldExcess = function (structure, resourceType) {
 
 cook.___roomDemand = function (structure, resourceType) {
   // TODO ___roomDemand
-  return structure.store.getFreeCapacity(resourceType)
+  if (resourceType === RESOURCE_ENERGY) {
+    return intentSolver.getFreeCapacity(structure, resourceType)
+  }
+
+  return 0
 }
 
 cook._hasDemand = function (structure, resourceType) {
@@ -90,7 +95,7 @@ cook._hasDemand = function (structure, resourceType) {
 
 cook.___roomSpace = function (structure, resourceType) {
   // TODO ___roomSpace
-  return this.___roomDemand(structure, resourceType)
+  return intentSolver.getFreeCapacity(structure, resourceType)
 }
 
 // expected that if this returns true, _hasDemand returns true as well
