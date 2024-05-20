@@ -12,9 +12,16 @@ sourceHarvestGenericController._act = function (source, creep) {
   return this.wrapIntent(creep, 'harvest', source)
 }
 
-sourceHarvestGenericController._notSticky = function (target) {
-  const others = target.room.getRoomControlledCreeps()
-  return !_.some(others, _.matchesProperty('memory._est', target.id))
+sourceHarvestGenericController._sticky = function (target) {
+  if (target.__sourceHarvestControllers__sticky) return true
+
+  const creeps = target.room.getRoomControlledCreeps()
+  const sticky = _.some(creeps, _.matchesProperty('memory._est', target.id))
+  if (sticky) {
+    target.__sourceHarvestControllers__sticky = true
+  }
+
+  return sticky
 }
 
 sourceHarvestGenericController.act = function (source, creep) {
@@ -30,7 +37,7 @@ sourceHarvestGenericController.validateTarget = function (allTargets, target, cr
   // for room fast start
   if (target.room.spawns && target.room.spawns.size === 0) return true
 
-  return this._notSticky(target)
+  return !this._sticky(target)
 }
 
 sourceHarvestGenericController.targets = function (room) {
@@ -54,8 +61,11 @@ sourceHarvestSpecialistController.roomPrepare = function (room) {
 
 sourceHarvestSpecialistController.observeMyCreep = function (creep) {
   this._excludeTarget(creep)
-  // stick creep to source
-  creep.memory._est = creep.memory.dest
+}
+
+sourceHarvestSpecialistController.onAssign = function (target, creep) {
+  target.__sourceHarvestControllers__sticky = true
+  creep.memory._est = target.id
 }
 
 sourceHarvestSpecialistController.act = function (source, creep) {
@@ -82,7 +92,7 @@ sourceHarvestSpecialistController.validateTarget = function (allTargets, target,
     return target.id === creep.memory._est
   }
 
-  return this._notSticky(target)
+  return !this._sticky(target)
 }
 
 sourceHarvestSpecialistController.filterCreep = function (creep) {
