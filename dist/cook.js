@@ -104,13 +104,12 @@ cook._hasSpace = function (structure, resourceType) {
   return space > planned
 }
 
-cook.__labClusterDemand = function (room, resourceType) {
-  // TODO __labClusterDemand
-  return 0
-}
+cook._labClusterDemandTarget = function (room, resourceType) {
+  for (const lab of room.labs.values()) {
+    if (this._hasDemand(lab, resourceType)) return [lab, resourceType]
+  }
 
-cook._labClusterHasDemand = function (room, resourceType) {
-  return this.__labClusterDemand(room, resourceType) > 0
+  return [undefined, resourceType]
 }
 
 cook.___addWorldDemand = function (structure, resourceType, amount) {
@@ -323,8 +322,11 @@ cook._energyRestockPass1 = function (room, creeps) {
 }
 
 cook.__labClusterResourceRestockTargetForCreep = function (room, resourceType) {
-  // TODO __labClusterResourceRestockTargetForCreep
-  return [undefined, undefined]
+  for (const lab of room.labs.values()) {
+    if (this._hasDemand(lab, resourceType)) {
+
+    }
+  }
 }
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
@@ -346,7 +348,8 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   // purposeful
   if (this._hasDemand(room.powerSpawn, resourceType)) return [room.powerSpawn, resourceType]
   if (this._hasDemand(room.nuker, resourceType)) return [room.nuker, resourceType]
-  if (this._labClusterHasDemand(room, resourceType)) return this.__labClusterResourceRestockTargetForCreep(room, resourceType)
+  const [someLab, someResourceType] = this._labClusterDemandTarget(room, resourceType)
+  if (someLab !== undefined && someResourceType !== undefined) return [someLab, someResourceType]
   if (this._hasDemand(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   // just unload
@@ -775,7 +778,10 @@ cook.roomCanHandle = function (room, resourceType) {
   if (this._hasSpace(room.terminal, resourceType)) return withCache(room, resourceType, true)
 
   // for reagents lost in transport
-  if (this._labClusterHasDemand(room)) return withCache(room, resourceType, true)
+  const [someLab, someResourceType] = this._labClusterDemandTarget(room, resourceType)
+  if (someLab !== undefined && someResourceType !== undefined) {
+    return withCache(room, resourceType, true)
+  }
 
   // for ghodium lost in transport
   if (this._hasDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
@@ -804,7 +810,10 @@ cook.roomCanMine = function (room) {
   const mineralType = room.mineralType()
   if (mineralType === '') return false
 
-  return this._hasSpace(room.terminal, mineralType) || this._labClusterHasDemand(room, mineralType)
+  if (this._hasSpace(room.terminal, mineralType)) return true
+
+  const [someLab, someResourceType] = this._labClusterDemandTarget(room, mineralType)
+  return someLab !== undefined && someResourceType !== undefined
 }
 
 cook._askForEnergyIfNeeded = function (room) {
