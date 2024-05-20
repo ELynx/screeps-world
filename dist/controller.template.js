@@ -74,6 +74,8 @@ function Controller (id) {
 
   this.__controllerTemplate_targetCache = undefined
 
+  this.onAssign = undefined
+
   this._findTargets = function (room) {
     if (this.__controllerTemplate_targetCache) {
       return this.__controllerTemplate_targetCache
@@ -127,6 +129,11 @@ function Controller (id) {
   this._hasWCM = function (creep) {
     bootstrap.activeBodyParts(creep)
     return creep._work_ > 0 && creep._carry_ > 0 && creep._move_ > 0
+  }
+
+  this._hasCM = function (creep) {
+    bootstrap.activeBodyParts(creep)
+    return creep._carry_ > 0 && creep._move_ > 0
   }
 
   this._hasEnergy = function (creep) {
@@ -353,6 +360,11 @@ function Controller (id) {
         }
 
         bootstrap.assignCreep(this, target, path, creep, extra)
+
+        if (_.isFunction(this.onAssign)) {
+          this.onAssign(target, creep)
+        }
+
         assignedCreeps.push(creep)
 
         const circleOptions = { stroke: 'white', fill: 'white', radius: 0.15 }
