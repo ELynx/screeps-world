@@ -445,8 +445,31 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
 }
 
 cook.__energyRestockSources = function (room) {
-  // TODO __energyRestockSources
-  return []
+  if (room.__cook__energyRestockSources) {
+    return room.__cook__energyRestockSources
+  }
+
+  const sources = []
+
+  for (const container of room.__cook__containers) {
+    if (this.__hasSupply(container, RESOURCE_ENERGY)) sources.push(container)
+  }
+
+  if (this.__hasSupply(room.factory, RESOURCE_ENERGY)) sources.push(room.factory)
+
+  for (const link of room.links.values()) {
+    if (this.__hasSupply(link, RESOURCE_ENERGY)) sources.push(link)
+  }
+
+  if (this.__hasSupply(room.storage, RESOURCE_ENERGY)) sources.push(room.storage)
+  if (this.__hasSupply(room.terminal, RESOURCE_ENERGY)) sources.push(room.terminal)
+
+  for (const source of sources) {
+    source.__cook__resourceToTake = RESOURCE_ENERGY
+  }
+
+  room.__cook__energyRestockSources = sources
+  return sources
 }
 
 cook.__resourceRestockSources = function (room, count) {
@@ -561,11 +584,16 @@ cook._controlPass2 = function (room, creeps) {
     if (transports.length > 0) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
-        this._creepPerTarget = false
-        // eslint-disable-next-line no-unused-vars
-        const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
-        for (const creep of used) {
-          creep.__cook__pass2__used = true
+        const prio3EnergyRestockTargets = this.__prio3EnergyRestockTargets(room, transports.length)
+        if (prio3EnergyRestockTargets.length > 0) {
+          transports = _.sample(transports, prio3EnergyRestockTargets.length)
+
+          this._creepPerTarget = false
+          // eslint-disable-next-line no-unused-vars
+          const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
+          for (const creep of used) {
+            creep.__cook__pass2__used = true
+          }
         }
       }
     }
