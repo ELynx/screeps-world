@@ -498,9 +498,9 @@ cook._controlPass2 = function (room, creeps) {
   let priorityEnergyCycle = false
 
   const hasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
-  const hasEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
+  const hasPrioEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
 
-  if (hasEnergyTrap || hasEnergyDemand) {
+  if (hasEnergyTrap || hasPrioEnergyDemand) {
     priorityEnergyCycle = true
 
     const wantEnergy = []
@@ -512,7 +512,7 @@ cook._controlPass2 = function (room, creeps) {
         continue
       }
 
-      if (hasEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
+      if (hasPrioEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
         wantEnergy.push(creep)
       }
     }
