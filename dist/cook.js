@@ -326,14 +326,6 @@ cook._energyRestockPass1 = function (room, creeps) {
   return [unused, used]
 }
 
-cook.__labClusterResourceRestockTargetForCreep = function (room, resourceType) {
-  for (const lab of room.labs.values()) {
-    if (this._hasDemand(lab, resourceType)) {
-
-    }
-  }
-}
-
 cook.__resourceRestockTargetForCreep = function (room, creep) {
   let resourceType
   const resourceTypes = _.shuffle(_.keys(creep.store))
