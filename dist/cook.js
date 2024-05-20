@@ -369,7 +369,7 @@ cook._controlPass1 = function (room, creeps) {
 
   room.__cook__energyRestockAssign = true
   const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
-  room.__cook__energyRestockAssign = unused
+  room.__cook__energyRestockAssign = undefined
 
   const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
 
@@ -494,6 +494,7 @@ cook._controlPass2 = function (room, creeps) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
         this._creepPerTarget = false
+        // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, wantEnergy, energyRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
@@ -516,6 +517,7 @@ cook._controlPass2 = function (room, creeps) {
       const resourceRestockSources = this.__resourceRestockSources(room, transports.length)
       if (resourceRestockSources.length > 0) {
         this._creepPerTarget = false
+        // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, transports, resourceRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
