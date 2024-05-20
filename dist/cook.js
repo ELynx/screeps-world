@@ -42,6 +42,16 @@ cook.___roomSupply = function (structure, resourceType) {
   return structure.store.getUsedCapacity(resourceType)
 }
 
+cook.__hasSupply = function (structure, resourceType) {
+  // save typing down the line
+  if (structure === undefined) return false
+
+  const supply = this.___roomSupply(structure, resourceType)
+  const planned = this.___plannedDelta(structure, resourceType)
+
+  return supply + planned > 0
+}
+
 cook.___worldSupply = function (structure, resourceType) {
   // TODO
   return this.___roomSupply(structure, resourceType)
@@ -218,6 +228,24 @@ cook.onAssign = function (target, creep) {
   if (target.room.__cook__energyRestockAssign) {
     target.__cook__hasEnergyDemand = false
   }
+
+  if (creep.memory.xtra) {
+    this._reserveFromStructureToCreep(target, creep, creep.memory.xtra)
+    target.__cook__recheckSupply
+  }
+}
+
+cook.validateTarget = function (allTargets, target, creep) {
+  // pay respect to defaults
+  if (!this._validateTarget(allTargets, target, creep)) {
+    return false
+  }
+
+  if (target.__cook__resourceToTake && target.__cook__recheckSupply) {
+    return this.__hasSupply(target, target.__cook__resourceToTake)
+  }
+
+  return true
 }
 
 cook._energyRestockPass1 = function (room, creeps) {
@@ -430,7 +458,6 @@ cook.extra = function (target) {
   return target.__cook__resourceToTake
 }
 
-// TODO validate store
 cook._controlPass2 = function (room, creeps) {
   // transfer energy reserves from containers to links
   for (const link of room.links.values()) {
