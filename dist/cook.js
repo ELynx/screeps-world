@@ -376,29 +376,54 @@ cook._controlPass1 = function (room, creeps) {
 }
 
 cook._controlPass2 = function (room, creeps) {
-  const unused = []
-  const usedHarvesters = []
+  // transfer energy reserves from containers to links
+  for (const link of room.links.values()) {
+    if (!link.isSource()) continue
 
-  for (const creep of creeps) {
-    if (creep.memory.btyp === 'harvester') {
-      for (const link of room.links.values()) {
-        if (link.isSource() && link.isNearTo(creep)) {
-          const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY)
-          if (canTake <= 0) continue
+    const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY)
+    if (canTake <= 0) continue
 
-          const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
-          if (canGive <= 0) {
+    for (const creep of creeps) {
+      if (creep.memory.btyp !== 'harvester') continue
+      if (!creep.pos.isNearTo(link)) continue
 
-          } else {
-            
+      const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+      if (canGive <= 0) {
+        const amount = Math.min(canTake, canGive)
+        const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
+        if (rc >= OK) {
+          creep.__cook__pass2__used = true
+          break // from creeps loop
+        }
+      } else {
+        for (const container of room.__cook__containers) {
+          if (!creep.pos.isNearTo(container)) continue
+          if (intentSolver.getUsedCapacity(container, RESOURCE_ENERGY) <= 0) continue
+
+          const rc1 = this.wrapIntent(creep, 'withdraw', container, RESOURCE_ENERGY)
+          if (rc1 >= OK) {
+            creep.__cook__pass2__used = true
+            break // from containers loop
           }
         }
+
+        if (creep.__cook__pass2__used) break // from creeps loop
       }
     }
   }
 
-  // TODO
-  return [creeps, []]
+  const unused = []
+  const used = []
+
+  for (const creep of creeps) {
+    if (creep.__cook__pass2__used) {
+      used.push(creep)
+    } else {
+      unused.push(creep)
+    }
+  }
+
+  return [unused, used]
 }
 
 cook.control = function (room, creeps) {
