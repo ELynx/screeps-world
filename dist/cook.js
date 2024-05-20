@@ -233,7 +233,7 @@ cook._energyRestockPass1 = function (room, creeps) {
     }
   }
 
-  //this is so numerous that any speedup helps
+  // this is so numerous that any speedup helps
   for (const extension of room.extensions.values()) {
     if (extension.__cook__hasEnergyDemand === true) {
       prio1.push(extension)
@@ -402,7 +402,7 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
     if (this.__hasEnergyDemand(spawn)) return true
   }
 
-  //this is so numerous that any speedup helps
+  // this is so numerous that any speedup helps
   for (const extension of room.extensions.values()) {
     if (extension.__cook__hasEnergyDemand === true) return true
     if (extension.__cook__hasEnergyDemand === false) continue
