@@ -8,9 +8,6 @@ const Controller = require('./controller.template')
 
 const cook = new Controller('cook')
 
-// STRATEGY lab batch size
-const LabBatchSize = Math.min(NUKER_GHODIUM_CAPACITY / 2, LAB_MINERAL_CAPACITY)
-
 // made up value that is used to plug planned capacity on first assignment
 const MadeUpLargeNumber = 1000000
 
@@ -22,9 +19,6 @@ const LinkDestinationTreshold = LINK_CAPACITY / 16
 const PostCPUTarget = Game.cpu.limit - 0.5
 
 cook.actRange = 1
-
-// when doing "matrix" assignment with function from base class, assign once
-cook._creepPerTarget = true
 
 cook.__adjustPlannedDelta = function (something, resourceType, delta) {
   if (something.__cook__deltaMap === undefined) {
@@ -212,7 +206,18 @@ cook.act = function (structure, creep) {
 }
 
 cook.__hasEnergyDemand = function (structure) {
-  return this._hasDemand(structure, RESOURCE_ENERGY)
+  if (structure.__cook__hasEnergyDemand !== undefined) {
+    return structure.__cook__hasEnergyDemand
+  }
+
+  structure.__cook__hasEnergyDemand = this._hasDemand(structure, RESOURCE_ENERGY)
+  return structure.__cook__hasEnergyDemand
+}
+
+cook.onAssign = function (target, creep) {
+  if (target.room.__cook__energyRestockAssign) {
+    target.__cook__hasEnergyDemand = false
+  }
 }
 
 cook._energyRestockPass1 = function (room, creeps) {
@@ -228,7 +233,17 @@ cook._energyRestockPass1 = function (room, creeps) {
     }
   }
 
+  //this is so numerous that any speedup helps
   for (const extension of room.extensions.values()) {
+    if (extension.__cook__hasEnergyDemand === true) {
+      prio1.push(extension)
+      continue
+    }
+
+    if (extension.__cook__hasEnergyDemand === false) {
+      continue
+    }
+
     if (this.__hasEnergyDemand(extension)) {
       prio1.push(extension)
     }
@@ -349,8 +364,15 @@ cook._controlPass1 = function (room, creeps) {
   }
 
   // unload
+
+  this._creepPerTarget = true
+
+  room.__cook__energyRestockAssign = true
   const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
+  room.__cook__energyRestockAssign = unused
+
   const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
+
   const unused = empty.concat(energyUnused).concat(resourceUnused)
   const used = energyUsed.concat(resourceUsed)
 
@@ -375,6 +397,40 @@ cook._controlPass1 = function (room, creeps) {
   return [unused, used]
 }
 
+cook.__hasPrio1And2EnergyRestockTargets = function (room) {
+  for (const spawn of room.spawns.values()) {
+    if (this.__hasEnergyDemand(spawn)) return true
+  }
+
+  //this is so numerous that any speedup helps
+  for (const extension of room.extensions.values()) {
+    if (extension.__cook__hasEnergyDemand === true) return true
+    if (extension.__cook__hasEnergyDemand === false) continue
+    if (this.__hasEnergyDemand(extension)) return true
+  }
+
+  for (const tower of room.towers.values()) {
+    if (this.__hasEnergyDemand(tower)) return true
+  }
+
+  return false
+}
+
+cook.__energyRestockSources = function (room) {
+  // TODO
+  return []
+}
+
+cook.__resourceRestockSources = function (room, count) {
+  // TODO
+  return []
+}
+
+cook.extra = function (target) {
+  return target.__cook__resourceToTake
+}
+
+// TODO validate store
 cook._controlPass2 = function (room, creeps) {
   // transfer energy reserves from containers to links
   for (const link of room.links.values()) {
@@ -412,10 +468,71 @@ cook._controlPass2 = function (room, creeps) {
     }
   }
 
+  let priorityEnergyCycle = false
+
+  const hasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
+  const hasEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
+
+  if (hasEnergyTrap || hasEnergyDemand) {
+    priorityEnergyCycle = true
+
+    const wantEnergy = []
+    for (const creep of creeps) {
+      if (creep.__cook__pass2__used) continue
+
+      if (hasEnergyTrap && creep._was_trap_ === RESOURCE_ENERGY) {
+        wantEnergy.push(creep)
+        continue
+      }
+
+      if (hasEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
+        wantEnergy.push(creep)
+      }
+    }
+
+    if (wantEnergy.length > 0) {
+      const energyRestockSources = this.__energyRestockSources(room)
+      if (energyRestockSources.length > 0) {
+        this._creepPerTarget = false
+        const [unused, used] = this.assignCreeps(room, wantEnergy, energyRestockSources)
+        for (const creep of used) {
+          creep.__cook__pass2__used = true
+        }
+      }
+    }
+  }
+
+  if (!priorityEnergyCycle) {
+    const transports = []
+    for (const creep of creeps) {
+      if (creep.__cook__pass2__used) continue
+
+      if (this._hasCM && this._hasFreeCapacity(creep)) {
+        transports.push(creep)
+      }
+    }
+
+    if (transports.length > 0) {
+      const resourceRestockSources = this.__resourceRestockSources(room, transports.length)
+      if (resourceRestockSources.length > 0) {
+        this._creepPerTarget = false
+        const [unused, used] = this.assignCreeps(room, transports, resourceRestockSources)
+        for (const creep of used) {
+          creep.__cook__pass2__used = true
+        }
+      }
+    }
+  }
+
+  room.traps = []
+
   const unused = []
   const used = []
 
   for (const creep of creeps) {
+    creep._trap_ = undefined
+    creep._was_trap_ = undefined
+
     if (creep.__cook__pass2__used) {
       used.push(creep)
     } else {
