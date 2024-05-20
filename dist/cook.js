@@ -818,8 +818,7 @@ cook._askForEnergyIfNeeded = function (room) {
   if (!room.terminal) return
   if (room.memory.slvl > 1) return
 
-  const hasSupply = this.___roomSupply(room.terminal, RESOURCE_ENERGY)
-  if (hasSupply > 0) return
+  if (this.__hasSupply(room.terminal, RESOURCE_ENERGY)) return
 
   this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
 }
