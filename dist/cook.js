@@ -53,13 +53,24 @@ cook.__hasSupply = function (structure, resourceType) {
 }
 
 cook.___worldSupply = function (structure, resourceType) {
-  // TODO ___worldSupply
-  return this.___roomSupply(structure, resourceType)
+  const roomSupply = this.___roomSupply(structure, resourceType)
+  // STRATEGY histeresis on resource movement
+  if (roomSupply <= 1000) return 0
+
+  return roomSupply
 }
 
 cook.___worldExcess = function (structure, resourceType) {
-  // TODO ___worldExcess
-  return this.___worldSupply(structure, resourceType) - 5000
+  if (resourceType !== RESOURCE_ENERGY) {
+    if (this.___roomNeedResource(structure.room, resourceType)) return 0
+    return this.___worldSupply(structure, resourceType)
+  }
+
+  const roomSupply = this.___roomSupply(structure, resourceType)
+  // STRATEGY histeresis on resource movement
+  if (roomSupply <= SOURCE_ENERGY_CAPACITY) return 0
+
+  return roomSupply
 }
 
 cook.___roomDemand = function (structure, resourceType) {
@@ -796,6 +807,17 @@ cook.roomCanMine = function (room) {
   return this._hasSpace(room.terminal, mineralType) || this._labClusterHasDemand(room, mineralType)
 }
 
+cook._askForEnergyIfNeeded = function (room) {
+  if (!room._my_) return
+  if (!room.terminal) return
+  if (room.memory.slvl > 1) return
+
+  const hasSupply = this.___roomSupply(room.terminal, RESOURCE_ENERGY)
+  if (hasSupply > 0) return
+
+  this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
+}
+
 cook._operateHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
 
@@ -1048,6 +1070,8 @@ cook._operateLinks = function (room) {
 }
 
 cook._operateLabs = function (room) {
+  if (!room._my_) return
+
   const inputLabs = []
   const outputLabs = []
 
@@ -1090,6 +1114,7 @@ cook._operateLabs = function (room) {
 
 // called from room actor after controllers
 cook.roomPost = function (room) {
+  this._askForEnergyIfNeeded(room)
   this._operateHarvesters(room)
   this._operateLinks(room)
   this._operateLabs(room)
