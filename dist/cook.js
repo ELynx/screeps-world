@@ -454,6 +454,11 @@ cook.__resourceRestockSources = function (room, count) {
   return []
 }
 
+cook.__prio3EnergyRestockTargets = function (room, count) {
+  // TODO
+  return []
+}
+
 cook.extra = function (target) {
   return target.__cook__resourceToTake
 }
@@ -531,11 +536,11 @@ cook._controlPass2 = function (room, creeps) {
   }
 
   if (!priorityEnergyCycle) {
-    const transports = []
+    let transports = []
     for (const creep of creeps) {
       if (creep.__cook__pass2__used) continue
 
-      if (this._hasCM && this._hasFreeCapacity(creep)) {
+      if (this._hasCM && this._isEmpty(creep)) {
         transports.push(creep)
       }
     }
@@ -544,8 +549,21 @@ cook._controlPass2 = function (room, creeps) {
       const resourceRestockSources = this.__resourceRestockSources(room, transports.length)
       if (resourceRestockSources.length > 0) {
         this._creepPerTarget = false
-        // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, transports, resourceRestockSources)
+        for (const creep of used) {
+          creep.__cook__pass2__used = true
+        }
+        transports = unused
+      }
+    }
+
+    // go fill with energy, always an opportunity
+    if (transports.length > 0) {
+      const energyRestockSources = this.__energyRestockSources(room)
+      if (energyRestockSources.length > 0) {
+        this._creepPerTarget = false
+        // eslint-disable-next-line no-unused-vars
+        const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
         }
@@ -555,13 +573,33 @@ cook._controlPass2 = function (room, creeps) {
 
   room.traps = []
 
-  const unused = []
-  const used = []
-
+  const remainder = []
   for (const creep of creeps) {
     creep._trap_ = undefined
     creep._was_trap_ = undefined
 
+    if (creep.__cook__pass2__used) continue
+
+    if (this._hasCM(creep) && this._hasEnergy(creep)) {
+      remainder.push(creep)
+    }
+  }
+
+  if (remainder.length > 0) {
+    const prio3EnergyRestockTargets = this.__prio3EnergyRestockTargets(room, remainder.length)
+    if (prio3EnergyRestockTargets.length > 0) {
+      this._creepPerTarget = true
+      // eslint-disable-next-line no-unused-vars
+      const [unused, used] = this.assignCreeps(room, remainder, prio3EnergyRestockTargets)
+      for (const creep of used) {
+        creep.__cook__pass2__used = true
+      }
+    }
+  }
+
+  const unused = []
+  const used = []
+  for (const creep of creeps) {
     if (creep.__cook__pass2__used) {
       used.push(creep)
     } else {
