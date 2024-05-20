@@ -82,8 +82,6 @@ Auto create security_ flags based on autobuild.
 
 ### Economy
 
-Clean up source and other technical containers.
-
 Cluster restock.
 
 Global Control farm rooms.

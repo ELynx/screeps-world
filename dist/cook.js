@@ -472,9 +472,76 @@ cook.__energyRestockSources = function (room) {
   return sources
 }
 
+cook.___roomNeedResource = function (room, resourceType) {
+  if (this.___roomDemand(room.factory, resourceType)) return true
+
+  for (const lab of room.labs.values()) {
+    if (this.___roomDemand(lab, resourceType)) return true
+  }
+
+  if (this.___roomDemand(room.nuker, resourceType)) return true
+  if (this.___roomDemand(room.powerSpawn, resourceType)) return true
+  if (this.___roomDemand(room.storage, resourceType)) return true
+  if (this.___roomDemand(room.terminal, resourceType)) return true
+
+  return false
+}
+
 cook.__resourceRestockSources = function (room, count) {
-  // TODO __resourceRestockSources
-  return []
+  if (count === 0) return []
+
+  const sources = []
+
+  // force flush containers
+  for (const container of room.__cook__containers) {
+    const stored = _.shuffle(_.keys(container.store))
+    if (!_.every(stored, _.matches(RESOURCE_ENERGY))) {
+      for (const resourceType of stored) {
+        if (resourceType === RESOURCE_ENERGY) continue
+
+        if (this.__hasSupply(container, resourceType)) {
+          container.__cook__resourceToTake = resourceType
+          sources.push(container)
+          break // from stored loop
+        }
+      }
+    }
+
+    if (sources.length >= count) return sources
+  }
+
+  const pushStore = structure => {
+    const stored = _.shuffle(_.keys(structure.store))
+    for (const resourceType of stored) {
+      if (resourceType === RESOURCE_ENERGY) continue
+
+      if (!this.__hasSupply(structure, resourceType)) continue
+
+      if (this.___roomNeedResource(room, resourceType)) {
+        structure.__cook__resourceToTake = resourceType
+        return true
+      }
+    }
+
+    return false
+  }
+
+  if (pushStore(room.factory)) sources.push(room.factory)
+  if (sources.length >= count) return sources
+
+  for (const lab of room.labs.values()) {
+    if (pushStore(lab)) {
+      sources.push(lab)
+      if (sources.length >= count) return sources
+    }
+  }
+
+  if (pushStore(room.storage)) sources.push(room.storage)
+  if (sources.length >= count) return sources
+
+  if (pushStore(room.terminal)) sources.push(room.terminal)
+
+  return sources
 }
 
 cook.__prio3EnergyRestockTargets = function (room, count) {
@@ -487,7 +554,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 
   for (const lab of room.labs.values()) {
     if (this.__hasEnergyDemand(lab)) {
-      sources.push(lab)
+      targets.push(lab)
       if (targets.length >= count) return targets
     }
   }
