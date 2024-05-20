@@ -75,9 +75,57 @@ cook.___worldExcess = function (structure, resourceType) {
 }
 
 cook.___roomDemand = function (structure, resourceType) {
-  // TODO ___roomDemand
-  if (resourceType === RESOURCE_ENERGY) {
-    return intentSolver.getFreeCapacity(structure, resourceType)
+  const structureType = structure.structureType
+
+  if (structureType === STRUCTURE_EXTENSION ||
+      structureType === STRUCTURE_SPAWN ||
+      structureType === STRUCTURE_TOWER) {
+    if (resourceType !== RESOURCE_ENERGY) return 0
+
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+  }
+
+  if (structureType === STRUCTURE_LAB) {
+    if (resourceType === RESOURCE_ENERGY) return 0
+
+    const designated = structure.resourceType()
+    if (designated === '') return 0
+    if (designated !== resourceType) return 0
+
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+  }
+
+  if (structureType === STRUCTURE_TERMINAL) {
+    if (resourceType !== RESOURCE_ENERGY) return 0
+
+    const now = intentSolver.getUsedCapacity(structure, resourceType)
+    const left = 30000 - now
+    return Math.max(left, 0)
+  }
+
+  // TODO storage want shinies
+
+  if (structureType === STRUCTURE_FACTORY) {
+    if (resourceType === RESOURCE_GHODIUM_MELT ||
+        resourceType === RESOURCE_BATTERY) {
+      const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const left = 10000 - now
+      return Math.max(left, 0)
+    }
+
+    if (resourceType === RESOURCE_ENERGY) {
+      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) ||0
+      if (nowReagent1 <= 0) return 0
+
+      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType)
+      const left = (nowReagent1 * 2) - nowReagent2
+      return Math.max(left, 0)
+    }
+  }
+
+  if (structureType === STRUCTURE_NUKER ||
+      structureType == STRUCTURE_POWER_SPAWN) {
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
   return 0
@@ -111,6 +159,7 @@ cook._hasSpace = function (structure, resourceType) {
 
 cook._labClusterDemandTarget = function (room, resourceType) {
   for (const lab of room.labs.values()) {
+    // TODO bath size
     if (this._hasDemand(lab, resourceType)) return [lab, resourceType]
   }
 
