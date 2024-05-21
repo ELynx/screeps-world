@@ -9,7 +9,7 @@ const Controller = require('./controller.template')
 const cook = new Controller('cook')
 
 // STRATEGY demands and supplies
-const WorldGreedFactor = 1000
+const WorldSupplyHisteresis = 1000
 const TerminalEnergyDemand = 30000
 const FactoryAnyReagentDemand = 10000
 
@@ -78,7 +78,7 @@ cook.___roomSupply = function (structure, resourceType) {
 
   if (structureType === STRUCTURE_TERMINAL) {
     if (resourceType === RESOURCE_ENERGY) {
-      const now = intentSolver.getUsedCapacity(structure, resourceType)
+      const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
       const free = now - TerminalEnergyDemand
       return Math.max(free, 0)
     }
@@ -148,27 +148,14 @@ cook.___hasFlush = function (structure) {
 cook.___worldSupply = function (structure, resourceType) {
   const roomSupply = this.___roomSupply(structure, resourceType)
   // STRATEGY histeresis on resource movement
-  if (roomSupply <= WorldGreedFactor) return 0
+  if (roomSupply <= WorldSupplyHisteresis) return 0
 
   return roomSupply
 }
 
 cook.___worldExcess = function (structure, resourceType) {
-  if (resourceType !== RESOURCE_ENERGY) {
-    if (this.___roomNeedResource(structure.room, resourceType)) return 0
-    return this.___worldSupply(structure, resourceType)
-  }
-
-  const roomSupply = this.___roomSupply(structure, resourceType)
-  // STRATEGY histeresis on energy movement
-  if (roomSupply <= SOURCE_ENERGY_CAPACITY) return 0
-
-  return roomSupply
-}
-
-cook.__labDemandImpl = function (lab, resourceType) {
-  // TODO __labDemandImpl
-  return intentSolver.getFreeCapacity(lab, resourceType) || 0
+  // TODO ___worldExcess
+  return 0
 }
 
 cook.___roomDemand = function (structure, resourceType) {
@@ -183,13 +170,8 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    if (resourceType === RESOURCE_ENERGY) return 0
-    if (!structure.isSource()) return 0
-
-    const reagentType = structure.resourceType()
-    if (reagentType === '') return 0
-    if (reagentType !== resourceType) return 0
-    return this.__labDemandImpl(structure, resourceType)
+    // TODO cook scheme
+    return 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -240,7 +222,7 @@ cook._hasDemand = function (structure, resourceType) {
 
 cook.___roomSpace = function (structure, resourceType) {
   // TODO ___roomSpace
-  return intentSolver.getFreeCapacity(structure, resourceType)
+  return this.___roomDemand(structure, resourceType)
 }
 
 // expected that if this returns true, _hasDemand returns true as well
@@ -288,7 +270,7 @@ cook.__worldDemandTypes = function (structure) {
 }
 
 cook._reserveFromStructureToCreep = function (structure, creep, resourceType) {
-  const freeSpace = intentSolver.getFreeCapacity(creep, resourceType)
+  const freeSpace = intentSolver.getFreeCapacity(creep, resourceType) || 0
   if (freeSpace <= 0) return
 
   this.__adjustPlannedDelta(structure, resourceType, -1 * freeSpace)
@@ -296,7 +278,7 @@ cook._reserveFromStructureToCreep = function (structure, creep, resourceType) {
 
 cook._expectFromCreepToStructure = function (structure, creep) {
   for (const resourceType in creep.store) {
-    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType)
+    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType) || 0
     if (usedSpace <= 0) continue
 
     this.__adjustPlannedDelta(structure, resourceType, usedSpace)
@@ -304,7 +286,7 @@ cook._expectFromCreepToStructure = function (structure, creep) {
 }
 
 cook.__withdrawFromStructureToCreep = function (structure, creep, resourceType) {
-  const canTake = creep.store.getFreeCapacity(resourceType)
+  const canTake = intentSolver.getFreeCapacity(creep, resourceType) || 0
   if (canTake <= 0) return ERR_FULL
 
   const wantGive = this.___roomSupply(structure, resourceType)
@@ -328,7 +310,7 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
   const canTake = this.___roomSpace(structure, resourceType)
   if (canTake <= 0) return ERR_FULL
 
-  const canGive = intentSolver.getUsedCapacity(creep, resourceType)
+  const canGive = intentSolver.getUsedCapacity(creep, resourceType) || 0
   if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
   const amount = Math.min(canGive, canTake)
@@ -491,7 +473,7 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   if (this._hasDemand(room.powerSpawn, resourceType)) return [room.powerSpawn, resourceType]
   if (this._hasDemand(room.nuker, resourceType)) return [room.nuker, resourceType]
   const [someLab, someResourceType] = this._labClusterDemandTarget(room, resourceType)
-  if (someLab !== undefined && someResourceType !== undefined) return [someLab, someResourceType]
+  if (someLab !== undefined && someResourceType !== undefined) return [someLab, resourceType]
   if (this._hasDemand(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   // just unload
@@ -532,13 +514,14 @@ cook._controlPass1 = function (room, creeps) {
   const creepsWithNonEnergy = []
 
   for (const creep of creeps) {
-    const energy = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
-    const total = intentSolver.getUsedCapacity(creep)
+    const total = intentSolver.getUsedCapacity(creep) || 0
 
     if (total <= 0) {
       empty.push(creep)
       continue
     }
+
+    const energy = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
 
     if (total > energy) {
       creepsWithNonEnergy.push(creep)
@@ -766,14 +749,14 @@ cook._controlPass2 = function (room, creeps) {
   for (const link of room.links.values()) {
     if (!link.isSource()) continue
 
-    const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY)
+    const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
     if (canTake <= 0) continue
 
     for (const creep of creeps) {
       if (creep.memory.btyp !== 'harvester') continue
       if (!creep.pos.isNearTo(link)) continue
 
-      const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY)
+      const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
       if (canGive <= 0) {
         const amount = Math.min(canTake, canGive)
         const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
@@ -784,7 +767,7 @@ cook._controlPass2 = function (room, creeps) {
       } else {
         for (const container of room.__cook__containers) {
           if (!creep.pos.isNearTo(container)) continue
-          if (intentSolver.getUsedCapacity(container, RESOURCE_ENERGY) <= 0) continue
+          if (!this.__hasSupply(container, RESOURCE_ENERGY)) continue
 
           const rc1 = this.wrapIntent(creep, 'withdraw', container, RESOURCE_ENERGY)
           if (rc1 >= OK) {
@@ -996,11 +979,7 @@ cook._askWorld = function (room) {
     }
   }
 
-  if (room.nuker && room.labs.size === 0) {
-    if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-      this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, NUKER_GHODIUM_CAPACITY)
-    }
-  }
+  // TODO ask for ghodium when nuker but no labs
 }
 
 cook._operateHarvesters = function (room) {
@@ -1165,12 +1144,22 @@ cook._operateLinks = function (room) {
 
   const useAsSource = someLink => {
     if (someLink.cooldown && someLink.cooldown > 0) return false
-    const energy = this.__plannedUsedCapacity(someLink, RESOURCE_ENERGY)
+    const energyInt = intentSolver.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
+    const energyNow = someLink.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
+    const energy = Math.min(energyInt, energyNow)
+
+    const plannedDelta = this.___plannedDelta(someLink, RESOURCE_ENERGY)
+
+    const free = plannedDelta > 0 ? energy : (energy + plannedDelta)
+
+    someLink.__cook__freeEnergy = free
+
     // to avoid frantic sends
-    return energy >= LinkSourceTreshold
+    return free >= LinkSourceTreshold
   }
 
   const useAsDest = someLink => {
+    if (intentSolver.getFreeCapacity(someLink, RESOURCE_ENERGY) <= 0) return false
     // cut off transfer, due to losses it is never 100% full
     return someLink.store.getFreeCapacity(RESOURCE_ENERGY) > LinkDestinationTreshold
   }
@@ -1195,7 +1184,7 @@ cook._operateLinks = function (room) {
   sources.sort(
     (l1, l2) => {
       // STRATEGY most energy first
-      return l2.store[RESOURCE_ENERGY] - l1.store[RESOURCE_ENERGY]
+      return l2.__cook__freeEnergy - l1.__cook__freeEnergy
     }
   )
 
@@ -1245,7 +1234,7 @@ cook._operateLinks = function (room) {
   for (const source of sources) {
     const destination = destinations[destinationIndex]
 
-    source.transferEnergy(destination)
+    source.transferEnergy(destination, source.__cook__freeEnergy)
 
     ++destinationIndex
     if (destinationIndex >= destinations.length) {
@@ -1415,13 +1404,13 @@ cook.__operateFactory = function (factory) {
     return ERR_FULL
   }
 
+  if (factory.store.getUsedCapacity(RESOURCE_BATTERY) >= 50) {
+    return factory.produce(RESOURCE_ENERGY)
+  }
+
   if (factory.store.getUsedCapacity(RESOURCE_GHODIUM_MELT) >= 100 &&
       factory.store.getUsedCapacity(RESOURCE_ENERGY) >= 200) {
     return factory.produce(RESOURCE_GHODIUM)
-  }
-
-  if (factory.store.getUsedCapacity(RESOURCE_BATTERY) >= 50) {
-    return factory.produce(RESOURCE_ENERGY)
   }
 
   return ERR_NOT_ENOUGH_RESOURCES
