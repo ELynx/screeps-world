@@ -663,16 +663,16 @@ cook.___roomNeedResource = function (room, resourceType) {
     return value
   }
 
-  if (this.___roomDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
+  if (room.factory && this.___roomDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
 
   for (const lab of room.labs.values()) {
     if (this.___roomDemand(lab, resourceType)) return withCache(room, resourceType, true)
   }
 
-  if (this.___roomDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
-  if (this.___roomDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
-  if (this.___roomDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
-  if (this.___roomDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
+  if (room.nuker && this.___roomDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
+  if (room.powerSpawn && this.___roomDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
+  if (room.storage && this.___roomDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
+  if (room.terminal && this.___roomDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
 
   return withCache(room, resourceType, false)
 }
