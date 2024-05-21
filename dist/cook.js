@@ -221,7 +221,26 @@ cook._hasDemand = function (structure, resourceType) {
 }
 
 cook.___roomSpace = function (structure, resourceType) {
-  // TODO ___roomSpace
+  const structureType = structure.structureType
+
+  if (structureType === STRUCTURE_CONTAINER) {
+    if (resourceType !== RESOURCE_ENERGY) return 0
+    return intentSolver.getFreeCapacity(structure, resourceType)
+  }
+
+  if (structureType === STRUCTURE_STORAGE) {
+    if (resourceType === RESOURCE_ENERGY ||
+        resourceType === RESOURCE_OPS ||
+        resourceType === RESOURCE_POWER) {
+      return intentSolver.getFreeCapacity(structure, resourceType)
+    }
+
+    return 0
+  }
+
+  // TODO factory above demand
+  // TODO terminal above demand
+
   return this.___roomDemand(structure, resourceType)
 }
 
@@ -1244,7 +1263,7 @@ cook._operateLinks = function (room) {
 }
 
 cook._operateLabs = function (room) {
-  // TODO _operateLabs lab schema
+  // TODO _operateLabs cook schema
 }
 
 // called from room actor after controllers
