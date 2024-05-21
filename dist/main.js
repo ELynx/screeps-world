@@ -13,6 +13,8 @@ const cleanup = require('./routine.cleanup')
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
 // console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
 
+let skipTicks = 2
+
 let profiler
 
 // load and enable profiler with a flag on map during load
@@ -45,6 +47,18 @@ const loop = function () {
     if (Game.time % 100 === 0) {
       console.log('War enabled by flag at ' + Game.flags.war.pos)
     }
+  }
+
+  if (skipTicks > 0) {
+    --skipTicks
+
+    if (!Game._fight_ && !Game._war_) {
+      console.log('Skipping tick after code load')
+      return
+    }
+
+    console.log('Skipping ticks ignored')
+    skipTicks = 0
   }
 
   // prevent division by zero
