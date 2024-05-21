@@ -76,9 +76,8 @@ cook.___roomSupply = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    if (structure.isSource()) return 0
-    if (structure.mineralType !== resourceType) return 0
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    // TODO ___roomSupply cook schema
+    return 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -139,7 +138,6 @@ cook.___hasFlush = function (structure) {
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_OPS) continue
       if (resourceType === RESOURCE_POWER) continue
-      if (resourceType === RESOURCE_ENERGY) continue
 
       if (this.__hasSupply(structure, resourceType)) return resourceType
     }
@@ -175,7 +173,7 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    // ___roomDemand TODO cook schema
+    // TODO ___roomDemand cook schema
     return 0
   }
 
@@ -250,30 +248,28 @@ cook.___roomSpace = function (structure, resourceType) {
     }
 
     if (above > 0) {
-      const totalUsed = intentSolver.getFreeCapacity(structure) || 0
-      const freeUnused = FactoryTotalMax - totalUsed
-      const remaining = Math.max(freeUnused, 0)
+      const used = intentSolver.getUsedCapacity(structure) || 0
+      const can = FactoryTotalMax - used
+      const remaining = Math.max(can, 0)
       above = Math.min(above, remaining)
     }
   }
 
   if (structureType === STRUCTURE_STORAGE) {
-    if (resourceType === RESOURCE_ENERGY ||
-        resourceType === RESOURCE_OPS ||
+    if (resourceType === RESOURCE_OPS ||
         resourceType === RESOURCE_POWER) {
       above = intentSolver.getFreeCapacity(structure, resourceType) || 0
     }
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
-    // TODO
+    // TODO __roomSpace terminal above
   }
 
   // default to demand only
   return Math.max(above, this.___roomDemand(structure, resourceType))
 }
 
-// expected that if this returns true, _hasDemand returns true as well
 cook._hasSpace = function (structure, resourceType) {
   // save typing down the line
   if (structure === undefined) return false
