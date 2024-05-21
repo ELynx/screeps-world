@@ -349,7 +349,9 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
   const canTake = this.___roomSpace(structure, resourceType)
   if (canTake <= 0) return ERR_FULL
 
-  const canGive = intentSolver.getUsedCapacity(creep, resourceType) || 0
+  const canGiveInt = intentSolver.getUsedCapacity(creep, resourceType) || 0
+  const canGiveNow = creep.store.getUsedCapacity(resourceType) || 0
+  const canGive = Math.min(canGiveInt, canGiveNow)
   if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
   const amount = Math.min(canGive, canTake)
@@ -800,7 +802,9 @@ cook._controlPass2 = function (room, creeps) {
         if (creep.memory.btyp !== 'harvester') continue
         if (!creep.pos.isNearTo(link)) continue
 
-        const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
+        const canGiveInt = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
+        const canGiveNow = creep.store.getUsedCapacity(RESOURCE_ENERGY) || 0
+        const canGive = Math.min(canGiveInt, canGiveNow)
         if (canGive > 0) {
           const amount = Math.min(canTake, canGive)
           const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
@@ -831,7 +835,9 @@ cook._controlPass2 = function (room, creeps) {
       if (creep.__cook__pass2__used) continue
       if (creep.memory.btyp !== 'harvester') continue
 
-      const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
+      const canGiveInt = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
+      const canGiveNow = creep.store.getUsedCapacity(RESOURCE_ENERGY) || 0
+      const canGive = Math.min(canGiveInt, canGiveNow)
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
           if (!container.isSource()) continue
