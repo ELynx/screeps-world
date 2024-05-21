@@ -47,7 +47,7 @@ cook.___roomSupply = function (structure, resourceType) {
 
   if (structureType === STRUCTURE_CONTAINER ||
       structureType === STRUCTURE_LINK ||
-      structureType === STRUCTURUCTURE_STORAGE) {
+      structureType === STRUCTURE_STORAGE) {
     return intentSolver.getUsedCapacity(structure, resourceType) || 0
   }
 
