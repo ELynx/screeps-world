@@ -516,9 +516,9 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   if (this._hasDemand(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   // just unload
-  if (this._hasSpace(room.storage)) return [room.storage, resourceType]
-  if (this._hasSpace(room.factory)) return [room.factory, resourceType]
-  if (this._hasSpace(room.terminal)) return [room.terminal, resourceType]
+  if (this._hasSpace(room.storage, resourceType)) return [room.storage, resourceType]
+  if (this._hasSpace(room.factory, resourceType)) return [room.factory, resourceType]
+  if (this._hasSpace(room.terminal, resourceType)) return [room.terminal, resourceType]
 
   return [undefined, undefined]
 }
