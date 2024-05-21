@@ -156,11 +156,6 @@ cook.___worldSupply = function (structure, resourceType) {
   return roomSupply
 }
 
-cook.___worldExcess = function (structure, resourceType) {
-  // TODO ___worldExcess
-  return 0
-}
-
 cook.___roomDemand = function (structure, resourceType) {
   const structureType = structure.structureType
 
@@ -1189,7 +1184,7 @@ cook._operateLinks = function (room) {
   const useAsSource = someLink => {
     if (someLink.cooldown && someLink.cooldown > 0) return false
     const energyInt = intentSolver.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
-    const energyNow = someLink.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
+    const energyNow = someLink.store.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
     const energy = Math.min(energyInt, energyNow)
 
     const plannedDelta = this.___plannedDelta(someLink, RESOURCE_ENERGY)
@@ -1333,32 +1328,16 @@ cook._performTerminalExchange = function () {
     if (terminal.cooldown && terminal.cooldown > 0) continue
 
     for (const resourceType of demandTypes) {
-      const excessAmount = this.___worldExcess(terminal, resourceType)
-      if (excessAmount > 0) {
+      const supplyAmount = this.___worldSupply(terminal, resourceType)
+      if (supplyAmount > 0) {
         sourceTerminal = terminal
         sourceType = resourceType
-        sourceSupply = excessAmount
-        break
+        sourceSupply = supplyAmount
+        break // from demandTypes loop
       }
     }
-  }
 
-  if (sourceTerminal === undefined) {
-    for (const terminal of allTerminals) {
-      if (terminal.id === targetTerminal.id) continue
-      if (terminal._operated_) continue
-      if (terminal.cooldown && terminal.cooldown > 0) continue
-
-      for (const resourceType of demandTypes) {
-        const supplyAmount = this.___worldSupply(terminal, resourceType)
-        if (supplyAmount > 0) {
-          sourceTerminal = terminal
-          sourceType = resourceType
-          sourceSupply = supplyAmount
-          break
-        }
-      }
-    }
+    if (sourceTerminal) break // from allTerminals loop
   }
 
   if (sourceTerminal === undefined) {
@@ -1434,6 +1413,54 @@ cook.___findBuyOrder = function (resourceType) {
   return _.sample(allBuyOrders)
 }
 
+cook.___excessToSell = function (terminal, resourceType) {
+  if (resourceType === RESOURCE_BATTERY) return 0
+  if (resourceType === RESOURCE_GHODIUM_MELT) return 0
+  if (resourceType === RESOURCE_GHODIUM) return 0
+  if (resourceType === RESOURCE_OPS) return 0
+  if (resourceType === RESOURCE_POWER) return 0
+
+  const usedInt = intentSolver.getUsedCapacity(terminal, resourceType) || 0
+  const usedNow = terminal.store.getUsedCapacity(resourceType)
+
+  const used = Math.min(usedInt, usedNow)
+
+  const plannedDelta = this.___plannedDelta(terminal, resourceType)
+
+  let free = plannedDelta > 0 ? used : (used + plannedDelta)
+
+  if (free <= 0) return 0
+
+  if (resourceType === RESOURCE_ENERGY) {
+    free -= 30000
+    return Math.max(free, 0)
+  }
+
+  if (this.___roomNeedResource(terminal.room, resourceType)) return 0
+
+  if (terminal.room.mineralType() === resourceType) {
+    free -= 200000
+  }
+
+  if (resourceType === RESOURCE_KEANIUM) {
+    free -= 5000
+  }
+
+  if (resourceType === RESOURCE_LEMERGIUM) {
+    free -= 5000
+  }
+
+  if (resourceType === RESOURCE_UTRIUM) {
+    free -= 5000
+  }
+
+  if (resourceType === RESOURCE_ZYNTHIUM) {
+    free -= 5000
+  }
+
+  return Math.max(free, 0)
+}
+
 cook.__sellTerminalExcess = function (terminal) {
   if (terminal._operated_) {
     return ERR_TIRED
@@ -1445,7 +1472,7 @@ cook.__sellTerminalExcess = function (terminal) {
 
   const resourceTypes = _.shuffle(_.keys(terminal.store))
   for (const resourceType of resourceTypes) {
-    const excess = this.___worldExcess(terminal, resourceType)
+    const excess = this.___excessToSell(terminal, resourceType)
     if (excess > 0) {
       const order = this.___findBuyOrder(resourceType)
       if (order) {
