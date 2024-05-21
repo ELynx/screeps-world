@@ -51,7 +51,7 @@ grabController.act = function (room, creep) {
 
     if (didPickup === false && grab.type === LOOK_RESOURCES) {
       if (!energyOnlyCreep || from.resourceType === RESOURCE_ENERGY) {
-        if (cook.roomCanHandle(room, from.resouceType)) {
+        if (cook.roomCanHandle(room, from.resourceType)) {
           if (intentSolver.getAmount(from) > 0) {
             const rc = this.wrapIntent(creep, 'pickup', from)
             if (rc >= OK) {
@@ -80,8 +80,8 @@ grabController.targets = function (room) {
 
   const tombstones = room.find(FIND_TOMBSTONES)
   for (const tombstone of tombstones) {
-    for (const resouceType of _.keys(tombstone.store)) {
-      if (cook.roomCanHandle(room, resouceType)) {
+    for (const resourceType of _.keys(tombstone.store)) {
+      if (cook.roomCanHandle(room, resourceType)) {
         result.push(
           {
             type: LOOK_TOMBSTONES,
@@ -102,8 +102,8 @@ grabController.targets = function (room) {
 
   const ruins = room.find(FIND_RUINS)
   for (const ruin of ruins) {
-    for (const resouceType of _.keys(ruin.store)) {
-      if (cook.roomCanHandle(room, resouceType)) {
+    for (const resourceType of _.keys(ruin.store)) {
+      if (cook.roomCanHandle(room, resourceType)) {
         result.push(
           {
             type: LOOK_RUINS,
@@ -124,7 +124,7 @@ grabController.targets = function (room) {
 
   const resources = room.find(FIND_DROPPED_RESOURCES)
   for (const resource of resources) {
-    if (cook.roomCanHandle(room, resource.resouceType)) {
+    if (cook.roomCanHandle(room, resource.resourceType)) {
       result.push(
         {
           type: LOOK_RESOURCES,
