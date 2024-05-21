@@ -1019,6 +1019,7 @@ cook._askWorld = function (room) {
   }
 
   // TODO ask for ghodium when nuker but no labs
+  // TODO ask for nuke ingredients
 }
 
 cook._operateHarvesters = function (room) {
