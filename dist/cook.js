@@ -1094,7 +1094,7 @@ cook._operateHarvesters = function (room) {
   }
 
   for (const harvester in harvesters) {
-    let clusterContainers = _.filter(containers, container => container.isNearTo(harvester._source_))
+    let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
     if (_.some(clusterContainers, notMaxHits)) continue
 
     let clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
