@@ -835,6 +835,7 @@ cook._controlPass2 = function (room, creeps) {
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
           if (!container.isSource()) continue
+          if (!creep.pos.isNearTo(container)) continue
 
           const canTake = intentSolver.getFreeCapacity(container, RESOURCE_ENERGY) || 0
           if (canTake > 0) {
