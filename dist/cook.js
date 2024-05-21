@@ -784,38 +784,64 @@ cook.extra = function (target) {
 }
 
 cook._controlPass2 = function (room, creeps) {
-  // transfer energy reserves from containers to links
-  for (const link of room.links.values()) {
-    if (!link.isSource()) continue
+  if (room._actType_ === bootstrap.RoomActTypeMy) {
+    // transfer energy reserves from containers to links
+    for (const link of room.links.values()) {
+      if (!link.isSource()) continue
 
-    const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
-    if (canTake <= 0) continue
+      const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
+      if (canTake <= 0) continue
 
+      for (const creep of creeps) {
+        if (creep.memory.btyp !== 'harvester') continue
+        if (!creep.pos.isNearTo(link)) continue
+
+        const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
+        if (canGive > 0) {
+          const amount = Math.min(canTake, canGive)
+          const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
+          if (rc >= OK) {
+            creep.__cook__pass2__used = true
+            break // from creeps loop
+          }
+        } else {
+          for (const container of room.__cook__containers) {
+            if (!creep.pos.isNearTo(container)) continue
+            if (!this.__hasSupply(container, RESOURCE_ENERGY)) continue
+
+            const rc1 = this.wrapIntent(creep, 'withdraw', container, RESOURCE_ENERGY)
+            if (rc1 >= OK) {
+              creep.__cook__pass2__used = true
+              break // from containers loop
+            }
+          }
+
+          if (creep.__cook__pass2__used) break // from creeps loop
+        }
+      }
+    }
+  }
+
+  if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
     for (const creep of creeps) {
+      if (creep.__cook__pass2__used) continue
       if (creep.memory.btyp !== 'harvester') continue
-      if (!creep.pos.isNearTo(link)) continue
 
       const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
       if (canGive > 0) {
-        const amount = Math.min(canTake, canGive)
-        const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
-        if (rc >= OK) {
-          creep.__cook__pass2__used = true
-          break // from creeps loop
-        }
-      } else {
         for (const container of room.__cook__containers) {
-          if (!creep.pos.isNearTo(container)) continue
-          if (!this.__hasSupply(container, RESOURCE_ENERGY)) continue
+          if (!container.isSource()) continue
 
-          const rc1 = this.wrapIntent(creep, 'withdraw', container, RESOURCE_ENERGY)
-          if (rc1 >= OK) {
-            creep.__cook__pass2__used = true
-            break // from containers loop
+          const canTake = intentSolver.getFreeCapacity(container, RESOURCE_ENERGY) || 0
+          if (canTake > 0) {
+            const amount = Math.min(canGive, canTake)
+            const rc = this.wrapIntent(creep, 'transfer', container, RESOURCE_ENERGY, amount)
+            if (rc >= OK) {
+              creep.__cook__pass2__used = true
+              break // from containers loop
+            }
           }
         }
-
-        if (creep.__cook__pass2__used) break // from creeps loop
       }
     }
   }
@@ -860,7 +886,7 @@ cook._controlPass2 = function (room, creeps) {
     for (const creep of creeps) {
       if (creep.__cook__pass2__used) continue
 
-      if (this._hasCM && this._isEmpty(creep)) {
+      if (this._hasCM(creep) && this._isEmpty(creep)) {
         transports.push(creep)
       }
     }
