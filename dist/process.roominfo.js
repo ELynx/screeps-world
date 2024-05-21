@@ -152,7 +152,6 @@ roomInfoProcess.work = function (room) {
     }
 
     if (Game._war_ && !force) {
-      console.log('Skipping room info')
       return
     }
 
