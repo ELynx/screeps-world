@@ -5,7 +5,6 @@ const bootstrap = require('./bootstrap')
 const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
-const intent = require('./routine.intent')
 
 const cook = new Controller('cook')
 
@@ -44,8 +43,50 @@ cook.___plannedDelta = function (something, resourceType) {
 }
 
 cook.___roomSupply = function (structure, resourceType) {
-  // TODO ___roomSupply
-  return intent.getUsedCapacity(structure, resourceType)
+  const structureType = structure.structureType
+
+  if (structureType === STRUCTURE_CONTAINER ||
+      structureType === STRUCTURE_LINK ||
+      structureType === STRUCTURUCTURE_STORAGE) {
+    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+  }
+
+  if (structureType === STRUCTURE_FACTORY) {
+    if (resourceType === RESOURCE_GHODIUM_MELT ||
+        resourceType === RESOURCE_BATTERY) {
+      return 0
+    }
+
+    if (resourceType === RESOURCE_ENERGY) {
+      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) || 0
+      if (nowReagent1 <= 0) return nowReagent2
+
+      const toKeep = nowReagent1 * 2
+      const free = nowReagent2 - toKeep
+      return Math.max(free, 0)
+    }
+
+    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+  }
+
+  if (structureType === STRUCTURE_LAB) {
+    if (structure.isSource()) return 0
+    if (structure.mineralType !== resourceType) return 0
+    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+  }
+
+  if (structureType === STRUCTURE_TERMINAL) {
+    if (resourceType === RESOURCE_ENERGY) {
+      const now = intentSolver.getUsedCapacity(structure, resourceType)
+      const free = now - TerminalEnergyDemand
+      return Math.max(free, 0)
+    }
+
+    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+  }
+
+  return 0
 }
 
 cook.__hasSupply = function (structure, resourceType) {
@@ -102,6 +143,7 @@ cook.___roomDemand = function (structure, resourceType) {
 
   if (structureType === STRUCTURE_LAB) {
     if (resourceType === RESOURCE_ENERGY) return 0
+    if (!structure.isSource()) return 0
 
     const reagentType = structure.resourceType()
     if (reagentType === '') return 0
@@ -112,7 +154,7 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_TERMINAL) {
     if (resourceType !== RESOURCE_ENERGY) return 0
 
-    const now = intentSolver.getUsedCapacity(structure, resourceType)
+    const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
     const left = TerminalEnergyDemand - now
     return Math.max(left, 0)
   }
@@ -129,7 +171,7 @@ cook.___roomDemand = function (structure, resourceType) {
       const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) || 0
       if (nowReagent1 <= 0) return 0
 
-      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType)
+      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType) || 0
       const left = (nowReagent1 * 2) - nowReagent2
       return Math.max(left, 0)
     }
@@ -173,11 +215,10 @@ cook._hasSpace = function (structure, resourceType) {
 
 cook._labClusterDemandTarget = function (room, resourceType) {
   for (const lab of room.labs.values()) {
-    // TODO bath size
     if (this._hasDemand(lab, resourceType)) return [lab, resourceType]
   }
 
-  return [undefined, resourceType]
+  return [undefined, undefined]
 }
 
 cook.___addWorldDemand = function (structure, resourceType, amount) {
@@ -904,14 +945,21 @@ cook.roomCanMine = function (room) {
   return someLab !== undefined && someResourceType !== undefined
 }
 
-cook._askForEnergyIfNeeded = function (room) {
+cook._askWorld = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
-  if (room.memory.slvl > 1) return
 
-  if (this.__hasSupply(room.terminal, RESOURCE_ENERGY)) return
+  if (room.memory.slvl < 2) {
+    if (!this.__hasSupply(room.terminal, RESOURCE_ENERGY)) {
+      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
+    }
+  }
 
-  this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
+  if (room.nuker && room.labs.size === 0) {
+    if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
+      this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, NUKER_GHODIUM_CAPACITY)
+    }
+  }
 }
 
 cook._operateHarvesters = function (room) {
@@ -1210,7 +1258,7 @@ cook._operateLabs = function (room) {
 
 // called from room actor after controllers
 cook.roomPost = function (room) {
-  this._askForEnergyIfNeeded(room)
+  this._askWorld(room)
   this._operateHarvesters(room)
   this._operateLinks(room)
   this._operateLabs(room)
