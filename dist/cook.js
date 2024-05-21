@@ -170,7 +170,7 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    // TODO cook scheme
+    // ___roomDemand TODO cook schema
     return 0
   }
 
@@ -1244,46 +1244,7 @@ cook._operateLinks = function (room) {
 }
 
 cook._operateLabs = function (room) {
-  if (!room._my_) return
-
-  const inputLabs = []
-  const outputLabs = []
-
-  for (const lab of room.labs.values()) {
-    if (lab.isSource()) {
-      inputLabs.push(lab)
-    } else {
-      outputLabs.push(lab)
-    }
-  }
-
-  if (inputLabs.length < 2) return
-  if (inputLabs.length > 2) {
-    console.log('Unexpected number of input labs in room [' + room.name + ']. Found [' + inputLabs.length + '] input labs')
-    return
-  }
-
-  // detect when no reaction possible
-  for (const lab of inputLabs) {
-    if (lab.mineralType === undefined) return
-    if (lab.store.getUsedCapacity(lab.mineralType) <= 0) return
-  }
-
-  // STRATEGY how much labs can fire at the same tick by default
-  const cookedMax = room.memory.cook || 1
-  let cooked = 0
-  for (const lab of outputLabs) {
-    if (lab.cooldown && lab.cooldown > 0) continue
-
-    if (lab.mineralType) {
-      if (lab.store.getFreeCapacity(lab.mineralType) <= 0) continue
-    }
-
-    const rc = lab.runReaction(inputLabs[0], inputLabs[1])
-    if (rc >= OK) ++cooked
-
-    if (cooked >= cookedMax) return
-  }
+  // TODO _operateLabs lab schema
 }
 
 // called from room actor after controllers
