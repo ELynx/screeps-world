@@ -1130,7 +1130,7 @@ cook._operateHarvesters = function (room) {
     return undefined
   }
 
-  for (const harvester in harvesters) {
+  for (const harvester of harvesters) {
     let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
     if (_.some(clusterContainers, notMaxHits)) continue
 
