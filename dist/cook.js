@@ -10,8 +10,13 @@ const cook = new Controller('cook')
 
 // STRATEGY demands and supplies
 const WorldSupplyHisteresis = 1000
+
 const TerminalEnergyDemand = 30000
+
 const FactoryAnyReagentDemand = 10000
+const FactoryGhodiumMeltMax = 15000
+const FactoryBatteryMax = 45000
+const FactoryTotalMax = 45000
 
 // made up value that is used to plug planned capacity on first assignment
 const MadeUpLargeNumber = 1000000
@@ -223,25 +228,49 @@ cook._hasDemand = function (structure, resourceType) {
 cook.___roomSpace = function (structure, resourceType) {
   const structureType = structure.structureType
 
+  let above = 0
+
   if (structureType === STRUCTURE_CONTAINER) {
-    if (resourceType !== RESOURCE_ENERGY) return 0
-    return intentSolver.getFreeCapacity(structure, resourceType)
+    if (resourceType === RESOURCE_ENERGY) {
+      above = intentSolver.getFreeCapacity(structure, resourceType) || 0
+    }
+  }
+
+  if (structureType === STRUCTURE_FACTORY) {
+    if (resourceType === RESOURCE_GHODIUM_MELT) {
+      const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const can = FactoryGhodiumMeltMax - used
+      above = Math.max(can, 0)
+    }
+
+    if (resourceType === RESOURCE_BATTERY) {
+      const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const can = FactoryBatteryMax - used
+      above = Math.max(can, 0)
+    }
+
+    if (above > 0) {
+      const totalUsed = intentSolver.getFreeCapacity(structure) || 0
+      const freeUnused = FactoryTotalMax - totalUsed
+      const remaining = Math.max(freeUnused, 0)
+      above = Math.min(above, remaining)
+    }
   }
 
   if (structureType === STRUCTURE_STORAGE) {
     if (resourceType === RESOURCE_ENERGY ||
         resourceType === RESOURCE_OPS ||
         resourceType === RESOURCE_POWER) {
-      return intentSolver.getFreeCapacity(structure, resourceType)
+      above = intentSolver.getFreeCapacity(structure, resourceType) || 0
     }
-
-    return 0
   }
 
-  // TODO factory above demand
-  // TODO terminal above demand
+  if (structureType === STRUCTURE_TERMINAL) {
+    // TODO
+  }
 
-  return this.___roomDemand(structure, resourceType)
+  // default to demand only
+  return Math.max(above, this.___roomDemand(structure, resourceType))
 }
 
 // expected that if this returns true, _hasDemand returns true as well
