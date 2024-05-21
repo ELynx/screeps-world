@@ -148,7 +148,7 @@ spawnProcess.upgraders = function (room, live) {
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const want = room.memory.wwww || 1 // default to at least one when situation is BS
+  const want = (room.memory.wwww === undefined) ? 1 : room.memory.wwww // default to at least one when situation is BS
   const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
