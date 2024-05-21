@@ -9,6 +9,11 @@ const intent = require('./routine.intent')
 
 const cook = new Controller('cook')
 
+// STRATEGY demands and supplies
+const WorldGreedFactor = 1000
+const TerminalEnergyDemand = 30000
+const FactoryAnyReagentDemand = 10000
+
 // made up value that is used to plug planned capacity on first assignment
 const MadeUpLargeNumber = 1000000
 
@@ -53,10 +58,15 @@ cook.__hasSupply = function (structure, resourceType) {
   return supply + planned > 0
 }
 
+cook.___hasFlush = function (structure) {
+  // TODO ___hasFlush allow undefined
+  return undefined
+}
+
 cook.___worldSupply = function (structure, resourceType) {
   const roomSupply = this.___roomSupply(structure, resourceType)
   // STRATEGY histeresis on resource movement
-  if (roomSupply <= 1000) return 0
+  if (roomSupply <= WorldGreedFactor) return 0
 
   return roomSupply
 }
@@ -68,10 +78,15 @@ cook.___worldExcess = function (structure, resourceType) {
   }
 
   const roomSupply = this.___roomSupply(structure, resourceType)
-  // STRATEGY histeresis on resource movement
+  // STRATEGY histeresis on energy movement
   if (roomSupply <= SOURCE_ENERGY_CAPACITY) return 0
 
   return roomSupply
+}
+
+cook.__labDemandImpl = function (lab, resourceType) {
+  // TODO __labDemandImpl
+  return intentSolver.getFreeCapacity(lab, resourceType) || 0
 }
 
 cook.___roomDemand = function (structure, resourceType) {
@@ -88,43 +103,42 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_LAB) {
     if (resourceType === RESOURCE_ENERGY) return 0
 
-    const designated = structure.resourceType()
-    if (designated === '') return 0
-    if (designated !== resourceType) return 0
-
-    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    const reagentType = structure.resourceType()
+    if (reagentType === '') return 0
+    if (reagentType !== resourceType) return 0
+    return this.__labDemandImpl(structure, resourceType)
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
     if (resourceType !== RESOURCE_ENERGY) return 0
 
     const now = intentSolver.getUsedCapacity(structure, resourceType)
-    const left = 30000 - now
+    const left = TerminalEnergyDemand - now
     return Math.max(left, 0)
   }
-
-  // TODO storage want shinies
 
   if (structureType === STRUCTURE_FACTORY) {
     if (resourceType === RESOURCE_GHODIUM_MELT ||
         resourceType === RESOURCE_BATTERY) {
       const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
-      const left = 10000 - now
+      const left = FactoryAnyReagentDemand - now
       return Math.max(left, 0)
     }
 
     if (resourceType === RESOURCE_ENERGY) {
-      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) ||0
+      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) || 0
       if (nowReagent1 <= 0) return 0
 
       const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType)
       const left = (nowReagent1 * 2) - nowReagent2
       return Math.max(left, 0)
     }
+
+    return 0
   }
 
   if (structureType === STRUCTURE_NUKER ||
-      structureType == STRUCTURE_POWER_SPAWN) {
+      structureType === STRUCTURE_POWER_SPAWN) {
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
@@ -533,42 +547,36 @@ cook.__energyRestockSources = function (room) {
 }
 
 cook.___roomNeedResource = function (room, resourceType) {
-  if (this.___roomDemand(room.factory, resourceType)) return true
-
-  for (const lab of room.labs.values()) {
-    if (this.___roomDemand(lab, resourceType)) return true
+  if (room.__cook__roomNeedResourceMap === undefined) {
+    room.__cook__roomNeedResourceMap = new Map()
   }
 
-  if (this.___roomDemand(room.nuker, resourceType)) return true
-  if (this.___roomDemand(room.powerSpawn, resourceType)) return true
-  if (this.___roomDemand(room.storage, resourceType)) return true
-  if (this.___roomDemand(room.terminal, resourceType)) return true
+  const cached = room.__cook__roomNeedResourceMap.get(resourceType)
+  if (cached !== undefined) return cached
 
-  return false
+  const withCache = (x, key, value) => {
+    x.__cook__roomNeedResourceMap.set(key, value)
+    return value
+  }
+
+  if (this.___roomDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
+
+  for (const lab of room.labs.values()) {
+    if (this.___roomDemand(lab, resourceType)) return withCache(room, resourceType, true)
+  }
+
+  if (this.___roomDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
+  if (this.___roomDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
+  if (this.___roomDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
+  if (this.___roomDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
+
+  return withCache(room, resourceType, false)
 }
 
 cook.__resourceRestockSources = function (room, count) {
   if (count === 0) return []
 
   const sources = []
-
-  // force flush containers
-  for (const container of room.__cook__containers) {
-    const stored = _.shuffle(_.keys(container.store))
-    if (!_.every(stored, _.matches(RESOURCE_ENERGY))) {
-      for (const resourceType of stored) {
-        if (resourceType === RESOURCE_ENERGY) continue
-
-        if (this.__hasSupply(container, resourceType)) {
-          container.__cook__resourceToTake = resourceType
-          sources.push(container)
-          break // from stored loop
-        }
-      }
-    }
-
-    if (sources.length >= count) return sources
-  }
 
   const pushStore = structure => {
     const stored = _.shuffle(_.keys(structure.store))
@@ -600,6 +608,40 @@ cook.__resourceRestockSources = function (room, count) {
   if (sources.length >= count) return sources
 
   if (pushStore(room.terminal)) sources.push(room.terminal)
+  if (sources.length >= count) return sources
+
+  // check flush space by king of greed resources
+  if (!this._hasSpace(room.terminal, RESOURCE_POWER)) return sources
+
+  const flushStore = structure => {
+    const flushType = this.___hasFlush(structure)
+    if (flushType) {
+      structure.__cook__resourceToTake = flushType
+      return true
+    }
+
+    return false
+  }
+
+  for (const container of room.__cook__containers) {
+    if (flushStore(container)) {
+      sources.push(container)
+      if (sources.length >= count) return sources
+    }
+  }
+
+  if (flushStore(room.factory)) sources.push(room.factory)
+  if (sources.length >= count) return sources
+
+  for (const lab of room.labs.values()) {
+    if (flushStore(lab)) {
+      sources.push(lab)
+      if (sources.length >= count) return sources
+    }
+  }
+
+  if (flushStore(room.storage)) sources.push(room.storage)
+  if (sources.length >= count) return sources
 
   return sources
 }
