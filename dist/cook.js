@@ -1182,13 +1182,15 @@ cook._operateHarvesters = function (room) {
     }
 
     if (!transferred) {
-      // unload to containers only when there is more energy in source
-      // otherwise continue to next harvester
-      const hrc = harvester._source_harvest_specialist_rc_
-      if (hrc === bootstrap.WARN_BOTH_EXHAUSED) continue
-      if (hrc === bootstrap.WARN_INTENDED_EXHAUSTED) continue
-      if (hrc === bootstrap.ERR_INTENDED_EXHAUSTED) continue
-      if (hrc === ERR_NOT_ENOUGH_RESOURCES) continue
+      if (room._actType_ !== bootstrap.RoomActTypeRemoteHarvest) {
+        // unload to containers only when there is more energy in source
+        // otherwise continue to next harvester
+        const hrc = harvester._source_harvest_specialist_rc_
+        if (hrc === bootstrap.WARN_BOTH_EXHAUSED) continue
+        if (hrc === bootstrap.WARN_INTENDED_EXHAUSTED) continue
+        if (hrc === bootstrap.ERR_INTENDED_EXHAUSTED) continue
+        if (hrc === ERR_NOT_ENOUGH_RESOURCES) continue
+      }
 
       for (const container of clusterContainers) {
         const rc = this.__transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
