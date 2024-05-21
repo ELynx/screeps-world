@@ -45,8 +45,18 @@ const upgradeSpecialistController = _.assign({ }, upgradeGenericController)
 upgradeSpecialistController.id = 'upgrade.specialist'
 
 upgradeSpecialistController.act = function (controller, creep) {
-  // stick to position
-  creep.memory.atds = true
+  // mark as arrived if standing near the link
+  // otherwise may not reach link later for withdraw
+  if (!creep.memory.atds) {
+    for (const link of controller.room.links.values()) {
+      if (link.isSource()) continue
+      if (creep.pos.isNearTo(link)) {
+        creep.memory.atds = true
+        break // from links loop
+      }
+    }
+  }
+
   return this._act(controller, creep)
 }
 
