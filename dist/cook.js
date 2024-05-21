@@ -100,7 +100,48 @@ cook.__hasSupply = function (structure, resourceType) {
 }
 
 cook.___hasFlush = function (structure) {
-  // TODO ___hasFlush allow undefined
+  if (structure === undefined) return undefined
+
+  const structureType = structure.structureType
+
+  if (structureType === STRUCTURE_CONTAINER) {
+    const stored = _.shuffle(_.keys(structure.store))
+    for (const resourceType of stored) {
+      if (resourceType === RESOURCE_ENERGY) continue
+
+      if (this.__hasSupply(structure, resourceType)) return resourceType
+    }
+
+    return undefined
+  }
+
+  if (structureType === STRUCTURE_FACTORY) {
+    const stored = _.shuffle(_.keys(structure.store))
+    for (const resourceType of stored) {
+      if (resourceType === RESOURCE_GHODIUM_MELT) continue
+      if (resourceType === RESOURCE_BATTERY) continue
+      if (resourceType === RESOURCE_GHODIUM) continue
+      if (resourceType === RESOURCE_ENERGY) continue
+
+      if (this.__hasSupply(structure, resourceType)) return resourceType
+    }
+
+    return undefined
+  }
+
+  if (structureType === STRUCTURE_STORAGE) {
+    const stored = _.shuffle(_.keys(structure.store))
+    for (const resourceType of stored) {
+      if (resourceType === RESOURCE_OPS) continue
+      if (resourceType === RESOURCE_POWER) continue
+      if (resourceType === RESOURCE_ENERGY) continue
+
+      if (this.__hasSupply(structure, resourceType)) return resourceType
+    }
+
+    return undefined
+  }
+
   return undefined
 }
 
