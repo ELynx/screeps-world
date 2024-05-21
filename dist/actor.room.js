@@ -60,17 +60,19 @@ const controllersMyAuto = [
 ]
 
 const controllersRemoteHarvestAuto = [
-  cook.id, // controls unload
+  cook.id,
   repairController.id,
   buildController.id,
-  sourceHarvestController.specialist.id
+  sourceHarvestController.specialist.id,
+  cook.id
 ]
 
 const controllersHelpAuto = [
   cook.id, // controls energy withdraw for help
   rampupController.id,
   repairController.id,
-  buildController.id
+  buildController.id,
+  cook.id
 ]
 
 const controllersConsuming = [
