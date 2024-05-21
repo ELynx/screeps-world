@@ -130,7 +130,7 @@ spawnProcess.miners = function (room, live) {
 }
 
 spawnProcess.upgraders = function (room, live) {
-  const want = this._canSpawn(room) ? (room.memory.ulvl || 0) : 0
+  const want = (!Game._war_ && this._canSpawn(room)) ? (room.memory.ulvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
