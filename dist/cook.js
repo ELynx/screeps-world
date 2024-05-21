@@ -796,7 +796,7 @@ cook._controlPass2 = function (room, creeps) {
       if (!creep.pos.isNearTo(link)) continue
 
       const canGive = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
-      if (canGive <= 0) {
+      if (canGive > 0) {
         const amount = Math.min(canTake, canGive)
         const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
         if (rc >= OK) {
@@ -1185,7 +1185,7 @@ cook._operateLinks = function (room) {
   const useAsSource = someLink => {
     if (someLink.cooldown && someLink.cooldown > 0) return false
     const energyInt = intentSolver.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
-    const energyNow = someLink.store.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
+    const energyNow = someLink.store.getUsedCapacity(RESOURCE_ENERGY) || 0
     const energy = Math.min(energyInt, energyNow)
 
     const plannedDelta = this.___plannedDelta(someLink, RESOURCE_ENERGY)
