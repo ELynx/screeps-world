@@ -50,6 +50,7 @@ const controllersMyAuto = [
   unliveController.id, // after unload, before takes other tasks
   mineralHarvestController.id, // narrow filter
   sourceHarvestController.specialist.id, // narrow filter
+  upgradeController.specialist.id, // narrow filter
   rampupController.id,
   repairController.id,
   buildController.id,
