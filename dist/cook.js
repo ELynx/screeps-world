@@ -683,6 +683,8 @@ cook.__resourceRestockSources = function (room, count) {
   const sources = []
 
   const pushStore = structure => {
+    if (structure === undefined) return false
+
     const stored = _.shuffle(_.keys(structure.store))
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
@@ -718,6 +720,8 @@ cook.__resourceRestockSources = function (room, count) {
   if (!this._hasSpace(room.terminal, RESOURCE_POWER)) return sources
 
   const flushStore = structure => {
+    if (structure === undefined) return false
+
     const flushType = this.___hasFlush(structure)
     if (flushType) {
       structure.__cook__resourceToTake = flushType
@@ -755,7 +759,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 
   const targets = []
 
-  if (this.__hasEnergyDemand(room.terminal)) targets.push(room.terminal)
+  if (room.terminal && this.__hasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
 
   for (const lab of room.labs.values()) {
@@ -765,16 +769,16 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
     }
   }
 
-  if (this.__hasEnergyDemand(room.nuker)) targets.push(room.nuker)
+  if (room.nuker && this.__hasEnergyDemand(room.nuker)) targets.push(room.nuker)
   if (targets.length >= count) return targets
 
-  if (this.__hasEnergyDemand(room.powerSpawn)) targets.push(room.powerSpawn)
+  if (room.powerSpawn && this.__hasEnergyDemand(room.powerSpawn)) targets.push(room.powerSpawn)
   if (targets.length >= count) return targets
 
-  if (this.__hasEnergyDemand(room.factory)) targets.push(room.factory)
+  if (room.factory && this.__hasEnergyDemand(room.factory)) targets.push(room.factory)
   if (targets.length >= count) return targets
 
-  if (this.__hasEnergyDemand(room.storage)) targets.push(room.storage)
+  if (room.storage && this.__hasEnergyDemand(room.storage)) targets.push(room.storage)
 
   return targets
 }
