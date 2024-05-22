@@ -705,6 +705,7 @@ cook.___roomNeedResource = function (room, resourceType) {
   return withCache(room, resourceType, false)
 }
 
+// TODO restock pick size
 cook.__resourceRestockSources = function (room, count) {
   if (count === 0) return []
 
@@ -976,7 +977,7 @@ cook._controlPass2 = function (room, creeps) {
           const [unused, used] = this.assignCreeps(room, upgraders, energyRestockSources)
           for (const creep of used) {
             creep.__cook__pass2__used = true
-          }          
+          }
         }
       }
     }
