@@ -1229,18 +1229,21 @@ cook._operateLinks = function (room) {
 
     const plannedDelta = this.___plannedDelta(someLink, RESOURCE_ENERGY)
 
-    const free = plannedDelta > 0 ? energy : (energy + plannedDelta)
+    const freeEnergy = plannedDelta > 0 ? energy : (energy + plannedDelta)
 
-    someLink.__cook__freeEnergy = free
+    someLink.__cook__freeEnergy = freeEnergy
 
     // to avoid frantic sends
-    return free >= LinkSourceTreshold
+    return freeEnergy >= LinkSourceTreshold
   }
 
   const useAsDest = someLink => {
-    if (intentSolver.getFreeCapacity(someLink, RESOURCE_ENERGY) <= 0) return false
+    const freeInt = intentSolver.getFreeCapacity(someLink, RESOURCE_ENERGY)
+    const freeNow = someLink.store.getFreeCapacity(RESOURCE_ENERGY)
+    const free = Math.min(freeInt, freeNow)
+
     // cut off transfer, due to losses it is never 100% full
-    return someLink.store.getFreeCapacity(RESOURCE_ENERGY) > LinkDestinationTreshold
+    return free >= LinkDestinationTreshold
   }
 
   for (const link of allLinks) {
