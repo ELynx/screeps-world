@@ -1075,7 +1075,8 @@ cook._askWorld = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
 
-  if (room.memory.slvl < 2) {
+  const roomSourceLevel = room.memory.slvl || 0
+  if (roomSourceLevel < 2) {
     if (!this.__hasSupply(room.terminal, RESOURCE_ENERGY)) {
       this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
     }
@@ -1423,6 +1424,7 @@ cook._performTerminalExchange = function () {
 
   const rc = sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
   if (rc >= OK) {
+    console.log('Terminal ' + sourceTerminal + ' helped terminal ' + targetTerminal + ' with [' + amount + '] of [' + sourceType + ']')
     sourceTerminal._operated_ = true
   }
   return rc
@@ -1501,7 +1503,7 @@ cook.___excessToSell = function (terminal, resourceType) {
   if (free <= 0) return 0
 
   if (resourceType === RESOURCE_ENERGY) {
-    free -= TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
+    free -= TerminalEnergyDemand
     return Math.max(free, 0)
   }
 
