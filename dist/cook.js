@@ -1501,30 +1501,30 @@ cook.___excessToSell = function (terminal, resourceType) {
   if (free <= 0) return 0
 
   if (resourceType === RESOURCE_ENERGY) {
-    free -= 30000
+    free -= TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     return Math.max(free, 0)
   }
 
   if (this.___roomNeedResource(terminal.room, resourceType)) return 0
 
   if (terminal.room.mineralType() === resourceType) {
-    free -= 200000
+    free -= TerminalRoomMineralStore
   }
 
   if (resourceType === RESOURCE_KEANIUM) {
-    free -= 5000
+    free -= TerminalNukeReagentStore
   }
 
   if (resourceType === RESOURCE_LEMERGIUM) {
-    free -= 5000
+    free -= TerminalNukeReagentStore
   }
 
   if (resourceType === RESOURCE_UTRIUM) {
-    free -= 5000
+    free -= TerminalNukeReagentStore
   }
 
   if (resourceType === RESOURCE_ZYNTHIUM) {
-    free -= 5000
+    free -= TerminalNukeReagentStore
   }
 
   return Math.max(free, 0)
