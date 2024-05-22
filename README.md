@@ -24,6 +24,8 @@ In emergency, release stored energy.
 
 Plunders and other creeps have some place to dump resources.
 
+Upgraders and other stationaries can take resources for restock and not being able to deliver them.
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
