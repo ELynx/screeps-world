@@ -729,18 +729,37 @@ cook.___roomNeedResource = function (room, resourceType) {
     return value
   }
 
-  if (room.factory && this.___roomDemand(room.factory, resourceType)) return withCache(room, resourceType, true)
-
-  for (const lab of room.labs.values()) {
-    if (this.___roomDemand(lab, resourceType)) return withCache(room, resourceType, true)
+  if (room.factory) {
+    const demand = this.___roomDemand(room.factory, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
   }
 
-  if (room.nuker && this.___roomDemand(room.nuker, resourceType)) return withCache(room, resourceType, true)
-  if (room.powerSpawn && this.___roomDemand(room.powerSpawn, resourceType)) return withCache(room, resourceType, true)
-  if (room.storage && this.___roomDemand(room.storage, resourceType)) return withCache(room, resourceType, true)
-  if (room.terminal && this.___roomDemand(room.terminal, resourceType)) return withCache(room, resourceType, true)
+  for (const lab of room.labs.values()) {
+    const demand = this.___roomDemand(lab, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
+  }
 
-  return withCache(room, resourceType, false)
+  if (room.nuker) {
+    const demand = this.___roomDemand(room.nuker, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
+  }
+
+  if (room.powerSpawn) {
+    const demand = this.___roomDemand(room.powerSpawn, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
+  }
+
+  if (room.storage) {
+    const demand = this.___roomDemand(room.storage, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
+  }
+
+  if (room.terminal) {
+    const demand = this.___roomDemand(room.terminal, resourceType)
+    if (demand > 0) return withCache(room, resourceType, demand)
+  }
+
+  return withCache(room, resourceType, 0)
 }
 
 cook.__resourceRestockSources = function (room, count) {
@@ -757,9 +776,10 @@ cook.__resourceRestockSources = function (room, count) {
 
       if (!this.__hasSupply(structure, resourceType)) continue
 
-      if (this.___roomNeedResource(room, resourceType)) {
+      const roomDemand = this.___roomNeedResource(room, resourceType)
+      if (roomDemand > 0) {
         structure.__cook__resourceToTake = resourceType
-        structure.__cook__restockToTakeAmount = MadeUpLargeNumber // TODO actual amount
+        structure.__cook__restockToTakeAmount = roomDemand
         return true
       }
     }
@@ -1570,7 +1590,7 @@ cook.___excessToSell = function (terminal, resourceType) {
     return Math.max(free, 0)
   }
 
-  if (this.___roomNeedResource(terminal.room, resourceType)) return 0
+  if (this.___roomNeedResource(terminal.room, resourceType) > 0) return 0
 
   if (terminal.room.mineralType() === resourceType) {
     free -= TerminalRoomMineralStore
