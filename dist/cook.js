@@ -312,7 +312,7 @@ cook.___roomSpace = function (structure, resourceType) {
       if (allowed > 0) {
         const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
         // STRATEGY allow overflow of named resources to be sold
-        const remaining = TerminalOtherStuffStore + allowed - used
+        const remaining = allowed - used
         above = Math.max(remaining, 0)
       } else {
         const useful = new Map()
