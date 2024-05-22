@@ -200,9 +200,31 @@ cook.___roomDemand = function (structure, resourceType) {
     return 0
   }
 
-  if (structureType === STRUCTURE_NUKER ||
-      structureType === STRUCTURE_POWER_SPAWN) {
-    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+  if (structureType === STRUCTURE_NUKER) {
+    if (resourceType === RESOURCE_ENERGY ||
+        resourceType === RESOURCE_GHODIUM) {
+      return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    }
+
+    return 0
+  }
+
+  if (structureType === STRUCTURE_POWER_SPAWN) {
+    if (resourceType === RESOURCE_ENERGY) {
+      const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
+      // STRATEGY avoid repeated trips
+      if (demand <= 5000) return 0
+      return demand
+    }
+
+    if (resourceType === RESOURCE_POWER) {
+      const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
+      // STRATEGY avoid repeated trips
+      if (demand <= 100) return 0
+      return demand
+    }
+
+    return 0
   }
 
   return 0
