@@ -549,12 +549,8 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
-  getDemand: function (something, tickFunction) {
-    return this._getWithIntentCache(something, '__demand_cache', tickFunction)
-  },
-
-  getSupply: function (something, tickFunction) {
-    return this._getWithIntentCache(something, '__supply_cache', tickFunction)
+  getWithIntentCache: function (something, key, tickFunction) {
+    return this._getWithIntentCache(something, key, tickFunction)
   },
 
   getAmount: function (something) {

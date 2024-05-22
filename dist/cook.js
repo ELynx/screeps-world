@@ -295,10 +295,14 @@ cook._hasSpace = function (structure, resourceType) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const space = this.___roomSpace(structure, resourceType)
-  const planned = this.___plannedDelta(structure, resourceType)
+  const lambda = () => {
+    const space = this.___roomSpace(structure, resourceType)
+    const planned = this.___plannedDelta(structure, resourceType)
 
-  return space > planned
+    return space > planned
+  }
+
+  return intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
 }
 
 cook._labClusterDemandTarget = function (room, resourceType) {
