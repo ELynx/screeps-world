@@ -323,7 +323,7 @@ cook.___roomSpace = function (structure, resourceType) {
         useful.set(RESOURCE_ENERGY, intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0)
 
         let usedByUseful = 0
-        useful.forEach(value => usedByUseful += value)
+        useful.forEach(value => (usedByUseful += value))
         const usedTotal = intentSolver.getUsedCapacity(structure) || 0
         const usedByUseless = Math.max(usedTotal - usedByUseful, 0)
         const remaining = TerminalOtherStuffStore - usedByUseless
