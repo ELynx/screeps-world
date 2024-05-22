@@ -311,7 +311,8 @@ cook.___roomSpace = function (structure, resourceType) {
       // one of resources kept by name
       if (allowed > 0) {
         const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
-        const remaining = allowed - used
+        // STRATEGY allow overflow of named resources to be sold
+        const remaining = TerminalOtherStuffStore + allowed - used
         above = Math.max(remaining, 0)
       } else {
         const useful = new Map()
@@ -402,7 +403,7 @@ cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
   }
 
   const resoureAmount = _.parseInt(asWords[1])
-  if (_.isNan(resoureAmount) || resoureAmount <= 0) {
+  if (_.isNaN(resoureAmount) || resoureAmount <= 0) {
     console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', resource amount, [' + resourceTypeAndAmount + ']')
     bootstrap.unassignCreep(creep)
     return [undefined, undefined]
