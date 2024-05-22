@@ -284,7 +284,57 @@ cook.___roomSpace = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
-    // TODO __roomSpace terminal above
+    // it is handled in demand
+    if (resourceType !== RESOURCE_ENERGY) {
+      let allowed = 0
+
+      if (resourceType === structure.room.mineralType()) {
+        allowed += TerminalRoomMineralStore
+      }
+
+      if (resourceType === RESOURCE_KEANIUM) {
+        allowed += TerminalNukeReagentStore
+      }
+
+      if (resourceType === RESOURCE_LEMERGIUM) {
+        allowed += TerminalNukeReagentStore
+      }
+
+      if (resourceType === RESOURCE_UTRIUM) {
+        allowed += TerminalNukeReagentStore
+      }
+
+      if (resourceType === RESOURCE_ZYNTHIUM) {
+        allowed += TerminalNukeReagentStore
+      }
+
+      // one of resources kept by name
+      if (allowed > 0) {
+        const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+        const remaining = allowed - used
+        above = Math.max(remaining, 0)
+      } else {
+        const useful = new Map()
+        useful.set(structure.room.mineralType(), intentSolver.getUsedCapacity(structure, structure.room.mineralType()) || 0)
+        useful.set(RESOURCE_KEANIUM, intentSolver.getUsedCapacity(structure, RESOURCE_KEANIUM) || 0)
+        useful.set(RESOURCE_LEMERGIUM, intentSolver.getUsedCapacity(structure, RESOURCE_LEMERGIUM) || 0)
+        useful.set(RESOURCE_UTRIUM, intentSolver.getUsedCapacity(structure, RESOURCE_UTRIUM) || 0)
+        useful.set(RESOURCE_ZYNTHIUM, intentSolver.getUsedCapacity(structure, RESOURCE_ZYNTHIUM) || 0)
+        useful.set(RESOURCE_ENERGY, intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0)
+
+        let usedByUseful = 0
+        useful.forEach(value => usedByUseful += value)
+        const usedTotal = intentSolver.getUsedCapacity(structure) || 0
+        const usedByUseless = Math.max(usedTotal - usedByUseful, 0)
+        const remaining = TerminalOtherStuffStore - usedByUseless
+        above = Math.max(remaining, 0)
+      }
+
+      if (above > 0) {
+        const free = intentSolver.getFreeCapacity(structure, resourceType) || 0
+        above = Math.min(free, above)
+      }
+    }
   }
 
   // default to demand only
