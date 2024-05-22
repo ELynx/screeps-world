@@ -1168,9 +1168,6 @@ cook._askWorld = function (room) {
       this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
     }
   }
-
-  // TODO ask for ghodium when nuker but no labs
-  // TODO ask for nuke ingredients
 }
 
 cook._operateHarvesters = function (room) {
@@ -1473,7 +1470,15 @@ cook._performTerminalExchange = function () {
     return ERR_FULL
   }
 
-  // TODO? sort by proximity
+  // target terminal will always get first but eh, ok
+  allTerminals.sort(
+    (terminal1, terminal2) => {
+      const d1 = Game.map.getRoomLinearDistance(terminal1.room.name, targetTerminal.room.name, true)
+      const d2 = Game.map.getRoomLinearDistance(terminal2.room.name, targetTerminal.room.name, true)
+
+      return d1 - d2
+    }
+  )
 
   let sourceTerminal
   let sourceType
