@@ -216,14 +216,14 @@ cook.___roomDemand = function (structure, resourceType) {
     if (resourceType === RESOURCE_ENERGY) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips
-      if (demand <= 5000) return 0
+      if (demand <= 2500) return 0
       return demand
     }
 
     if (resourceType === RESOURCE_POWER) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips
-      if (demand <= 100) return 0
+      if (demand <= 50) return 0
       return demand
     }
 
