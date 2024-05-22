@@ -334,11 +334,42 @@ cook.__worldDemandTypes = function (structure) {
   return []
 }
 
-cook._reserveFromStructureToCreep = function (structure, creep, resourceType) {
+cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
+  const asWords = _.words(resourceTypeAndAmount)
+  if (asWords.length !== 2) {
+    console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', whole, [' + resourceTypeAndAmount + ']')
+    return [undefined, undefined]
+  }
+
+  const resourceType = asWords[0]
+  if (!_.contains(RESOURCES_ALL, resourceType)) {
+    console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', resource type, [' + resourceTypeAndAmount + ']')
+    return [undefined, undefined]
+  }
+
+  const resoureAmount = _.parseInt(asWords[1])
+  if (_.isNan(resoureAmount) || resoureAmount <= 0) {
+    console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', resource amount, [' + resourceTypeAndAmount + ']')
+    bootstrap.unassignCreep(creep)
+    return [undefined, undefined]
+  }
+
+  return [resourceType, resoureAmount]
+}
+
+cook._reserveFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
+  const [resourceType, resoureAmount] = this.__processExtra(structure, creep, resourceTypeAndAmount)
+  if (resourceType === undefined || resoureAmount === undefined) {
+    bootstrap.unassignCreep(creep)
+    return
+  }
+
   const freeSpace = intentSolver.getFreeCapacity(creep, resourceType) || 0
   if (freeSpace <= 0) return
 
-  this.__adjustPlannedDelta(structure, resourceType, -1 * freeSpace)
+  const actualAmount = Math.min(freeSpace, resoureAmount)
+
+  this.__adjustPlannedDelta(structure, resourceType, -1 * actualAmount)
 }
 
 cook._expectFromCreepToStructure = function (structure, creep) {
@@ -350,14 +381,20 @@ cook._expectFromCreepToStructure = function (structure, creep) {
   }
 }
 
-cook.__withdrawFromStructureToCreep = function (structure, creep, resourceType) {
+cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
+  const [resourceType, resoureAmount] = this.__processExtra(structure, creep, resourceTypeAndAmount)
+  if (resourceType === undefined || resoureAmount === undefined) {
+    bootstrap.unassignCreep(creep)
+    return ERR_INVALID_ARGS
+  }
+
   const canTake = intentSolver.getFreeCapacity(creep, resourceType) || 0
   if (canTake <= 0) return ERR_FULL
 
   const wantGive = this.___roomSupply(structure, resourceType)
   if (wantGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
-  const amount = Math.min(canTake, wantGive)
+  const amount = Math.min(canTake, wantGive, resoureAmount)
 
   return this.wrapIntent(creep, 'withdraw', structure, resourceType, amount)
 }
@@ -672,6 +709,7 @@ cook.__energyRestockSources = function (room) {
 
   for (const source of sources) {
     source.__cook__resourceToTake = RESOURCE_ENERGY
+    source.__cook__restockToTakeAmount = MadeUpLargeNumber
   }
 
   room.__cook__energyRestockSources = sources
@@ -705,7 +743,6 @@ cook.___roomNeedResource = function (room, resourceType) {
   return withCache(room, resourceType, false)
 }
 
-// TODO restock pick size
 cook.__resourceRestockSources = function (room, count) {
   if (count === 0) return []
 
@@ -722,6 +759,7 @@ cook.__resourceRestockSources = function (room, count) {
 
       if (this.___roomNeedResource(room, resourceType)) {
         structure.__cook__resourceToTake = resourceType
+        structure.__cook__restockToTakeAmount = MadeUpLargeNumber // TODO actual amount
         return true
       }
     }
@@ -754,6 +792,7 @@ cook.__resourceRestockSources = function (room, count) {
     const flushType = this.___hasFlush(structure)
     if (flushType) {
       structure.__cook__resourceToTake = flushType
+      structure.__cook__restockToTakeAmount = MadeUpLargeNumber
       return true
     }
 
@@ -813,7 +852,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 }
 
 cook.extra = function (target) {
-  return target.__cook__resourceToTake
+  return target.__cook__resourceToTake + ':' + target.__cook__restockToTakeAmount
 }
 
 cook._controlPass2 = function (room, creeps) {
