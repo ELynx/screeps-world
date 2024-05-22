@@ -9,14 +9,17 @@ const Controller = require('./controller.template')
 const cook = new Controller('cook')
 
 // STRATEGY demands and supplies
-const WorldSupplyHisteresis = 1000
+const WorldSupplyHisteresis = 2500
 
 const TerminalEnergyDemand = 30000
+const TerminalRoomMineralStore = 200000
+const TerminalNukeReagentStore = 5000
+const TerminalOtherStuffStore = 25000
 
 const FactoryAnyReagentDemand = 10000
-const FactoryGhodiumMeltMax = 15000
-const FactoryBatteryMax = 45000
-const FactoryTotalMax = 45000
+const FactoryGhodiumMeltMaxStore = 15000
+const FactoryBatteryMaxStore = 45000
+const FactoryTotalMaxStore = 45000
 
 // made up value that is used to plug planned capacity on first assignment
 const MadeUpLargeNumber = 1000000
@@ -241,9 +244,8 @@ cook._hasDemand = function (structure, resourceType) {
 }
 
 cook.___roomSpace = function (structure, resourceType) {
-  const structureType = structure.structureType
-
   let above = 0
+  const structureType = structure.structureType
 
   if (structureType === STRUCTURE_CONTAINER) {
     if (resourceType === RESOURCE_ENERGY) {
@@ -252,23 +254,25 @@ cook.___roomSpace = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_FACTORY) {
+    const totalUsed = intentSolver.getUsedCapacity(structure) || 0
+    if (totalUsed >= FactoryTotalMaxStore) return 0
+    const totalRemaining = FactoryTotalMaxStore - totalUsed
+
     if (resourceType === RESOURCE_GHODIUM_MELT) {
       const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
-      const can = FactoryGhodiumMeltMax - used
-      above = Math.max(can, 0)
+      const remaining = FactoryGhodiumMeltMaxStore - used
+      above = Math.max(remaining, 0)
     }
 
     if (resourceType === RESOURCE_BATTERY) {
       const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
-      const can = FactoryBatteryMax - used
-      above = Math.max(can, 0)
+      const remaining = FactoryBatteryMaxStore - used
+      above = Math.max(remaining, 0)
     }
 
     if (above > 0) {
-      const used = intentSolver.getUsedCapacity(structure) || 0
-      const can = FactoryTotalMax - used
-      const remaining = Math.max(can, 0)
-      above = Math.min(above, remaining)
+      const free = intentSolver.getFreeCapacity(structure, resourceType) || 0
+      above = Math.min(totalRemaining, free, above)
     }
   }
 
