@@ -949,11 +949,34 @@ cook._controlPass2 = function (room, creeps) {
           transports = _.sample(transports, prio3EnergyRestockTargets.length)
 
           this._creepPerTarget = false
-          // eslint-disable-next-line no-unused-vars
           const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
           for (const creep of used) {
             creep.__cook__pass2__used = true
           }
+          transports = unused
+        }
+      }
+    }
+
+    // send upgraders to upgrade
+    if (transports.length > 0) {
+      let upgraders = []
+      for (const creep of transports) {
+        if (creep.__cook__pass2__used) continue
+        if (creep.memory.btyp !== 'upgrader') continue
+
+        upgraders.push(creep)
+      }
+
+      if (upgraders.length > 0) {
+        const energyRestockSources = this.__energyRestockSources(room)
+        if (energyRestockSources.length > 0) {
+          this._creepPerTarget = false
+          // eslint-disable-next-line no-unused-vars
+          const [unused, used] = this.assignCreeps(room, upgraders, energyRestockSources)
+          for (const creep of used) {
+            creep.__cook__pass2__used = true
+          }          
         }
       }
     }
