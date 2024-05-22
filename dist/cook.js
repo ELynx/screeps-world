@@ -1024,7 +1024,7 @@ cook._controlPass2 = function (room, creeps) {
 
     // send upgraders to upgrade
     if (transports.length > 0) {
-      let upgraders = []
+      const upgraders = []
       for (const creep of transports) {
         if (creep.__cook__pass2__used) continue
         if (creep.memory.btyp !== 'upgrader') continue
