@@ -927,7 +927,12 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 }
 
 cook.extra = function (target) {
-  return target.__cook__resourceToTake + ':' + target.__cook__restockToTakeAmount
+  if (target.__cook__resourceToTake !== undefined &&
+      target.__cook__restockToTakeAmount !== undefined) {
+    return target.__cook__resourceToTake + ':' + target.__cook__restockToTakeAmount
+  }
+
+  return undefined
 }
 
 cook._controlPass2 = function (room, creeps) {
