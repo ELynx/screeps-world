@@ -540,7 +540,7 @@ StructureController.prototype.canActivateSafeMode = function () {
 }
 
 StructureLab.prototype.isSource = function () {
-  return this.getFromMemory(_isSourceKey_) || false
+  return this.getFromMemory(_isSourceKey_)
 }
 
 StructureLab.prototype.setSource = function (flag) {
@@ -742,6 +742,8 @@ const extensions = {
         case STRUCTURE_LAB:
           Game.labs.set(structure.id, structure)
           structure.room.labs.set(structure.id, structure)
+          const mark = structure.getFromMemory('mark') || 'X'
+          structure.room.visual.text(mark, structure.pos.x, structure.pos.y + 0.2)
           break
         case STRUCTURE_TERMINAL:
           Game.terminals.set(structure.id, structure)
