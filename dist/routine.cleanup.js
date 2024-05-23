@@ -58,7 +58,9 @@ const cleanup = {
         Memory.structures[id] = _.pick(
           Memory.structures[id],
           [
+            'input',
             'isSource',
+            'mark',
             'nodeAccessed',
             'resourceType'
           ]
