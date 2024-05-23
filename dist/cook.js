@@ -79,8 +79,16 @@ cook.___roomSupply = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    // TODO ___roomSupply cook schema
-    return 0
+    // nothing, skip
+    if (structure.mineralType === undefined) return 0
+    // wrong recepie, handle with flush only
+    if (structure.mineralType !== resourceType) return 0
+
+    // explicit inputs do not give back
+    const tristateIsSource = structure.isSource()
+    if (tristateIsSource === true) return 0
+
+    return intentSolver.getUsedCapacity(structure, resourceType) || 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -136,6 +144,18 @@ cook.___hasFlush = function (structure) {
     return undefined
   }
 
+  if (structureType === STRUCTURE_LAB) {
+    // nothing, ignore
+    if (structure.mineralType === undefined) return undefined
+
+    // what is the current recepie
+    const resourceType = structure.resourceType()
+    // if not current recepie, dispose
+    if (structure.mineralType !== resourceType) return structure.mineralType
+
+    return undefined
+  }
+
   if (structureType === STRUCTURE_STORAGE) {
     const stored = _.shuffle(_.keys(structure.store))
     for (const resourceType of stored) {
@@ -171,8 +191,16 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
-    // TODO ___roomDemand cook schema
-    return 0
+    if (resourceType === RESOURCE_ENERGY) return 0
+
+    const tristateIsSource = structure.isSource()
+    // explicit outputs do not demand in resources, only supply them
+    if (tristateIsSource === false) return 0
+
+    const resourceType1 = structure.resourceType()
+    if (resourceType1 !== resourceType) return 0
+
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
