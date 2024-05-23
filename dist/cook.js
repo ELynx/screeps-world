@@ -804,7 +804,7 @@ cook.__energyRestockSources = function (room) {
   return sources
 }
 
-cook.___roomNeedResource = function (room, resourceType) {
+cook.___roomNeedResource = function (room, resourceType, referenceLab = undefined) {
   if (room.__cook__roomNeedResourceMap === undefined) {
     room.__cook__roomNeedResourceMap = new Map()
   }
@@ -823,6 +823,11 @@ cook.___roomNeedResource = function (room, resourceType) {
   }
 
   for (const lab of room.labs.values()) {
+    // explicitly prevent labs from cross-demand-supplying
+    if (referenceLab) {
+      if (lab.resourceType() === referenceLab.resourceType()) continue
+    }
+
     const demand = this.___roomDemand(lab, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }
@@ -858,13 +863,16 @@ cook.__resourceRestockSources = function (room, count) {
   const pushStore = structure => {
     if (structure === undefined) return false
 
+    let referenceLab
+    if (structure.structureType === STRUCTURE_LAB) referenceLab = structure
+
     const stored = _.shuffle(_.keys(structure.store))
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
       if (!this.__hasSupply(structure, resourceType)) continue
 
-      const roomDemand = this.___roomNeedResource(room, resourceType)
+      const roomDemand = this.___roomNeedResource(room, resourceType, referenceLab)
       if (roomDemand > 0) {
         structure.__cook__resourceToTake = resourceType
         structure.__cook__restockToTakeAmount = roomDemand
