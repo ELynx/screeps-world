@@ -286,9 +286,10 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
   if (structureType === STRUCTURE_TERMINAL) {
     // it is handled in demand
     if (resourceType !== RESOURCE_ENERGY) {
+      const mineralType = structure.room.mineralType()
       let allowed = 0
 
-      if (resourceType === structure.room.mineralType()) {
+      if (resourceType === mineralType) {
         allowed += TerminalRoomMineralStore
       }
 
@@ -316,13 +317,15 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
         above = Math.max(remaining, 0)
       } else {
         const useful = new Map()
-        useful.set(structure.room.mineralType(), intentSolver.getUsedCapacity(structure, structure.room.mineralType()) || 0)
-        useful.set(RESOURCE_KEANIUM, intentSolver.getUsedCapacity(structure, RESOURCE_KEANIUM) || 0)
-        useful.set(RESOURCE_LEMERGIUM, intentSolver.getUsedCapacity(structure, RESOURCE_LEMERGIUM) || 0)
-        useful.set(RESOURCE_UTRIUM, intentSolver.getUsedCapacity(structure, RESOURCE_UTRIUM) || 0)
-        useful.set(RESOURCE_ZYNTHIUM, intentSolver.getUsedCapacity(structure, RESOURCE_ZYNTHIUM) || 0)
-        useful.set(RESOURCE_ENERGY, intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0)
+        useful.set(RESOURCE_KEANIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_LEMERGIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_UTRIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_ZYNTHIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_ENERGY, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
+        const mineralTypeMax = TerminalRoomMineralStore + useful.has(mineralType) ? TerminalNukeReagentStore : 0
+        useful.set(mineralType, Math.min(intentSolver.getUsedCapacity(structure, mineralType) || 0, mineralTypeMax))
+        
         let usedByUseful = 0
         useful.forEach(value => (usedByUseful += value))
         const usedTotal = intentSolver.getUsedCapacity(structure) || 0
