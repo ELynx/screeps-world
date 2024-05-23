@@ -1279,18 +1279,20 @@ cook.___setRoomRecepieNuke = function (room) {
     return
   }
 
+  // input order is not important, just used to amortise checks
+
   room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
   room.setLabRecepie('3', true, RESOURCE_KEANIUM)
   room.setLabRecepie('5', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
-  room.setLabRecepie('7', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
+  room.setLabRecepie('7', undefined, RESOURCE_ZYNTHIUM_KEANITE, '3,1')
 
   room.setLabRecepie('2', true, RESOURCE_UTRIUM)
   room.setLabRecepie('4', true, RESOURCE_LEMERGIUM)
   room.setLabRecepie('6', undefined, RESOURCE_UTRIUM_LEMERGITE, '2,4')
-  room.setLabRecepie('8', undefined, RESOURCE_UTRIUM_LEMERGITE, '2,4')
+  room.setLabRecepie('8', undefined, RESOURCE_UTRIUM_LEMERGITE, '4,2')
 
   room.setLabRecepie('9', false, RESOURCE_GHODIUM, '5,6,7,8')
-  room.setLabRecepie('A', false, RESOURCE_GHODIUM, '5,6,7,8')
+  room.setLabRecepie('A', false, RESOURCE_GHODIUM, '8,7,6,5')
 }
 
 cook.__updateRoomRecepie = function (room) {
