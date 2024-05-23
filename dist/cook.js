@@ -1260,15 +1260,50 @@ cook.roomCanMine = function (room) {
   return someLab !== undefined && someResourceType !== undefined
 }
 
+cook.___setRoomRecepieNuke = function (room) {
+  room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
+  room.setLabRecepie('3', true, RESOURCE_KEANIUM)
+  room.setLabRecepie('5', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
+  room.setLabRecepie('7', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
+
+  room.setLabRecepie('2', true, RESOURCE_UTRIUM)
+  room.setLabRecepie('4', true, RESOURCE_LEMERGIUM)
+  room.setLabRecepie('6', undefined, RESOURCE_UTRIUM_LEMERGITE, '2,4')
+  room.setLabRecepie('8', undefined, RESOURCE_UTRIUM_LEMERGITE, '2,4')
+
+  room.setLabRecepie('9', false, RESOURCE_GHODIUM, '5,6,7,8')
+  room.setLabRecepie('A', false, RESOURCE_GHODIUM, '5,6,7,8')
+}
+
+cook.__updateRoomRecepie = function (room) {
+  this.___setRoomRecepieNuke(room)
+}
+
+cook._updateRoomRecepie = function (room) {
+  const processKey = (room.memory.intl + Game.time) % 100
+  if (processKey === 0) {
+    this.__updateRoomRecepie(room)
+  }
+}
+
 cook._askWorld = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
 
-  const roomSourceLevel = room.memory.slvl || 0
-  if (roomSourceLevel < 2) {
-    if (!this.__hasSupply(room.terminal, RESOURCE_ENERGY)) {
-      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, SOURCE_ENERGY_CAPACITY)
-    }
+  if (this.__hasSupply(room.terminal, RESOURCE_ZYNTHIUM)) {
+    this.___addWorldDemand(room.terminal, RESOURCE_ZYNTHIUM, TerminalNukeReagentStore)
+  }
+
+  if (this.__hasSupply(room.terminal, RESOURCE_KEANIUM)) {
+    this.___addWorldDemand(room.terminal, RESOURCE_KEANIUM, TerminalNukeReagentStore)
+  }
+
+  if (this.__hasSupply(room.terminal, RESOURCE_UTRIUM)) {
+    this.___addWorldDemand(room.terminal, RESOURCE_UTRIUM, TerminalNukeReagentStore)
+  }
+
+  if (this.__hasSupply(room.terminal, RESOURCE_LEMERGIUM)) {
+    this.___addWorldDemand(room.terminal, RESOURCE_LEMERGIUM, TerminalNukeReagentStore)
   }
 }
 
@@ -1544,6 +1579,7 @@ cook._operateLabs = function (room) {
 
 // called from room actor after controllers
 cook.roomPost = function (room) {
+  this._updateRoomRecepie(room)
   this._askWorld(room)
   this._operateHarvesters(room)
   this._operateLinks(room)

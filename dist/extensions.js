@@ -421,6 +421,25 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   return this.__extendedAvailableEnergyCapacity_value
 }
 
+Room.prototype._recalcLabMarks = function () {
+  // TODO
+}
+
+Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input) {
+  this._recalcLabMarks()
+
+  for (const lab of this.labs.values()) {
+    if (lab.mark() === mark) {
+      lab.setSource(isSource)
+      lab.setResourceType(resourceType)
+      lab.setInput(input)
+      return
+    }
+  }
+
+  console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
+}
+
 RoomPosition.prototype.offBorderDistance = function () {
   return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0)
 }
@@ -519,6 +538,8 @@ Structure.prototype.setToMemory = function (key, value) {
 
 const _isSourceKey_ = 'isSource'
 const _resourceTypeKey_ = 'resourceType'
+const _markKey_ = 'mark'
+const _inputKey_ = 'input'
 
 StructureContainer.prototype.isSource = function () {
   let result = this.getFromMemory(_isSourceKey_)
@@ -561,8 +582,20 @@ StructureLab.prototype.setResourceType = function (resourceType) {
   this.setToMemory(_resourceTypeKey_, resourceType)
 }
 
-StructureLab.prototype.resetResourceType = function () {
-  this.setResourceType(_resourceTypeKey_, undefined)
+StructureLab.prototype.mark = function() {
+  return this.getFromMemory(_markKey_) || 'X'
+}
+
+StructureLab.prototype.setMark = function (mark) {
+  this.setToMemory(_markKey_, mark)
+}
+
+StructureLab.prototype.input = function () {
+  return this.getFromMemory(_inputKey_)
+}
+
+StructureLab.prototype.setInput = function (input) {
+  this.setToMemory(_inputKey_, input)
 }
 
 StructureLink.prototype.isSource = function () {
