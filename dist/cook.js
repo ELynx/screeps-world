@@ -1310,19 +1310,19 @@ cook._askWorld = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
 
-  if (this.__hasSupply(room.terminal, RESOURCE_ZYNTHIUM)) {
+  if (!this.__hasSupply(room.terminal, RESOURCE_ZYNTHIUM)) {
     this.___addWorldDemand(room.terminal, RESOURCE_ZYNTHIUM, TerminalNukeReagentStore)
   }
 
-  if (this.__hasSupply(room.terminal, RESOURCE_KEANIUM)) {
+  if (!this.__hasSupply(room.terminal, RESOURCE_KEANIUM)) {
     this.___addWorldDemand(room.terminal, RESOURCE_KEANIUM, TerminalNukeReagentStore)
   }
 
-  if (this.__hasSupply(room.terminal, RESOURCE_UTRIUM)) {
+  if (!this.__hasSupply(room.terminal, RESOURCE_UTRIUM)) {
     this.___addWorldDemand(room.terminal, RESOURCE_UTRIUM, TerminalNukeReagentStore)
   }
 
-  if (this.__hasSupply(room.terminal, RESOURCE_LEMERGIUM)) {
+  if (!this.__hasSupply(room.terminal, RESOURCE_LEMERGIUM)) {
     this.___addWorldDemand(room.terminal, RESOURCE_LEMERGIUM, TerminalNukeReagentStore)
   }
 }
