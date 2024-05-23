@@ -1592,7 +1592,71 @@ cook._operateLinks = function (room) {
 }
 
 cook._operateLabs = function (room) {
-  // TODO _operateLabs cook schema
+  if (!room._my_) return
+  if (room.labs.size === 0) return
+
+  const maxCooked = room.memory.cook || 1
+  let cooked = 0
+  for (const lab of room.labs.values()) {
+    if (lab.cooldown && lab.cooldown > 0) continue
+
+    const resourceType = lab.resourceType()
+    if (resourceType === '') continue
+
+    if (lab.mineralType) {
+      if (lab.store.getFreeCapacity(lab.mineralType) <= 0) continue
+      if (lab.mineralType !== resourceType) continue
+    }
+
+    if (lab.isSource() === true) continue
+
+    const input = lab.input()
+    if (!input) continue
+
+    const inputMarks = _.words(input)
+
+    let inputLab1
+    let inputLab2
+    for (const someLab of room.labs.values()) {
+      if (someLab.id === lab.id) continue
+
+      const mark = someLab.mark()
+      if (_.some(inputMarks, _.matches(mark))) {
+        if (someLab.mineralType === undefined) continue
+        if (someLab.store.getUsedCapacity(someLab.mineralType) <= 0) continue
+
+        if (someLab.mineralType !== someLab.resourceType()) continue
+
+        if (someLab.isSource() === false) continue
+
+        if (inputLab1 === undefined) {
+          inputLab1 = someLab
+          continue
+        }
+
+        if (inputLab1.mineralType !== inputLab2.mineralType) {
+          inputLab2 = someLab
+          break
+        }
+      }
+    }
+
+    if (inputLab1 && inputLab2) {
+      // sanity check
+      const reactionProduct = REACTIONS[inputLab1.mineralType][inputLab2.mineralType]
+      if (resourceType !== reactionProduct) {
+        console.log('Unexpected lab combination for lab ' + lab + ' trying to combine ' + inputLab1 + ' and ' + inputLab2 + ' expected [' + resourceType + ' but got [' + reactionProduct + ']')
+        continue
+      }
+
+      const rc = lab.runReaction(inputLab1, inputLab2)
+      if (rc >= OK) {
+        ++cooked
+      }
+    }
+
+    if (cooked >= maxCooked) break
+  }
 }
 
 // called from room actor after controllers
