@@ -243,7 +243,7 @@ cook._hasDemand = function (structure, resourceType) {
   return demand > planned
 }
 
-cook.___roomSpace = function (structure, resourceType) {
+cook.___roomSpace = function (structure, resourceType, forMining = false) {
   let above = 0
   const structureType = structure.structureType
 
@@ -312,7 +312,7 @@ cook.___roomSpace = function (structure, resourceType) {
       if (allowed > 0) {
         const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
         // STRATEGY allow overflow of named resources to be sold
-        const remaining = TerminalOtherStuffStore + allowed - used
+        const remaining = (forMining ? 0 : TerminalOtherStuffStore) + allowed - used
         above = Math.max(remaining, 0)
       } else {
         const useful = new Map()
@@ -342,16 +342,18 @@ cook.___roomSpace = function (structure, resourceType) {
   return Math.max(above, this.___roomDemand(structure, resourceType))
 }
 
-cook._hasSpace = function (structure, resourceType) {
+cook._hasSpace = function (structure, resourceType, forMining = false) {
   // save typing down the line
   if (structure === undefined) return false
 
   const lambda = () => {
-    const space = this.___roomSpace(structure, resourceType)
+    const space = this.___roomSpace(structure, resourceType, forMining)
     const planned = this.___plannedDelta(structure, resourceType)
 
     return space > planned
   }
+
+  if (forMining) return lambda()
 
   return intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
 }
@@ -1208,7 +1210,7 @@ cook.roomCanMine = function (room) {
   const mineralType = room.mineralType()
   if (mineralType === '') return false
 
-  if (this._hasSpace(room.terminal, mineralType)) return true
+  if (this._hasSpace(room.terminal, mineralType, true)) return true
 
   const [someLab, someResourceType] = this._labClusterDemandTarget(room, mineralType)
   return someLab !== undefined && someResourceType !== undefined
