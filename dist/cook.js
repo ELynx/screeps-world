@@ -325,7 +325,7 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
 
         const mineralTypeMax = TerminalRoomMineralStore + useful.has(mineralType) ? TerminalNukeReagentStore : 0
         useful.set(mineralType, Math.min(intentSolver.getUsedCapacity(structure, mineralType) || 0, mineralTypeMax))
-        
+
         let usedByUseful = 0
         useful.forEach(value => (usedByUseful += value))
         const usedTotal = intentSolver.getUsedCapacity(structure) || 0
