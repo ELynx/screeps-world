@@ -1260,7 +1260,25 @@ cook.roomCanMine = function (room) {
   return someLab !== undefined && someResourceType !== undefined
 }
 
+cook.___resetRoomRecepie = function (room) {
+  room.setLabRecepie('1', undefined, undefined, undefined)
+  room.setLabRecepie('2', undefined, undefined, undefined)
+  room.setLabRecepie('3', undefined, undefined, undefined)
+  room.setLabRecepie('4', undefined, undefined, undefined)
+  room.setLabRecepie('5', undefined, undefined, undefined)
+  room.setLabRecepie('6', undefined, undefined, undefined)
+  room.setLabRecepie('7', undefined, undefined, undefined)
+  room.setLabRecepie('8', undefined, undefined, undefined)
+  room.setLabRecepie('9', undefined, undefined, undefined)
+  room.setLabRecepie('A', undefined, undefined, undefined)
+}
+
 cook.___setRoomRecepieNuke = function (room) {
+  if (room.labs.size !== 10) {
+    this.___resetRoomRecepie(room)
+    return
+  }
+
   room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
   room.setLabRecepie('3', true, RESOURCE_KEANIUM)
   room.setLabRecepie('5', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
