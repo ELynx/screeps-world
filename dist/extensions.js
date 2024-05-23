@@ -582,7 +582,7 @@ StructureLab.prototype.setResourceType = function (resourceType) {
   this.setToMemory(_resourceTypeKey_, resourceType)
 }
 
-StructureLab.prototype.mark = function() {
+StructureLab.prototype.mark = function () {
   return this.getFromMemory(_markKey_) || 'X'
 }
 
