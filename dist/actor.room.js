@@ -46,7 +46,7 @@ const controllersBlockStop = [
 // STRATEGY priority for creep assignment
 const controllersMyAuto = [
   downgradeController.id, // always on top
-  cook.id, // 1st pass, set traps, unload
+  cook.id, // 1st pass, set generic energy traps, unload
   unliveController.id, // after unload, before takes other tasks
   mineralHarvestController.id, // narrow filter
   sourceHarvestController.specialist.id, // narrow filter
@@ -54,8 +54,9 @@ const controllersMyAuto = [
   rampupController.id,
   repairController.id,
   buildController.id,
-  cook.id, // 2nd pass, check traps, load accordingly
+  cook.id, // 2nd pass, check generic energy traps, load, set upgrade energy traps
   upgradeController.generic.id, // nothing to do - maybe upgrade
+  cook.id, // 3rd pass, check upgrade energy traps
   sourceHarvestController.generic.id // nothing to do - maybe harvest
 ]
 
