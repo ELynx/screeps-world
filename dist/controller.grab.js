@@ -81,7 +81,7 @@ grabController.targets = function (room) {
 
   const tombstones = room.find(FIND_TOMBSTONES)
   for (const tombstone of tombstones) {
-    const resourceTypes = intentSolver.getUsedCapacityKeysMin(from)
+    const resourceTypes = intentSolver.getUsedCapacityKeysMin(tombstone)
     for (const resourceType of resourceTypes) {
       if (cook.roomCanHandle(room, resourceType)) {
         result.push(
@@ -104,7 +104,7 @@ grabController.targets = function (room) {
 
   const ruins = room.find(FIND_RUINS)
   for (const ruin of ruins) {
-    const resourceTypes = intentSolver.getUsedCapacityKeysMin(from)
+    const resourceTypes = intentSolver.getUsedCapacityKeysMin(ruin)
     for (const resourceType of resourceTypes) {
       if (cook.roomCanHandle(room, resourceType)) {
         result.push(
