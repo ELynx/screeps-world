@@ -1855,17 +1855,15 @@ cook.__sellTerminalExcess = function (terminal) {
     return ERR_TIRED
   }
 
-  const resourceTypes = _.shuffle(_.keys(terminal.store))
-  for (const resourceType of resourceTypes) {
-    const excess = this.___excessToSell(terminal, resourceType)
-    if (excess > 0) {
-      const order = this.___findBuyOrder(resourceType)
-      if (order) {
-        const rc = terminal.autoSell(order, excess)
-        if (rc >= OK) {
-          terminal._operated_ = true
-          return rc
-        }
+  const resourceType = _.sample(_.keys(terminal.store))
+  const excess = this.___excessToSell(terminal, resourceType)
+  if (excess > 0) {
+    const order = this.___findBuyOrder(resourceType)
+    if (order) {
+      const rc = terminal.autoSell(order, excess)
+      if (rc >= OK) {
+        terminal._operated_ = true
+        return rc
       }
     }
   }
@@ -1885,8 +1883,14 @@ cook.globalPost = function () {
   if (this._outOfCpu()) return
 
   this._performTerminalExchange()
+
+  if (Game._war_) return
+
   this._operatePowerSpawns()
   this._operateFactories()
+
+  if (Game._fight_) return
+
   this._sellTerminalsExcess()
 }
 
