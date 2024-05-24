@@ -646,7 +646,6 @@ cook._energyRestockPass1 = function (room, creeps) {
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
   let resourceType
-  // TODO keys with intents
   const resourceTypes = _.shuffle(_.keys(creep.store))
   for (const resourceType1 of resourceTypes) {
     if (resourceType1 === RESOURCE_ENERGY) continue
@@ -1797,11 +1796,27 @@ cook._operateFactories = function () {
   }
 }
 
-cook.___findBuyOrder = function (resourceType) {
+cook.___findBuyOrder = function (terminal, resourceType) {
   const allBuyOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType })
-  // TODO sort by distance to save energy
-  // STRATEGY just sell at random
-  return _.sample(allBuyOrders)
+  if (allBuyOrders.length === 0) return undefined
+  if (allBuyOrders.length === 1) return allBuyOrders[0]
+
+  const randomBuyOrders = _.sample(allBuyOrders, 10)
+
+  const roomNameFrom = terminal.room.name
+  const ordered = _.sortByOrder(
+    randomBuyOrders,
+    [
+      order => Game.map.getRoomLinearDistance(roomNameFrom, order.roomName, true),
+      'price'
+    ],
+    [
+      'asc',
+      'desc'
+    ]
+  )
+
+  return ordered[0]
 }
 
 cook.___excessToSell = function (terminal, resourceType) {
@@ -1864,7 +1879,7 @@ cook.__sellTerminalExcess = function (terminal) {
   const resourceType = _.sample(_.keys(terminal.store))
   const excess = this.___excessToSell(terminal, resourceType)
   if (excess > 0) {
-    const order = this.___findBuyOrder(resourceType)
+    const order = this.___findBuyOrder(terminal, resourceType)
     if (order) {
       const rc = terminal.autoSell(order, excess)
       if (rc >= OK) {
