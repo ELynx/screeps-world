@@ -85,8 +85,7 @@ cook.___roomSupply = function (structure, resourceType) {
     if (structure.mineralType !== resourceType) return 0
 
     // explicit inputs do not give back
-    const tristateIsSource = structure.isSource()
-    if (tristateIsSource === true) return 0
+    if (structure.__cook__cache__isSource === true) return 0
 
     return intentSolver.getUsedCapacity(structure, resourceType) || 0
   }
@@ -148,10 +147,8 @@ cook.___hasFlush = function (structure) {
     // nothing, ignore
     if (structure.mineralType === undefined) return undefined
 
-    // what is the current recepie
-    const resourceType = structure.resourceType()
     // if not current recepie, dispose
-    if (structure.mineralType !== resourceType) return structure.mineralType
+    if (structure.__cook__cache__resourceType !== resourceType) return structure.mineralType
 
     return undefined
   }
@@ -193,12 +190,10 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_LAB) {
     if (resourceType === RESOURCE_ENERGY) return 0
 
-    const tristateIsSource = structure.isSource()
     // explicit outputs do not demand in resources, only supply them
-    if (tristateIsSource === false) return 0
+    if (structure.__cook__cache__isSource === false) return 0
 
-    const resourceType1 = structure.resourceType()
-    if (resourceType1 !== resourceType) return 0
+    if (structure.__cook__cache__resourceType !== resourceType) return 0
 
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
@@ -351,6 +346,7 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
         useful.set(RESOURCE_ZYNTHIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
         useful.set(RESOURCE_ENERGY, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
+        // `useful` can be tricked to know if mineralType is one of nuke reagents
         const mineralTypeMax = TerminalRoomMineralStore + useful.has(mineralType) ? TerminalNukeReagentStore : 0
         useful.set(mineralType, Math.min(intentSolver.getUsedCapacity(structure, mineralType) || 0, mineralTypeMax))
 
@@ -528,6 +524,21 @@ cook.roomPrepare = function (room) {
     room.find(FIND_STRUCTURES),
     structure => structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple
   )
+
+  for (const container in room.__cook__containers) {
+    container.__cook__cache__isSource = container.isSource()
+  }
+
+  for (const lab of room.labs.values()) {
+    lab.__cook__cache__isSource = lab.isSource()
+    lab.__cook__cache__resourceType = lab.resourceType()
+    lab.__cook__cache__mark = lab.mark()
+    lab.__cook__cache__input = lab.input()
+  }
+
+  for (const link of room.links.values()) {
+    link.__cook__cache__isSource = link.isSource()
+  }
 }
 
 cook.observeMyCreep = function (creep) {
@@ -825,7 +836,7 @@ cook.___roomNeedResource = function (room, resourceType, referenceLab = undefine
   for (const lab of room.labs.values()) {
     // explicitly prevent labs from cross-demand-supplying
     if (referenceLab) {
-      if (lab.resourceType() === referenceLab.resourceType()) continue
+      if (lab.__cook__cache__resourceType === referenceLab.__cook__cache__resourceType) continue
     }
 
     const demand = this.___roomDemand(lab, resourceType)
@@ -946,12 +957,15 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (room.terminal && this.__hasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
 
+  // unpack later if needed
+  /*
   for (const lab of room.labs.values()) {
     if (this.__hasEnergyDemand(lab)) {
       targets.push(lab)
       if (targets.length >= count) return targets
     }
   }
+  */
 
   if (room.nuker && this.__hasEnergyDemand(room.nuker)) targets.push(room.nuker)
   if (targets.length >= count) return targets
@@ -980,7 +994,7 @@ cook._controlPass2 = function (room, creeps) {
   if (room._actType_ === bootstrap.RoomActTypeMy) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
-      if (!link.isSource()) continue
+      if (!link.__cook__cache__isSource) continue
 
       const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
       if (canTake <= 0) continue
@@ -1027,7 +1041,7 @@ cook._controlPass2 = function (room, creeps) {
       const canGive = Math.min(canGiveInt, canGiveNow)
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
-          if (!container.isSource()) continue
+          if (!container.__cook__cache__isSource) continue
           if (!creep.pos.isNearTo(container)) continue
 
           const canTake = intentSolver.getFreeCapacity(container, RESOURCE_ENERGY) || 0
@@ -1300,31 +1314,14 @@ cook.__updateRoomRecepie = function (room) {
 }
 
 cook._updateRoomRecepie = function (room) {
-  const processKey = (room.memory.intl + Game.time) % 100
+  const processKey = (room.memory.intl + Game.time) % CREEP_LIFE_TIME
   if (processKey === 0) {
     this.__updateRoomRecepie(room)
   }
 }
 
 cook._askWorld = function (room) {
-  if (!room._my_) return
-  if (!room.terminal) return
-
-  if (!this.__hasSupply(room.terminal, RESOURCE_ZYNTHIUM)) {
-    this.___addWorldDemand(room.terminal, RESOURCE_ZYNTHIUM, TerminalNukeReagentStore)
-  }
-
-  if (!this.__hasSupply(room.terminal, RESOURCE_KEANIUM)) {
-    this.___addWorldDemand(room.terminal, RESOURCE_KEANIUM, TerminalNukeReagentStore)
-  }
-
-  if (!this.__hasSupply(room.terminal, RESOURCE_UTRIUM)) {
-    this.___addWorldDemand(room.terminal, RESOURCE_UTRIUM, TerminalNukeReagentStore)
-  }
-
-  if (!this.__hasSupply(room.terminal, RESOURCE_LEMERGIUM)) {
-    this.___addWorldDemand(room.terminal, RESOURCE_LEMERGIUM, TerminalNukeReagentStore)
-  }
+  // TODO
 }
 
 cook._operateHarvesters = function (room) {
@@ -1516,7 +1513,7 @@ cook._operateLinks = function (room) {
 
   for (const link of allLinks) {
     // quick flag, source keeps to be source
-    if (link.isSource()) {
+    if (link.__cook__cache__isSource) {
       if (useAsSource(link)) {
         sources.push(link)
       }
@@ -1597,39 +1594,42 @@ cook._operateLabs = function (room) {
   if (!room._my_) return
   if (room.labs.size === 0) return
 
+  const properLabs = _.filter(
+    Array.from(room.labs.values()),
+    lab => {
+      if (lab.__cook__cache__resourceType === '') return false
+
+      if (lab.mineralType !== undefined) {
+        return lab.mineralType === lab.__cook__cache__resourceType
+      }
+
+      return true
+    }
+  )
+
   const maxCooked = room.memory.cook || 1
   let cooked = 0
-  for (const lab of room.labs.values()) {
+  for (const lab of properLabs) {
     if (lab.cooldown && lab.cooldown > 0) continue
-
-    const resourceType = lab.resourceType()
-    if (resourceType === '') continue
+    if (lab.__cook__cache__isSource === true) continue
+    if (lab.__cook__cache__input === undefined) continue
 
     if (lab.mineralType) {
       if (lab.store.getFreeCapacity(lab.mineralType) <= 0) continue
-      if (lab.mineralType !== resourceType) continue
     }
 
-    if (lab.isSource() === true) continue
-
-    const input = lab.input()
-    if (!input) continue
-
-    const inputMarks = _.words(input)
+    const inputMarks = _.words(lab.__cook__cache__input)
 
     let inputLab1
     let inputLab2
-    for (const someLab of room.labs.values()) {
+    for (const someLab of properLabs) {
       if (someLab.id === lab.id) continue
 
       const mark = someLab.mark()
       if (_.some(inputMarks, _.matches(mark))) {
+        if (someLab.__cook__cache__isSource === false) continue
         if (someLab.mineralType === undefined) continue
-        if (someLab.store.getUsedCapacity(someLab.mineralType) <= 0) continue
-
-        if (someLab.mineralType !== someLab.resourceType()) continue
-
-        if (someLab.isSource() === false) continue
+        // if (someLab.store.getUsedCapacity(someLab.mineralType) <= 0) continue
 
         if (inputLab1 === undefined) {
           inputLab1 = someLab
@@ -1646,8 +1646,8 @@ cook._operateLabs = function (room) {
     if (inputLab1 && inputLab2) {
       // sanity check
       const reactionProduct = REACTIONS[inputLab1.mineralType][inputLab2.mineralType]
-      if (resourceType !== reactionProduct) {
-        console.log('Unexpected lab combination for lab ' + lab + ' trying to combine ' + inputLab1 + ' and ' + inputLab2 + ' expected [' + resourceType + ' but got [' + reactionProduct + ']')
+      if (lab.__cook__cache__resourceType !== reactionProduct) {
+        console.log('Unexpected lab combination for lab ' + lab + ' trying to combine ' + inputLab1 + ' and ' + inputLab2 + ' expected [' + lab.__cook__cache__resourceType + ' but got [' + reactionProduct + ']')
         continue
       }
 
@@ -1738,7 +1738,7 @@ cook._performTerminalExchange = function () {
 
   const rc = sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
   if (rc >= OK) {
-    console.log('Terminal ' + sourceTerminal + ' helped terminal ' + targetTerminal + ' with [' + amount + '] of [' + sourceType + ']')
+    console.log('Terminal in [' + sourceTerminal.room.name + '] helped terminal in [' + targetTerminal.room.name + '] with [' + amount + '] of [' + sourceType + ']')
     sourceTerminal._operated_ = true
   }
   return rc
