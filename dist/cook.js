@@ -148,7 +148,7 @@ cook.___hasFlush = function (structure) {
     if (structure.mineralType === undefined) return undefined
 
     // if not current recepie, dispose
-    if (structure.__cook__cache__resourceType !== resourceType) return structure.mineralType
+    if (structure.__cook__cache__resourceType !== structure.mineralType) return structure.mineralType
 
     return undefined
   }
