@@ -733,9 +733,7 @@ cook._controlPass1 = function (room, creeps) {
   const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
   room.__cook__energyRestockAssign = undefined
 
-  if (_.some(creepsWithNonEnergy, 'memory.atds'))
-    this.validateTarget = this._validateTarget
-  else {
+  if (_.some(creepsWithNonEnergy, 'memory.atds')) { this.validateTarget = this._validateTarget } else {
     this.validateTarget = undefined
   }
   const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
@@ -976,7 +974,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (targets.length >= count) return targets
 
   if (isAndHasEnergyDemand(room.factory)) targets.push(room.factory)
-  //if (targets.length >= count) return targets
+  // if (targets.length >= count) return targets
 
   // ^ unpack later if needed v
   // if (isAndHasEnergyDemand(room.storage)) targets.push(room.storage)
