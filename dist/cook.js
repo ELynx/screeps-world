@@ -52,7 +52,7 @@ cook.___roomSupply = function (structure, resourceType) {
   if (structureType === STRUCTURE_CONTAINER ||
       structureType === STRUCTURE_LINK ||
       structureType === STRUCTURE_STORAGE) {
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    return intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
   }
 
   if (structureType === STRUCTURE_FACTORY) {
@@ -61,9 +61,11 @@ cook.___roomSupply = function (structure, resourceType) {
       return 0
     }
 
+    const all = intentSolver.getAllUsedCapacity(structure)
+
     if (resourceType === RESOURCE_ENERGY) {
-      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType) || 0
-      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) || 0
+      const nowReagent2 = all.get(resourceType) || 0
+      const nowReagent1 = all.get(RESOURCE_GHODIUM_MELT) || 0
       if (nowReagent1 <= 0) return nowReagent2
 
       const toKeep = nowReagent1 * 2
@@ -71,7 +73,7 @@ cook.___roomSupply = function (structure, resourceType) {
       return Math.max(free, 0)
     }
 
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    return all.get(resourceType) || 0
   }
 
   if (structureType === STRUCTURE_LAB) {
@@ -87,13 +89,15 @@ cook.___roomSupply = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
+    const all = intentSolver.getAllUsedCapacity(structure)
+
     if (resourceType === RESOURCE_ENERGY) {
-      const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const now = all.get(resourceType) || 0
       const free = now - TerminalEnergyDemand
       return Math.max(free, 0)
     }
 
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    return all.get(resourceType) || 0
   }
 
   return 0
@@ -193,7 +197,7 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_TERMINAL) {
     if (resourceType !== RESOURCE_ENERGY) return 0
 
-    const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
+    const now = intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
     const left = TerminalEnergyDemand - now
     return Math.max(left, 0)
   }
@@ -201,16 +205,18 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_FACTORY) {
     if (resourceType === RESOURCE_GHODIUM_MELT ||
         resourceType === RESOURCE_BATTERY) {
-      const now = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const now = intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
       const left = FactoryAnyReagentDemand - now
       return Math.max(left, 0)
     }
 
     if (resourceType === RESOURCE_ENERGY) {
-      const nowReagent1 = intentSolver.getUsedCapacity(structure, RESOURCE_GHODIUM_MELT) || 0
+      const all = intentSolver.getAllUsedCapacity(structure)
+
+      const nowReagent1 = all.get(RESOURCE_GHODIUM_MELT) || 0
       if (nowReagent1 <= 0) return 0
 
-      const nowReagent2 = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const nowReagent2 = all.get(resourceType) || 0
       const left = (nowReagent1 * 2) - nowReagent2
       return Math.max(left, 0)
     }
@@ -269,18 +275,20 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
   }
 
   if (structureType === STRUCTURE_FACTORY) {
-    const totalUsed = intentSolver.getUsedCapacity(structure) || 0
+    const all = intentSolver.getAllUsedCapacity(structure)
+
+    const totalUsed = all.get('total') || 0
     if (totalUsed >= FactoryTotalMaxStore) return 0
     const totalRemaining = FactoryTotalMaxStore - totalUsed
 
     if (resourceType === RESOURCE_GHODIUM_MELT) {
-      const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const used = all.get(resourceType) || 0
       const remaining = FactoryGhodiumMeltMaxStore - used
       above = Math.max(remaining, 0)
     }
 
     if (resourceType === RESOURCE_BATTERY) {
-      const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+      const used = all.get(resourceType) || 0
       const remaining = FactoryBatteryMaxStore - used
       above = Math.max(remaining, 0)
     }
@@ -326,26 +334,29 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
 
       // one of resources kept by name
       if (allowed > 0) {
-        const used = intentSolver.getUsedCapacity(structure, resourceType) || 0
+        const used = intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
         // STRATEGY allow overflow of named resources, to be sold
         const remaining = (forMining ? 0 : TerminalOtherStuffStore) + allowed - used
         above = Math.max(remaining, 0)
       } else {
+        const all = intentSolver.getAllUsedCapacity(structure)
         const useful = new Map()
-        useful.set(RESOURCE_KEANIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_LEMERGIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_UTRIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_ZYNTHIUM, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_ENERGY, Math.min(intentSolver.getUsedCapacity(structure, RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
+
+        useful.set(RESOURCE_KEANIUM,Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
+
+        useful.set(RESOURCE_ENERGY, Math.min(all.get(RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
         // `useful` can be tricked to know if mineralType is one of nuke reagents
         const mineralTypeMax = TerminalRoomMineralStore + useful.has(mineralType) ? TerminalNukeReagentStore : 0
-        useful.set(mineralType, Math.min(intentSolver.getUsedCapacity(structure, mineralType) || 0, mineralTypeMax))
+        useful.set(mineralType, Math.min(all.get(mineralType) || 0, mineralTypeMax))
 
         // TODO sus
         let usedByUseful = 0
         useful.forEach(value => (usedByUseful += value))
-        const usedTotal = intentSolver.getUsedCapacity(structure) || 0
+        const usedTotal = all.get('total') || 0
         const usedByUseless = Math.max(usedTotal - usedByUseful, 0)
         const remaining = TerminalOtherStuffStore - usedByUseless
         above = Math.max(remaining, 0)
@@ -450,10 +461,9 @@ cook._reserveFromStructureToCreep = function (structure, creep, resourceTypeAndA
 }
 
 cook._expectFromCreepToStructure = function (structure, creep) {
-  for (const resourceType in creep.store) {
-    const usedSpace = intentSolver.getUsedCapacity(creep, resourceType) || 0
+  const all = intentSolver.getAllUsedCapacity(creep)
+  for (const [resourceType, usedSpace] of all) {
     if (usedSpace <= 0) continue
-
     this.__adjustPlannedDelta(structure, resourceType, usedSpace)
   }
 }
@@ -701,15 +711,15 @@ cook._controlPass1 = function (room, creeps) {
   const creepsWithNonEnergy = []
 
   for (const creep of creeps) {
-    const total = intentSolver.getUsedCapacity(creep) || 0
+    const all = intentSolver.getAllUsedCapacity(creep)
+    const total = all.get('total') || 0
 
     if (total <= 0) {
       empty.push(creep)
       continue
     }
 
-    const energy = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
-
+    const energy = all.get(RESOURCE_ENERGY) || 0
     if (total > energy) {
       creepsWithNonEnergy.push(creep)
     } else {
