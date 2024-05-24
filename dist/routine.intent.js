@@ -31,6 +31,13 @@ const intent = {
     something.__intents_cache = undefined
   },
 
+  getIntent: function (something, key) {
+    if (something.__intents) {
+      return something.__intents[key]
+    }
+    return undefined
+  },
+
   getIntended: function (something, key, tickValue) {
     if (something.__intents) {
       return something.__intents[key] || tickValue
@@ -532,9 +539,16 @@ const intent = {
     return this.__getFreeCapacity(something, type, nonUniversal)
   },
 
-  getFreeCapacityMin: function (something, type = undefined) {
-    // TODO
-    return this.getFreeCapacity(something, type)
+  getFreeCapacityMin: function (something, type) {
+    // close to original API based on usage
+    if (type === undefined) return null
+
+    const tickValue = something.store.getFreeCapacity(type) || 0
+    if (tickValue <= 0) return 0
+
+    const withIntent = this._getFreeCapacity(something, type)
+
+    return Math.min(tickValue, withIntent)
   },
 
   getUsedCapacity: function (something, type = undefined) {
@@ -554,9 +568,16 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
-  getUsedCapacityMin: function (something, type = undefined) {
-    // TODO
-    return this.getUsedCapacity(something, type)
+  getUsedCapacityMin: function (something, type) {
+    // close to original API based on usage
+    if (type === undefined) return null
+
+    const tickValue = something.store.getUsedCapacity(type) || 0
+    if (tickValue <= 0) return 0
+
+    const withIntent = this._getUsedCapacity(something, type)
+
+    return Math.min(tickValue, withIntent)
   },
 
   getUsedCapacityKeysMin: function (something) {
