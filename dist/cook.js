@@ -115,7 +115,7 @@ cook.___hasFlush = function (structure) {
   const structureType = structure.structureType
 
   if (structureType === STRUCTURE_CONTAINER) {
-    const stored = _.shuffle(_.keys(structure.store))
+    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
@@ -126,7 +126,7 @@ cook.___hasFlush = function (structure) {
   }
 
   if (structureType === STRUCTURE_FACTORY) {
-    const stored = _.shuffle(_.keys(structure.store))
+    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_GHODIUM_MELT) continue
       if (resourceType === RESOURCE_BATTERY) continue
@@ -151,7 +151,7 @@ cook.___hasFlush = function (structure) {
   }
 
   if (structureType === STRUCTURE_STORAGE) {
-    const stored = _.shuffle(_.keys(structure.store))
+    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_OPS) continue
       if (resourceType === RESOURCE_POWER) continue
@@ -183,10 +183,8 @@ cook.___roomDemand = function (structure, resourceType) {
 
   if (structureType === STRUCTURE_LAB) {
     if (resourceType === RESOURCE_ENERGY) return 0
-
     // explicit outputs do not demand in resources, only supply them
     if (structure.__cook__cache__isSource === false) return 0
-
     if (structure.__cook__cache__resourceType !== resourceType) return 0
 
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
@@ -467,7 +465,7 @@ cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAn
     return ERR_INVALID_ARGS
   }
 
-  const canTake = intentSolver.getFreeCapacity(creep, resourceType) || 0
+  const canTake = intentSolver.getFreeCapacityMin(creep, resourceType) || 0
   if (canTake <= 0) return ERR_FULL
 
   const wantGive = this.___roomSupply(structure, resourceType)
@@ -491,9 +489,7 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
   const canTake = this.___roomSpace(structure, resourceType)
   if (canTake <= 0) return ERR_FULL
 
-  const canGiveInt = intentSolver.getUsedCapacity(creep, resourceType) || 0
-  const canGiveNow = creep.store.getUsedCapacity(resourceType) || 0
-  const canGive = Math.min(canGiveInt, canGiveNow)
+  const canGive = intentSolver.getUsedCapacityMin(creep, resourceType) || 0
   if (canGive <= 0) return ERR_NOT_ENOUGH_RESOURCES
 
   const amount = Math.min(canGive, canTake)
@@ -646,7 +642,7 @@ cook._energyRestockPass1 = function (room, creeps) {
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
   let resourceType
-  const resourceTypes = _.shuffle(_.keys(creep.store))
+  const resourceTypes = intentSolver.getShuffledUsedCapacityKeysMin(creep)
   for (const resourceType1 of resourceTypes) {
     if (resourceType1 === RESOURCE_ENERGY) continue
     resourceType = resourceType1
@@ -875,7 +871,7 @@ cook.__resourceRestockSources = function (room, count) {
     let referenceLab
     if (structure.structureType === STRUCTURE_LAB) referenceLab = structure
 
-    const stored = _.shuffle(_.keys(structure.store))
+    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
@@ -1027,16 +1023,12 @@ cook._controlPass2 = function (room, creeps) {
     for (const link of room.links.values()) {
       if (!link.__cook__cache__isSource) continue
 
-      const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
+      const canTake = intentSolver.getFreeCapacityMin(link, RESOURCE_ENERGY) || 0
       if (canTake <= 0) continue
 
       for (const harvester of harvesters) {
         if (!harvester.pos.isNearTo(link)) continue
-
-        const canGiveInt = intentSolver.getUsedCapacity(harvester, RESOURCE_ENERGY) || 0
-        const canGiveNow = harvester.store.getUsedCapacity(RESOURCE_ENERGY) || 0
-        const canGive = Math.min(canGiveInt, canGiveNow)
-
+        const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
         if (canGive > 0) {
           const amount = Math.min(canTake, canGive)
           const rc = this.wrapIntent(harvester, 'transfer', link, RESOURCE_ENERGY, amount)
@@ -1062,16 +1054,13 @@ cook._controlPass2 = function (room, creeps) {
     }
   } else {
     for (const harvester of harvesters) {
-      const canGiveInt = intentSolver.getUsedCapacity(harvester, RESOURCE_ENERGY) || 0
-      const canGiveNow = harvester.store.getUsedCapacity(RESOURCE_ENERGY) || 0
-      const canGive = Math.min(canGiveInt, canGiveNow)
-
+      const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
           if (!container.__cook__cache__isSource) continue
           if (!harvester.pos.isNearTo(container)) continue
 
-          const canTake = intentSolver.getFreeCapacity(container, RESOURCE_ENERGY) || 0
+          const canTake = intentSolver.getFreeCapacityMin(container, RESOURCE_ENERGY) || 0
           if (canTake > 0) {
             const amount = Math.min(canGive, canTake)
             const rc = this.wrapIntent(harvester, 'transfer', container, RESOURCE_ENERGY, amount)
@@ -1491,9 +1480,7 @@ cook._operateLinks = function (room) {
 
   const useAsSource = someLink => {
     if (someLink.cooldown && someLink.cooldown > 0) return false
-    const energyInt = intentSolver.getUsedCapacity(someLink, RESOURCE_ENERGY) || 0
-    const energyNow = someLink.store.getUsedCapacity(RESOURCE_ENERGY) || 0
-    const energy = Math.min(energyInt, energyNow)
+    const energy = intentSolver.getUsedCapacityMin(someLink, RESOURCE_ENERGY) || 0
 
     const plannedDelta = this.___plannedDelta(someLink, RESOURCE_ENERGY)
 
@@ -1506,9 +1493,7 @@ cook._operateLinks = function (room) {
   }
 
   const useAsDest = someLink => {
-    const freeInt = intentSolver.getFreeCapacity(someLink, RESOURCE_ENERGY)
-    const freeNow = someLink.store.getFreeCapacity(RESOURCE_ENERGY)
-    const free = Math.min(freeInt, freeNow)
+    const free = intentSolver.getFreeCapacityMin(someLink, RESOURCE_ENERGY)
 
     // cut off transfer, due to losses it is never 100% full
     return free >= LinkDestinationTreshold
@@ -1826,13 +1811,8 @@ cook.___excessToSell = function (terminal, resourceType) {
   if (resourceType === RESOURCE_OPS) return 0
   if (resourceType === RESOURCE_POWER) return 0
 
-  const usedInt = intentSolver.getUsedCapacity(terminal, resourceType) || 0
-  const usedNow = terminal.store.getUsedCapacity(resourceType)
-
-  const used = Math.min(usedInt, usedNow)
-
+  const used = intentSolver.getUsedCapacityMin(terminal, resourceType) || 0
   const plannedDelta = this.___plannedDelta(terminal, resourceType)
-
   let free = plannedDelta > 0 ? used : (used + plannedDelta)
 
   if (free <= 0) return 0
@@ -1876,7 +1856,7 @@ cook.__sellTerminalExcess = function (terminal) {
     return ERR_TIRED
   }
 
-  const resourceType = _.sample(_.keys(terminal.store))
+  const resourceType = _.sample(intentSolver.getShuffledUsedCapacityKeysMin(terminal))
   const excess = this.___excessToSell(terminal, resourceType)
   if (excess > 0) {
     const order = this.___findBuyOrder(terminal, resourceType)

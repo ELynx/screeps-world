@@ -35,7 +35,8 @@ grabController.act = function (room, creep) {
     if (!creep.pos.isNearTo(from)) continue
 
     if ((didWithdraw === false) && (grab.type === LOOK_TOMBSTONES || grab.type === LOOK_RUINS)) {
-      for (const resourceType of _.keys(from.store)) {
+      const resourceTypes = intentSolver.getUsedCapacityKeysMin(from)
+      for (const resourceType of resourceTypes) {
         if (energyOnlyCreep && resourceType !== RESOURCE_ENERGY) continue // to next type
         if (!cook.roomCanHandle(room, resourceType)) continue // to next type
 
@@ -80,7 +81,8 @@ grabController.targets = function (room) {
 
   const tombstones = room.find(FIND_TOMBSTONES)
   for (const tombstone of tombstones) {
-    for (const resourceType of _.keys(tombstone.store)) {
+    const resourceTypes = intentSolver.getUsedCapacityKeysMin(from)
+    for (const resourceType of resourceTypes) {
       if (cook.roomCanHandle(room, resourceType)) {
         result.push(
           {
@@ -102,7 +104,8 @@ grabController.targets = function (room) {
 
   const ruins = room.find(FIND_RUINS)
   for (const ruin of ruins) {
-    for (const resourceType of _.keys(ruin.store)) {
+    const resourceTypes = intentSolver.getUsedCapacityKeysMin(from)
+    for (const resourceType of resourceTypes) {
       if (cook.roomCanHandle(room, resourceType)) {
         result.push(
           {
