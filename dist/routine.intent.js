@@ -569,6 +569,11 @@ const intent = {
     return _.shuffle(_.keys(something.store))
   },
 
+  getAllUsedCapacity: function (something) {
+    // TODO!
+    return new Map()
+  },
+
   getWithIntentCache: function (something, key, tickFunction) {
     return this._getWithIntentCache(something, key, tickFunction)
   },
