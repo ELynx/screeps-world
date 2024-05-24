@@ -775,10 +775,6 @@ const extensions = {
         case STRUCTURE_LAB:
           Game.labs.set(structure.id, structure)
           structure.room.labs.set(structure.id, structure)
-          structure.room.visual.text(
-            structure.getFromMemory('mark') || 'X',
-            structure.pos.x,
-            structure.pos.y + 0.2)
           break
         case STRUCTURE_TERMINAL:
           Game.terminals.set(structure.id, structure)
