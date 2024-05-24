@@ -1061,10 +1061,7 @@ cook._controlPass2 = function (room, creeps) {
         }
       }
     }
-  }
-
-  // TODO not here?
-  if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
+  } else {
     for (const harvester of harvesters) {
       const canGiveInt = intentSolver.getUsedCapacity(harvester, RESOURCE_ENERGY) || 0
       const canGiveNow = harvester.store.getUsedCapacity(RESOURCE_ENERGY) || 0
@@ -1088,6 +1085,7 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
   }
+
   const roomHasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
   const roomHasPrioEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
 
@@ -1154,15 +1152,14 @@ cook._controlPass2 = function (room, creeps) {
   }
 
   // reset old traps
-
   this.__untrap(room, creeps)
 
   // set upgrader traps
-
   for (const upgrader of upgraders) {
     upgrader._trap_ = RESOURCE_ENERGY
   }
 
+  // summarize
   const unused = []
   const used = []
   for (const creep of creeps) {
@@ -1333,8 +1330,7 @@ cook._askWorld = function (room) {
   // TODO
 }
 
-// TODO drops
-cook._operateHarvesters = function (room) {
+cook._unloadActiveHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
 
   const harvesters = _.filter(
@@ -1453,35 +1449,33 @@ cook._operateHarvesters = function (room) {
       }
     }
 
-    let transferred = false
+    let transferredToLink = false
     for (const link of clusterLinks) {
       const rc = this.__transferFromCreepToStructure(link, harvester, RESOURCE_ENERGY)
       if (rc >= OK) {
-        transferred = true
+        transferredToLink = true
         break // from links loop
       }
     }
+    if (transferredToLink) continue // to next harvester
 
-    if (!transferred) {
-      if (room._actType_ !== bootstrap.RoomActTypeRemoteHarvest) {
-        // unload to containers only when there is more energy in source
-        // otherwise continue to next harvester
-        const hrc = harvester._source_harvest_specialist_rc_
-        if (hrc === bootstrap.WARN_BOTH_EXHAUSED) continue
-        if (hrc === bootstrap.WARN_INTENDED_EXHAUSTED) continue
-        if (hrc === bootstrap.ERR_INTENDED_EXHAUSTED) continue
-        if (hrc === ERR_NOT_ENOUGH_RESOURCES) continue
-      }
+    if (room._actType_ === bootstrap.RoomActTypeMy) {
+      // unload to containers only when there is more energy in source
+      // this is to reduce withdrawing from containers to links on way back
+      const rc = harvester._source_harvest_specialist_rc_
+      if (rc === bootstrap.WARN_BOTH_EXHAUSED) continue
+      if (rc === bootstrap.WARN_INTENDED_EXHAUSTED) continue
+      if (rc === bootstrap.ERR_INTENDED_EXHAUSTED) continue
+      if (rc === ERR_NOT_ENOUGH_RESOURCES) continue
+    }
 
-      for (const container of clusterContainers) {
-        const rc = this.__transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
-        if (rc >= OK) {
-          transferred = true
-          break // from containers loop
-        }
+    for (const container of clusterContainers) {
+      const rc = this.__transferFromCreepToStructure(container, harvester, RESOURCE_ENERGY)
+      if (rc >= OK) {
+        break // from containers loop
       }
     }
-  }
+  } // harvesters
 }
 
 cook._operateLinks = function (room) {
@@ -1675,7 +1669,8 @@ cook._operateLabs = function (room) {
 cook.roomPost = function (room) {
   this._updateRoomRecepie(room)
   this._askWorld(room)
-  this._operateHarvesters(room)
+
+  this._unloadActiveHarvesters(room)
   this._operateLinks(room)
   this._operateLabs(room)
 }
