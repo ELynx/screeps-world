@@ -532,6 +532,11 @@ const intent = {
     return this.__getFreeCapacity(something, type, nonUniversal)
   },
 
+  getFreeCapacityMin: function (something, type = undefined) {
+    // TODO
+    return this.getFreeCapacity(something, type)
+  },
+
   getUsedCapacity: function (something, type = undefined) {
     // repeat after original API
     const nonUniversal = something.store.getCapacity() === null
@@ -547,6 +552,21 @@ const intent = {
     const value = something.store.getUsedCapacity()
 
     return this.getWithIntended(something, key, value)
+  },
+
+  getUsedCapacityMin: function (something, type = undefined) {
+    // TODO
+    return this.getUsedCapacity(something, type)
+  },
+
+  getUsedCapacityKeysMin: function (something) {
+    // TODO
+    return _.keys(something.store)
+  },
+
+  getShuffledUsedCapacityKeysMin: function (something) {
+    // TODO
+    return _.shuffle(_.keys(something.store))
   },
 
   getWithIntentCache: function (something, key, tickFunction) {
