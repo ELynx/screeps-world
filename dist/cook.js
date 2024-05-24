@@ -29,10 +29,6 @@ const LinkDestinationTreshold = LINK_CAPACITY / 16
 // STRATEGY CPU reservation strategy
 const PostCPUTarget = Game.cpu.limit - 0.5
 
-cook.actRange = 1
-
-cook._creepPerTarget = true
-
 cook.__adjustPlannedDelta = function (something, resourceType, delta) {
   if (something.__cook__deltaMap === undefined) {
     something.__cook__deltaMap = new Map()
@@ -516,6 +512,12 @@ cook._controllerTransferFromCreepToStructure = function (structure, creep) {
 }
 
 // << controller
+cook.actRange = 1
+
+cook._creepPerTarget = true
+
+cook.validateTarget = undefined
+
 cook.roomPrepare = function (room) {
   room.__cook__pass = 0
 
@@ -559,15 +561,6 @@ cook.act = function (structure, creep) {
   }
 }
 
-cook.__hasEnergyDemand = function (structure) {
-  if (structure.__cook__hasEnergyDemand !== undefined) {
-    return structure.__cook__hasEnergyDemand
-  }
-
-  structure.__cook__hasEnergyDemand = this._hasDemand(structure, RESOURCE_ENERGY)
-  return structure.__cook__hasEnergyDemand
-}
-
 cook.onAssign = function (target, creep) {
   if (target.room.__cook__energyRestockAssign) {
     target.__cook__hasEnergyDemand = false
@@ -579,7 +572,14 @@ cook.onAssign = function (target, creep) {
   }
 }
 
-// TODO maybe complete undefined on validateTarget
+cook.__hasEnergyDemand = function (structure) {
+  if (structure.__cook__hasEnergyDemand !== undefined) {
+    return structure.__cook__hasEnergyDemand
+  }
+
+  structure.__cook__hasEnergyDemand = this._hasDemand(structure, RESOURCE_ENERGY)
+  return structure.__cook__hasEnergyDemand
+}
 
 cook._energyRestockPass1 = function (room, creeps) {
   if (creeps.length === 0) {
@@ -724,11 +724,22 @@ cook._controlPass1 = function (room, creeps) {
 
   // unload
 
+  if (_.some(creepsWithOnlyEnergy, 'memory.atds')) {
+    this.validateTarget = this._validateTarget
+  } else {
+    this.validateTarget = undefined
+  }
   room.__cook__energyRestockAssign = true
   const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
   room.__cook__energyRestockAssign = undefined
 
+  if (_.some(creepsWithNonEnergy, 'memory.atds'))
+    this.validateTarget = this._validateTarget
+  else {
+    this.validateTarget = undefined
+  }
   const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
+  this.validateTarget = undefined
 
   const unused = empty.concat(energyUnused).concat(resourceUnused)
   const used = energyUsed.concat(resourceUsed)
@@ -949,8 +960,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (isAndHasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
 
-  // unpack later if needed
-  /*
+  /* v unpack later if needed v
   for (const lab of room.labs.values()) {
     if (this.__hasEnergyDemand(lab)) {
       targets.push(lab)
@@ -966,9 +976,10 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (targets.length >= count) return targets
 
   if (isAndHasEnergyDemand(room.factory)) targets.push(room.factory)
-  if (targets.length >= count) return targets
+  //if (targets.length >= count) return targets
 
-  if (isAndHasEnergyDemand(room.storage)) targets.push(room.storage)
+  // ^ unpack later if needed v
+  // if (isAndHasEnergyDemand(room.storage)) targets.push(room.storage)
 
   return targets
 }
@@ -982,7 +993,36 @@ cook.extra = function (target) {
   return undefined
 }
 
+cook.__untrap = function (room, creeps) {
+  room.traps = []
+  for (const creep of creeps) {
+    creep._was_trap_ = undefined
+    creep._trap_ = undefined
+  }
+}
+
 cook._controlPass2 = function (room, creeps) {
+  const byBodyType = _.groupBy(creeps, 'memory.btyp')
+
+  const harvesters = []
+  const upgraders = []
+  const others = []
+
+  for (const bodyType in byBodyType) {
+    if (bodyType === ' harvester') {
+      harvesters = byBodyType[bodyType]
+      continue
+    }
+
+    if (bodyType === 'upgrader') {
+      upgraders = byBodyType[bodyType]
+      continue
+    }
+
+    const others1 = byBodyType[bodyType]
+    others = others.concat(others1)
+  }
+
   if (room._actType_ === bootstrap.RoomActTypeMy) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
@@ -991,33 +1031,33 @@ cook._controlPass2 = function (room, creeps) {
       const canTake = intentSolver.getFreeCapacity(link, RESOURCE_ENERGY) || 0
       if (canTake <= 0) continue
 
-      for (const creep of creeps) {
-        if (creep.memory.btyp !== 'harvester') continue
-        if (!creep.pos.isNearTo(link)) continue
+      for (const harvester of harvesters) {
+        if (!harvester.pos.isNearTo(link)) continue
 
-        const canGiveInt = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
-        const canGiveNow = creep.store.getUsedCapacity(RESOURCE_ENERGY) || 0
+        const canGiveInt = intentSolver.getUsedCapacity(harvester, RESOURCE_ENERGY) || 0
+        const canGiveNow = harvester.store.getUsedCapacity(RESOURCE_ENERGY) || 0
         const canGive = Math.min(canGiveInt, canGiveNow)
+
         if (canGive > 0) {
           const amount = Math.min(canTake, canGive)
-          const rc = this.wrapIntent(creep, 'transfer', link, RESOURCE_ENERGY, amount)
+          const rc = this.wrapIntent(harvester, 'transfer', link, RESOURCE_ENERGY, amount)
           if (rc >= OK) {
-            creep.__cook__pass2__used = true
+            harvester.__cook__pass2__used = true
             break // from creeps loop
           }
         } else {
           for (const container of room.__cook__containers) {
-            if (!creep.pos.isNearTo(container)) continue
+            if (!harvester.pos.isNearTo(container)) continue
             if (!this.__hasSupply(container, RESOURCE_ENERGY)) continue
 
-            const rc1 = this.wrapIntent(creep, 'withdraw', container, RESOURCE_ENERGY)
+            const rc1 = this.wrapIntent(harvester, 'withdraw', container, RESOURCE_ENERGY)
             if (rc1 >= OK) {
-              creep.__cook__pass2__used = true
+              harvester.__cook__pass2__used = true
               break // from containers loop
             }
           }
 
-          if (creep.__cook__pass2__used) break // from creeps loop
+          if (harvester.__cook__pass2__used = true) break // from creeps loop
         }
       }
     }
@@ -1025,24 +1065,22 @@ cook._controlPass2 = function (room, creeps) {
 
   // TODO not here?
   if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
-    for (const creep of creeps) {
-      if (creep.__cook__pass2__used) continue
-      if (creep.memory.btyp !== 'harvester') continue
-
-      const canGiveInt = intentSolver.getUsedCapacity(creep, RESOURCE_ENERGY) || 0
-      const canGiveNow = creep.store.getUsedCapacity(RESOURCE_ENERGY) || 0
+    for (const harvester of harvesters) {
+      const canGiveInt = intentSolver.getUsedCapacity(harvester, RESOURCE_ENERGY) || 0
+      const canGiveNow = harvester.store.getUsedCapacity(RESOURCE_ENERGY) || 0
       const canGive = Math.min(canGiveInt, canGiveNow)
+
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
           if (!container.__cook__cache__isSource) continue
-          if (!creep.pos.isNearTo(container)) continue
+          if (!harvester.pos.isNearTo(container)) continue
 
           const canTake = intentSolver.getFreeCapacity(container, RESOURCE_ENERGY) || 0
           if (canTake > 0) {
             const amount = Math.min(canGive, canTake)
-            const rc = this.wrapIntent(creep, 'transfer', container, RESOURCE_ENERGY, amount)
+            const rc = this.wrapIntent(harvester, 'transfer', container, RESOURCE_ENERGY, amount)
             if (rc >= OK) {
-              creep.__cook__pass2__used = true
+              harvester.__cook__pass2__used = true
               break // from containers loop
             }
           }
@@ -1050,46 +1088,35 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
   }
+  const roomHasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
+  const roomHasPrioEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
 
-  let priorityEnergyCycle = false
-
-  const hasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
-  const hasPrioEnergyDemand = this.__hasPrio1And2EnergyRestockTargets(room)
-
-  if (hasEnergyTrap || hasPrioEnergyDemand) {
-    priorityEnergyCycle = true
-
-    const wantEnergy = []
-    for (const creep of creeps) {
-      if (creep.__cook__pass2__used) continue
-
-      if (hasEnergyTrap && creep._was_trap_ === RESOURCE_ENERGY) {
-        wantEnergy.push(creep)
+  if (roomHasEnergyTrap || roomHasPrioEnergyDemand) {
+    const transports = []
+    for (const creep of others) {
+      if (roomHasEnergyTrap && creep._was_trap_ === RESOURCE_ENERGY) {
+        transports.push(creep)
         continue
       }
 
-      if (hasPrioEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
-        wantEnergy.push(creep)
+      if (roomHasPrioEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
+        transports.push(creep)
       }
     }
 
-    if (wantEnergy.length > 0) {
+    if (transports.length > 0) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
         // eslint-disable-next-line no-unused-vars
-        const [unused, used] = this.assignCreeps(room, wantEnergy, energyRestockSources)
+        const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
         }
       }
     }
-  }
-
-  if (!priorityEnergyCycle) {
+  } else {
     let transports = []
-    for (const creep of creeps) {
-      if (creep.__cook__pass2__used) continue
-
+    for (const creep of others) {
       if (this._hasCM(creep) && this._isEmpty(creep)) {
         transports.push(creep)
       }
@@ -1116,68 +1143,24 @@ cook._controlPass2 = function (room, creeps) {
           // targets no longer than transports by call agreement
           // limit business to necessary only
           transports = _.sample(transports, prio3EnergyRestockTargets.length)
-
+          // eslint-disable-next-line no-unused-vars
           const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
           for (const creep of used) {
             creep.__cook__pass2__used = true
           }
-          transports = unused
-        }
-      }
-    }
-
-    // TODO standalone
-    // send upgraders to upgrade
-    if (transports.length > 0) {
-      const upgraders = []
-      for (const creep of transports) {
-        if (creep.__cook__pass2__used) continue
-
-        if (room.level() >= 8) {
-          if (creep.memory.btyp !== 'upgrader') continue
-        } else {
-          if (creep.memory.btyp !== 'worker' && creep.memory.btyp !== 'upgrader') continue
-        }
-
-        upgraders.push(creep)
-      }
-
-      if (upgraders.length > 0) {
-        const energyRestockSources = this.__energyRestockSources(room)
-        if (energyRestockSources.length > 0) {
-          // eslint-disable-next-line no-unused-vars
-          const [unused, used] = this.assignCreeps(room, upgraders, energyRestockSources)
-          for (const creep of used) {
-            creep.__cook__pass2__used = true
-          }
         }
       }
     }
   }
 
-  room.traps = []
+  // reset old traps
 
-  const remainder = []
-  for (const creep of creeps) {
-    creep._trap_ = undefined
-    creep._was_trap_ = undefined
+  this.__untrap(room, creeps)
 
-    if (creep.__cook__pass2__used) continue
+  // set upgrader traps
 
-    if (this._hasCM(creep) && this._hasEnergy(creep)) {
-      remainder.push(creep)
-    }
-  }
-
-  if (remainder.length > 0) {
-    const prio3EnergyRestockTargets = this.__prio3EnergyRestockTargets(room, remainder.length)
-    if (prio3EnergyRestockTargets.length > 0) {
-      // eslint-disable-next-line no-unused-vars
-      const [unused, used] = this.assignCreeps(room, remainder, prio3EnergyRestockTargets)
-      for (const creep of used) {
-        creep.__cook__pass2__used = true
-      }
-    }
+  for (const upgrader of upgraders) {
+    upgrader._trap_ = RESOURCE_ENERGY
   }
 
   const unused = []
@@ -1194,8 +1177,36 @@ cook._controlPass2 = function (room, creeps) {
 }
 
 cook._controlPass3 = function (room, creeps) {
-  // TODO
-  return [creeps, []]
+  if (!_.some(room.traps, _.matches(RESOURCE_ENERGY))) {
+    this.__untrap(room, creeps)
+    return [creeps, []]
+  }
+
+  const transports = []
+  for (const creep of creeps) {
+    if (creep._was_trap_ === RESOURCE_ENERGY) {
+      transports.push(creep)
+    }
+  }
+
+  if (transports.length === 0) {
+    this.__untrap(room, creeps)
+    return [creeps, []]
+  }
+
+  const energyRestockSources = this.__energyRestockSources(room)
+  if (energyRestockSources.length === 0) {
+    this.__untrap(room, creeps)
+    return [creeps, []]
+  }
+
+  this.__untrap(room, creeps)
+
+  this.validateTarget = this._validateTarget
+  const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
+  this.validateTarget = undefined
+
+  return [unused, used]
 }
 
 cook.control = function (room, creeps) {
