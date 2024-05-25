@@ -1031,6 +1031,15 @@ cook.__untrap = function (room, creeps) {
   }
 }
 
+cook.__checkNoRun = function (allTargets, target, creep) {
+  if (!target.__cook__noEnergyRun) return true
+  return target.pos.isNearTo(creep)
+}
+
+cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
+  return this.__checkNoRun(allTargets, target, creep) && this._validateTarget(allTargets, target, creep)
+}
+
 cook.__harvestersPass2 = function (room, harvesters) {
   if (room._actType_ === bootstrap.RoomActTypeMy) {
     // transfer energy reserves from containers to links
@@ -1091,13 +1100,31 @@ cook.__harvestersPass2 = function (room, harvesters) {
   }
 }
 
-cook.__checkNoRun = function (allTargets, target, creep) {
-  if (!target.__cook__noEnergyRun) return true
-  return target.pos.isNearTo(creep)
-}
+cook.__upgradersPass2 = function (room, upgraders) {
+  const transports = []
 
-cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
-  return this.__checkNoRun(allTargets, target, creep) && this._validateTarget(allTargets, target, creep)
+  for (const upgrader of upgraders) {
+    if (this._hasEnergy(upgrader)) continue
+    transports.push(upgrader)
+  }
+
+  if (transports.length === 0) return
+
+  const energyRestockSources = this.__energyRestockSources(room)
+  if (energyRestockSources.length === 0) return
+
+  if (room.__cook__hasNoEnergyRun) {
+    this.validateTarget = this.__checkNoRunAndDefault
+  } else {
+    this.validateTarget = this._validateTarget
+  }
+  // eslint-disable-next-line no-unused-vars
+  const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
+  this.validateTarget = undefined
+
+  for (const creep of used) {
+    creep.__cook__pass2__used = true
+  }
 }
 
 cook._controlPass2 = function (room, creeps) {
@@ -1123,6 +1150,10 @@ cook._controlPass2 = function (room, creeps) {
 
   if (harvesters.length > 0) {
     this.__harvestersPass2(room, harvesters)
+  }
+
+  if (upgraders.length > 0) {
+    this.__upgradersPass2(room, upgraders)
   }
 
   const roomHasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
@@ -1151,6 +1182,8 @@ cook._controlPass2 = function (room, creeps) {
         }
         // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
+        this.validateTarget = undefined
+
         for (const creep of used) {
           creep.__cook__pass2__used = true
         }
@@ -1192,6 +1225,8 @@ cook._controlPass2 = function (room, creeps) {
           }
           // eslint-disable-next-line no-unused-vars
           const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
+          this.validateTarget = undefined
+
           for (const creep of used) {
             creep.__cook__pass2__used = true
           }
@@ -1200,13 +1235,8 @@ cook._controlPass2 = function (room, creeps) {
     }
   }
 
-  // reset old traps
+  // reset traps
   this.__untrap(room, creeps)
-
-  // set upgrader traps
-  for (const upgrader of upgraders) {
-    upgrader._trap_ = RESOURCE_ENERGY
-  }
 
   // summarize
   const unused = []
@@ -1222,45 +1252,11 @@ cook._controlPass2 = function (room, creeps) {
   return [unused, used]
 }
 
-cook._controlPass3 = function (room, creeps) {
-  if (!_.some(room.traps, _.matches(RESOURCE_ENERGY))) {
-    this.__untrap(room, creeps)
-    return [creeps, []]
-  }
-
-  const transports = []
-  for (const creep of creeps) {
-    if (creep._was_trap_ === RESOURCE_ENERGY) {
-      transports.push(creep)
-    }
-  }
-
-  if (transports.length === 0) {
-    this.__untrap(room, creeps)
-    return [creeps, []]
-  }
-
-  const energyRestockSources = this.__energyRestockSources(room)
-  if (energyRestockSources.length === 0) {
-    this.__untrap(room, creeps)
-    return [creeps, []]
-  }
-
-  this.__untrap(room, creeps)
-
-  this.validateTarget = this.__checkNoRunAndDefault
-  const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
-  this.validateTarget = undefined
-
-  return [unused, used]
-}
-
 cook.control = function (room, creeps) {
   ++room.__cook__pass
 
   if (room.__cook__pass === 1) return this._controlPass1(room, creeps)
   if (room.__cook__pass === 2) return this._controlPass2(room, creeps)
-  if (room.__cook__pass === 3) return this._controlPass3(room, creeps)
 
   console.log('Unexpected call to cook::control for room [' + room.name + '] with pass [' + room.__cook__pass + ']')
   return [creeps, []]
