@@ -157,20 +157,12 @@ function Controller (id) {
     return creep.memory.hvst || false
   }
 
-  this._isNotHarvester = function (creep) {
-    return !this._isHarvester(creep)
-  }
-
   this._isMiner = function (creep) {
     return creep.memory.minr || false
   }
 
   this._isUpgrader = function (creep) {
     return creep.memory.upgr || false
-  }
-
-  this._isNotUpgrader = function (creep) {
-    return !this._isUpgrader(creep)
   }
 
   this._isRecyclee = function (creep) {

@@ -63,7 +63,7 @@ mineralHarvestController.targets = function (room) {
 }
 
 mineralHarvestController.filterCreep = function (creep) {
-  return this._isMiner(creep) && this._hasWCM(creep) && this._isEmpty(creep)
+  return this._isMiner(creep) && this._hasWCM(creep) && this._hasFreeCapacity(creep)
 }
 
 mineralHarvestController.register()
