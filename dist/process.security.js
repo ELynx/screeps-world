@@ -33,8 +33,22 @@ secutiryProcess.work = function (room) {
   )
 
   if (hostileCreeps.length > 0) {
-    // TODO filter by bodypart
-    const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
+    const hostilePCs = []
+
+    for (const creep of hostileCreeps) {
+      if (!creep.pc) continue
+
+      const body = creep.body
+      for (const bodyPart of body) {
+        if (bodyPart.type === CARRY) continue
+        if (bodyPart.type === HEAL) continue
+        if (bodyPart.type === MOVE) continue
+        if (bodyPart.type === TOUGH) continue
+
+        hostilePCs.push(creep)
+        break
+      }
+    }
 
     if (threatTimer + ThreatStep <= Game.time) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
