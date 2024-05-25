@@ -82,17 +82,21 @@ sourceHarvestSpecialistController.act = function (source, creep) {
 }
 
 sourceHarvestSpecialistController.validateTarget = function (allTargets, target, creep) {
-  // pay respect to defaults
-  if (!this._validateTarget(allTargets, target, creep)) {
-    return false
+  if (creep.memory._est === undefined) {
+    if (this._sticky(target)) return false
+    return this._validateTarget(allTargets, target, creep)
   }
 
-  // if already has sticky, stick
-  if (creep.memory._est !== undefined) {
-    return target.id === creep.memory._est
+  if (target.id !== creep.memory._est) return false
+
+  // unstuck if atds was lost
+  if (creep.memory.atds) {
+    if (!creep.pos.isNearTo(target)) {
+      creep.memory.atds = undefined
+    }
   }
 
-  return !this._sticky(target)
+  return true
 }
 
 sourceHarvestSpecialistController.filterCreep = function (creep) {
