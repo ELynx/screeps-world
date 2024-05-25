@@ -601,7 +601,7 @@ const intent = {
 
   getAllUsedCapacity: function (something) {
     const lambda = () => {
-      all = new Map()
+      const all = new Map()
 
       const fromStore = _.keys(something.store)
       for (const tickKey of fromStore) {
