@@ -519,7 +519,7 @@ const intent = {
 
   backupIntents: function (something) {
     if (something && something.__intents) {
-      return _.cloneDeep(something.__intents)
+      return new Map(something.__intents)
     }
 
     return undefined
