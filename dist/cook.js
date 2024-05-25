@@ -881,7 +881,7 @@ cook.__resourceRestockSources = function (room, count) {
     let referenceLab
     if (structure.structureType === STRUCTURE_LAB) referenceLab = structure
 
-    const stored = intentSolver.getShuffledUsedCapacityKeysM(structure)
+    const stored = intentSolver.getUsedCapacityMinKeys(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
