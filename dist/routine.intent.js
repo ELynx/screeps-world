@@ -573,26 +573,36 @@ const intent = {
     if (type === undefined) return null
 
     const tickValue = something.store.getUsedCapacity(type) || 0
-    if (tickValue <= 0) return 0
+    if (tickValue <= 0) return tickValue
 
     const withIntent = this._getUsedCapacity(something, type)
 
     return Math.min(tickValue, withIntent)
   },
 
-  getUsedCapacityKeysMin: function (something) {
-    // TODO
-    return _.keys(something.store)
-  },
+  getUsedCapacityMinKeys: function (something) {
+    const lambda = something => {
+      const result = []
 
-  getShuffledUsedCapacityKeysMin: function (something) {
-    // TODO
-    return _.shuffle(_.keys(something.store))
+      const resourceTypes = _.keys(something.store)
+      for (const resourceType of resourceTypes) {
+        if (this.getUsedCapacityMin(resourceType) > 0) {
+          result.push(resourceType)
+        }
+      }
+
+      return result
+    }
+
+    return this._getWithIntentCache(something, '__internal_getUsedCapacityKeys', lambda)
   },
 
   getAllUsedCapacity: function (something) {
-    // TODO!
-    return new Map()
+    const lambda = something => {
+      return new Map()
+    }
+
+    return this._getWithIntentCache(something, '__internal_getAllUsedCapacity', lambda)
   },
 
   getWithIntentCache: function (something, key, tickFunction) {

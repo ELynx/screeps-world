@@ -119,7 +119,7 @@ cook.___hasFlush = function (structure) {
   const structureType = structure.structureType
 
   if (structureType === STRUCTURE_CONTAINER) {
-    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
+    const stored = _.shuffle(intentSolver.getUsedCapacityMinKeys(structure))
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
@@ -130,7 +130,7 @@ cook.___hasFlush = function (structure) {
   }
 
   if (structureType === STRUCTURE_FACTORY) {
-    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
+    const stored = _.shuffle(intentSolver.getUsedCapacityMinKeys(structure))
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_GHODIUM_MELT) continue
       if (resourceType === RESOURCE_BATTERY) continue
@@ -155,7 +155,7 @@ cook.___hasFlush = function (structure) {
   }
 
   if (structureType === STRUCTURE_STORAGE) {
-    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
+    const stored = _.shuffle(intentSolver.getUsedCapacityMinKeys(structure))
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_OPS) continue
       if (resourceType === RESOURCE_POWER) continue
@@ -652,7 +652,7 @@ cook._energyRestockPass1 = function (room, creeps) {
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
   let resourceType
-  const resourceTypes = intentSolver.getShuffledUsedCapacityKeysMin(creep)
+  const resourceTypes = intentSolver.getShuffledUsedCapacityKeys(creep)
   for (const resourceType1 of resourceTypes) {
     if (resourceType1 === RESOURCE_ENERGY) continue
     resourceType = resourceType1
@@ -881,7 +881,7 @@ cook.__resourceRestockSources = function (room, count) {
     let referenceLab
     if (structure.structureType === STRUCTURE_LAB) referenceLab = structure
 
-    const stored = intentSolver.getShuffledUsedCapacityKeysMin(structure)
+    const stored = intentSolver.getShuffledUsedCapacityKeysM(structure)
     for (const resourceType of stored) {
       if (resourceType === RESOURCE_ENERGY) continue
 
@@ -1866,7 +1866,7 @@ cook.__sellTerminalExcess = function (terminal) {
     return ERR_TIRED
   }
 
-  const resourceType = _.sample(intentSolver.getShuffledUsedCapacityKeysMin(terminal))
+  const resourceType = _.sample(_.shuffle(intentSolver.getUsedCapacityMinKeys(terminal)))
   const excess = this.___excessToSell(terminal, resourceType)
   if (excess > 0) {
     const order = this.___findBuyOrder(terminal, resourceType)
