@@ -601,7 +601,23 @@ const intent = {
 
   getAllUsedCapacity: function (something) {
     const lambda = () => {
-      return new Map()
+      all = new Map()
+
+      const fromStore = _.keys(something.store)
+      for (const tickKey of fromStore) {
+        all.set(tickKey, something.store.getUsedCapacity(tickKey))
+      }
+
+      if (something.__intents) {
+        for (const [intentKey, intentValue] of something.__intents) {
+          if (!_.startsWith(intentKey, '__stored_')) continue
+          const tickKey = intentKey.substring(9)
+          const tickValue = all.get(tickKey) || 0
+          all.set(tickKey, tickValue + intentValue)
+        }
+      }
+
+      return all
     }
 
     return this._getWithIntentCache(something, '__internal_getAllUsedCapacity', lambda)
