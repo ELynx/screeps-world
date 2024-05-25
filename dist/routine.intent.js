@@ -197,6 +197,34 @@ const intent = {
     return rc
   },
 
+  // TODO? resource on the floor
+  creep_intent_drop: function (creep, type, amount = undefined) {
+    if (!_.contains(RESOURCES_ALL, type)) {
+      console.log('creep_intent_drop received invalid argument [type] of value [' + type + ']')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    if (amount && amount <= 0) {
+      console.log('creep_intent_drop received invalid argument [amount] of value [' + amount + ']')
+      return bootstrap.ERR_INVALID_INTENT_ARG
+    }
+
+    const creepHas = this._getUsedCapacity(creep, type)
+    if (creepHas <= 0) {
+      return bootstrap.ERR_INTENDEE_EXHAUSTED
+    }
+
+    const toDrop = amount || creepHas
+
+    this.intentCapacityChange(creep, type, -1 * toDrop)
+
+    let rc = OK
+
+    if (exchange >= creepHas) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+
+    return rc
+  },
+
   creep_intent_harvest: function (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_harvest received undefined argument [target]')

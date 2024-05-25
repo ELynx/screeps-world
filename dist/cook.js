@@ -767,6 +767,11 @@ cook._controlPass1 = function (room, creeps) {
   const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithOnlyNonEnergy)
   this.validateTarget = undefined
 
+  for (const creep of resourceUnused) {
+    const toDrop = _.sample(intentSolver.getUsedCapacityMinKeys(creep))
+    this.wrapIntent(creep, 'drop', toDrop)
+  }
+
   const unused = empty.concat(energyUnused).concat(resourceUnused)
   const used = energyUsed.concat(resourceUsed)
 

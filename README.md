@@ -22,8 +22,6 @@ Proprietary and confidential.
 
 In emergency, release stored energy.
 
-Plunders and other creeps have some place to dump resources.
-
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
