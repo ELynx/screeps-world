@@ -583,7 +583,7 @@ const intent = {
   },
 
   getUsedCapacityMinKeys: function (something) {
-    const lambda = something => {
+    const lambda = () => {
       const result = []
 
       const resourceTypes = _.keys(something.store)
@@ -600,7 +600,7 @@ const intent = {
   },
 
   getAllUsedCapacity: function (something) {
-    const lambda = something => {
+    const lambda = () => {
       return new Map()
     }
 
