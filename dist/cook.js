@@ -342,7 +342,7 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
         const all = intentSolver.getAllUsedCapacity(structure)
         const useful = new Map()
 
-        useful.set(RESOURCE_KEANIUM,Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
+        useful.set(RESOURCE_KEANIUM, Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
         useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
         useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
         useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
