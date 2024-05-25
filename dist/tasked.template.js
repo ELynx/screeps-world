@@ -161,32 +161,34 @@ Creep.prototype.withdrawFromAdjacentStructures = function (targets) {
 }
 
 Creep.prototype.unlive = function () {
-  let result = false
+  let toRoom
 
   if (this.room.level() > 0) {
-    this.setControlRoom(this.room.name)
-    this.setFromRoom(undefined)
-    result = true
+    toRoom = this.room.name
   } else if (this.memory.mrts) {
-    this.setControlRoom(this.memory.mrts)
-    this.setFromRoom(undefined)
-    result = true
+    toRoom = this.memory.mrts
   } else {
     for (const room of Game.rooms_values) {
       if (room.level() > 0) {
-        this.setControlRoom(room.name)
-        this.setFromRoom(undefined)
-        result = true
+        toRoom = room.name
         break
       }
     }
   }
 
-  if (result) {
-    // forget who they serve
-    this.memory.flag = undefined
+  if (toRoom) {
+    const roomsToGo = Game.map.getRoomLinearDistance(this.room.name, toRoom)
+    const ticksToGo = roomsToGo * 50
+    if (this.ticksToLive < ticksToGo) toRoom = undefined
+  }
+
+  if (toRoom) {
+    // forget who they are
+    this.memory = { }
     this.flag = undefined
+
     // mark to be cycled out of existence
+    this.setControlRoom(toRoom)
     this.memory.rccl = true
 
     return OK

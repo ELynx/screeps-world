@@ -40,8 +40,6 @@ Movement and positioning:
 
 React to PowerCreeps.
 
-Unlive for harvesters.
-
 ## Intents
 
 [Intents](https://github.com/screeps/engine/tree/master/src/processor/intents)
@@ -54,7 +52,7 @@ Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
 
-* [International Bot](https://github.com/The-International-Screeps-Bot/The-International-Open-Source/blob/7fb3ccb5ecae4ab7f5eb5dcf9bbd13c022ba30c2/src/international/constants.ts#L399)
+* [International Bot](https://github.com/The-International-Screeps-Bot/The-International-Open-Source)
 
 * [Kasami Bot](https://github.com/kasami/kasamibot)
 
@@ -99,6 +97,10 @@ Flag to turn verbose naming on and off.
 Instead of healing by towers spawn healers.
 
 No firing at things in room safe mode.
+
+* Set threat to 0.
+
+* Towers do not fire in rooms with threat 0.
 
 Ignore Invader healers if no other Invader creeps exist.
 
