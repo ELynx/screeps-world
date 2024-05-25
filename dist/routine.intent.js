@@ -607,6 +607,7 @@ const intent = {
       for (const tickKey of fromStore) {
         all.set(tickKey, something.store.getUsedCapacity(tickKey))
       }
+      all.set('total', something.store.getUsedCapacity() || 0)
 
       if (something.__intents) {
         for (const [intentKey, intentValue] of something.__intents) {
