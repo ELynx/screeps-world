@@ -8,7 +8,17 @@ const roomInfoProcess = new Process('roomInfo')
 
 roomInfoProcess.sourceLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
-  return sources.length
+
+  const sourcesInForseableFuture = _.filter(
+    sources,
+    source => {
+      if (source.energy > 0) return true
+      if (source.ticksToRegeneration < CREEP_LIFE_TIME) return true
+      return false
+    }
+  )
+
+  return sourcesInForseableFuture.length
 }
 
 roomInfoProcess.miningLevel = function (room) {
