@@ -1,5 +1,7 @@
 'use strict'
 
+const bootstrap = require('./bootstrap')
+
 const intentSolver = require('./routine.intent')
 
 const Controller = require('./controller.template')
@@ -77,6 +79,9 @@ sourceHarvestSpecialistController.act = function (source, creep) {
   // remember for cook
   creep._source_harvest_specialist_rc_ = rc
   creep._source_ = source
+
+  // cook will take care
+  if (rc === bootstrap.WARN_INTENDEE_EXHAUSTED) return OK
 
   return rc
 }
