@@ -56,7 +56,7 @@ const intent = {
 
   getWithIntended: function (something, key, tickValue) {
     if (something.__intents) {
-      return tickValue + (something.get(key) || 0)
+      return tickValue + (something.__intents.get(key) || 0)
     }
     return tickValue
   },
