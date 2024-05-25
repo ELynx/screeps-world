@@ -673,7 +673,7 @@ cook._energyRestockPass1 = function (room, creeps) {
 
 cook.__resourceRestockTargetForCreep = function (room, creep) {
   let resourceType
-  const resourceTypes = intentSolver.getShuffledUsedCapacityKeys(creep)
+  const resourceTypes = _.shuffle(intentSolver.getUsedCapacityMinKeys(creep))
   for (const resourceType1 of resourceTypes) {
     if (resourceType1 === RESOURCE_ENERGY) continue
     resourceType = resourceType1
