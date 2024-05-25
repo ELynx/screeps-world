@@ -1144,12 +1144,12 @@ cook._controlPass2 = function (room, creeps) {
     if (transports.length > 0) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
-        // eslint-disable-next-line no-unused-vars
         if (room.__cook__hasNoEnergyRun) {
           this.validateTarget = this.__checkNoRun
         } else {
           this.validateTarget = undefined
         }
+        // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
@@ -1185,12 +1185,12 @@ cook._controlPass2 = function (room, creeps) {
           // targets no longer than transports by call agreement
           // limit business to necessary only
           transports = _.sample(transports, prio3EnergyRestockTargets.length)
-          // eslint-disable-next-line no-unused-vars
           if (room.__cook__hasNoEnergyRun) {
             this.validateTarget = this.__checkNoRun
           } else {
             this.validateTarget = undefined
           }
+          // eslint-disable-next-line no-unused-vars
           const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
           for (const creep of used) {
             creep.__cook__pass2__used = true
