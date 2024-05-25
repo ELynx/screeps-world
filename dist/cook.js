@@ -1623,7 +1623,7 @@ cook._operateLabs = function (room) {
     for (const someLab of properLabs) {
       if (someLab.id === lab.id) continue
 
-      const mark = someLab.mark()
+      const mark = someLab.__cook__cache__mark
       if (_.some(inputMarks, _.matches(mark))) {
         if (someLab.__cook__cache__isSource === false) continue
         if (someLab.mineralType === undefined) continue
