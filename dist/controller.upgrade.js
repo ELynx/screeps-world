@@ -69,7 +69,7 @@ upgradeSpecialistController.targets = function (room) {
 }
 
 upgradeSpecialistController.filterCreep = function (creep) {
-  return this._defaultFilter(creep) && this._isUpgrader(creep)
+  return this._isUpgrader(creep) && this._isWorkAble(creep)
 }
 
 upgradeGenericController.register()

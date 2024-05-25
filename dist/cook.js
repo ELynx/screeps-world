@@ -1113,7 +1113,7 @@ cook._controlPass2 = function (room, creeps) {
       continue
     }
 
-    if (bodyType === 'upgraders') {
+    if (bodyType === 'upgrader') {
       upgraders.push(creep)
       continue
     }
