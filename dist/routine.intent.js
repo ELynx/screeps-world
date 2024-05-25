@@ -588,7 +588,7 @@ const intent = {
 
       const resourceTypes = _.keys(something.store)
       for (const resourceType of resourceTypes) {
-        if (this.getUsedCapacityMin(resourceType) > 0) {
+        if (this.getUsedCapacityMin(something, resourceType) > 0) {
           result.push(resourceType)
         }
       }
