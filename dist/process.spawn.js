@@ -78,8 +78,9 @@ spawnProcess.streloks = function (room, live) {
   if (threat <= bootstrap.ThreatLevelLow) return
 
   const want = threat
-  // TODO coordinate with room service
-  const now = this._hasAndPlanned(room, live, 'strelok')
+
+  const roomServiceFlag = Game.flags['strelok_' + room.name]
+  const now = this._hasAndPlanned(room, live, 'strelok') + (roomServiceFlag ? roomServiceFlag.getValue() : 0)
 
   this.addToQueue(
     room.name,
