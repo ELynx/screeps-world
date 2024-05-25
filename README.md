@@ -40,6 +40,8 @@ Movement and positioning:
 
 React to PowerCreeps.
 
+Unlive for harvesters.
+
 ## Intents
 
 [Intents](https://github.com/screeps/engine/tree/master/src/processor/intents)
