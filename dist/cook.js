@@ -679,9 +679,6 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   }
 
   if (resourceType === undefined) {
-    const defaultKeys = _.keys(creep.store)
-    const minKeys = intentSolver.getUsedCapacityMinKeys(creep)
-    console.log('Unexpected creep [' + creep.name + '] for resource restock, store [' + defaultKeys + '], min [' + minKeys + ']')
     return [undefined, undefined]
   }
 
@@ -764,7 +761,7 @@ cook._controlPass1 = function (room, creeps) {
   } else {
     this.validateTarget = undefined
   }
-  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithOnlyNonEnergy)
+  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithOnlyNonEnergy.concat(energyUnused))
   this.validateTarget = undefined
 
   for (const creep of resourceUnused) {
@@ -772,7 +769,7 @@ cook._controlPass1 = function (room, creeps) {
     this.wrapIntent(creep, 'drop', toDrop)
   }
 
-  const unused = empty.concat(energyUnused).concat(resourceUnused)
+  const unused = empty.concat(resourceUnused)
   const used = energyUsed.concat(resourceUsed)
 
   // assign energy traps to workers
