@@ -149,10 +149,6 @@ grabController.targets = function (room) {
 }
 
 grabController.filterCreep = function (creep) {
-  if (this._isStationarySpecialist(creep)) {
-    if (!creep.memory.atds) return false
-  }
-
   // only if some creep passed the check and triggered target search
   if (this.fastCheck) {
     if (!this.fastCheckX.has(creep.pos.x)) {
@@ -162,6 +158,10 @@ grabController.filterCreep = function (creep) {
     if (!this.fastCheckY.has(creep.pos.y)) {
       return false
     }
+  }
+
+  if (this._isStationarySpecialist(creep)) {
+    if (!creep.memory.atds) return false
   }
 
   return this._hasFreeCapacity(creep)
