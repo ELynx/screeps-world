@@ -1027,27 +1027,7 @@ cook.__untrap = function (room, creeps) {
   }
 }
 
-cook._controlPass2 = function (room, creeps) {
-  const harvesters = []
-  const upgraders = []
-  const others = []
-
-  for (const creep of creeps) {
-    const bodyType = creep.memory.btyp
-
-    if (bodyType === 'harvester') {
-      harvesters.push(creep)
-      continue
-    }
-
-    if (bodyType === 'upgraders') {
-      upgraders.push(creep)
-      continue
-    }
-
-    others.push(creep)
-  }
-
+cook.__harvestersPass2 = function (room, harvesters) {
   if (room._actType_ === bootstrap.RoomActTypeMy) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
@@ -1104,6 +1084,32 @@ cook._controlPass2 = function (room, creeps) {
         }
       }
     }
+  }
+}
+
+cook._controlPass2 = function (room, creeps) {
+  const harvesters = []
+  const upgraders = []
+  const others = []
+
+  for (const creep of creeps) {
+    const bodyType = creep.memory.btyp
+
+    if (bodyType === 'harvester') {
+      harvesters.push(creep)
+      continue
+    }
+
+    if (bodyType === 'upgraders') {
+      upgraders.push(creep)
+      continue
+    }
+
+    others.push(creep)
+  }
+
+  if (harvesters.length > 0) {
+    this.__harvestersPass2(room, harvesters)
   }
 
   const roomHasEnergyTrap = _.some(room.traps, _.matches(RESOURCE_ENERGY))
