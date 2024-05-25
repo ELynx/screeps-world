@@ -52,6 +52,8 @@ cook.___roomSupply = function (structure, resourceType) {
   if (structureType === STRUCTURE_CONTAINER ||
       structureType === STRUCTURE_LINK ||
       structureType === STRUCTURE_STORAGE) {
+    if (structure.__cook__noEnergySupply && resourceType === RESOURCE_ENERGY) return 0
+
     return intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
   }
 
@@ -373,6 +375,12 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
     }
   }
 
+  if (structureType === STRUCTURE_LINK) {
+    if (resourceType !== RESOURCE_ENERGY) return 0
+    if (!structure.__cook__cache__isSource) return 0
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+  }
+
   // default to demand only
   return Math.max(above, this.___roomDemand(structure, resourceType))
 }
@@ -549,6 +557,15 @@ cook.roomPrepare = function (room) {
 
   for (const link of room.links.values()) {
     link.__cook__cache__isSource = link.isSource()
+
+    if (!link.__cook__cache__isSource) continue
+
+    link.__cook__noEnergySupply = true
+
+    for (const container of room.__cook__containers) {
+      if (container.__cook__noEnergySupply) continue
+      if (link.pos.isNearTo(container)) container.__cook__noEnergySupply = true
+    }
   }
 }
 
@@ -1035,6 +1052,8 @@ cook._controlPass2 = function (room, creeps) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
       if (!link.__cook__cache__isSource) continue
+      // for uniformity
+      if (!this._hasSpace(link, RESOURCE_ENERGY)) continue
 
       const canTake = intentSolver.getFreeCapacityMin(link, RESOURCE_ENERGY) || 0
       if (canTake <= 0) continue
