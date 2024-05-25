@@ -24,7 +24,7 @@ const MadeUpLargeNumber = 1000000
 
 // STRATEGY link send values
 const LinkSourceTreshold = LINK_CAPACITY / 2
-const LinkDestinationTreshold = LINK_CAPACITY / 16
+const LinkDestinationTreshold = LINK_CAPACITY / 8
 
 // STRATEGY CPU reservation strategy
 const PostCPUTarget = Game.cpu.limit - 0.5
@@ -1601,7 +1601,7 @@ cook._operateLinks = function (room) {
   for (const source of sources) {
     const destination = destinations[destinationIndex]
 
-    source.transferEnergy(destination, source.__cook__freeEnergy)
+    source.transferEnergy(destination)
 
     ++destinationIndex
     if (destinationIndex >= destinations.length) {
