@@ -114,6 +114,7 @@ spawnProcess.harvesters = function (room, live) {
 }
 
 spawnProcess.miners = function (room, live) {
+  const limit = room.memory.slvl || 0
   const want = this._canSpawn(room) ? (room.memory.mlvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
@@ -125,12 +126,13 @@ spawnProcess.miners = function (room, live) {
     {
       minr: true
     },
-    want - now,
+    Math.min(limit, want) - now,
     'lowkey'
   )
 }
 
 spawnProcess.upgraders = function (room, live) {
+  const limit = room.memory.slvl || 0
   const want = (!Game._war_ && this._canSpawn(room)) ? (room.memory.ulvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
@@ -143,13 +145,14 @@ spawnProcess.upgraders = function (room, live) {
       upgr: true,
       blok: true
     },
-    want - now,
+    Math.min(limit, want) - now,
     'lowkey'
   )
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const want = (room.memory.wwww === undefined) ? 1 : room.memory.wwww // default to at least one when situation is BS
+  const limit = (room.level() < 3 ? 2 : 1) * (room.memory.slvl || 0)
+  const want = (room.memory.wwww === undefined) ? (room.level() < 7 ? 2 : 1) : room.memory.wwww
   const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
@@ -158,7 +161,7 @@ spawnProcess.workers_my = function (room, live) {
     'worker',
     'worker',
     { },
-    want - now,
+    Math.min(limit, want) - now,
     'normal'
   )
 }
