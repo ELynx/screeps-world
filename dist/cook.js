@@ -52,8 +52,6 @@ cook.___roomSupply = function (structure, resourceType) {
   if (structureType === STRUCTURE_CONTAINER ||
       structureType === STRUCTURE_LINK ||
       structureType === STRUCTURE_STORAGE) {
-    if (structure.__cook__noEnergySupply && resourceType === RESOURCE_ENERGY) return 0
-
     return intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
   }
 
@@ -560,11 +558,11 @@ cook.roomPrepare = function (room) {
 
     if (!link.__cook__cache__isSource) continue
 
-    link.__cook__noEnergySupply = true
+    link.__cook__noEnergyRun = true
 
     for (const container of room.__cook__containers) {
-      if (container.__cook__noEnergySupply) continue
-      if (link.pos.isNearTo(container)) container.__cook__noEnergySupply = true
+      if (container.__cook__noEnergyRun) continue
+      if (link.pos.isNearTo(container)) container.__cook__noEnergyRun = true
     }
   }
 }
@@ -819,13 +817,19 @@ cook.__energyRestockSources = function (room) {
   const sources = []
 
   for (const container of room.__cook__containers) {
-    if (this.__hasSupply(container, RESOURCE_ENERGY)) sources.push(container)
+    if (this.__hasSupply(container, RESOURCE_ENERGY)) {
+      sources.push(container)
+      if (container.__cook__noEnergyRun) room.__cook__hasNoEnergyRun = true
+    }
   }
 
   if (this.__hasSupply(room.factory, RESOURCE_ENERGY)) sources.push(room.factory)
 
   for (const link of room.links.values()) {
-    if (this.__hasSupply(link, RESOURCE_ENERGY)) sources.push(link)
+    if (this.__hasSupply(link, RESOURCE_ENERGY)) {
+      sources.push(link)
+      if (link.__cook__noEnergyRun) room.__cook__hasNoEnergyRun = true
+    }
   }
 
   if (this.__hasSupply(room.storage, RESOURCE_ENERGY)) sources.push(room.storage)
@@ -1087,6 +1091,15 @@ cook.__harvestersPass2 = function (room, harvesters) {
   }
 }
 
+cook.__checkNoRun = function (allTargets, target, creep) {
+  if (!target.__cook__noEnergyRun) return true
+  return target.pos.isNearTo(creep)
+}
+
+cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
+  return this.__checkNoRun(allTargets, target, creep) && this._validateTarget(allTargets, target, creep)
+}
+
 cook._controlPass2 = function (room, creeps) {
   const harvesters = []
   const upgraders = []
@@ -1132,6 +1145,11 @@ cook._controlPass2 = function (room, creeps) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
         // eslint-disable-next-line no-unused-vars
+        if (room.__cook__hasNoEnergyRun) {
+          this.validateTarget = this.__checkNoRun
+        } else {
+          this.validateTarget = undefined
+        }
         const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
         for (const creep of used) {
           creep.__cook__pass2__used = true
@@ -1168,6 +1186,11 @@ cook._controlPass2 = function (room, creeps) {
           // limit business to necessary only
           transports = _.sample(transports, prio3EnergyRestockTargets.length)
           // eslint-disable-next-line no-unused-vars
+          if (room.__cook__hasNoEnergyRun) {
+            this.validateTarget = this.__checkNoRun
+          } else {
+            this.validateTarget = undefined
+          }
           const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
           for (const creep of used) {
             creep.__cook__pass2__used = true
@@ -1225,7 +1248,7 @@ cook._controlPass3 = function (room, creeps) {
 
   this.__untrap(room, creeps)
 
-  this.validateTarget = this._validateTarget
+  this.validateTarget = this.__checkNoRunAndDefault
   const [unused, used] = this.assignCreeps(room, transports, energyRestockSources)
   this.validateTarget = undefined
 
