@@ -1113,7 +1113,7 @@ cook._controlPass2 = function (room, creeps) {
   } else {
     let transports = []
     for (const creep of others) {
-      if (this._hasCM(creep) && this._isEmpty(creep)) {
+      if (this._hasCM(creep) && this._hasFreeCapacity(creep)) {
         transports.push(creep)
       }
     }
