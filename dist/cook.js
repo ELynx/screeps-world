@@ -679,7 +679,9 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
   }
 
   if (resourceType === undefined) {
-    console.log('Unexpected creep [' + creep.name + '] for resource restock')
+    const defaultKeys = _.keys(creep.store)
+    const minKeys = intentSolver.getUsedCapacityMinKeys(creep)
+    console.log('Unexpected creep [' + creep.name + '] for resource restock, store [' + defaultKeys + '], min [' + minKeys + ']')
     return [undefined, undefined]
   }
 
