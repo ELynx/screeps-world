@@ -545,8 +545,6 @@ cook.roomPrepare = function (room) {
   for (const lab of room.labs.values()) {
     lab.__cook__cache__isSource = lab.isSource()
     lab.__cook__cache__resourceType = lab.resourceType()
-    lab.__cook__cache__mark = lab.mark()
-    lab.__cook__cache__input = lab.input()
   }
 
   for (const link of room.links.values()) {
@@ -1616,25 +1614,34 @@ cook._operateLabs = function (room) {
   for (const lab of labsToOperate) {
     if (lab.cooldown && lab.cooldown > 0) continue
     if (lab.__cook__cache__isSource === true) continue
-    if (lab.__cook__cache__input === undefined) continue
 
     if (lab.mineralType) {
       if (lab.store.getFreeCapacity(lab.mineralType) <= 0) continue
     }
 
-    const inputMarks = _.words(lab.__cook__cache__input)
+    const input = lab.input()
+    if (input === undefined) continue
+    const inputMarks = _.words(input)
 
     let inputLab1
     let inputLab2
     for (const someLab of properLabs) {
+      // because faster than string comparison
+      if (someLab.__cook__cache__isSource === false) continue
+      if (someLab.mineralType === undefined) continue
+
       if (someLab.id === lab.id) continue
 
-      const mark = someLab.__cook__cache__mark
-      if (_.some(inputMarks, _.matches(mark))) {
-        if (someLab.__cook__cache__isSource === false) continue
-        if (someLab.mineralType === undefined) continue
-        // if (someLab.store.getUsedCapacity(someLab.mineralType) <= 0) continue
+      // mineral capacity is defined only when there is a mineral
+      // if (someLab.store.getUsedCapacity(someLab.mineralType) <= 0) continue
 
+      let mark = someLab.__cook__cache__mark
+      if (mark === undefined) {
+        mark = someLab.mark()
+        someLab.__cook__cache__mark = mark
+      }
+
+      if (_.some(inputMarks, _.matches(mark))) {
         if (inputLab1 === undefined) {
           inputLab1 = someLab
           continue
