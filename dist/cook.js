@@ -1095,7 +1095,7 @@ cook._controlPass2 = function (room, creeps) {
         continue
       }
 
-      if (roomHasPrioEnergyDemand && this._hasCM(creep) && this._isEmpty(creep)) {
+      if (roomHasPrioEnergyDemand && this._hasCM(creep) && this._hasFreeCapacity(creep)) {
         transports.push(creep)
       }
     }
