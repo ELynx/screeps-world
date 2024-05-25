@@ -29,15 +29,15 @@ sourceHarvestGenericController.act = function (source, creep) {
 }
 
 sourceHarvestGenericController.validateTarget = function (allTargets, target, creep) {
-  // pay respect to defaults
-  if (!this._validateTarget(allTargets, target, creep)) {
-    return false
+  if (this._sticky(target)) {
+    if (target.room.spawns && target.room.spawns.size > 0) {
+      return false
+    }
+
+    // fall through for room rampup
   }
 
-  // for room fast start
-  if (target.room.spawns && target.room.spawns.size === 0) return true
-
-  return !this._sticky(target)
+  return this._validateTarget(allTargets, target, creep)
 }
 
 sourceHarvestGenericController.targets = function (room) {
@@ -96,7 +96,7 @@ sourceHarvestSpecialistController.validateTarget = function (allTargets, target,
     }
   }
 
-  return true
+  return this._validateTarget(allTargets, target, creep)
 }
 
 sourceHarvestSpecialistController.filterCreep = function (creep) {
