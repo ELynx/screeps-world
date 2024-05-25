@@ -532,7 +532,7 @@ cook.roomPrepare = function (room) {
     structure => structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple
   )
 
-  for (const container in room.__cook__containers) {
+  for (const container of room.__cook__containers) {
     container.__cook__cache__isSource = container.isSource()
   }
 
@@ -1634,7 +1634,7 @@ cook._operateLabs = function (room) {
           continue
         }
 
-        if (inputLab1.mineralType !== inputLab2.mineralType) {
+        if (inputLab1.mineralType !== someLab.mineralType) {
           inputLab2 = someLab
           break
         }
