@@ -350,16 +350,16 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
         useful.set(RESOURCE_ENERGY, Math.min(all.get(RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
         // `useful` can be tricked to know if mineralType is one of nuke reagents
-        const mineralTypeMax = TerminalRoomMineralStore + useful.has(mineralType) ? TerminalNukeReagentStore : 0
+        const mineralTypeMax = TerminalRoomMineralStore + (useful.has(mineralType) ? TerminalNukeReagentStore : 0)
         useful.set(mineralType, Math.min(all.get(mineralType) || 0, mineralTypeMax))
 
-        // TODO sus
         let usedByUseful = 0
         useful.forEach(value => (usedByUseful += value))
         const usedTotal = all.get('total') || 0
         const usedByUseless = Math.max(usedTotal - usedByUseful, 0)
-        const remaining = TerminalOtherStuffStore - usedByUseless
-        above = Math.max(remaining, 0)
+
+        const remainingForUseless = TerminalOtherStuffStore - usedByUseless
+        above = Math.max(remainingForUseless, 0)
       }
 
       if (above > 0) {
