@@ -466,7 +466,7 @@ const intent = {
       return bootstrap.ERR_INVALID_INTENT_ARG
     }
 
-    // TODO support for `energyStructures`
+    // TODO? support for `energyStructures`
     const energyAvailableKey = '__energyAvailable'
     const energyAvailableValue = spawn.room.energyAvailable
     const energyAvailable = this.getWithIntended(spawn.room, energyAvailableKey, energyAvailableValue)
