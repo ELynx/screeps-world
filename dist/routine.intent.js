@@ -220,7 +220,7 @@ const intent = {
 
     let rc = OK
 
-    if (exchange >= creepHas) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
+    if (toDrop >= creepHas) rc += bootstrap.WARN_INTENDEE_EXHAUSTED
 
     return rc
   },
