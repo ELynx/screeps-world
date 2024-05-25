@@ -13,59 +13,61 @@ const MadeUpLargeNumber = 1000000
 const intent = {
   _getWithIntentCache: function (something, key, tickFunction) {
     if (something.__intents_cache) {
-      const cached = something.__intents_cache[key]
+      const cached = something.__intents_cache.get(key)
       if (cached) return cached
     }
 
     if (something.__intents_cache === undefined) {
-      something.__intents_cache = { }
+      something.__intents_cache = new Map()
     }
 
     const value = tickFunction()
 
-    something.__intents_cache[key] = value
+    something.__intents_cache.set(key, value)
     return value
   },
 
   _clearIntentCache: function (something) {
-    something.__intents_cache = undefined
+    if (something.__intents_cache) {
+      something.__intents_cache.clear()
+    }
   },
 
   getIntent: function (something, key) {
     if (something.__intents) {
-      return something.__intents[key]
+      return something.__intents.get(key)
     }
     return undefined
   },
 
   getIntended: function (something, key, tickValue) {
     if (something.__intents) {
-      return something.__intents[key] || tickValue
+      return something.__intents.get(key) || tickValue
     }
     return tickValue
   },
 
   setIntended: function (something, key, value) {
     if (something.__intents === undefined) {
-      something.__intents = { }
+      something.__intents = new Map()
     }
-    something.__intents[key] = value
+    something.__intents.set(key, value)
   },
 
   getWithIntended: function (something, key, tickValue) {
     if (something.__intents) {
-      return tickValue + (something.__intents[key] || 0)
+      return tickValue + (something.get(key) || 0)
     }
     return tickValue
   },
 
   addIntended: function (something, key, intentValue) {
     if (something.__intents === undefined) {
-      something.__intents = { }
+      something.__intents = new Map()
     }
-    const now = something.__intents[key] || 0
+    const now = something.__intents.get(key) || 0
     const after = now + intentValue
-    something.__intents[key] = after
+    something.__intents.set(key, after)
   },
 
   subIntended: function (something, key, intentValue) {
@@ -628,10 +630,6 @@ const intent = {
     const value = spawn.spawning
 
     return this.getIntended(spawn, key, value)
-  },
-
-  getRoomIntents: function (room) {
-    return room.__intents || { }
   },
 
   wrapCreepIntent: function (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
