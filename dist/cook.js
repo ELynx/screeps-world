@@ -1605,9 +1605,9 @@ cook._operateLabs = function (room) {
     }
   )
 
-  const maxCooked = room.memory.cook || 1
-  let cooked = 0
-  for (const lab of properLabs) {
+  const labsToOperate = _.sample(properLabs, room.memory.cook || 1)
+
+  for (const lab of labsToOperate) {
     if (lab.cooldown && lab.cooldown > 0) continue
     if (lab.__cook__cache__isSource === true) continue
     if (lab.__cook__cache__input === undefined) continue
@@ -1649,13 +1649,8 @@ cook._operateLabs = function (room) {
         continue
       }
 
-      const rc = lab.runReaction(inputLab1, inputLab2)
-      if (rc >= OK) {
-        ++cooked
-      }
+      lab.runReaction(inputLab1, inputLab2)
     }
-
-    if (cooked >= maxCooked) break
   }
 }
 
