@@ -289,6 +289,12 @@ const roomActor =
           creep.__roomActor_target = bootstrap.getObjectById(creep.memory.dest)
 
           if (creep.__roomActor_target) {
+            if (creep.__roomActor_target.room.name !== room.name) {
+              creep.__roomActor_atTarget = undefined
+              bootstrap.unassignCreep(creep)
+              continue
+            }
+
             if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
               const keep = this.roomControllersAct(creep.__roomActor_target, creep)
 
