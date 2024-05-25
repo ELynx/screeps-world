@@ -542,10 +542,6 @@ cook.roomPrepare = function (room) {
     structure => structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple
   )
 
-  for (const container of room.__cook__containers) {
-    container.__cook__cache__isSource = container.isSource()
-  }
-
   for (const lab of room.labs.values()) {
     lab.__cook__cache__isSource = lab.isSource()
     lab.__cook__cache__resourceType = lab.resourceType()
@@ -1077,7 +1073,7 @@ cook._controlPass2 = function (room, creeps) {
       const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
       if (canGive > 0) {
         for (const container of room.__cook__containers) {
-          if (!container.__cook__cache__isSource) continue
+          if (!container.isSource()) continue
           if (!harvester.pos.isNearTo(container)) continue
 
           const canTake = intentSolver.getFreeCapacityMin(container, RESOURCE_ENERGY) || 0
