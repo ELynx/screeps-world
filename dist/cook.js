@@ -728,8 +728,8 @@ cook._resourceRestock = function (room, creeps) {
 cook._controlPass1 = function (room, creeps) {
   // qualify
   const empty = []
-  const creepsWithOnlyEnergy = []
-  const creepsWithNonEnergy = []
+  const creepsWithSomeEnergy = []
+  const creepsWithOnlyNonEnergy = []
 
   for (const creep of creeps) {
     const all = intentSolver.getAllUsedCapacity(creep)
@@ -741,30 +741,30 @@ cook._controlPass1 = function (room, creeps) {
     }
 
     const energy = all.get(RESOURCE_ENERGY) || 0
-    if (total > energy) {
-      creepsWithNonEnergy.push(creep)
+    if (energy > 0) {
+      creepsWithSomeEnergy.push(creep)
     } else {
-      creepsWithOnlyEnergy.push(creep)
+      creepsWithOnlyNonEnergy.push(creep)
     }
   }
 
   // unload
 
-  if (_.some(creepsWithOnlyEnergy, 'memory.atds')) {
+  if (_.some(creepsWithSomeEnergy, 'memory.atds')) {
     this.validateTarget = this._validateTarget
   } else {
     this.validateTarget = undefined
   }
   room.__cook__energyRestockAssign = true
-  const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithOnlyEnergy)
+  const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithSomeEnergy)
   room.__cook__energyRestockAssign = undefined
 
-  if (_.some(creepsWithNonEnergy, 'memory.atds')) {
+  if (_.some(creepsWithOnlyNonEnergy, 'memory.atds')) {
     this.validateTarget = this._validateTarget
   } else {
     this.validateTarget = undefined
   }
-  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithNonEnergy)
+  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsWithOnlyNonEnergy)
   this.validateTarget = undefined
 
   const unused = empty.concat(energyUnused).concat(resourceUnused)
