@@ -1279,16 +1279,16 @@ cook.roomCanMine = function (room) {
 }
 
 cook.___resetRoomRecepie = function (room) {
-  room.setLabRecepie('1', undefined, undefined, undefined)
-  room.setLabRecepie('2', undefined, undefined, undefined)
-  room.setLabRecepie('3', undefined, undefined, undefined)
-  room.setLabRecepie('4', undefined, undefined, undefined)
-  room.setLabRecepie('5', undefined, undefined, undefined)
-  room.setLabRecepie('6', undefined, undefined, undefined)
-  room.setLabRecepie('7', undefined, undefined, undefined)
-  room.setLabRecepie('8', undefined, undefined, undefined)
-  room.setLabRecepie('9', undefined, undefined, undefined)
-  room.setLabRecepie('A', undefined, undefined, undefined)
+  room.setLabRecepie('1', undefined, undefined, undefined, true)
+  room.setLabRecepie('2', undefined, undefined, undefined, true)
+  room.setLabRecepie('3', undefined, undefined, undefined, true)
+  room.setLabRecepie('4', undefined, undefined, undefined, true)
+  room.setLabRecepie('5', undefined, undefined, undefined, true)
+  room.setLabRecepie('6', undefined, undefined, undefined, true)
+  room.setLabRecepie('7', undefined, undefined, undefined, true)
+  room.setLabRecepie('8', undefined, undefined, undefined, true)
+  room.setLabRecepie('9', undefined, undefined, undefined, true)
+  room.setLabRecepie('A', undefined, undefined, undefined, true)
 }
 
 cook.___setRoomRecepieNuke = function (room) {

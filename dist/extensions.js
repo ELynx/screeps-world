@@ -425,7 +425,7 @@ Room.prototype._recalcLabMarks = function () {
   // TODO!
 }
 
-Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input) {
+Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, silent = false) {
   this._recalcLabMarks()
 
   for (const lab of this.labs.values()) {
@@ -436,6 +436,8 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input) {
       return
     }
   }
+
+  if (silent) return
 
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
 }
