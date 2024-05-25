@@ -1028,9 +1028,9 @@ cook.__untrap = function (room, creeps) {
 }
 
 cook._controlPass2 = function (room, creeps) {
-  let harvesters = []
-  let upgraders = []
-  let others = []
+  const harvesters = []
+  const upgraders = []
+  const others = []
 
   for (const creep of creeps) {
     const bodyType = creep.memory.btyp
