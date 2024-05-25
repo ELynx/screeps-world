@@ -175,6 +175,8 @@ cook.___worldSupply = function (structure, resourceType) {
 }
 
 cook.___roomDemand = function (structure, resourceType) {
+  if (!structure.isActiveSimple) return 0
+
   const structureType = structure.structureType
 
   if (structureType === STRUCTURE_EXTENSION ||
@@ -265,6 +267,8 @@ cook._hasDemand = function (structure, resourceType) {
 }
 
 cook.___roomSpace = function (structure, resourceType, forMining = false) {
+  if (!structure.isActiveSimple) return 0
+
   let above = 0
   const structureType = structure.structureType
 
@@ -398,6 +402,8 @@ cook._labClusterDemandTarget = function (room, resourceType) {
 }
 
 cook.___addWorldDemand = function (structure, resourceType, amount) {
+  if (!structure.isActiveSimple) return
+
   if (structure.__cook__worldDemandMap === undefined) {
     structure.__cook__worldDemandMap = new Map()
   }
@@ -407,6 +413,8 @@ cook.___addWorldDemand = function (structure, resourceType, amount) {
 }
 
 cook.___worldDemand = function (structure, resourceType) {
+  if (!structure.isActiveSimple) return 0
+
   if (structure.__cook__worldDemandMap) {
     return structure.__cook__worldDemandMap.get(resourceType) || 0
   }
@@ -415,6 +423,8 @@ cook.___worldDemand = function (structure, resourceType) {
 }
 
 cook.__worldDemandTypes = function (structure) {
+  if (!structure.isActiveSimple) return []
+
   if (structure.__cook__worldDemandMap) {
     return Array.from(structure.__cook__worldDemandMap.keys())
   }
