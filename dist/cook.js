@@ -1011,25 +1011,24 @@ cook.__untrap = function (room, creeps) {
 }
 
 cook._controlPass2 = function (room, creeps) {
-  const byBodyType = _.groupBy(creeps, 'memory.btyp')
-
   let harvesters = []
   let upgraders = []
   let others = []
 
-  for (const bodyType in byBodyType) {
-    if (bodyType === ' harvester') {
-      harvesters = byBodyType[bodyType]
+  for (const creep of creeps) {
+    const bodyType = creep.memory.btyp
+
+    if (bodyType === 'harvester') {
+      harvesters.push(creep)
       continue
     }
 
-    if (bodyType === 'upgrader') {
-      upgraders = byBodyType[bodyType]
+    if (bodyType === 'upgraders') {
+      upgraders.push(creep)
       continue
     }
 
-    const others1 = byBodyType[bodyType]
-    others = others.concat(others1)
+    others.push(creep)
   }
 
   if (room._actType_ === bootstrap.RoomActTypeMy) {
