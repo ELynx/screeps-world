@@ -23,7 +23,7 @@ const FactoryTotalMaxStore = 45000
 const MadeUpLargeNumber = 1000000
 
 // STRATEGY link send values
-const LinkSourceTreshold = LINK_CAPACITY / 2
+const LinkSourceTreshold = LINK_CAPACITY / 8
 const LinkDestinationTreshold = LINK_CAPACITY / 8
 
 // STRATEGY CPU reservation strategy
