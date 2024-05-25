@@ -422,7 +422,7 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
 }
 
 Room.prototype._recalcLabMarks = function () {
-  // TODO
+  // TODO!
 }
 
 Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input) {
