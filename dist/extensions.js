@@ -512,7 +512,7 @@ Room.prototype._assignLabMarks = function () {
   let hasWork = false
   for (const lab of this.labs.values()) {
     if (lab.__extensions__mark === undefined) lab.__extensions__mark = lab.mark()
-    if (lab.__extensions__mark == 'X') {
+    if (lab.__extensions__mark === 'X') {
       hasWork = true
     }
   }
