@@ -544,7 +544,7 @@ cook.roomPrepare = function (room) {
 
   room.__cook__containers = _.filter(
     room.find(FIND_STRUCTURES),
-    structure => structure.structureType === STRUCTURE_CONTAINER && structure.isActiveSimple
+    structure => structure.structureType === STRUCTURE_CONTAINER
   )
 
   for (const lab of room.labs.values()) {
