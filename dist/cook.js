@@ -1353,6 +1353,7 @@ cook.roomCanMine = function (room) {
   const mineralType = room.mineralType()
   if (mineralType === '') return false
 
+  // special flag that do not allow for "sell off" excess
   if (this._hasSpace(room.terminal, mineralType, true)) return true
 
   const [someLab, someResourceType] = this._labClusterDemandTarget(room, mineralType)
