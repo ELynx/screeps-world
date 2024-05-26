@@ -238,8 +238,8 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_POWER_SPAWN) {
     if (resourceType === RESOURCE_ENERGY) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
-      // STRATEGY avoid repeated trips
-      if (demand <= 2500) return 0
+      // STRATEGY avoid repeated trips, 300 or 600 is worker capacity on level 8
+      if (demand <= 2400) return 0
       return demand
     }
 
