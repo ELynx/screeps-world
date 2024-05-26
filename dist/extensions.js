@@ -421,15 +421,34 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   return this.__extendedAvailableEnergyCapacity_value
 }
 
-Room.prototype._recalcLabMarks = function () {
-  // TODO!
+Room.prototype.__assignLabMarks = function () {
+}
+
+Room.prototype._assignLabMarks = function () {
+  if (this.labs.size === 0) return
+  if (this.__extensions__mark__done) return
+
+  const hasWork = false
+  for (const lab of this.labs.values()) {
+    if (lab.__extensions__mark === undefined) lab.__extensions__mark = lab.mark()
+    if (lab.__extensions__mark == 'X') {
+      hasWork = true
+    }
+  }
+
+  if (hasWork) {
+    this.__assignLabMarks()
+  }
+
+  this.__extensions__mark__done = true
 }
 
 Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, silent = false) {
-  this._recalcLabMarks()
+  // also sets the cache
+  this._assignLabMarks()
 
   for (const lab of this.labs.values()) {
-    if (lab.mark() === mark) {
+    if (lab.__extensions__mark === mark) {
       lab.setSource(isSource)
       lab.setResourceType(resourceType)
       lab.setInput(input)
