@@ -1196,7 +1196,7 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
   } else {
-    let withEnergy = []
+    const withEnergy = []
     for (const creep of others) {
       if (this._hasCM(creep) && this._hasEnergy(creep)) {
         withEnergy.push(creep)
