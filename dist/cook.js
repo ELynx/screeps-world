@@ -767,6 +767,7 @@ cook._controlPass1 = function (room, creeps) {
   for (const creep of resourceUnused) {
     const resourceType = _.sample(intentSolver.getUsedCapacityMinKeys(creep))
     if (resourceType === undefined) continue
+    if (resourceType === RESOURCE_ENERGY) continue
     this.wrapIntent(creep, 'drop', resourceType)
   }
 
