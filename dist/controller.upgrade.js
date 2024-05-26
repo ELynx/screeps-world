@@ -32,7 +32,7 @@ upgradeGenericController.targets = function (room) {
     return []
   }
 
-  if (room.controller.level >= 8) {
+  if ((room.memory.ulvl || 0) > 0) {
     return []
   }
 
