@@ -170,8 +170,16 @@ cook.___hasFlush = function (structure) {
 }
 
 cook.___worldSupply = function (structure, resourceType) {
-  // TODO
-  return 0
+  if (resourceType === RESOURCE_ENERGY) {
+    const sourceLevel = structure.room.memory.slvl || 0
+    if (sourceLevel < 2) return 0
+    if (this.__hasEnergyDemand(structure)) return 0
+    return SOURCE_ENERGY_CAPACITY
+  }
+
+  const mineralType = structure.room.mineralType()
+  if (resourceType !== mineralType) return 0
+  return this.___roomSupply(structure, resourceType)
 }
 
 cook.___roomDemand = function (structure, resourceType) {
