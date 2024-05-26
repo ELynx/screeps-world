@@ -1065,7 +1065,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
           const rc = this.wrapIntent(harvester, 'transfer', link, RESOURCE_ENERGY, amount)
           if (rc >= OK) {
             harvester.__cook__pass2__used = true
-            break // from creeps loop
+            break // from harvesters loop
           }
         } else {
           for (const container of room.__cook__containers) {
@@ -1079,7 +1079,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
             }
           }
 
-          if (harvester.__cook__pass2__used === true) break // from creeps loop
+          if (harvester.__cook__pass2__used === true) break // from harvesters loop
         }
       }
     }
@@ -1415,6 +1415,7 @@ cook._unloadActiveHarvesters = function (room) {
   const harvesters = _.filter(
     roomCreeps,
     creep => {
+      if (creep.__cook__pass2__used) return false
       if (creep._source_harvest_specialist_rc_ === OK) return false
       if (creep._source_ === undefined) return false
       if (creep.memory.atds !== true) return false
