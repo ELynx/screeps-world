@@ -1373,11 +1373,6 @@ cook.___resetRoomRecepie = function (room) {
 }
 
 cook.___setRoomRecepieNuke = function (room) {
-  if (room.labs.size !== 10) {
-    this.___resetRoomRecepie(room)
-    return
-  }
-
   // input order is not important, just used to amortise checks
 
   room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
@@ -1395,7 +1390,12 @@ cook.___setRoomRecepieNuke = function (room) {
 }
 
 cook.__updateRoomRecepie = function (room) {
-  this.___setRoomRecepieNuke(room)
+  if (room.labs.size === 10 && _hasDemand(room.nuker. RESOURCE_GHODIUM)) {
+    this.___setRoomRecepieNuke(room)
+    return
+  }
+
+  this.___resetRoomRecepie(room)
 }
 
 cook._updateRoomRecepie = function (room) {
