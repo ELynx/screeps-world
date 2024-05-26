@@ -1476,7 +1476,7 @@ cook._askWorld = function (room) {
   }
 
   if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-    if (this.labs.size === 10) {
+    if (room.labs.size === 10) {
       const mineralType = room.mineralType()
 
       const lambda = resourceType => {
@@ -1487,10 +1487,12 @@ cook._askWorld = function (room) {
         }
       }
 
-      lambda(RESOURCE_KEANIUM)
-      lambda(RESOURCE_LEMERGIUM)
-      lambda(RESOURCE_UTRIUM)
       lambda(RESOURCE_ZYNTHIUM)
+      lambda(RESOURCE_KEANIUM)
+      lambda(RESOURCE_UTRIUM)
+      lambda(RESOURCE_LEMERGIUM)
+      lambda(RESOURCE_UTRIUM_LEMERGITE)
+      lambda(RESOURCE_ZYNTHIUM_KEANITE)
     } else {
       this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, 100) // drip feed it
     }
@@ -1994,6 +1996,8 @@ cook.___excessToSell = function (terminal, resourceType) {
   if (resourceType === RESOURCE_GHODIUM) return 0
   if (resourceType === RESOURCE_OPS) return 0
   if (resourceType === RESOURCE_POWER) return 0
+  if (resourceType === RESOURCE_ZYNTHIUM_KEANITE) return 0
+  if (resourceType === RESOURCE_UTRIUM_LEMERGITE) return 0
 
   const used = intentSolver.getUsedCapacityMin(terminal, resourceType) || 0
   const plannedDelta = this.___plannedDelta(terminal, resourceType)
