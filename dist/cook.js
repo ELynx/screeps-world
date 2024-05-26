@@ -2052,7 +2052,7 @@ cook.__sellTerminalExcess = function (terminal) {
       const rc = terminal.autoSell(order, excess)
       if (rc >= OK) {
         console.log('Terminal in [' + terminal.room.name + '] sold up to [' + excess + '] of [' + resourceType + ']')
-        sourceTerminal._operated_ = true
+        terminal._operated_ = true
         return rc
       }
     }
