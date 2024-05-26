@@ -174,7 +174,7 @@ cook.___worldSupply = function (structure, resourceType) {
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
     if (this.__hasEnergyDemand(structure)) return 0
-    return SOURCE_ENERGY_CAPACITY
+    return Math.floor(SOURCE_ENERGY_CAPACITY / 2)
   }
 
   const mineralType = structure.room.mineralType()
@@ -1453,6 +1453,9 @@ cook.__updateRoomRecepie = function (room) {
 }
 
 cook._updateRoomRecepie = function (room) {
+  if (!room._my_) return
+  if (room.labs.size === 0) return
+
   const processKey = (room.memory.intl + Game.time) % CREEP_LIFE_TIME
   if (processKey === 0) {
     this.__updateRoomRecepie(room)
@@ -1460,7 +1463,38 @@ cook._updateRoomRecepie = function (room) {
 }
 
 cook._askWorld = function (room) {
-  // TODO
+  if (!room._my_) return
+  if (!room.terminal) return
+
+  const sourceLevel = room.memory.slvl || 0
+  if (sourceLevel < 2) {
+    const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
+    const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
+    if (now < ideal) {
+      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
+    }
+  }
+
+  if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
+    if (this.labs.size === 10) {
+      const mineralType = room.mineralType()
+
+      const lambda = resourceType => {
+        if (mineralType !== resourceType) {
+          if (!this.__hasSupply(room.terminal, resourceType)) {
+            this.___addWorldDemand(room.terminal, resourceType, 1000)
+          }
+        }
+      }
+
+      lambda(RESOURCE_KEANIUM)
+      lambda(RESOURCE_LEMERGIUM)
+      lambda(RESOURCE_UTRIUM)
+      lambda(RESOURCE_ZYNTHIUM)
+    } else {
+      this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, 100) // drip feed it
+    }
+  }
 }
 
 cook._unloadActiveHarvesters = function (room) {
