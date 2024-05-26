@@ -421,14 +421,95 @@ Room.prototype.extendedAvailableEnergyCapacity = function () {
   return this.__extendedAvailableEnergyCapacity_value
 }
 
+const MarkNumbers = new Map()
+MarkNumbers.set(1, '1')
+MarkNumbers.set(10, '2')
+MarkNumbers.set(2, '3')
+MarkNumbers.set(20, '4')
+MarkNumbers.set(12, '5')
+MarkNumbers.set(21, '6')
+MarkNumbers.set(13, '7')
+MarkNumbers.set(31, '8')
+MarkNumbers.set(23, '9')
+MarkNumbers.set(32, 'A')
+
 Room.prototype.__assignLabMarks = function () {
+  const labsArr = Array.from(this.labs.values())
+
+  let xMin = 50
+  let xMax = -1
+  let yMin = 50
+  let yMax = -1
+  for (const lab of labsArr) {
+    const x = lab.pos.x
+    const y = lab.pos.y
+
+    if (x < xMin) xMin = x
+    if (x > xMax) xMax = x
+    if (y < yMin) yMin = y
+    if (y > yMax) yMax = y
+  }
+
+  let xRef
+  let yRef
+  if (this.terminal) {
+    xRef = this.terminal.pos.x
+    yRef = this.terminal.pos.y
+  } else {
+    xRef = this.controller.pos.x
+    yRef = this.controller.pos.y
+  }
+
+  let xStart
+  let xEnd
+  if (Math.abs(xMin - xRef) < Math.abs(xMax - xRef)) {
+    xStart = xMin
+    xEnd = xMax
+  } else {
+    xStart = xMax
+    xEnd = xMin
+  }
+
+  let yStart
+  let yEnd
+  if (Math.abs(yMin - yRef) < Math.abs(yMax - yRef)) {
+    yStart = yMin
+    yEnd = yMax
+  } else {
+    yStart = yMax
+    yEnd = yMin
+  }
+
+  const xStep = Math.sign(xEnd - xStart)
+  const yStep = Math.sign(yEnd - yStart)
+  if (xStep === 0 || yStep === 0) {
+    console.log('Cannot allocate marks for room [' + this.name + ']')
+    return
+  }
+
+  for (const lab of labsArr) {
+    const dx = lab.pos.x - xStart
+    const dy = lab.pos.y - yStart
+    const xNo = dx / xStep
+    const yNo = dy / yStep
+    const no = xNo * 10 + yNo
+    const mark = MarkNumbers.get(no)
+    if (!mark) {
+      console.log('Cannot allocate mark for lab ' + lab)
+      continue
+    }
+    lab.setMark(mark)
+    lab.__extensions__mark = mark
+  }
+
+  console.log('Assignment of marks is complete for room [' + this.name + ']')
 }
 
 Room.prototype._assignLabMarks = function () {
   if (this.labs.size === 0) return
   if (this.__extensions__mark__done) return
 
-  const hasWork = false
+  let hasWork = false
   for (const lab of this.labs.values()) {
     if (lab.__extensions__mark === undefined) lab.__extensions__mark = lab.mark()
     if (lab.__extensions__mark == 'X') {
