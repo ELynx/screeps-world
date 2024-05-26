@@ -996,7 +996,7 @@ cook.__resourceRestockSources = function (room, count) {
     }
   }
 
-  if (flushStore(room.storage)) sources.push(room.storage)
+  // if (flushStore(room.storage)) sources.push(room.storage)
 
   return sources
 }
