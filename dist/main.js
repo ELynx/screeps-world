@@ -1,17 +1,19 @@
 'use strict'
 
-// standalone
+const historyActor = require('./actor.history')
+const roomActor = require('./actor.room')
+const taskedActor = require('./actor.tasked')
+
+const cook = require('./cook')
+const extensions = require('./extensions')
 const iff = require('./iff')
 
 const cleanup = require('./routine.cleanup')
-const extensions = require('./extensions')
-const demandAndSupply = require('./routine.dns') // eslint-disable-line no-unused-vars
-const historyActor = require('./actor.history')
-const roomActor = require('./actor.room')
-const worldActor = require('./actor.world')
 
 console.log('T: ' + Game.time + ' Loading took ' + Game.cpu.getUsed() + ' CPU')
-console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
+// console.log('Lodash version ' + _.VERSION + ' documented at https://lodash.com/docs/' + _.VERSION)
+
+let skipTicks = 2
 
 let profiler
 
@@ -21,12 +23,12 @@ if (Game.flags.profiler) {
 
   profiler = require('./screeps-profiler')
 
-  profiler.registerObject(iff, 'iff')
-  profiler.registerObject(cleanup, 'cleanup')
-  profiler.registerObject(extensions, 'extensions')
   profiler.registerObject(historyActor, 'historyActor')
   profiler.registerObject(roomActor, 'roomActor')
-  profiler.registerObject(worldActor, 'worldActor')
+  profiler.registerObject(taskedActor, 'taskedActor')
+  profiler.registerObject(extensions, 'extensions')
+  profiler.registerObject(iff, 'iff')
+  profiler.registerObject(cleanup, 'cleanup')
 
   profiler.enable()
 }
@@ -37,6 +39,27 @@ const loop = function () {
   extensions.shortcuts()
 
   historyActor.act()
+
+  if (Game.flags.war) {
+    Game._fight_ = true
+    Game._war_ = true
+
+    if (Game.time % 100 === 0) {
+      console.log('War enabled by flag at ' + Game.flags.war.pos)
+    }
+  }
+
+  if (skipTicks > 0) {
+    --skipTicks
+
+    if (!Game._fight_ && !Game._war_) {
+      console.log('Skipping tick after code load')
+      return
+    }
+
+    console.log('Skipping ticks ignored')
+    skipTicks = 0
+  }
 
   // prevent division by zero
   const myCreepsCount = Math.max(1, Game.myCreepsCount)
@@ -56,7 +79,9 @@ const loop = function () {
     }
   }
 
-  worldActor.act()
+  taskedActor.act()
+
+  cook.globalPost()
 
   // a sneaky way to run some arbitrary code on every tick without reloading
   if (Memory.eval) {

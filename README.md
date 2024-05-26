@@ -20,6 +20,8 @@ Proprietary and confidential.
 
 ## TODO
 
+In emergency, release stored energy.
+
 Spawn blocked in one room starves other rooms.
 
 Movement and positioning:
@@ -30,29 +32,15 @@ Movement and positioning:
 
 * Plunder tries to plunder unreachable sections.
 
+* -> Because moveTo does not check for reached range.
+
 * Worker creeps avoid hostile areas.
+
+React to PowerCreeps.
 
 ## Intents
 
-[Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/creeps/intents.js)
-
-[Flag](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/flags/intents.js)
-
-[Global](https://github.com/screeps/engine/tree/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/global-intents)
-
-[Lab](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/labs/intents.js)
-
-[Link](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/links/intents.js)
-
-[Power Creep](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/power-creeps/intents.js)
-
-[Power Spawn](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/power-spawns/intents.js)
-
-[Room](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/room/intents.js)
-
-[Spawn](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/spawns/intents.js)
-
-[Tower](https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/processor/intents/towers/intents.js)
+[Intents](https://github.com/screeps/engine/tree/master/src/processor/intents)
 
 ## Ideas
 
@@ -62,7 +50,7 @@ Some material on autobases:
 
 * [Wiki overview](https://wiki.screepspl.us/index.php/Automatic_base_building)
 
-* [International Bot](https://github.com/The-International-Screeps-Bot/The-International-Open-Source/blob/7fb3ccb5ecae4ab7f5eb5dcf9bbd13c022ba30c2/src/international/constants.ts#L399)
+* [International Bot](https://github.com/The-International-Screeps-Bot/The-International-Open-Source)
 
 * [Kasami Bot](https://github.com/kasami/kasamibot)
 
@@ -72,27 +60,23 @@ Fatigue based emergent road building.
 
 Source link placement adjacent (and maybe vectored) from source container.
 
+Auto create security_ flags based on autobuild.
+
+Roads on constructed walls cost as much as roads on plains. Can be used for securing entrance with failsafe paths.
+
 ### Economy
-
-Sell off commodities.
-
-Send resources away instead of selling out on panic.
-
-Containers next to Controller to decrease walking to upgrade:
-
-* Grab from Links and Containers inside act.
-
-Do not overfill Labs and Factory to prevent process pollution.
-
-Clean up source and other technical containers.
 
 Cluster restock.
 
 Global Control farm rooms.
 
+Unlive old miners.
+
 ### Auto room attack / defense
 
 Room attack definition:
+
+* War flag
 
 * Breached only Streloks on towers and spawns.
 
@@ -108,11 +92,15 @@ Flag to turn verbose naming on and off.
 
 * Auto condition to turn verbose naming on and off.
 
+* -> War?
+
 Instead of healing by towers spawn healers.
 
-Auto create security_ flags based on autobuild.
-
 No firing at things in room safe mode.
+
+* Set threat to 0.
+
+* Towers do not fire in rooms with threat 0.
 
 Ignore Invader healers if no other Invader creeps exist.
 
@@ -120,9 +108,9 @@ Don't send military to enemy safe mode rooms.
 
 ### Technical
 
-Intent queue for withdraw and transfer.
+? Intent queue for withdraw and transfer.
 
-Spawn intent uber-wrapper:
+? Spawn intent uber-wrapper:
 
 * Delayed call to spawn
 

@@ -2,18 +2,18 @@
 
 const Controller = require('./controller.template')
 
-const upgradeController = new Controller('upgrade.generic')
+const upgradeGenericController = new Controller('upgrade.generic')
 
-upgradeController.actRange = 3
+upgradeGenericController.actRange = 3
 
-upgradeController.act = function (controller, creep) {
+upgradeGenericController._act = function (controller, creep) {
   return this.wrapIntent(creep, 'upgradeController', controller)
 }
 
-upgradeController._roomQualified = function (room) {
-  // don't upgrade controller in room with active fight
-  if (room._fight_) {
-    return false
+upgradeGenericController._check = function (room) {
+  // don't upgrade while there is a fight
+  if (Game._war_ || Game._fight_ || room._fight_) {
+    return []
   }
 
   if (room.controller.upgradeBlocked) {
@@ -23,13 +23,16 @@ upgradeController._roomQualified = function (room) {
   return true
 }
 
-upgradeController.targets = function (room) {
-  if (!this._roomQualified(room)) {
+upgradeGenericController.act = function (controller, creep) {
+  return this._act(controller, creep)
+}
+
+upgradeGenericController.targets = function (room) {
+  if (!this._check(room)) {
     return []
   }
 
-  // leave 8 and above :) to specialists
-  if (room.controller.level >= 8) {
+  if ((room.memory.ulvl || 0) > 0) {
     return []
   }
 
@@ -37,29 +40,43 @@ upgradeController.targets = function (room) {
 }
 
 // before profiler wrap
-const upgradeControllerSpecialist = _.assign({ }, upgradeController)
+const upgradeSpecialistController = _.assign({ }, upgradeGenericController)
 
-upgradeControllerSpecialist.id = 'upgrade.specialist'
+upgradeSpecialistController.id = 'upgrade.specialist'
 
-upgradeControllerSpecialist.validateTarget = undefined // TODO actually bypass range check only, not all checks
+upgradeSpecialistController.act = function (controller, creep) {
+  // mark as arrived if standing near the link
+  // otherwise may not reach link later for withdraw
+  if (!creep.memory.atds) {
+    for (const link of controller.room.links.values()) {
+      if (link.isSource()) continue
+      if (creep.pos.isNearTo(link)) {
+        creep.memory.atds = true
+        break // from links loop
+      }
+    }
+  }
 
-upgradeControllerSpecialist.targets = function (room) {
-  if (!this._roomQualified(room)) {
+  return this._act(controller, creep)
+}
+
+upgradeSpecialistController.targets = function (room) {
+  if (!this._check(room)) {
     return []
   }
 
   return [room.controller]
 }
 
-upgradeControllerSpecialist.filterCreep = function (creep) {
-  return this._defaultFilter(creep) && this._isUpgrader(creep)
+upgradeSpecialistController.filterCreep = function (creep) {
+  return this._isUpgrader(creep) && this._isWorkAble(creep)
 }
 
-upgradeController.register()
-upgradeControllerSpecialist.register()
+upgradeGenericController.register()
+upgradeSpecialistController.register()
 
 module.exports =
 {
-  generic: upgradeController,
-  specialist: upgradeControllerSpecialist
+  generic: upgradeGenericController,
+  specialist: upgradeSpecialistController
 }

@@ -107,14 +107,14 @@ buildController.targets = function (room) {
 
   return _.filter(
     sites,
-    function (site) {
+    site => {
       if (!_.some(OBSTACLE_OBJECT_TYPES, _.matches(site.structureType))) {
         return true
       }
 
       return !_.some(
         obstacleCreeps,
-        function (creep) {
+        creep => {
           return creep.pos.x === site.pos.x && creep.pos.y === site.pos.y
         }
       )

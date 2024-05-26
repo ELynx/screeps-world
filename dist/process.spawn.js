@@ -78,8 +78,9 @@ spawnProcess.streloks = function (room, live) {
   if (threat <= bootstrap.ThreatLevelLow) return
 
   const want = threat
-  // TODO coordinate with room service
-  const now = this._hasAndPlanned(room, live, 'strelok')
+
+  const roomServiceFlag = Game.flags['strelok_' + room.name]
+  const now = this._hasAndPlanned(room, live, 'strelok') + (roomServiceFlag ? roomServiceFlag.getValue() : 0)
 
   this.addToQueue(
     room.name,
@@ -94,17 +95,17 @@ spawnProcess.streloks = function (room, live) {
   )
 }
 
-spawnProcess.restockers = function (room, live) {
+spawnProcess.harvesters = function (room, live) {
   const want = room.memory.slvl || 0
-  const now = this._hasAndPlanned(room, live, 'restocker')
+  const now = this._hasAndPlanned(room, live, 'harvester')
 
   this.addToQueue(
     room.name,
     this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
-    'restocker',
-    room._my_ ? 'restocker_my' : 'restocker_other',
+    'harvester',
+    room._my_ ? 'harvester_my' : 'harvester_other',
     {
-      rstk: true,
+      hvst: true,
       blok: true
     },
     want - now,
@@ -113,6 +114,7 @@ spawnProcess.restockers = function (room, live) {
 }
 
 spawnProcess.miners = function (room, live) {
+  const limit = room.memory.slvl || 0
   const want = this._canSpawn(room) ? (room.memory.mlvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
@@ -124,13 +126,14 @@ spawnProcess.miners = function (room, live) {
     {
       minr: true
     },
-    want - now,
+    Math.min(limit, want) - now,
     'lowkey'
   )
 }
 
 spawnProcess.upgraders = function (room, live) {
-  const want = this._canSpawn(room) ? (room.memory.ulvl || 0) : 0
+  const limit = room.memory.slvl || 0
+  const want = (!Game._war_ && this._canSpawn(room)) ? (room.memory.ulvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
@@ -142,13 +145,14 @@ spawnProcess.upgraders = function (room, live) {
       upgr: true,
       blok: true
     },
-    want - now,
+    Math.min(limit, want) - now,
     'lowkey'
   )
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const want = room.memory.wwww || 1 // default to at least one when situation is BS
+  const limit = (room.level() < 3 ? 2 : 1) * (room.memory.slvl || 0)
+  const want = (room.memory.wwww === undefined) ? (room.level() < 7 ? 2 : 1) : room.memory.wwww
   const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
@@ -157,7 +161,7 @@ spawnProcess.workers_my = function (room, live) {
     'worker',
     'worker',
     { },
-    want - now,
+    Math.min(limit, want) - now,
     'normal'
   )
 }
@@ -180,7 +184,7 @@ spawnProcess.workers_remote = function (room, live, limit) {
 }
 
 spawnProcess.plunders = function (room, live) {
-  const want = this._hasAndPlanned(room, live, 'restocker')
+  const want = this._hasAndPlanned(room, live, 'harvester')
   const now = this._hasAndPlanned(room, live, 'plunder')
 
   this.addToQueue(
@@ -199,7 +203,7 @@ spawnProcess.plunders = function (room, live) {
 
 spawnProcess.my = function (room, live) {
   this.streloks(room, live)
-  this.restockers(room, live)
+  this.harvesters(room, live)
   this.miners(room, live)
   this.upgraders(room, live)
   this.workers_my(room, live)
@@ -207,7 +211,7 @@ spawnProcess.my = function (room, live) {
 
 spawnProcess.myReserved = function (room, live) {
   this.streloks(room, live)
-  this.restockers(room, live)
+  this.harvesters(room, live)
   this.plunders(room, live)
 }
 
@@ -217,7 +221,7 @@ spawnProcess.sourceKeeper = function (room, live) {
 
 spawnProcess.unowned = function (room, live) {
   this.streloks(room, live)
-  this.restockers(room, live)
+  this.harvesters(room, live)
   this.plunders(room, live)
 }
 
@@ -261,8 +265,8 @@ spawnProcess._registerBodyFunction = function (routineId) {
 
 spawnProcess.registerBodyFunctions = function () {
   this._registerBodyFunction('worker')
-  this._registerBodyFunction('restocker_my')
-  this._registerBodyFunction('restocker_other')
+  this._registerBodyFunction('harvester_my')
+  this._registerBodyFunction('harvester_other')
   this._registerBodyFunction('miner')
   this._registerBodyFunction('upgrader')
 }

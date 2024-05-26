@@ -6,6 +6,8 @@ const beetle = new Tasked('beetle')
 
 const BreachCompleteDistance = 1
 
+const Buildable = _.keys(CONSTRUCTION_COST)
+
 beetle.breachLength = function (breach) {
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
   return breach.length - 4
@@ -172,8 +174,6 @@ beetle.creepAtDestination = function (creep) {
         true // as array
       )
 
-      const buildable = _.keys(CONSTRUCTION_COST)
-
       for (const itemInfo of around) {
         const structure = itemInfo.structure
 
@@ -196,7 +196,7 @@ beetle.creepAtDestination = function (creep) {
           continue
         }
 
-        structure.__buildable = _.some(buildable, _.matches(structure.structureType))
+        structure.__buildable = _.some(Buildable, _.matches(structure.structureType))
 
         if (creep.__canMelee || (structure.__buildable && creep.__canDismantle)) {
           target = structure
@@ -284,14 +284,14 @@ beetle.makeBody = function (room) {
   const budget = 300 + 150 * elvl
   const pairs = Math.min(Math.floor(budget / 150), 25)
 
-  const a = new Array(pairs)
-  a.fill(MOVE)
+  const partsMove = new Array(pairs)
+  partsMove.fill(MOVE)
 
-  // one spot for withdraw
-  const b = new Array(pairs - 1)
-  b.fill(WORK)
+  // one spot for CARRY / withdraw
+  const partsWork = new Array(pairs - 1)
+  partsWork.fill(WORK)
 
-  const body = a.concat([CARRY]).concat(b)
+  const body = partsMove.concat([CARRY]).concat(partsWork)
 
   this.__bodyCache[elvl] = body
 

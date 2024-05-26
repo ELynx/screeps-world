@@ -1,9 +1,6 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
-
-const mineralRestockController = require('./controller.mineral.restock')
-const upgradeController = require('./controller.upgrade')
+const cook = require('./cook')
 
 const Process = require('./process.template')
 
@@ -11,22 +8,28 @@ const roomInfoProcess = new Process('roomInfo')
 
 roomInfoProcess.sourceLevel = function (room) {
   const sources = room.find(FIND_SOURCES)
-  return sources.length
+
+  const sourcesInForseableFuture = _.filter(
+    sources,
+    source => {
+      if (source.energy > 0) return true
+      if (source.ticksToRegeneration < CREEP_LIFE_TIME) return true
+      return false
+    }
+  )
+
+  return sourcesInForseableFuture.length
 }
 
 roomInfoProcess.miningLevel = function (room) {
   if (room._my_) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
-    if (room.storage === undefined && room.terminal === undefined) return 0
-
-    // stop producing miners when there is no place to put resources
-    const mineralRestockTargets = mineralRestockController.full.targets(room)
-    if (mineralRestockTargets.length === 0) return 0
+    if (!cook.roomCanMine(room)) return 0
   } else {
     const extractors = room.find(
       FIND_STRUCTURES,
       {
-        filter: function (structure) {
+        filter: structure => {
           return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
         }
       }
@@ -38,7 +41,7 @@ roomInfoProcess.miningLevel = function (room) {
   const minerals = room.find(
     FIND_MINERALS,
     {
-      filter: function (mineral) {
+      filter: mineral => {
         return mineral.mineralAmount > 0
       }
     }
@@ -53,8 +56,8 @@ roomInfoProcess._wallLevel = function (room) {
   const walls = room.find(
     FIND_STRUCTURES,
     {
-      filter: function (structure) {
-        return structure.structureType === STRUCTURE_WALL && structure.hits
+      filter: structure => {
+        return structure.structureType === STRUCTURE_WALL && structure.hits && structure.hitsMax
       }
     }
   )
@@ -70,7 +73,7 @@ roomInfoProcess._wallLevel = function (room) {
   }
 
   hits.sort(
-    function (hits1, hits2) {
+    (hits1, hits2) => {
       return hits1 - hits2
     }
   )
@@ -125,14 +128,16 @@ roomInfoProcess.wallLevel = function (room) {
 roomInfoProcess.upgradeLevel = function (room) {
   if (!room._my_) return 0
 
-  const maxDelta = upgradeController.specialist.actRange + 1
+  if (room.level() < 8) return 0
+
+  const MaxDistance = 3
 
   const links = _.filter(Array.from(room.links.values()), _.property('isActiveSimple'))
   const linksWithinActRange = _.filter(
     links,
     link => {
-      if (Math.abs(link.pos.x - room.controller.pos.x) > maxDelta) return false
-      if (Math.abs(link.pos.y - room.controller.pos.y) > maxDelta) return false
+      if (Math.abs(link.pos.x - room.controller.pos.x) > MaxDistance) return false
+      if (Math.abs(link.pos.y - room.controller.pos.y) > MaxDistance) return false
 
       return true
     }
@@ -156,6 +161,10 @@ roomInfoProcess.work = function (room) {
       Game.flags.recount.remove()
     }
 
+    if (Game._war_ && !force) {
+      return
+    }
+
     room.memory.slvl = this.sourceLevel(room)
     room.memory.mlvl = this.miningLevel(room)
     room.memory.wlvl = this.wallLevel(room)
@@ -163,26 +172,6 @@ roomInfoProcess.work = function (room) {
 
     // offset regeneration time randomly so multiple rooms don't do it at same tick
     room.memory.intl = Game.time + Math.ceil(Math.random() * 42)
-  }
-
-  // STRATEGY how much energy to keep in storage as backup
-  room.memory.stre = 10000
-
-  // STRATEGY stored energy in store per threat level
-  const threat = room.memory.threat
-  if (threat) {
-    if (threat === bootstrap.ThreatLevelMax) {
-      room.memory.stre = 0
-    } else if (threat >= bootstrap.ThreatLevelMedium) {
-      room.memory.stre = 5000
-    } else if (threat > bootstrap.ThreatLevelLow) {
-      room.memory.stre = 9000
-    }
-  }
-
-  // STRATEGY when there is no other way, use reserves
-  if (room.extendedAvailableEnergyCapacity() === 0) {
-    room.memory.stre = 0
   }
 }
 

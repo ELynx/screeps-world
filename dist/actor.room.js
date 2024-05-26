@@ -2,83 +2,77 @@
 
 const bootstrap = require('./bootstrap')
 
-const mapUtils = require('./routine.map')
-
-const autobuildProcess = require('./process.autobuild')
-const linkProcess = require('./process.link')
-const roomInfoProcess = require('./process.roominfo')
-const secutiryProcess = require('./process.security')
-const spawnProcess = require('./process.spawn')
-const terminalProcess = require('./process.terminal')
-const towerProcess = require('./process.tower')
-
 const buildController = require('./controller.build')
 const downgradeController = require('./controller.downgrade')
-const energyHarvestController = require('./controller.energy.harvest')
-const energyRestockController = require('./controller.energy.restock')
-const energySpecialistController = require('./controller.energy.specialist')
-const energyTakeController = require('./controller.energy.take')
 const grabController = require('./controller.grab')
 const mineralHarvestController = require('./controller.mineral.harvest')
-const mineralRestockController = require('./controller.mineral.restock')
 const rampupController = require('./controller.rampup')
 const repairController = require('./controller.repair')
+const sourceHarvestController = require('./controller.source.harvest')
 const unliveController = require('./controller.unlive')
 const upgradeController = require('./controller.upgrade')
 
+const cook = require('./cook')
+
+const autobuildProcess = require('./process.autobuild')
+const roomInfoProcess = require('./process.roominfo')
+const secutiryProcess = require('./process.security')
+const spawnProcess = require('./process.spawn')
+const towerProcess = require('./process.tower')
+
+const mapUtils = require('./routine.map')
+
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
-  energyHarvestController.id,
-  energySpecialistController.id,
-  energyTakeController.id,
   grabController.id,
-  mineralHarvestController.id
+  mineralHarvestController.id,
+  sourceHarvestController.generic.id,
+  sourceHarvestController.specialist.id
 ]
 
 // all controllers that will keep creep in place for more than one tick
 const controllersBlockStop = [
   buildController.id,
   downgradeController.id,
-  energyHarvestController.id,
-  energySpecialistController.id,
   mineralHarvestController.id,
   rampupController.id,
   repairController.id,
+  sourceHarvestController.generic.id,
+  sourceHarvestController.specialist.id,
   upgradeController.generic.id,
   upgradeController.specialist.id
 ]
 
 // STRATEGY priority for creep assignment
-
 const controllersMyAuto = [
   downgradeController.id, // always on top
-  unliveController.id, // catch recyclees
-  mineralHarvestController.id, // catch miners to mineral
-  mineralRestockController.full.id, // catch anyone with mineral only
-  energySpecialistController.id, // catch restockers
-  upgradeController.specialist.id, // catch upgraders
-  energyTakeController.id, // above harvest, decrease harvest work
-  energyHarvestController.id,
-  energyRestockController.id,
+  cook.id, // 1st pass, set energy traps, unload
+  unliveController.id, // after unload, before takes other tasks
+  mineralHarvestController.id, // narrow filter
+  sourceHarvestController.specialist.id, // narrow filter
+  upgradeController.specialist.id, // narrow filter
   rampupController.id,
   repairController.id,
   buildController.id,
-  upgradeController.generic.id,
-  mineralRestockController.dump.id
+  cook.id, // 2nd pass, check energy traps, load
+  upgradeController.generic.id, // nothing to do - maybe upgrade
+  sourceHarvestController.generic.id // nothing to do - maybe harvest
 ]
 
 const controllersRemoteHarvestAuto = [
+  cook.id,
   repairController.id,
   buildController.id,
-  energySpecialistController.id
+  sourceHarvestController.specialist.id,
+  cook.id
 ]
 
 const controllersHelpAuto = [
-  energyTakeController.id,
-  energyRestockController.id,
+  cook.id, // controls energy withdraw for help
   rampupController.id,
   repairController.id,
-  buildController.id
+  buildController.id,
+  cook.id
 ]
 
 const controllersConsuming = [
@@ -227,33 +221,28 @@ const roomActor =
     const t0 = Game.cpu.getUsed()
 
     room._actType_ = this.roomActType(room)
-    const [roomControllers, consumingControllers] = this.roomControllersFind(room)
 
-    if (roomControllers.length === 0 && consumingControllers.length === 0) {
-      console.log('No controllers found for room [' + room.name + ']')
-      return
-    }
-
+    // priority, triggers safe mode
     secutiryProcess.work(room)
+    // misc constants that govern other stuff
     roomInfoProcess.work(room)
+    // stationary defense
     towerProcess.work(room)
 
     // STRATEGY don't execute certain processes too often and on the same tick / all rooms
-    const processKey = (room.memory.intl + Game.time) % 12
+    const processKey = (room.memory.intl + Game.time) % 10
 
     if (processKey === 0 ||
-        processKey === 6 ||
+        processKey === 5 ||
         room._threatEscalated_) {
       spawnProcess.work(room)
-    }
-
-    if (processKey === 3) {
-      linkProcess.work(room)
     }
 
     const roomCreeps = room.getRoomControlledCreeps()
 
     if (roomCreeps.length > 0) {
+      const [roomControllers, consumingControllers] = this.roomControllersFind(room)
+
       // clean up controllers
       this.roomControllersPrepare(roomControllers, room)
       this.roomControllersPrepare(consumingControllers, room)
@@ -299,6 +288,12 @@ const roomActor =
           creep.__roomActor_target = bootstrap.getObjectById(creep.memory.dest)
 
           if (creep.__roomActor_target) {
+            if (creep.__roomActor_target.room.name !== room.name) {
+              creep.__roomActor_atTarget = undefined
+              bootstrap.unassignCreep(creep)
+              continue
+            }
+
             if (creep.pos.inRangeTo(creep.__roomActor_target, creep.memory.dact)) {
               const keep = this.roomControllersAct(creep.__roomActor_target, creep)
 
@@ -399,11 +394,11 @@ const roomActor =
 
       const unassignedCreeps = _.filter(
         roomCreeps,
-        function (creep) {
+        creep => {
           if (creep.__roomActor_target) return false
 
           // plunders with empty cargo will be taken away
-          if (creep.shortcut === 'plunder' && upgradeController.generic._isEmpty(creep)) {
+          if (creep.shortcut === 'plunder' && downgradeController._isEmpty(creep)) {
             return false
           }
 
@@ -428,14 +423,12 @@ const roomActor =
           else if (pos.y === 49) creep.moveWrapper(TOP)
         }
       }
+
+      cook.roomPost(room)
     }
 
     if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
       autobuildProcess.work(room)
-    }
-
-    if (processKey === 9 && bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
-      terminalProcess.work(room)
     }
   } // end of act method
 }
