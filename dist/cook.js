@@ -1196,9 +1196,37 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
   } else {
+    let withEnergy = []
+    for (const creep of others) {
+      if (this._hasCM(creep) && this._hasEnergy(creep)) {
+        withEnergy.push(creep)
+      }
+    }
+
+    let restockedPrio3 = false
+    if (withEnergy.length > 0) {
+      const prio3EnergyRestockTargets = this.__prio3EnergyRestockTargets(room, withEnergy.length)
+      if (prio3EnergyRestockTargets.length > 0) {
+        if (_.some(withEnergy, 'memory.atds')) {
+          this.validateTarget = this._validateTarget
+        } else {
+          this.validateTarget = undefined
+        }
+        // eslint-disable-next-line no-unused-vars
+        const [unused, used] = this.assignCreeps(room, withEnergy, prio3EnergyRestockTargets)
+        this.validateTarget = undefined
+
+        for (const creep of used) {
+          creep.__cook__pass2__used = true
+        }
+
+        restockedPrio3 = used.length > 0
+      }
+    }
+
     let transports = []
     for (const creep of others) {
-      if (this._hasCM(creep) && this._hasFreeCapacity(creep)) {
+      if (!creep.__cook__pass2__used && this._hasCM(creep) && this._hasFreeCapacity(creep)) {
         transports.push(creep)
       }
     }
@@ -1216,7 +1244,7 @@ cook._controlPass2 = function (room, creeps) {
     }
 
     // restock low priority energy demands
-    if (transports.length > 0) {
+    if (!restockedPrio3 && transports.length > 0) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
         const prio3EnergyRestockTargets = this.__prio3EnergyRestockTargets(room, transports.length)
