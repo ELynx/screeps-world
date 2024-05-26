@@ -62,6 +62,8 @@ Source link placement adjacent (and maybe vectored) from source container.
 
 Auto create security_ flags based on autobuild.
 
+Roads on constructed walls cost as much as roads on plains. Can be used for securing entrance with failsafe paths.
+
 ### Economy
 
 Cluster restock.
