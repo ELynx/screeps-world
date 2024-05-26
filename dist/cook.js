@@ -1228,7 +1228,9 @@ cook._controlPass2 = function (room, creeps) {
 
     let transports = []
     for (const creep of others) {
-      if (!creep.__cook__pass2__used && this._hasCM(creep) && this._hasFreeCapacity(creep)) {
+      if (creep.__cook__pass2__used) continue
+
+      if (this._hasCM(creep) && this._hasFreeCapacity(creep)) {
         transports.push(creep)
       }
     }
@@ -1268,6 +1270,10 @@ cook._controlPass2 = function (room, creeps) {
           }
         }
       }
+    }
+
+    if ((room.memory.ulvl || 0) <= 0) {
+      // TODO workers to energy for upgrades
     }
   }
 
