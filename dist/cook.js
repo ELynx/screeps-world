@@ -1178,6 +1178,8 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
 
+    this.__untrap(room)
+
     if (transports.length > 0) {
       const energyRestockSources = this.__energyRestockSources(room)
       if (energyRestockSources.length > 0) {
@@ -1196,6 +1198,9 @@ cook._controlPass2 = function (room, creeps) {
       }
     }
   } else {
+    // otherwise chase ghosths
+    this.__untrap(room)
+
     const withEnergy = []
     for (const creep of others) {
       if (this._hasCM(creep) && this._hasEnergy(creep)) {
@@ -1276,9 +1281,6 @@ cook._controlPass2 = function (room, creeps) {
       // TODO workers to energy for upgrades
     }
   }
-
-  // reset traps
-  this.__untrap(room, creeps)
 
   // summarize
   const unused = []
