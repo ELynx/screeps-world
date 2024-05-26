@@ -1278,7 +1278,32 @@ cook._controlPass2 = function (room, creeps) {
     }
 
     if ((room.memory.ulvl || 0) <= 0) {
-      // TODO workers to energy for upgrades
+      const lowkeyUpgraders = []
+
+      for (const creep of others) {
+        if (creep.__cook__pass2__used) continue
+        if (creep.memory.btyp !== 'worker') continue
+        if (this._hasEnergy(creep)) continue
+        if (this._hasCM(creep)) lowkeyUpgraders.push(creep)
+      }
+
+      if (lowkeyUpgraders.length > 0) {
+        const energyRestockSources = this.__energyRestockSources(room)
+        if (energyRestockSources.length > 0) {
+          if (room.__cook__hasNoEnergyRun) {
+            this.validateTarget = this.__checkNoRun
+          } else {
+            this.validateTarget = undefined
+          }
+          // eslint-disable-next-line no-unused-vars
+          const [unused, used] = this.assignCreeps(room, lowkeyUpgraders, energyRestockSources)
+          this.validateTarget = undefined
+
+          for (const creep of used) {
+            creep.__cook__pass2__used = true
+          }
+        }
+      }
     }
   }
 
