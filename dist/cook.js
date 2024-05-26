@@ -1426,7 +1426,7 @@ cook.___setRoomRecepieNuke = function (room) {
 }
 
 cook.__updateRoomRecepie = function (room) {
-  if (room.labs.size === 10 && this._hasDemand(room.nuker. RESOURCE_GHODIUM)) {
+  if (room.labs.size === 10 && this._hasDemand(room.nuker.RESOURCE_GHODIUM)) {
     this.___setRoomRecepieNuke(room)
     return
   }
