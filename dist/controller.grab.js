@@ -43,6 +43,7 @@ grabController.act = function (room, creep) {
         if (intentSolver.getUsedCapacity(from, resourceType) > 0) {
           const rc = this.wrapIntent(creep, 'withdraw', from, resourceType)
           if (rc >= OK) {
+            creep.__grab__withdrawOrPickup = true
             didWithdraw = true
             break // from types loop
           }
@@ -56,6 +57,7 @@ grabController.act = function (room, creep) {
           if (intentSolver.getAmount(from) > 0) {
             const rc = this.wrapIntent(creep, 'pickup', from)
             if (rc >= OK) {
+              creep.__grab__withdrawOrPickup = true
               didPickup = true
             }
           }

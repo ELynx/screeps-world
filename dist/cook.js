@@ -504,7 +504,10 @@ cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAn
 cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resourceType) {
   const rc = this.__withdrawFromStructureToCreep(structure, creep, resourceType)
   // to avoid observe calls
-  if (rc >= OK) return bootstrap.ERR_TERMINATED
+  if (rc >= OK) {
+    creep.__cook__withdrawOrTransfer = true
+    return bootstrap.ERR_TERMINATED
+  }
 
   return rc
 }
@@ -526,7 +529,10 @@ cook._controllerTransferFromCreepToStructure = function (structure, creep) {
   for (const resourceType in creep.store) {
     const rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
     // to avoid observe calls
-    if (rc >= OK) return bootstrap.ERR_TERMINATED
+    if (rc >= OK) {
+      creep.__cook__withdrawOrTransfer = true
+      return bootstrap.ERR_TERMINATED
+    }
   }
 
   return ERR_NOT_ENOUGH_RESOURCES
@@ -765,6 +771,10 @@ cook._controlPass1 = function (room, creeps) {
   this.validateTarget = undefined
 
   for (const creep of resourceUnused) {
+    // because drop has priority
+    if (creep.__cook__withdrawOrTransfer) continue
+    if (creep.__grab__withdrawOrPickup) continue
+
     const resourceType = _.sample(intentSolver.getUsedCapacityMinKeys(creep))
     if (resourceType === undefined) continue
     if (resourceType === RESOURCE_ENERGY) continue
