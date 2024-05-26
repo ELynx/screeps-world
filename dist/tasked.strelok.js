@@ -43,15 +43,13 @@ strelok.creepAtDestination = function (creep) {
 
     const targetCreeps = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.hostile
-      }
+      creep1 => creep1.hostile
     )
 
     const targetStructures = creep.room.find(
       FIND_STRUCTURES,
       {
-        filter: function (structure) {
+        filter: structure => {
           // ignore everything without hit points
           if (!structure.hits) return false
 
@@ -90,16 +88,12 @@ strelok.creepAtDestination = function (creep) {
 
     const wounded = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.myOrAlly() && (creep1.hits < creep1.hitsMax)
-      }
+      creep1 => creep1.myOrAlly() && (creep1.hits < creep1.hitsMax)
     )
 
     const noHurt = _.filter(
       creeps,
-      function (creep1) {
-        return creep1.allyOrNeutral()
-      }
+      creep1 => creep1.allyOrNeutral()
     )
 
     this.roomTargets[dest] = targets
@@ -112,7 +106,7 @@ strelok.creepAtDestination = function (creep) {
 
   const targets = _.filter(
     this.roomTargets[dest],
-    function (hostile) {
+    hostile => {
       if (hostile._aggro_) {
         return true
       }
@@ -131,9 +125,7 @@ strelok.creepAtDestination = function (creep) {
   let moveTarget
   const prio = _.filter(
     targets,
-    function (target) {
-      return target.pos.x === rushPos.x && target.pos.y === rushPos.y
-    }
+    target => target.pos.x === rushPos.x && target.pos.y === rushPos.y
   )
 
   if (prio.length > 0) {
@@ -387,22 +379,22 @@ strelok.makeBody = function (room) {
     budget = budget - 10
   }
 
-  const a = new Array(tough)
-  a.fill(TOUGH)
+  const partsTough = new Array(tough)
+  partsTough.fill(TOUGH)
 
-  const b = new Array(move)
-  b.fill(MOVE)
+  const partsMove = new Array(move)
+  partsMove.fill(MOVE)
 
-  const c = new Array(ranged)
-  c.fill(RANGED_ATTACK)
+  const partsRanged = new Array(ranged)
+  partsRanged.fill(RANGED_ATTACK)
 
-  const d = new Array(melee)
-  d.fill(ATTACK)
+  const partsMelee = new Array(melee)
+  partsMelee.fill(ATTACK)
 
-  const e = new Array(heal)
-  e.fill(HEAL)
+  const partsHeal = new Array(heal)
+  partsHeal.fill(HEAL)
 
-  const body = a.concat(b).concat(c).concat(d).concat(e)
+  const body = partsTough.concat(partsMove).concat(partsRanged).concat(partsMelee).concat(partsHeal)
 
   this.__bodyCache[elvl] = body
 
@@ -414,13 +406,13 @@ strelok.makeBody_2 = function (room) {
   const energy = room.extendedAvailableEnergyCapacity()
   const pairs = Math.min(Math.floor(energy / 130), 25)
 
-  const a = new Array(pairs)
-  a.fill(MOVE)
+  const partsMove = new Array(pairs)
+  partsMove.fill(MOVE)
 
-  const b = new Array(pairs)
-  b.fill(ATTACK)
+  const partsMelee = new Array(pairs)
+  partsMelee.fill(ATTACK)
 
-  const body = a.concat(b)
+  const body = partsMove.concat(partsMelee)
 
   return body
 }

@@ -121,7 +121,7 @@ autobuildProcess.takePhoto = function (room) {
   const allStructures = room
     .find(FIND_STRUCTURES)
     .sort(
-      function (s1, s2) {
+      (s1, s2) => {
         const index1 = (s1.pos.y + 1) * 100 + s1.pos.x
         const index2 = (s2.pos.y + 1) * 100 + s2.pos.x
         if (index1 === index2) return s1.structureType.localeCompare(s2.structureType)

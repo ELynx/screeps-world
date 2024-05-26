@@ -25,15 +25,14 @@ const cleanup = {
         [
           '_ttt',
           'abld',
+          'cook',
           'intl',
           'mlvl',
           'mnrl',
           'nodeAccessed',
           'photo',
-          'sellEverything',
           'slvl',
           'srck',
-          'stre',
           'threat',
           'ulvl',
           'wlvl',
@@ -59,8 +58,11 @@ const cleanup = {
         Memory.structures[id] = _.pick(
           Memory.structures[id],
           [
+            'input',
             'isSource',
-            'nodeAccessed'
+            'mark',
+            'nodeAccessed',
+            'resourceType'
           ]
         )
       }
@@ -111,12 +113,11 @@ const cleanup = {
       if (flagName === 'photo') continue
       if (flagName === 'profiler') continue
       if (flagName === 'recount') continue
+      if (flagName === 'war') continue
 
       const controllerFound = _.some(
         flagKeys,
-        function (id) {
-          return flagName.startsWith(id)
-        }
+        id => flagName.startsWith(id)
       )
 
       if (controllerFound) continue

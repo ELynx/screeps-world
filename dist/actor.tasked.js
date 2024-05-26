@@ -7,7 +7,6 @@ const taskedBeetle = require('./tasked.beetle')
 const taskedClaim = require('./tasked.claim')
 const taskedObserve = require('./tasked.observe')
 const taskedOutlast = require('./tasked.outlast')
-const taskedPixel = require('./tasked.pixelgenerator')
 const taskedPlunder = require('./tasked.plunder')
 const taskedSpawn = require('./tasked.spawn')
 const taskedStrelok = require('./tasked.strelok')
@@ -23,12 +22,10 @@ const taskedAuto = [
   taskedClaim.id, // a bit paramilitary
   taskedObserve.id, // lowest prio
   // consume spawn(s)
-  taskedSpawn.id,
-  // other
-  taskedPixel.id
+  taskedSpawn.id
 ]
 
-const worldActor =
+const taskedActor =
 {
   taskControllersControl: function () {
     for (const id of taskedAuto) {
@@ -44,4 +41,4 @@ const worldActor =
   }
 }
 
-module.exports = worldActor
+module.exports = taskedActor

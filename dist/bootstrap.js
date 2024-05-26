@@ -23,6 +23,8 @@ const bootstrap = {
   ERR_INTENDEE_EXHAUSTED: -10002,
   // intent exhaused on intended side, such as trying to harvest with too many creeps from singe source
   ERR_INTENDED_EXHAUSTED: -10003,
+  // terminated by decision
+  ERR_TERMINATED: -10004,
 
   adjacentDirections: {
     [TOP]: [TOP_LEFT, TOP_RIGHT],
@@ -118,7 +120,7 @@ const bootstrap = {
     this.processControllers[processController.id] = processController
   },
 
-  makeItStop: function (creep, stop) {
+  rememberPositionAsStop: function (creep, stop) {
     creep.memory._stop =
     {
       stop: { x: stop.x, y: stop.y, room: stop.roomName },
@@ -140,7 +142,7 @@ const bootstrap = {
     }
 
     const stop = _.last(path)
-    this.makeItStop(creep, stop)
+    this.rememberPositionAsStop(creep, stop)
   },
 
   imitateMoveErase: function (creep) {

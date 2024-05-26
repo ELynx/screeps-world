@@ -197,15 +197,15 @@ claimTasked.flagPrepare = function (flag) {
 
 claimTasked.makeClaimM = function (claim, move) {
   // move up front to allow crawl even damaged
-  const a = new Array(move - 1)
-  a.fill(MOVE)
+  const partsMoveBegin = new Array(move - 1)
+  partsMoveBegin.fill(MOVE)
 
-  const b = new Array(claim)
-  b.fill(CLAIM)
+  const partsClaim = new Array(claim)
+  partsClaim.fill(CLAIM)
 
-  const c = [MOVE]
+  const partsMoveEnd = [MOVE]
 
-  return a.concat(b).concat(c)
+  return partsMoveBegin.concat(partsClaim).concat(partsMoveEnd)
 }
 
 claimTasked.makeBody = function (room) {

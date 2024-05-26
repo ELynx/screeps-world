@@ -28,14 +28,27 @@ secutiryProcess.work = function (room) {
   const hostileCreeps = room.find(
     FIND_CREEPS,
     {
-      filter: function (creep) {
-        return creep.hostile
-      }
+      filter: creep => creep.hostile
     }
   )
 
   if (hostileCreeps.length > 0) {
-    const hostilePCs = _.filter(hostileCreeps, _.property('pc'))
+    const hostilePCs = []
+
+    for (const creep of hostileCreeps) {
+      if (!creep.pc) continue
+
+      const body = creep.body
+      for (const bodyPart of body) {
+        if (bodyPart.type === CARRY) continue
+        if (bodyPart.type === HEAL) continue
+        if (bodyPart.type === MOVE) continue
+        if (bodyPart.type === TOUGH) continue
+
+        hostilePCs.push(creep)
+        break
+      }
+    }
 
     if (threatTimer + ThreatStep <= Game.time) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
@@ -71,7 +84,7 @@ secutiryProcess.work = function (room) {
 
         const trigger = _.some(
           hostilePCs,
-          function (someCreep) {
+          someCreep => {
             return someCreep.pos.inRangeTo(flag.pos, range)
           }
         )
