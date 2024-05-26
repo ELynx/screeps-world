@@ -454,7 +454,6 @@ cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
   const resoureAmount = _.parseInt(asWords[1])
   if (_.isNaN(resoureAmount) || resoureAmount <= 0) {
     console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', resource amount, [' + resourceTypeAndAmount + ']')
-    bootstrap.unassignCreep(creep)
     return [undefined, undefined]
   }
 
