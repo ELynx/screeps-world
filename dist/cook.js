@@ -1212,9 +1212,11 @@ cook._controlPass2 = function (room, creeps) {
         } else {
           this.validateTarget = undefined
         }
+        this.__cook__energyRestockAssign = true
         // eslint-disable-next-line no-unused-vars
         const [unused, used] = this.assignCreeps(room, withEnergy, prio3EnergyRestockTargets)
         this.validateTarget = undefined
+        this.__cook__energyRestockAssign = undefined
 
         for (const creep of used) {
           creep.__cook__pass2__used = true
