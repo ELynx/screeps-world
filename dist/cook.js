@@ -601,7 +601,7 @@ cook.act = function (structure, creep) {
   }
 }
 
-cook.onAssign = function (target, creep) {
+cook.onAssign = function (target, _creep) {
   if (target.room.__cook__energyRestockAssign) {
     target.__cook__hasEnergyDemand = false
   }
