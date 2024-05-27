@@ -610,6 +610,11 @@ RoomPosition.prototype.manhattanDistance = function (other) {
   return dx + dy
 }
 
+RoomPosition.prototype.getRoomLinearDistance = function (other, contineous = false) {
+  // use notation that allows for blind distance
+  return Game.map.getRoomLinearDistance(this.roomName, other.roomName, contineous)
+}
+
 Structure.prototype.isActiveSimple = true
 
 if (!Structure.prototype.__original_isActive) {

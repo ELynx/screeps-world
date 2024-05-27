@@ -5,6 +5,7 @@ const bootstrap = require('./bootstrap')
 const taskedAggro = require('./tasked.aggro')
 const taskedBeetle = require('./tasked.beetle')
 const taskedClaim = require('./tasked.claim')
+const taskedNuker = require('./tasked.nuker')
 const taskedObserve = require('./tasked.observe')
 const taskedOutlast = require('./tasked.outlast')
 const taskedPlunder = require('./tasked.plunder')
@@ -22,7 +23,9 @@ const taskedAuto = [
   taskedClaim.id, // a bit paramilitary
   taskedObserve.id, // lowest prio
   // consume spawn(s)
-  taskedSpawn.id
+  taskedSpawn.id,
+  // generate nuke(s)
+  taskedNuker.id
 ]
 
 const taskedActor =

@@ -389,19 +389,22 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
-  // default to demand only
-  return Math.max(above, this.___roomDemand(structure, resourceType))
+  return above
 }
 
 cook._hasSpace = function (structure, resourceType, forMining = false) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const lambda = () => this.___roomSpace(structure, resourceType, forMining)
-  const space = forMining ? lambda() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
+  const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
+  const lambda2 = () => this.___roomDemand(structure, resourceType)
+
+  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda1)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda2)
+  const eitherOr = Math.max(space, demand)
   const planned = this.___plannedDelta(structure, resourceType)
 
-  return space > planned
+  return eitherOr > planned
 }
 
 cook._labClusterDemandTarget = function (room, resourceType) {
@@ -519,7 +522,9 @@ cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resou
 
 cook.__transferFromCreepToStructure = function (structure, creep, resourceType) {
   // check first because dump mode
-  const canTake = this.___roomSpace(structure, resourceType)
+  const canTake1 = this.___roomSpace(structure, resourceType)
+  const canTake2 = this.___roomDemand(structure, resourceType)
+  const canTake = Math.max(canTake1, canTake2)
   if (canTake <= 0) return ERR_FULL
 
   const canGive = intentSolver.getUsedCapacityMin(creep, resourceType) || 0
@@ -1711,7 +1716,7 @@ cook._operateLinks = function (room) {
 
           if (worker.memory.dest) {
             const target = bootstrap.getObjectById(worker.memory.dest)
-            if (target && target.pos) {
+            if (target?.pos) {
               pos = target.pos
             }
           }
@@ -1867,8 +1872,8 @@ cook._performTerminalExchange = function () {
   // target terminal will always get first but eh, ok
   allTerminals.sort(
     (terminal1, terminal2) => {
-      const d1 = Game.map.getRoomLinearDistance(terminal1.room.name, targetTerminal.room.name, true)
-      const d2 = Game.map.getRoomLinearDistance(terminal2.room.name, targetTerminal.room.name, true)
+      const d1 = terminal1.pos.getRoomLinearDistance(targetTerminal.pos, true)
+      const d2 = terminal2.pos.getRoomLinearDistance(targetTerminal.pos, true)
 
       return d1 - d2
     }
