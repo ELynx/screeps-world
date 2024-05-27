@@ -15,8 +15,8 @@ nuker.act = function () {
     const local = nukers.slice(0)
     local.sort(
       (n1, n2) => {
-        const d1 = Game.map.getRoomLinearDistance(n1.room.name, flag.pos.roomName)
-        const d2 = Game.map.getRoomLinearDistance(n2.room.name, flag.pos.roomName)
+        const d1 = n1.pos.getRoomLinearDistance(flag.pos)
+        const d2 = n2.pos.getRoomLinearDistance(flag.pos)
         return d1 - d2
       }
     )
