@@ -107,7 +107,8 @@ cook.__hasSupply = function (structure, resourceType) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const supply = this.___roomSupply(structure, resourceType)
+  const lambda = () => this.___roomSupply(structure, resourceType)
+  const supply = intentSolver.getWithIntentCache(structure, '__cook__hasSupply', lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return supply + planned > 0
@@ -268,7 +269,8 @@ cook._hasDemand = function (structure, resourceType) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const demand = this.___roomDemand(structure, resourceType)
+  const lambda = () => this.___roomDemand(structure, resourceType)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return demand > planned
@@ -395,16 +397,11 @@ cook._hasSpace = function (structure, resourceType, forMining = false) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const lambda = () => {
-    const space = this.___roomSpace(structure, resourceType, forMining)
-    const planned = this.___plannedDelta(structure, resourceType)
+  const lambda = () => this.___roomSpace(structure, resourceType, forMining)
+  const space = forMining ? lambda() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
+  const planned = this.___plannedDelta(structure, resourceType)
 
-    return space > planned
-  }
-
-  if (forMining) return lambda()
-
-  return intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
+  return space > planned
 }
 
 cook._labClusterDemandTarget = function (room, resourceType) {
