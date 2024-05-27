@@ -18,14 +18,13 @@ nuker.act = function () {
 
   for (const flag of flags) {
     const local = nukers.slice(0)
-    local.sort(sortByDistance)
-
-    const sortByDistance = (n1, n2) => {
-      const d1 = Game.map.getRoomLinearDistance(n1.room.name, flag.pos.roomName)
-      const d2 = Game.map.getRoomLinearDistance(n2.room.name, flag.pos.roomName)
-
-      return d1 - d2
-    }
+    local.sort(
+      (n1, n2) => {
+        const d1 = Game.map.getRoomLinearDistance(n1.room.name, flag.pos.roomName)
+        const d2 = Game.map.getRoomLinearDistance(n2.room.name, flag.pos.roomName)
+        return d1 - d2
+      }
+    )
 
     for (const someNuker of local) {
       if (someNuker._launched_) continue
