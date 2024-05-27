@@ -4,11 +4,6 @@ const Tasked = require('./tasked.template')
 
 const nuker = new Tasked('nuker')
 
-StructureNuker.prototype.launchNuke = function (position) {
-  console.log('Nuker from [' + this.room.name + '] launces a nuke to ' + position)
-  return OK
-}
-
 nuker.act = function () {
   const flags = Game.flagsByShortcut[this.id] || []
   if (flags.length === 0) return
