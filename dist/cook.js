@@ -1872,8 +1872,8 @@ cook._performTerminalExchange = function () {
   // target terminal will always get first but eh, ok
   allTerminals.sort(
     (terminal1, terminal2) => {
-      const d1 = Game.map.getRoomLinearDistance(terminal1.room.name, targetTerminal.room.name, true)
-      const d2 = Game.map.getRoomLinearDistance(terminal2.room.name, targetTerminal.room.name, true)
+      const d1 = terminal1.pos.getRoomLinearDistance(targetTerminal.pos, true)
+      const d2 = terminal2.pos.getRoomLinearDistance(targetTerminal.pos, true)
 
       return d1 - d2
     }
