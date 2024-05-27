@@ -1512,9 +1512,8 @@ cook._unloadActiveHarvesters = function (room) {
       if (creep._source_ === undefined) return false
       if (creep.memory.atds !== true) return false
       if (creep.memory.btyp !== 'harvester') return false
-      if (creep.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) return false
 
-      return true
+      return creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0
     }
   )
 
