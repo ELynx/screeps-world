@@ -389,19 +389,22 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
-  // default to demand only
-  return Math.max(above, this.___roomDemand(structure, resourceType))
+  return above
 }
 
 cook._hasSpace = function (structure, resourceType, forMining = false) {
   // save typing down the line
   if (structure === undefined) return false
 
-  const lambda = () => this.___roomSpace(structure, resourceType, forMining)
-  const space = forMining ? lambda() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda)
+  const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
+  const lambda2 = () => this.___roomDemand(structure, resourceType)
+
+  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda1)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda2)
+  const eitherOr = Math.max(space, demand)
   const planned = this.___plannedDelta(structure, resourceType)
 
-  return space > planned
+  return eitherOr > planned
 }
 
 cook._labClusterDemandTarget = function (room, resourceType) {
@@ -519,7 +522,9 @@ cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resou
 
 cook.__transferFromCreepToStructure = function (structure, creep, resourceType) {
   // check first because dump mode
-  const canTake = this.___roomSpace(structure, resourceType)
+  const canTake1 = this.___roomSpace(structure, resourceType)
+  const canTake2 = this.___roomDemand(structure, resourceType)
+  const canTake = Math.max(canTake1, canTake2)
   if (canTake <= 0) return ERR_FULL
 
   const canGive = intentSolver.getUsedCapacityMin(creep, resourceType) || 0
