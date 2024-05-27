@@ -1716,7 +1716,7 @@ cook._operateLinks = function (room) {
 
           if (worker.memory.dest) {
             const target = bootstrap.getObjectById(worker.memory.dest)
-            if (target && target.pos) {
+            if (target?.pos) {
               pos = target.pos
             }
           }
