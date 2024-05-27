@@ -1886,6 +1886,7 @@ cook._performTerminalExchange = function () {
     if (terminal.id === targetTerminal.id) continue
     if (terminal._operated_) continue
     if (terminal.cooldown && terminal.cooldown > 0) continue
+    if (terminal.store[RESOURCE_ENERGY] <= 0) continue
 
     for (const resourceType of demandTypes) {
       const supplyAmount = this.___worldSupply(terminal, resourceType)
@@ -2046,7 +2047,10 @@ cook.__sellTerminalExcess = function (terminal) {
     return ERR_TIRED
   }
 
-  const resourceType = _.sample(_.shuffle(intentSolver.getUsedCapacityMinKeys(terminal)))
+  const resources = intentSolver.getUsedCapacityMinKeys(terminal)
+  if (!_.some(resources, _.matches(RESOURCE_ENERGY))) return ERR_NOT_ENOUGH_RESOURCES
+
+  const resourceType = _.sample(resources)
   const excess = this.___excessToSell(terminal, resourceType)
   if (excess > 0) {
     const order = this.___findBuyOrder(terminal, resourceType)
