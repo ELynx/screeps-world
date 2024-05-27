@@ -1992,12 +1992,13 @@ cook.___findBuyOrder = function (terminal, resourceType) {
 
 cook.___excessToSell = function (terminal, resourceType) {
   if (resourceType === RESOURCE_BATTERY) return 0
+  if (resourceType === RESOURCE_ENERGY) return 0
   if (resourceType === RESOURCE_GHODIUM_MELT) return 0
   if (resourceType === RESOURCE_GHODIUM) return 0
   if (resourceType === RESOURCE_OPS) return 0
   if (resourceType === RESOURCE_POWER) return 0
-  if (resourceType === RESOURCE_ZYNTHIUM_KEANITE) return 0
   if (resourceType === RESOURCE_UTRIUM_LEMERGITE) return 0
+  if (resourceType === RESOURCE_ZYNTHIUM_KEANITE) return 0
 
   const used = intentSolver.getUsedCapacityMin(terminal, resourceType) || 0
   const plannedDelta = this.___plannedDelta(terminal, resourceType)
