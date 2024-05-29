@@ -108,6 +108,107 @@ if (!Creep.prototype.__original_move) {
   }
 }
 
+// TODO avoid portals
+// only march in cardinal directions is intended
+Creep.prototype.march = function (direction) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  let options = {
+    reusePath: _.random(3, 5),
+    serializeMemory: true
+  }
+
+  if (this.memory._move) {
+    if (this.memory._move.room !== this.pos.roomName) {
+      console.log(Game.time + ' ' + this.pos + ' Erasing path because room change')
+      bootstrap.imitateMoveErase(this)
+    } else {
+      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, bootstrap.moveOptionsWrapper(this, options))
+      if (rc < OK) {
+        console.log(Game.time + ' ' + this.pos + ' Erasing path because ' + rc)
+        bootstrap.imitateMoveErase(this)
+      } else {
+        console.log(Game.time + ' ' + this.pos + ' I am on a path ' + rc)
+        return rc
+      }
+    }
+  }
+
+  const terrain = this.room.getTerrain()
+  const delta = bootstrap.directionToDelta[direction]
+  const x = this.pos.x + delta[0]
+  const y = this.pos.y + delta[1]
+  const maskAhead = terrain.get(x, y)
+
+  let beSmart = false
+  if (maskAhead === TERRAIN_MASK_SWAMP) {
+    options = bootstrap.moveOptionsWrapper(this, options)
+    beSmart = !options.ignoreRoads
+  }
+
+  if (beSmart || this.moved() === false) {
+    if (!beSmart) {
+      options = bootstrap.moveOptionsWrapper(this, options)
+    }
+
+    let xMin = 0
+    let xMax = 49
+    let yMin = 0
+    let yMax = 49
+
+    if (direction === TOP) yMax = 0
+    if (direction === RIGHT) xMin = 49
+    if (direction === BOTTOM) yMin = 49
+    if (direction === LEFT) xMax = 0
+
+    let goals = []
+    for (let x1 = xMin; x1 <= xMax; ++x1) {
+      for (let y1 = yMin; y1 <= yMax; ++y1) {
+        const maskOnBorder = terrain.get(x1, y1)
+        if (maskOnBorder !== TERRAIN_MASK_WALL) {
+          goals.push(new RoomPosition(x1, y1, this.pos.roomName))
+        }
+      }
+    }
+
+    if (goals.length > 0) {
+      const destination = _.sample(goals)
+      const rc = this.moveTo(destination, options)
+      console.log(Game.time + ' ' + this.pos + ' Stepping on the path with ' + rc)
+      return rc
+    }
+
+    console.log(Game.time + ' ' + this.pos + ' I am stuck')
+    return ERR_NOT_FOUND
+  }
+
+  let marchDirection = direction
+
+  if (maskAhead === TERRAIN_MASK_WALL) {
+    // coordinate checks inside steer creep towards center
+    if (direction === TOP) {
+      if (x < 25) marchDirection = RIGHT
+      else marchDirection = LEFT
+    } else if (direction === RIGHT) {
+      if (y < 25) marchDirection = BOTTOM
+      else marchDirection = TOP
+    } else if (direction === BOTTOM) {
+      if (x < 25) marchDirection = RIGHT
+      else marchDirection = LEFT
+    } else if (direction === LEFT) {
+      if (y < 25) marchDirection = BOTTOM
+      else marchDirection = TOP
+    }
+  }
+
+  this.rememberPosition()
+
+  console.log(Game.time + ' ' + this.pos + ' I move to ' + marchDirection)
+  return this.move(marchDirection)
+}
+
 Creep.prototype.moveWrapper = function (direction, options = { }) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
