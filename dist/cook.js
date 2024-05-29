@@ -175,7 +175,7 @@ cook.___worldSupply = function (structure, resourceType) {
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
     if (this.__hasEnergyDemand(structure)) return 0
-    return Math.floor(SOURCE_ENERGY_CAPACITY / 2)
+    return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
   const mineralType = structure.room.mineralType()
@@ -1473,7 +1473,11 @@ cook._askWorld = function (room) {
     const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
     const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     if (now < ideal) {
-      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
+      const delta = ideal - now
+      // slow down jiggling
+      if (delta >= SOURCE_ENERGY_CAPACITY / 3) {
+        this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
+      }
     }
   }
 
