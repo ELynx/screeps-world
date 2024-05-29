@@ -128,6 +128,7 @@ plunder.moveAndLoad = function (creep, target) {
     creep.moveToWrapper(
       target,
       {
+        maxRooms: 1,
         range: 1,
         reusePath: _.random(3, 5)
       }
