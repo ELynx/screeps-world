@@ -51,7 +51,7 @@ const bootstrap = {
   /**
    Same as built-in, but tries to get some shortcuts
    **/
-  getObjectById(id) {
+  getObjectById (id) {
     // most of cases is some kind of `my` structure
     const structure = Game.structures[id]
     if (structure) return structure
@@ -73,7 +73,7 @@ const bootstrap = {
     CPU used from hard shard limit.
     @return integer percent of used shard limit.
     **/
-  hardCpuUsed(from) {
+  hardCpuUsed (from) {
     if (!Game.cpu.limit) {
       return 0
     }
@@ -100,7 +100,7 @@ const bootstrap = {
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/
-  registerRoomController(controller) {
+  registerRoomController (controller) {
     this.roomControllers[controller.id] = controller
   },
 
@@ -108,7 +108,7 @@ const bootstrap = {
     Add a tasked to list of task controllers.
     @param {Tasked} tasked
     **/
-  registerTaskController(tasked) {
+  registerTaskController (tasked) {
     this.taskControllers[tasked.id] = tasked
   },
 
@@ -116,11 +116,11 @@ const bootstrap = {
     Add a process to list of process controllers.
     @param {Process} process
     **/
-  registerProcessController(processController) {
+  registerProcessController (processController) {
     this.processControllers[processController.id] = processController
   },
 
-  rememberPositionAsStop(creep, stop) {
+  rememberPositionAsStop (creep, stop) {
     creep.memory._stop =
     {
       stop: { x: stop.x, y: stop.y, room: stop.roomName },
@@ -131,7 +131,7 @@ const bootstrap = {
 
   // imitate _move cahce
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
-  imitateMoveCreate(target, creep, path) {
+  imitateMoveCreate (target, creep, path) {
     const pos = target.pos
     creep.memory._move =
     {
@@ -145,7 +145,7 @@ const bootstrap = {
     this.rememberPositionAsStop(creep, stop)
   },
 
-  imitateMoveErase(creep) {
+  imitateMoveErase (creep) {
     creep.memory._move = undefined
     creep.memory._stop = undefined
   },
@@ -160,7 +160,7 @@ const bootstrap = {
     @param {Creep} creep.
     @return If creep is assigned to a controller.
     **/
-  creepAssigned(creep) {
+  creepAssigned (creep) {
     return creep.memory.ctrl !== this.NO_CONTROL
   },
 
@@ -172,7 +172,7 @@ const bootstrap = {
     @param {Creep} creep.
     @param {???} extra value stored in memory.
     **/
-  assignCreep(controller, target, targetSolution, creep, extra) {
+  assignCreep (controller, target, targetSolution, creep, extra) {
     creep.memory.ctrl = controller.id
     creep.memory.dest = target.id
     creep.memory.dact = controller.actRange
@@ -189,7 +189,7 @@ const bootstrap = {
     Unassign creep from target or controller.
     @param {Creep} creep.
     **/
-  unassignCreep(creep) {
+  unassignCreep (creep) {
     creep.memory.ctrl = this.NO_CONTROL
     creep.memory.dest = this.NO_DESTINATION
     creep.memory.dact = this.NO_ACT_RANGE
@@ -198,7 +198,7 @@ const bootstrap = {
     this.imitateMoveErase(creep)
   },
 
-  activeBodyParts(creep) {
+  activeBodyParts (creep) {
     if (creep.__bootstrap_activeBodyParts_done) return
 
     // cache often made calls
@@ -240,7 +240,7 @@ const bootstrap = {
     creep.__bootstrap_activeBodyParts_done = true
   },
 
-  _movementCost(creep) {
+  _movementCost (creep) {
     if (creep.__bootstrap__movementCost_costs === undefined) {
       this.activeBodyParts(creep)
 
@@ -271,7 +271,7 @@ const bootstrap = {
     }
   },
 
-  moveOptionsWrapper(creep, options) {
+  moveOptionsWrapper (creep, options) {
     if (options.plainCost && options.swampCost) {
       return options
     }
@@ -283,7 +283,7 @@ const bootstrap = {
     return options
   },
 
-  centerRoomPosition(roomName) {
+  centerRoomPosition (roomName) {
     if (roomName === undefined) {
       console.log('Attempt to take center of undefined room, shard center returned')
       return new RoomPosition(25, 25, 'E0N0')
@@ -292,12 +292,12 @@ const bootstrap = {
     return new RoomPosition(25, 25, roomName)
   },
 
-  isHighwayRoomName(roomName) {
+  isHighwayRoomName (roomName) {
     // TODO
     return false
   },
 
-  isHighwayCrossingRoomName(roomName) {
+  isHighwayCrossingRoomName (roomName) {
     // TODO
     return false
   }
