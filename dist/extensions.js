@@ -912,7 +912,7 @@ StructureTerminal.prototype.autoSend = function (resourceType, amount, destinati
 
   const actualAmount = Math.min(amount, canBeTransferred)
 
-  return [this.send(resourceType, actualAmount, destination, description), 0]
+  return [this.send(resourceType, actualAmount, destination, description), actualAmount]
 }
 
 const extensions = {
