@@ -89,6 +89,10 @@ cook.___roomSupply = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
+    if (structure.effects && structure.effects.length > 0) {
+      if (_.some(structure.effects, _.matches(PWR_DISRUPT_TERMINAL))) return 0
+    }
+
     const all = intentSolver.getAllUsedCapacity(structure)
 
     if (resourceType === RESOURCE_ENERGY) {
@@ -178,6 +182,7 @@ cook.___worldSupply = function (structure, resourceType) {
     return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
+  // TODO give out ghodium etc.
   const mineralType = structure.room.mineralType()
   if (resourceType !== mineralType) return 0
   return this.___roomSupply(structure, resourceType)
