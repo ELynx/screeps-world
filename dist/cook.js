@@ -847,8 +847,22 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
 }
 
 cook.___filterOutUnderRamparts = function (room, structures) {
-  // TODO filter under ramparts
-  return structures
+  if (room.__cook__ramparts === undefined) {
+    room.__cook__ramparts = _.filter(
+      room.find(FIND_STRUCTURES),
+      structure => structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
+    )
+  }
+
+  return _.filter(
+    structures,
+    structure => {
+      return !_.some(
+        room.__cook__ramparts,
+        rampart => rampart.pos.x === structure.pos.x && rampart.pos.y === structure.pos.y
+      )
+    }
+  )
 }
 
 cook.__energyRestockSources = function (room) {
