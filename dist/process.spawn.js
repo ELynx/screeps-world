@@ -159,11 +159,9 @@ spawnProcess.workers_my = function (room, live) {
 
     if (level < 3) {
       limit = fromSources * 3
-    }
-    else if (level < 7) {
+    } else if (level < 7) {
       limit = fromSources * 2
-    }
-    else {
+    } else {
       limit = fromSources
     }
   } else {
@@ -174,11 +172,9 @@ spawnProcess.workers_my = function (room, live) {
   if (room.memory.wwww === undefined) {
     if (level < 3) {
       want = 4
-    }
-    else if (level < 7) {
+    } else if (level < 7) {
       want = 2
-    }
-    else {
+    } else {
       want = 1
     }
   } else {
