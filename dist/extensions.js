@@ -880,39 +880,39 @@ StructureTerminal.prototype.autoSell = function (order, amount) {
     const has = this.store.getUsedCapacity(order.resourceType)
 
     if (has === undefined || has <= 0) {
-      return ERR_NOT_ENOUGH_RESOURCES
+      return [ERR_NOT_ENOUGH_RESOURCES, 0]
     }
 
     const canBeTransferred = this._caclTransactionAmount(order.roomName)
 
     if (canBeTransferred < 1) {
-      return ERR_NOT_ENOUGH_ENERGY
+      return [ERR_NOT_ENOUGH_ENERGY, 0]
     }
 
     const actualAmount = Math.min(amount, has, canBeTransferred, order.amount)
 
-    return Game.market.deal(order.id, actualAmount, this.room.name)
+    return [Game.market.deal(order.id, actualAmount, this.room.name), actualAmount]
   }
 
-  return ERR_INVALID_ARGS
+  return [ERR_INVALID_ARGS, undefined]
 }
 
 StructureTerminal.prototype.autoSend = function (resourceType, amount, destination, description = undefined) {
   const has = this.store.getUsedCapacity(resourceType)
 
   if (has === undefined || has <= 0) {
-    return ERR_NOT_ENOUGH_RESOURCES
+    return [ERR_NOT_ENOUGH_RESOURCES, 0]
   }
 
   const canBeTransferred = this._caclTransactionAmount(destination)
 
   if (canBeTransferred < 1) {
-    return ERR_NOT_ENOUGH_ENERGY
+    return [ERR_NOT_ENOUGH_ENERGY, 0]
   }
 
   const actualAmount = Math.min(amount, canBeTransferred)
 
-  return this.send(resourceType, actualAmount, destination, description)
+  return [this.send(resourceType, actualAmount, destination, description), 0]
 }
 
 const extensions = {
