@@ -155,7 +155,7 @@ Creep.prototype.march = function (direction) {
   // portals are avoided, no need to provision
   // https://github.com/screeps/engine/blob/97c9d12385fed686655c13b09f5f2457dd83a2bf/src/game/rooms.js#L164
   let findNewPathOptions = {
-    ignoreCreeps: this.room.isHighway(),
+    ignoreCreeps: this.room.highway(),
     reusePath: _.random(3, 5),
     serializeMemory: true
   }
@@ -510,18 +510,6 @@ Room.prototype.sourceKeeper = function () {
   return this.memory.srck
 }
 
-Room.prototype.sourceEnergyCapacity = function () {
-  if (this.ownedOrReserved()) {
-    return SOURCE_ENERGY_CAPACITY
-  }
-
-  if (this.sourceKeeper()) {
-    return SOURCE_ENERGY_KEEPER_CAPACITY
-  }
-
-  return SOURCE_ENERGY_NEUTRAL_CAPACITY
-}
-
 Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (!this._my_) return 0
 
@@ -664,12 +652,12 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
 }
 
-Room.prototype.isHighway = function () {
+Room.prototype.highway = function () {
   if (this.controller) return false
   return bootstrap.isHighwayRoomName(this.name)
 }
 
-Room.prototype.isHighwayCrossing = function () {
+Room.prototype.highwayCrossing = function () {
   if (this.controller) return false
   return bootstrap.isHighwayCrossingRoomName(this.name)
 }
@@ -745,14 +733,6 @@ RoomPosition.prototype.manhattanDistance = function (other) {
 RoomPosition.prototype.getRoomLinearDistance = function (other, contineous = false) {
   // use notation that allows for blind distance
   return Game.map.getRoomLinearDistance(this.roomName, other.roomName, contineous)
-}
-
-RoomPosition.prototype.isHighway = function () {
-  return bootstrap.isHighwayRoomName(this.roomName)
-}
-
-RoomPosition.prototype.isHighwayCrossing = function () {
-  return bootstrap.isHighwayCrossingRoomName(this.roomName)
 }
 
 Structure.prototype.isActiveSimple = true
