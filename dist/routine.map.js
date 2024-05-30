@@ -22,7 +22,7 @@ PathFinder.CostMatrix.prototype.blockArray = function (blocks, visual = undefine
 }
 
 const map = {
-  costCallback_costMatrixForRoomActivity(roomName, costMatrix) {
+  costCallback_costMatrixForRoomActivity (roomName, costMatrix) {
     if (MapRoutineDisabled) return undefined
 
     const room = Game.rooms[roomName]

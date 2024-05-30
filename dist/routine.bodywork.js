@@ -20,7 +20,7 @@ CONTROLLER_MAX_UPGRADE_PER_TICK 15
 **/
 
 const bodywork = {
-  makeWCM(work, carry, move = work + carry) {
+  makeWCM (work, carry, move = work + carry) {
     const partsWork = new Array(work)
     partsWork.fill(WORK)
 
@@ -33,7 +33,7 @@ const bodywork = {
     return _.shuffle(partsWork.concat(partsCarry).concat(partsMove))
   },
 
-  worker(room) {
+  worker (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
@@ -69,7 +69,7 @@ const bodywork = {
     return this.makeWCM(12, 12)
   },
 
-  harvester_my(room) {
+  harvester_my (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
@@ -111,7 +111,7 @@ const bodywork = {
     return this.makeWCM(18, 3, 9)
   },
 
-  harvester_other(room) {
+  harvester_other (room) {
     // target is always 250 ticks, leaving 50 ticks for repairs
     // w eq c so there are no "odd" numbers on capacity
 
@@ -131,7 +131,7 @@ const bodywork = {
     return this.makeWCM(3, 3, 3)
   },
 
-  miner(room) {
+  miner (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 
@@ -153,7 +153,7 @@ const bodywork = {
     return this.makeWCM(10, 20, 10)
   },
 
-  upgrader(room) {
+  upgrader (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
 

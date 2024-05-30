@@ -81,7 +81,7 @@ const controllersConsuming = [
 
 const roomActor =
 {
-  roomControllersFind(room) {
+  roomControllersFind (room) {
     if (room._actType_ === bootstrap.RoomActTypeMy) {
       return [controllersMyAuto, controllersConsuming]
     }
@@ -97,7 +97,7 @@ const roomActor =
     return [[], []]
   },
 
-  roomActType(room) {
+  roomActType (room) {
     if (room._my_) {
       return bootstrap.RoomActTypeMy
     }
@@ -113,7 +113,7 @@ const roomActor =
     return 0
   },
 
-  roomControllersPrepare(controllers, room) {
+  roomControllersPrepare (controllers, room) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
       if (controller && _.isFunction(controller.roomPrepare)) {
@@ -122,20 +122,20 @@ const roomActor =
     }
   },
 
-  _roomControllerObserveOwn(controller, creep) {
+  _roomControllerObserveOwn (controller, creep) {
     if (_.isFunction(controller.observeMyCreep)) {
       controller.observeMyCreep(creep)
     }
   },
 
-  roomControllersObserveOwn(creep) {
+  roomControllersObserveOwn (creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
       this._roomControllerObserveOwn(controller, creep)
     }
   },
 
-  roomControllersAct(target, creep) {
+  roomControllersAct (target, creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
       const rc = controller.act(target, creep)
@@ -150,7 +150,7 @@ const roomActor =
     return false
   },
 
-  roomControllersControl(controllers, room, creeps) {
+  roomControllersControl (controllers, room, creeps) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
@@ -178,7 +178,7 @@ const roomActor =
     return creeps
   },
 
-  consumingControllersControl(controllers, room, creep) {
+  consumingControllersControl (controllers, room, creep) {
     let didConsume = false
     let error = false
     let warning = false
@@ -216,7 +216,7 @@ const roomActor =
     return OK
   },
 
-  act(room) {
+  act (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
