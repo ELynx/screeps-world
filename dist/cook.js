@@ -1955,9 +1955,9 @@ cook._performTerminalExchange = function () {
     return ERR_INVALID_TARGET
   }
 
-  const amount = Math.min(sourceSupply, targetDemand)
+  const exchange = Math.min(sourceSupply, targetDemand)
 
-  const rc = sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
+  const [rc, amount] = sourceTerminal.autoSend(sourceType, exchange, targetTerminal.room.name, 'internal exchange')
   if (rc >= OK) {
     console.log('Terminal in [' + sourceTerminal.room.name + '] helped terminal in [' + targetTerminal.room.name + '] with [' + amount + '] of [' + sourceType + ']')
     sourceTerminal._operated_ = true
@@ -2052,11 +2052,6 @@ cook.___excessToSell = function (terminal, resourceType) {
 
   if (free <= 0) return 0
 
-  if (resourceType === RESOURCE_ENERGY) {
-    free -= TerminalEnergyDemand
-    return Math.max(free, 0)
-  }
-
   if (this.___roomNeedResource(terminal.room, resourceType) > 0) return 0
 
   if (terminal.room.mineralType() === resourceType) {
@@ -2099,9 +2094,9 @@ cook.__sellTerminalExcess = function (terminal) {
   if (excess > 0) {
     const order = this.___findBuyOrder(terminal, resourceType)
     if (order) {
-      const rc = terminal.autoSell(order, excess)
+      const [rc, armount] = terminal.autoSell(order, excess)
       if (rc >= OK) {
-        console.log('Terminal in [' + terminal.room.name + '] sold up to [' + excess + '] of [' + resourceType + ']')
+        console.log('Terminal in [' + terminal.room.name + '] sold [' + armount + '] of [' + resourceType + ']')
         terminal._operated_ = true
         return rc
       }
