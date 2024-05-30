@@ -108,7 +108,16 @@ if (!Creep.prototype.__original_move) {
   }
 }
 
-// TODO avoid portals
+const MoreTop = [TOP, TOP, BOTTOM]
+const MoreRight = [RIGHT, RIGHT, LEFT]
+const MoreBottom = [TOP, BOTTOM, BOTTOM]
+const MoreLeft = [RIGHT, LEFT, LEFT]
+
+const NoPortalsCostCallback = function (roomName, _costMatrix) {
+  console.log(Game.time + ' ' + roomName +' NoPortalsCostCallback ')
+  // TODO avoid portals
+}
+
 // only march in cardinal directions is intended
 Creep.prototype.march = function (direction) {
   if (this.fatigue > 0) {
@@ -116,6 +125,8 @@ Creep.prototype.march = function (direction) {
   }
 
   let options = {
+    costCallback: NoPortalsCostCallback,
+    ignoreCreeps: !this.room._my_,
     reusePath: _.random(3, 5),
     serializeMemory: true
   }
@@ -189,17 +200,17 @@ Creep.prototype.march = function (direction) {
   if (maskAhead === TERRAIN_MASK_WALL) {
     // coordinate checks inside steer creep towards center
     if (direction === TOP) {
-      if (x < 25) marchDirection = RIGHT
-      else marchDirection = LEFT
+      if (x < 25) marchDirection = _.sample(MoreRight)
+      else marchDirection = _.sample(MoreLeft)
     } else if (direction === RIGHT) {
-      if (y < 25) marchDirection = BOTTOM
-      else marchDirection = TOP
+      if (y < 25) marchDirection = _.sample(MoreBottom)
+      else marchDirection = _.sample(MoreTop)
     } else if (direction === BOTTOM) {
-      if (x < 25) marchDirection = RIGHT
-      else marchDirection = LEFT
+      if (x < 25) marchDirection = _.sample(MoreRight)
+      else marchDirection = _.sample(MoreLeft)
     } else if (direction === LEFT) {
-      if (y < 25) marchDirection = BOTTOM
-      else marchDirection = TOP
+      if (y < 25) marchDirection = _.sample(MoreBottom)
+      else marchDirection = _.sample(MoreTop)
     }
   }
 
