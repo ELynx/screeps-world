@@ -726,8 +726,12 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
 }
 
 cook._resourceRestock = function (room, creeps) {
-  if (!room._my_ || creeps.length === 0) {
+  if (creeps.length === 0) {
     return [[], []]
+  }
+
+  if (!room._my_) {
+    return [creeps, []]
   }
 
   const unused = []
