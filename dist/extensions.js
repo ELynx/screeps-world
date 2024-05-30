@@ -134,13 +134,13 @@ Creep.prototype.march = function (direction) {
       bootstrap.imitateMoveErase(this)
       // continue below
     } else {
-      options = {
+      const followExistingPathOptions = {
         noPathFinding: true,
         reusePath: _.random(3, 5),
         serializeMemory: true
       }
 
-      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, options)
+      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, followExistingPathOptions)
 
       if (rc < OK) {
         console.log('Unexpected moveTo response for creep ' + this + ' [' + rc + ']')
@@ -154,7 +154,7 @@ Creep.prototype.march = function (direction) {
 
   // portals are avoided, no need to provision
   // https://github.com/screeps/engine/blob/97c9d12385fed686655c13b09f5f2457dd83a2bf/src/game/rooms.js#L164
-  let options = {
+  let findNewPathOptions = {
     ignoreCreeps: this.room.isHighway(),
     reusePath: _.random(3, 5),
     serializeMemory: true
@@ -170,10 +170,10 @@ Creep.prototype.march = function (direction) {
   let needPathfinding = false
 
   if (maskAhead === TERRAIN_MASK_SWAMP) {
-    options = bootstrap.moveOptionsWrapper(this, options)
+    findNewPathOptions = bootstrap.moveOptionsWrapper(this, findNewPathOptions)
     optionsWrapped = true
 
-    needPathfinding = !options.ignoreRoads
+    needPathfinding = !findNewPathOptions.ignoreRoads
   }
 
   if (!needPathfinding && this.moved() === false) {
@@ -182,7 +182,7 @@ Creep.prototype.march = function (direction) {
 
   if (needPathfinding) {
     if (!optionsWrapped) {
-      options = bootstrap.moveOptionsWrapper(this, options)
+      findNewPathOptions = bootstrap.moveOptionsWrapper(this, findNewPathOptions)
       optionsWrapped = true
     }
 
@@ -208,7 +208,7 @@ Creep.prototype.march = function (direction) {
 
     if (goals.length > 0) {
       const destination = _.sample(goals)
-      return this.moveTo(destination, options)
+      return this.moveTo(destination, findNewPathOptions)
     }
 
     return ERR_NOT_FOUND
