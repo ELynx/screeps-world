@@ -115,18 +115,23 @@ const MoreLeft = [RIGHT, LEFT, LEFT]
 
 const NoPortalsCostCallback = function (roomName, _costMatrix) {
   console.log(Game.time + ' ' + roomName + ' NoPortalsCostCallback ')
-  // TODO avoid portals
+  // TODO
 }
 
-// only march in cardinal directions is intended
 Creep.prototype.march = function (direction) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
   }
 
+  if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
+    console.log('Unexpecte march for creep ' + this + ' in direction [' + direction + ']')
+    return ERR_INVALID_ARGS
+  }
+
+  let optionsWrapped = false
   let options = {
-    costCallback: NoPortalsCostCallback,
-    ignoreCreeps: !this.room._my_,
+    costCallback: this.room.isHighwayCrossing() ? NoPortalsCostCallback : undefined,
+    ignoreCreeps: this.room.isHighway(),
     reusePath: _.random(3, 5),
     serializeMemory: true
   }
@@ -136,7 +141,11 @@ Creep.prototype.march = function (direction) {
       console.log(Game.time + ' ' + this.pos + ' Erasing path because room change')
       bootstrap.imitateMoveErase(this)
     } else {
-      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, bootstrap.moveOptionsWrapper(this, options))
+      optionsWrapped = true
+      options = bootstrap.moveOptionsWrapper(this, options)
+
+      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, options)
+
       if (rc < OK) {
         console.log(Game.time + ' ' + this.pos + ' Erasing path because ' + rc)
         bootstrap.imitateMoveErase(this)
@@ -155,12 +164,15 @@ Creep.prototype.march = function (direction) {
 
   let beSmart = false
   if (maskAhead === TERRAIN_MASK_SWAMP) {
+    optionsWrapped = true
     options = bootstrap.moveOptionsWrapper(this, options)
+
     beSmart = !options.ignoreRoads
   }
 
   if (beSmart || this.moved() === false) {
-    if (!beSmart) {
+    if (!optionsWrapped) {
+      optionsWrapped = true
       options = bootstrap.moveOptionsWrapper(this, options)
     }
 
@@ -654,6 +666,14 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
 }
 
+Room.prototype.isHighway = function () {
+  return bootstrap.isHighwayRoomName(this.name)
+}
+
+Room.prototype.isHighwayCrossing = function () {
+  return bootstrap.isHighwayCrossingRoomName(this.name)
+}
+
 RoomPosition.prototype.offBorderDistance = function () {
   return Math.max(Math.min(this.x, this.y, 49 - this.x, 49 - this.y) - 1, 0)
 }
@@ -725,6 +745,14 @@ RoomPosition.prototype.manhattanDistance = function (other) {
 RoomPosition.prototype.getRoomLinearDistance = function (other, contineous = false) {
   // use notation that allows for blind distance
   return Game.map.getRoomLinearDistance(this.roomName, other.roomName, contineous)
+}
+
+RoomPosition.prototype.isHighway = function () {
+  return bootstrap.isHighwayRoomName(this.roomName)
+}
+
+RoomPosition.prototype.isHighwayCrossing = function () {
+  return bootstrap.isHighwayCrossingRoomName(this.roomName)
 }
 
 Structure.prototype.isActiveSimple = true
