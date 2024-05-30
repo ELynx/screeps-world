@@ -151,8 +151,40 @@ spawnProcess.upgraders = function (room, live) {
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const limit = (room.level() < 3 ? 2 : 1) * (room.memory.slvl || 0)
-  const want = (room.memory.wwww === undefined) ? (room.level() < 7 ? 2 : 1) : room.memory.wwww
+  const level = room.level()
+
+  let limit
+  if (room.memory.slvl) {
+    const fromSources = room.memory.slvl || 0
+
+    if (level < 3) {
+      limit = fromSources * 3
+    }
+    else if (level < 7) {
+      limit = fromSources * 2
+    }
+    else {
+      limit = fromSources
+    }
+  } else {
+    limit = 0
+  }
+
+  let want
+  if (room.memory.wwww === undefined) {
+    if (level < 3) {
+      want = 4
+    }
+    else if (level < 7) {
+      want = 2
+    }
+    else {
+      want = 1
+    }
+  } else {
+    want = room.memory.wwww || 0
+  }
+
   const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
