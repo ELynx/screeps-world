@@ -7,7 +7,7 @@ if (!(new PathFinder.CostMatrix())._bits) {
   MapRoutineDisabled = true
 }
 
-PathFinder.CostMatrix.prototype.blockArray = function (blocks) {
+PathFinder.CostMatrix.prototype.blockArray = function (blocks, visual = undefined) {
   if (!this._bits) {
     return
   }
@@ -15,7 +15,9 @@ PathFinder.CostMatrix.prototype.blockArray = function (blocks) {
   for (const block of blocks) {
     // https://github.com/screeps/engine/blob/78d980e50821ea9956d940408b733c44fc9d94ed/src/game/path-finder.js#L25
     this._bits[block.x * 50 + block.y] = 255
-    room.visual.circle(block.x, block.y, { fill: 'transparent', radius: 0.55, stroke: 'white' })
+    if (visual) {
+      visual.circle(block.x, block.y, { fill: 'transparent', radius: 0.55, stroke: 'white' })
+    }
   }
 }
 
@@ -29,7 +31,7 @@ const map = {
     if (room.blocked.length > 0) {
       const costMatrix1 = room.__map__cache1 || costMatrix
 
-      costMatrix1.blockArray(room.blocked)
+      costMatrix1.blockArray(room.blocked, room.visual)
       room.blocked = []
 
       room.__map__cache1 = costMatrix1
