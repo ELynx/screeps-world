@@ -1067,7 +1067,7 @@ cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
 }
 
 cook.__harvestersPass2 = function (room, harvesters) {
-  if (room._actType_ === bootstrap.RoomActTypeMy) {
+  if (room._actType_ === bootstrap.RoomActTypeMy && room.links && room.links.size > 0) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
       if (!link.__cook__cache__isSource) continue
