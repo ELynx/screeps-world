@@ -293,12 +293,22 @@ const bootstrap = {
   },
 
   isHighwayRoomName (roomName) {
-    // TODO
+    for (const c of roomName) {
+      if (c === '0') return true
+    }
+
     return false
   },
 
   isHighwayCrossingRoomName (roomName) {
-    // TODO
+    let one = false
+    for (const c of roomName) {
+      if (c === '0') {
+        if (one) return true
+        one = true
+      }
+    }
+
     return false
   }
 }

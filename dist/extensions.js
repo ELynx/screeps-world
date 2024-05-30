@@ -665,10 +665,12 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
 }
 
 Room.prototype.isHighway = function () {
+  if (this.controller) return false
   return bootstrap.isHighwayRoomName(this.name)
 }
 
 Room.prototype.isHighwayCrossing = function () {
+  if (this.controller) return false
   return bootstrap.isHighwayCrossingRoomName(this.name)
 }
 
