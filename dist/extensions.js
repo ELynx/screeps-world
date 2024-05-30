@@ -114,7 +114,7 @@ const MoreBottom = [TOP, BOTTOM, BOTTOM]
 const MoreLeft = [RIGHT, LEFT, LEFT]
 
 const NoPortalsCostCallback = function (roomName, _costMatrix) {
-  console.log(Game.time + ' ' + roomName +' NoPortalsCostCallback ')
+  console.log(Game.time + ' ' + roomName + ' NoPortalsCostCallback ')
   // TODO avoid portals
 }
 
@@ -174,7 +174,7 @@ Creep.prototype.march = function (direction) {
     if (direction === BOTTOM) yMin = 49
     if (direction === LEFT) xMax = 0
 
-    let goals = []
+    const goals = []
     for (let x1 = xMin; x1 <= xMax; ++x1) {
       for (let y1 = yMin; y1 <= yMax; ++y1) {
         const maskOnBorder = terrain.get(x1, y1)
