@@ -24,6 +24,7 @@ const mapUtils = require('./routine.map')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
+  cook.id,
   grabController.id,
   mineralHarvestController.id,
   sourceHarvestController.generic.id,
