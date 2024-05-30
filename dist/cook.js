@@ -112,7 +112,7 @@ cook.__hasSupply = function (structure, resourceType) {
   if (structure === undefined) return false
 
   const lambda = () => this.___roomSupply(structure, resourceType)
-  const supply = intentSolver.getWithIntentCache(structure, '__cook__hasSupply', lambda)
+  const supply = intentSolver.getWithIntentCache(structure, '__cook__hasSupply_' + resourceType, lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return supply + planned > 0
@@ -175,6 +175,11 @@ cook.___hasFlush = function (structure) {
 }
 
 cook.___worldSupply = function (structure, resourceType) {
+  // if positive -> do not throw around
+  // if negative -> resource is marked as "not to give away"
+  const worldDemand = this.___worldDemand(structure, resourceType)
+  if (worldDemand !== 0) return 0
+
   if (resourceType === RESOURCE_ENERGY) {
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
@@ -182,9 +187,6 @@ cook.___worldSupply = function (structure, resourceType) {
     return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
-  // TODO give out ghodium etc.
-  const mineralType = structure.room.mineralType()
-  if (resourceType !== mineralType) return 0
   return this.___roomSupply(structure, resourceType)
 }
 
@@ -275,7 +277,7 @@ cook._hasDemand = function (structure, resourceType) {
   if (structure === undefined) return false
 
   const lambda = () => this.___roomDemand(structure, resourceType)
-  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return demand > planned
@@ -404,8 +406,8 @@ cook._hasSpace = function (structure, resourceType, forMining = false) {
   const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
   const lambda2 = () => this.___roomDemand(structure, resourceType)
 
-  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda1)
-  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda2)
+  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace_' + resourceType, lambda1)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda2)
   const eitherOr = Math.max(space, demand)
   const planned = this.___plannedDelta(structure, resourceType)
 
@@ -445,7 +447,11 @@ cook.__worldDemandTypes = function (structure) {
   if (!structure.isActiveSimple) return []
 
   if (structure.__cook__worldDemandMap) {
-    return Array.from(structure.__cook__worldDemandMap.keys())
+    const types = []
+    for (const [type, value] of structure.__cook__worldDemandMap) {
+      if (value > 0) types.push(type)
+    }
+    return types
   }
 
   return []
@@ -1478,7 +1484,7 @@ cook._updateRoomRecepie = function (room) {
   }
 }
 
-cook._askWorld = function (room) {
+cook._setWorldDemand = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
 
@@ -1492,30 +1498,36 @@ cook._askWorld = function (room) {
       if (delta >= SOURCE_ENERGY_CAPACITY / 3) {
         this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
       }
+    } else {
+      // mark as not ready to give energy
+      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, -1)
     }
   }
 
   if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-    if (room.labs.size === 10) {
-      const mineralType = room.mineralType()
-
-      const lambda = resourceType => {
-        if (mineralType !== resourceType) {
-          if (!this.__hasSupply(room.terminal, resourceType)) {
-            this.___addWorldDemand(room.terminal, resourceType, 1000)
-          }
+    const mineralType = room.mineralType()
+    const lambda = resourceType => {
+      // demand and hold only foreign resources
+      if (resourceType !== mineralType) {
+        if (this.__hasSupply(room.terminal, resourceType)) {
+          // mark as not ready to give this resource
+          this.___addWorldDemand(room.terminal, resourceType, -1)
+        } else {
+          this.___addWorldDemand(room.terminal, resourceType, 1000)
         }
       }
+    }
 
+    if (room.labs.size === 10) {
       lambda(RESOURCE_ZYNTHIUM)
       lambda(RESOURCE_KEANIUM)
       lambda(RESOURCE_UTRIUM)
       lambda(RESOURCE_LEMERGIUM)
       lambda(RESOURCE_UTRIUM_LEMERGITE)
       lambda(RESOURCE_ZYNTHIUM_KEANITE)
-    } else {
-      this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, 100) // drip feed it
     }
+
+    lambda(RESOURCE_GHODIUM)
   }
 }
 
@@ -1857,7 +1869,7 @@ cook._operateLabs = function (room) {
 // called from room actor after controllers
 cook.roomPost = function (room) {
   this._updateRoomRecepie(room)
-  this._askWorld(room)
+  this._setWorldDemand(room)
 
   this._unloadActiveHarvesters(room)
   this._operateLinks(room)
