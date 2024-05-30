@@ -519,7 +519,7 @@ const intent = {
       cancel () {
         // keep interface compatible but do not do anything
       },
-      setDirections (directions) {
+      setDirections (_directions) {
         // keep interface compatible but do not do anything
       }
     }
@@ -537,11 +537,11 @@ const intent = {
     return rc
   },
 
-  spawn_intent_renewCreep (spawn, creep) {
+  spawn_intent_renewCreep (_spawn, _creep) {
     return OK
   },
 
-  spawn_intent_recycleCreep (spawn, creep) {
+  spawn_intent_recycleCreep (_spawn, _creep) {
     return OK
   },
 
