@@ -243,7 +243,7 @@ spawnProcess.myReserved = function (room, live) {
   this.plunders(room, live)
 }
 
-spawnProcess.sourceKeeper = function (room, live) {
+spawnProcess.sourceKeeper = function (_room, _live) {
   // nothing for sourceKeeper now
 }
 
@@ -261,7 +261,7 @@ spawnProcess.neutral = function (room, live) {
   this.workers_remote(room, live, 1)
 }
 
-spawnProcess.hostile = function (room, live) {
+spawnProcess.hostile = function (_room, _live) {
   // nothing for hostile now
 }
 
