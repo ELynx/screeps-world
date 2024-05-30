@@ -108,87 +108,97 @@ if (!Creep.prototype.__original_move) {
   }
 }
 
-const MoreTop = [TOP, TOP, BOTTOM]
-const MoreRight = [RIGHT, RIGHT, LEFT]
-const MoreBottom = [TOP, BOTTOM, BOTTOM]
-const MoreLeft = [RIGHT, LEFT, LEFT]
-
-const NoPortalsCostCallback = function (roomName, _costMatrix) {
-  console.log(Game.time + ' ' + roomName + ' NoPortalsCostCallback ')
-  // TODO
-}
+const PreferTop = [TOP, TOP, BOTTOM]
+const PreferRight = [RIGHT, RIGHT, LEFT]
+const PreferBottom = [TOP, BOTTOM, BOTTOM]
+const PreferLeft = [RIGHT, LEFT, LEFT]
 
 Creep.prototype.march = function (direction) {
+  if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
+    console.log('Unexpected march for creep ' + this + ' in direction [' + direction + ']')
+    return ERR_INVALID_ARGS
+  }
+
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
   }
 
-  if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
-    console.log('Unexpecte march for creep ' + this + ' in direction [' + direction + ']')
-    return ERR_INVALID_ARGS
+  if (this.moved()) {
+    this._refreshMove()
   }
 
-  let optionsWrapped = false
-  let options = {
-    costCallback: this.room.isHighwayCrossing() ? NoPortalsCostCallback : undefined,
-    ignoreCreeps: this.room.isHighway(),
-    reusePath: _.random(3, 5),
-    serializeMemory: true
-  }
+  this.rememberPosition()
 
   if (this.memory._move) {
     if (this.memory._move.room !== this.pos.roomName) {
-      console.log(Game.time + ' ' + this.pos + ' Erasing path because room change')
       bootstrap.imitateMoveErase(this)
+      // continue below
     } else {
-      optionsWrapped = true
-      options = bootstrap.moveOptionsWrapper(this, options)
+      options = {
+        noPathFinding: true,
+        reusePath: _.random(3, 5),
+        serializeMemory: true
+      }
 
       const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, options)
 
       if (rc < OK) {
-        console.log(Game.time + ' ' + this.pos + ' Erasing path because ' + rc)
+        console.log('Unexpected moveTo response for creep ' + this + ' [' + rc + ']')
         bootstrap.imitateMoveErase(this)
+        // continue below as recovery strategy
       } else {
-        console.log(Game.time + ' ' + this.pos + ' I am on a path ' + rc)
         return rc
       }
     }
   }
 
+  // portals are avoided, no need to provision
+  // https://github.com/screeps/engine/blob/97c9d12385fed686655c13b09f5f2457dd83a2bf/src/game/rooms.js#L164
+  let options = {
+    ignoreCreeps: this.room.isHighway(),
+    reusePath: _.random(3, 5),
+    serializeMemory: true
+  }
+  let optionsWrapped = false
+
   const terrain = this.room.getTerrain()
   const delta = bootstrap.directionToDelta[direction]
-  const x = this.pos.x + delta[0]
-  const y = this.pos.y + delta[1]
-  const maskAhead = terrain.get(x, y)
+  const xAhead = this.pos.x + delta[0]
+  const yAhead = this.pos.y + delta[1]
+  const maskAhead = terrain.get(xAhead, yAhead)
 
-  let beSmart = false
+  let needPathfinding = false
+
   if (maskAhead === TERRAIN_MASK_SWAMP) {
-    optionsWrapped = true
     options = bootstrap.moveOptionsWrapper(this, options)
+    optionsWrapped = true
 
-    beSmart = !options.ignoreRoads
+    needPathfinding = !options.ignoreRoads
   }
 
-  if (beSmart || this.moved() === false) {
+  if (!needPathfinding && this.moved() === false) {
+    needPathfinding = true
+  }
+
+  if (needPathfinding) {
     if (!optionsWrapped) {
-      optionsWrapped = true
       options = bootstrap.moveOptionsWrapper(this, options)
+      optionsWrapped = true
     }
 
-    let xMin = 0
-    let xMax = 49
-    let yMin = 0
-    let yMax = 49
+    let xStart = 0
+    let xEnd = 49
+    let yStart = 0
+    let yEnd = 49
 
-    if (direction === TOP) yMax = 0
-    if (direction === RIGHT) xMin = 49
-    if (direction === BOTTOM) yMin = 49
-    if (direction === LEFT) xMax = 0
+    if (direction === TOP) yEnd = 0
+    if (direction === RIGHT) xStart = 49
+    if (direction === BOTTOM) yStart = 49
+    if (direction === LEFT) xEnd = 0
 
     const goals = []
-    for (let x1 = xMin; x1 <= xMax; ++x1) {
-      for (let y1 = yMin; y1 <= yMax; ++y1) {
+    for (let x1 = xStart; x1 <= xEnd; ++x1) {
+      for (let y1 = yStart; y1 <= yEnd; ++y1) {
         const maskOnBorder = terrain.get(x1, y1)
         if (maskOnBorder !== TERRAIN_MASK_WALL) {
           goals.push(new RoomPosition(x1, y1, this.pos.roomName))
@@ -198,12 +208,9 @@ Creep.prototype.march = function (direction) {
 
     if (goals.length > 0) {
       const destination = _.sample(goals)
-      const rc = this.moveTo(destination, options)
-      console.log(Game.time + ' ' + this.pos + ' Stepping on the path with ' + rc)
-      return rc
+      return this.moveTo(destination, options)
     }
 
-    console.log(Game.time + ' ' + this.pos + ' I am stuck')
     return ERR_NOT_FOUND
   }
 
@@ -211,24 +218,15 @@ Creep.prototype.march = function (direction) {
 
   if (maskAhead === TERRAIN_MASK_WALL) {
     // coordinate checks inside steer creep towards center
-    if (direction === TOP) {
-      if (x < 25) marchDirection = _.sample(MoreRight)
-      else marchDirection = _.sample(MoreLeft)
-    } else if (direction === RIGHT) {
-      if (y < 25) marchDirection = _.sample(MoreBottom)
-      else marchDirection = _.sample(MoreTop)
-    } else if (direction === BOTTOM) {
-      if (x < 25) marchDirection = _.sample(MoreRight)
-      else marchDirection = _.sample(MoreLeft)
-    } else if (direction === LEFT) {
-      if (y < 25) marchDirection = _.sample(MoreBottom)
-      else marchDirection = _.sample(MoreTop)
+    if (direction === TOP || direction === BOTTOM) {
+      if (xAhead < 25) marchDirection = _.sample(PreferRight)
+      else marchDirection = _.sample(PreferLeft)
+    } else if (direction === RIGHT || direction === LEFT) {
+      if (yAhead < 25) marchDirection = _.sample(PreferBottom)
+      else marchDirection = _.sample(PreferTop)
     }
   }
 
-  this.rememberPosition()
-
-  console.log(Game.time + ' ' + this.pos + ' I move to ' + marchDirection)
   return this.move(marchDirection)
 }
 
