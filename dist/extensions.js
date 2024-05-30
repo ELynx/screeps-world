@@ -6,14 +6,14 @@ Object.defineProperty(
   Creep.prototype,
   'viable',
   {
-    get() {
+    get () {
       if (this.spawning) return true
 
       const limit = this.__viable_value || (this.body.length * CREEP_SPAWN_TIME)
 
       return this.ticksToLive >= limit
     },
-    set(value) {
+    set (value) {
       this.__viable_value = value
     },
     configurable: true,
@@ -916,7 +916,7 @@ StructureTerminal.prototype.autoSend = function (resourceType, amount, destinati
 }
 
 const extensions = {
-  shortcuts() {
+  shortcuts () {
     const cutShort = function (name) {
       const index = name.indexOf('_')
 
