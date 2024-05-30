@@ -30,7 +30,7 @@ const taskedAuto = [
 
 const taskedActor =
 {
-  taskControllersControl: function () {
+  taskControllersControl() {
     for (const id of taskedAuto) {
       const tasked = bootstrap.taskControllers[id]
       if (tasked === undefined) continue
@@ -39,7 +39,7 @@ const taskedActor =
     }
   },
 
-  act: function () {
+  act() {
     this.taskControllersControl()
   }
 }
