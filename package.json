@@ -95,6 +95,7 @@
       "OwnedStructure",
       "PathFinder",
       "PIXEL_CPU_COST",
+      "PWR_DISRUPT_TERMINAL",
       "RAMPART_DECAY_AMOUNT",
       "RANGED_ATTACK",
       "REACTIONS",
