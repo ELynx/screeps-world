@@ -720,7 +720,7 @@ cook.__resourceRestockTargetForCreep = function (room, creep) {
 }
 
 cook._resourceRestock = function (room, creeps) {
-  if (creeps.length === 0) {
+  if (!room._my_ || creeps.length === 0) {
     return [[], []]
   }
 
@@ -840,12 +840,17 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
   return false
 }
 
+cook.___filterOutUnderRamparts = function (room, structures) {
+  // TODO filter under ramparts
+  return structures
+}
+
 cook.__energyRestockSources = function (room) {
   if (room.__cook__energyRestockSources) {
     return room.__cook__energyRestockSources
   }
 
-  const sources = []
+  let sources = []
 
   for (const container of room.__cook__containers) {
     if (this.__hasSupply(container, RESOURCE_ENERGY)) {
@@ -865,6 +870,10 @@ cook.__energyRestockSources = function (room) {
 
   if (this.__hasSupply(room.storage, RESOURCE_ENERGY)) sources.push(room.storage)
   if (this.__hasSupply(room.terminal, RESOURCE_ENERGY)) sources.push(room.terminal)
+
+  if (!room._my_ && room.controller && room.controller.owner) {
+    sources = this.___filterOutUnderRamparts(room, sources)
+  }
 
   for (const source of sources) {
     source.__cook__resourceToTake = RESOURCE_ENERGY
@@ -927,7 +936,7 @@ cook.___roomNeedResource = function (room, resourceType, referenceLab = undefine
 }
 
 cook.__resourceRestockSources = function (room, count) {
-  if (count === 0) return []
+  if (!room._my_ || count === 0) return []
 
   const sources = []
 
@@ -1639,7 +1648,7 @@ cook._unloadActiveHarvesters = function (room) {
     }
     if (transferredToLink) continue // to next harvester
 
-    if (room._actType_ === bootstrap.RoomActTypeMy) {
+    if (room._actType_ === bootstrap.RoomActTypeMy && room.links && room.links.size > 0) {
       // unload to containers only when there is more energy in source
       // this is to reduce withdrawing from containers to links on way back
       const rc = harvester._source_harvest_specialist_rc_
