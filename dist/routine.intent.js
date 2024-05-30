@@ -11,7 +11,7 @@ const MadeUpLargeNumber = 1000000
 
 // TODO boost
 const intent = {
-  _getWithIntentCache(something, key, tickFunction) {
+  _getWithIntentCache (something, key, tickFunction) {
     if (something.__intents_cache) {
       const cached = something.__intents_cache.get(key)
       if (cached) return cached
@@ -27,41 +27,41 @@ const intent = {
     return value
   },
 
-  _clearIntentCache(something) {
+  _clearIntentCache (something) {
     if (something.__intents_cache) {
       something.__intents_cache.clear()
     }
   },
 
-  getIntent(something, key) {
+  getIntent (something, key) {
     if (something.__intents) {
       return something.__intents.get(key)
     }
     return undefined
   },
 
-  getIntended(something, key, tickValue) {
+  getIntended (something, key, tickValue) {
     if (something.__intents) {
       return something.__intents.get(key) || tickValue
     }
     return tickValue
   },
 
-  setIntended(something, key, value) {
+  setIntended (something, key, value) {
     if (something.__intents === undefined) {
       something.__intents = new Map()
     }
     something.__intents.set(key, value)
   },
 
-  getWithIntended(something, key, tickValue) {
+  getWithIntended (something, key, tickValue) {
     if (something.__intents) {
       return tickValue + (something.__intents.get(key) || 0)
     }
     return tickValue
   },
 
-  addIntended(something, key, intentValue) {
+  addIntended (something, key, intentValue) {
     if (something.__intents === undefined) {
       something.__intents = new Map()
     }
@@ -70,16 +70,16 @@ const intent = {
     something.__intents.set(key, after)
   },
 
-  subIntended(something, key, intentValue) {
+  subIntended (something, key, intentValue) {
     this.addIntended(something, key, -1 * intentValue)
   },
 
-  roomEnergySpent(something, key, value) {
+  roomEnergySpent (something, key, value) {
     this.addIntended(something.room, '__spent_' + key, value)
     this.addIntended(something.room, '__spent_total', value)
   },
 
-  roomEnergyAcquired(something, key, value) {
+  roomEnergyAcquired (something, key, value) {
     this.addIntended(something.room, '__acquired_' + key, value)
     this.addIntended(something.room, '__acquired_total', value)
   },
@@ -87,13 +87,13 @@ const intent = {
   /**
    * Internal use, type is always defined
    **/
-  _getUsedCapacity(something, type) {
+  _getUsedCapacity (something, type) {
     const key = '__stored_' + type
     const value = something.store.getUsedCapacity(type)
     return this.getWithIntended(something, key, value)
   },
 
-  __getFreeCapacity(something, type, nonUniversal) {
+  __getFreeCapacity (something, type, nonUniversal) {
     const key = nonUniversal ? ('__free_' + type) : '__free_total'
     const value = nonUniversal ? something.store.getFreeCapacity(type) : something.store.getFreeCapacity()
     return this.getWithIntended(something, key, value)
@@ -102,7 +102,7 @@ const intent = {
   /**
    * Internal use, type is always defined
    **/
-  _getFreeCapacity(something, type) {
+  _getFreeCapacity (something, type) {
     const nonUniversal = something.store.getCapacity() === null
     return this.__getFreeCapacity(something, type, nonUniversal)
   },
@@ -112,7 +112,7 @@ const intent = {
    * {type} is always defined here, because this is transfer for concrete result
    * {amount} positive to increment value on something, negative to decrement
    **/
-  intentCapacityChange(something, type, amount) {
+  intentCapacityChange (something, type, amount) {
     this.addIntended(something, '__stored_' + type, amount)
     this.addIntended(something, '__stored_total', amount)
     this.subIntended(something, '__free_' + type, amount)
@@ -121,7 +121,7 @@ const intent = {
     this._clearIntentCache(something)
   },
 
-  exchangeImpl(source, target, type, noLessThan, amount) {
+  exchangeImpl (source, target, type, noLessThan, amount) {
     if (!_.contains(RESOURCES_ALL, type)) {
       console.log('exchangeImpl received invalid argument [type] of value [' + type + ']')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -162,7 +162,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_build(creep, target) {
+  creep_intent_build (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_build received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -198,7 +198,7 @@ const intent = {
   },
 
   // TODO? resource on the floor
-  creep_intent_drop(creep, type, amount = undefined) {
+  creep_intent_drop (creep, type, amount = undefined) {
     if (!_.contains(RESOURCES_ALL, type)) {
       console.log('creep_intent_drop received invalid argument [type] of value [' + type + ']')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -225,7 +225,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_harvest(creep, target) {
+  creep_intent_harvest (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_harvest received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -292,7 +292,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_pickup(creep, target) {
+  creep_intent_pickup (creep, target) {
     if (target === undefined) {
       console.log('creep_intent_pickup received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -324,7 +324,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_repair(creep, target, targetHits) {
+  creep_intent_repair (creep, target, targetHits) {
     if (target === undefined) {
       console.log('creep_intent_repair received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -364,7 +364,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_transfer(creep, target, type, amount) {
+  creep_intent_transfer (creep, target, type, amount) {
     if (target === undefined) {
       console.log('creep_intent_transfer received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -373,7 +373,7 @@ const intent = {
     return this.exchangeImpl(creep, target, type, true, amount)
   },
 
-  creep_intent_upgradeController(creep, target, targetTicksToDowngrade) {
+  creep_intent_upgradeController (creep, target, targetTicksToDowngrade) {
     if (target === undefined) {
       console.log('creep_intent_upgradeController received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -431,7 +431,7 @@ const intent = {
     return rc
   },
 
-  creep_intent_withdraw(creep, target, type, amount) {
+  creep_intent_withdraw (creep, target, type, amount) {
     if (target === undefined) {
       console.log('creep_intent_withdraw received undefined argument [target]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -448,7 +448,7 @@ const intent = {
     return rc
   },
 
-  _creepBodyCost(body) {
+  _creepBodyCost (body) {
     if (!_.isArray(body)) return undefined
 
     let total = 0
@@ -469,7 +469,7 @@ const intent = {
     return total
   },
 
-  spawn_intent_spawnCreep(spawn, body, name, options) {
+  spawn_intent_spawnCreep (spawn, body, name, options) {
     if (body === undefined) {
       console.log('spawn_intent_spawnCreep received undefined argument [body]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -516,10 +516,10 @@ const intent = {
       directions: options ? options.directions : undefined,
       spawn,
 
-      cancel() {
+      cancel () {
         // keep interface compatible but do not do anything
       },
-      setDirections(_directions) {
+      setDirections (directions) {
         // keep interface compatible but do not do anything
       }
     }
@@ -537,15 +537,15 @@ const intent = {
     return rc
   },
 
-  spawn_intent_renewCreep(_spawn, _creep) {
+  spawn_intent_renewCreep (spawn, creep) {
     return OK
   },
 
-  spawn_intent_recycleCreep(_spawn, _creep) {
+  spawn_intent_recycleCreep (spawn, creep) {
     return OK
   },
 
-  backupIntents(something) {
+  backupIntents (something) {
     if (something && something.__intents) {
       return new Map(something.__intents)
     }
@@ -553,13 +553,13 @@ const intent = {
     return undefined
   },
 
-  restoreIntents(something, backup) {
+  restoreIntents (something, backup) {
     if (something && backup) {
       something.__intents = backup
     }
   },
 
-  getFreeCapacity(something, type = undefined) {
+  getFreeCapacity (something, type = undefined) {
     // repeat after original API
     const nonUniversal = something.store.getCapacity() === null
     if (nonUniversal && type === undefined) {
@@ -569,7 +569,7 @@ const intent = {
     return this.__getFreeCapacity(something, type, nonUniversal)
   },
 
-  getFreeCapacityMin(something, type) {
+  getFreeCapacityMin (something, type) {
     // close to original API based on usage
     if (type === undefined) return null
 
@@ -581,7 +581,7 @@ const intent = {
     return Math.min(tickValue, withIntent)
   },
 
-  getUsedCapacity(something, type = undefined) {
+  getUsedCapacity (something, type = undefined) {
     // repeat after original API
     const nonUniversal = something.store.getCapacity() === null
     if (nonUniversal && type === undefined) {
@@ -598,7 +598,7 @@ const intent = {
     return this.getWithIntended(something, key, value)
   },
 
-  getUsedCapacityMin(something, type) {
+  getUsedCapacityMin (something, type) {
     // close to original API based on usage
     if (type === undefined) return null
 
@@ -610,7 +610,7 @@ const intent = {
     return Math.min(tickValue, withIntent)
   },
 
-  getUsedCapacityMinKeys(something) {
+  getUsedCapacityMinKeys (something) {
     const lambda = () => {
       const result = []
 
@@ -627,7 +627,7 @@ const intent = {
     return this._getWithIntentCache(something, '__internal_getUsedCapacityKeys', lambda)
   },
 
-  getAllUsedCapacity(something) {
+  getAllUsedCapacity (something) {
     const lambda = () => {
       const all = new Map()
 
@@ -652,32 +652,32 @@ const intent = {
     return this._getWithIntentCache(something, '__internal_getAllUsedCapacity', lambda)
   },
 
-  getWithIntentCache(something, key, tickFunction) {
+  getWithIntentCache (something, key, tickFunction) {
     return this._getWithIntentCache(something, key, tickFunction)
   },
 
-  getAmount(something) {
+  getAmount (something) {
     const key = '__amount'
     const value = something.amount
 
     return this.getWithIntended(something, key, value)
   },
 
-  getEnergy(something) {
+  getEnergy (something) {
     const key = '__amount'
     const value = something.energy
 
     return this.getWithIntended(something, key, value)
   },
 
-  getSpawnSpawning(spawn) {
+  getSpawnSpawning (spawn) {
     const key = '__spawning'
     const value = spawn.spawning
 
     return this.getIntended(spawn, key, value)
   },
 
-  wrapCreepIntent(creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
+  wrapCreepIntent (creep, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (creep === undefined) {
       console.log('wrapCreepIntent received undefined argument [creep]')
       return bootstrap.ERR_INVALID_INTENT_ARG
@@ -725,7 +725,7 @@ const intent = {
     return rc
   },
 
-  wrapSpawnIntent(spawn, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
+  wrapSpawnIntent (spawn, intentName, arg0 = undefined, arg1 = undefined, arg2 = undefined) {
     if (spawn === undefined) {
       console.log('wrapSpawnIntent received undefined argument [spawn]')
       return bootstrap.ERR_INVALID_INTENT_ARG

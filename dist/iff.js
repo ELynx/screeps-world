@@ -282,7 +282,7 @@ Object.defineProperty(
   OwnedStructure.prototype,
   'ally',
   {
-    get() {
+    get () {
       return isAlly(this)
     },
     configurable: true,
@@ -294,7 +294,7 @@ Object.defineProperty(
   OwnedStructure.prototype,
   'neutral',
   {
-    get() {
+    get () {
       return isNeutral(this)
     },
     configurable: true,
@@ -306,7 +306,7 @@ Object.defineProperty(
   OwnedStructure.prototype,
   'hostile',
   {
-    get() {
+    get () {
       return isHostile(this)
     },
     configurable: true,
@@ -318,7 +318,7 @@ Object.defineProperty(
   OwnedStructure.prototype,
   'unowned',
   {
-    get() {
+    get () {
       return isUnowned(this)
     },
     configurable: true,
@@ -330,7 +330,7 @@ Object.defineProperty(
   OwnedStructure.prototype,
   'pc',
   {
-    get() {
+    get () {
       return isPC(this)
     },
     configurable: true,
@@ -342,7 +342,7 @@ Object.defineProperty(
   Creep.prototype,
   'ally',
   {
-    get() {
+    get () {
       return isAlly(this)
     },
     configurable: true,
@@ -354,7 +354,7 @@ Object.defineProperty(
   Creep.prototype,
   'neutral',
   {
-    get() {
+    get () {
       return isNeutral(this)
     },
     configurable: true,
@@ -366,7 +366,7 @@ Object.defineProperty(
   Creep.prototype,
   'hostile',
   {
-    get() {
+    get () {
       return isHostile(this)
     },
     configurable: true,
@@ -390,7 +390,7 @@ Object.defineProperty(
   Creep.prototype,
   'pc',
   {
-    get() {
+    get () {
       return isPC(this)
     },
     configurable: true,
@@ -402,7 +402,7 @@ Object.defineProperty(
   Room.prototype,
   'my',
   {
-    get() {
+    get () {
       return this.controller ? this.controller.my : false
     },
     configurable: true,
@@ -414,7 +414,7 @@ Object.defineProperty(
   Room.prototype,
   'ally',
   {
-    get() {
+    get () {
       return this.controller ? isAlly(this.controller) : false
     },
     configurable: true,
@@ -426,7 +426,7 @@ Object.defineProperty(
   Room.prototype,
   'neutral',
   {
-    get() {
+    get () {
       return this.controller ? isNeutral(this.controller) : false
     },
     configurable: true,
@@ -438,7 +438,7 @@ Object.defineProperty(
   Room.prototype,
   'hostile',
   {
-    get() {
+    get () {
       return this.controller ? isHostile(this.controller) : false
     },
     configurable: true,
@@ -450,7 +450,7 @@ Object.defineProperty(
   Room.prototype,
   'unowned',
   {
-    get() {
+    get () {
       return this.controller ? isUnowned(this.controller) : true
     },
     configurable: true,
@@ -462,7 +462,7 @@ Object.defineProperty(
   Room.prototype,
   'pc',
   {
-    get() {
+    get () {
       return this.controller ? isPC(this.controller) : false
     },
     configurable: true,
