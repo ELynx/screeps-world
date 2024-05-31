@@ -61,23 +61,6 @@ const historyActor =
     return result
   },
 
-  _increaseSomeValue (something, valueName, amount) {
-    const now = something[valueName] || 0
-    something[valueName] = now + amount
-  },
-
-  increaseDirectHarm (something, amount) {
-    this._increaseSomeValue(something, 'directHarm', amount)
-  },
-
-  increaseSideHarm (something, amount) {
-    this._increaseSomeValue(something, 'sideHarm', amount)
-  },
-
-  increaseSideHarmPower (something, amount) {
-    this._increaseSomeValue(something, 'sideHarmPower', amount)
-  },
-
   handle_EVENT_ATTACK (room, eventRecord) {
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
@@ -152,8 +135,6 @@ const historyActor =
     } else {
       Game.iff.markNPCHostile(attacker)
     }
-
-    this.increaseDirectHarm(attacker, eventRecord.data.damage)
 
     if (attacker.room) {
       attacker.room._fight_ = true
@@ -239,15 +220,12 @@ const historyActor =
       }
     }
 
-    healer.__historyActor_healedWhat = target
-    healer.__historyActor_healedHowMuch = eventRecord.data.amount
-
-    // special case, if healed self then have some harm accounted for
-    if (healer.id === target.id) {
-      this.increaseDirectHarm(healer, healer.__historyActor_healedHowMuch)
+    if (healer.id !== target.id && // if healed something else
+        healer.owner.username !== target.owner.username && // from different owner (with potentially unknown reputation)
+        healer.pc && target.pc) { // and both are PCs, just to be sure
+      healer.__historyActor_healedWhat = target
+      Game.__historyActor_healers.set(healer.id, healer)
     }
-
-    Game.__historyActor_healers.set(healer.id, healer)
   },
 
   processRoomLog (room) {
@@ -272,10 +250,14 @@ const historyActor =
 
   processHealers () {
     for (const healer of Game.__historyActor_healers.values()) {
-      if (healer.__historyActor_healedWhat.directHarm) {
-        this.increaseSideHarm(healer, healer.__historyActor_healedWhat.directHarm)
-        this.increaseSideHarmPower(healer, healer.__historyActor_healedHowMuch)
-      }
+      // transfer reputation from heal target to owner of healer
+      const reputation = Game.iff.associate(
+        healer.owner.username, // active
+        healer.__historyActor_healedWhat.owner.username, // acted upon
+        3
+      )
+
+      console.log(this.hmiName(healer) + ' healed, had owner reputation changed to [' + reputation + ']')
     }
   },
 

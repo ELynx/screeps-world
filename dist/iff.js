@@ -512,6 +512,26 @@ module.exports = {
       isAlly (username) {
         const reputation = getPCReputation(username)
         return reputation >= LowestAllyReputation
+      },
+
+      associtate (activeUsername, targetUsername, amount) {
+        _fillOwnUsername()
+
+        // in case self was leaked
+        if (activeUsername === ownUsername) return MaxReputation
+
+        const activeReputation = getPCReputation(activeUsername)
+        const targetReputation = targetUsername === ownUsername ? MaxReputation : getPCReputation(targetUsername)
+
+        if (activeReputation === targetReputation) return activeReputation
+
+        if (activeReputation > targetReputation) {
+          // better reputation is decreased by amount
+          return adjustPCReputation(activeUsername, -1 * amount)
+        } else {
+          // worse reputation is increaed by amount
+          return adjustPCReputation(activeUsername, amount)
+        }
       }
     }
   }
