@@ -292,23 +292,23 @@ const bootstrap = {
     return new RoomPosition(25, 25, roomName)
   },
 
-  isHighwayRoomName (roomName) {
-    for (const c of roomName) {
-      if (c === '0') return true
-    }
-
+  isHighwayCrossingRoomName (roomName) {
+    // TODO proper handling
     return false
   },
 
-  isHighwayCrossingRoomName (roomName) {
-    let one = false
-    for (const c of roomName) {
-      if (c === '0') {
-        if (one) return true
-        one = true
-      }
-    }
+  isHighwayRoomName (roomName) {
+    // TODO proper handling
+    return false
+  },
 
+  isSourceKeeperRoomName (roomName) {
+    // TODO
+    return false
+  },
+
+  isSectorCenterRoomName (roomName) {
+    // TODO
     return false
   }
 }
