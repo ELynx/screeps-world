@@ -507,6 +507,11 @@ module.exports = {
       extendedOwnerUsername (something) {
         if (something === undefined) return undefined
         return _extendedOwnerUsername(something)
+      },
+
+      isAlly (username) {
+        const reputation = getPCReputation(username)
+        return reputation >= LowestAllyReputation
       }
     }
   }

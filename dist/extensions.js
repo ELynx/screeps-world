@@ -491,25 +491,6 @@ Room.prototype.mineralType = function () {
   return this.memory.mnrl
 }
 
-Room.prototype.sourceKeeper = function () {
-  this.memory.nodeAccessed = Game.time
-
-  if (this.memory.srck !== undefined) {
-    return this.memory.srck
-  }
-
-  const keeperLairs = this.find(
-    FIND_STRUCTURES,
-    {
-      filter: { structureType: STRUCTURE_KEEPER_LAIR }
-    }
-  ).length
-
-  this.memory.srck = keeperLairs > 0
-
-  return this.memory.srck
-}
-
 Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (!this._my_) return 0
 
@@ -652,14 +633,35 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
 }
 
+Room.prototype.highwayCrossing = function () {
+  if (this.controller) return false
+  return bootstrap.isHighwayCrossingRoomName(this.name)
+}
+
 Room.prototype.highway = function () {
   if (this.controller) return false
   return bootstrap.isHighwayRoomName(this.name)
 }
 
-Room.prototype.highwayCrossing = function () {
+Room.prototype.sourceKeeper = function () {
   if (this.controller) return false
-  return bootstrap.isHighwayCrossingRoomName(this.name)
+  return bootstrap.isSourceKeeperRoomName(this.name)
+}
+
+Room.prototype.sectorCenter = function () {
+  if (this.controller) return false
+  return bootstrap.isSectorCenterRoomName(this.name)
+}
+
+Room.prototype.updateOwner = function () {
+  this.memory.nodeAccessed = Game.time
+  this.memory.ownerUsername = this.extendedOwnerUsername()
+  this.memory.ownerLevel = this.controller ? this.controller.level : 0
+}
+
+Room.prototype.eraseOwner = function () {
+  this.memory.ownerUsername = undefined
+  this.memory.ownerLevel = undefined
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
@@ -928,6 +930,18 @@ const extensions = {
       const room = Game.rooms[roomName]
       // cachge property that is actually a function call
       room._my_ = room.my
+
+      // automatic intelligence recording for every room with visibility
+      if (room.controller) {
+        if (room._my_) {
+          // clear record for rooms with owned controller
+          room.eraseOwner()
+        } else {
+          // for every other room with controller, including own reserved, keep info
+          room.updateOwner()
+        }
+      }
+      // for rooms without controller rely on coordinates
 
       Game.rooms_values.push(room)
 
