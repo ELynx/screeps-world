@@ -75,16 +75,16 @@ spawnProcess._canSpawn = function (room) {
 
 spawnProcess.streloks = function (room, live) {
   const threat = room.memory.threat || 0
-  if (threat <= bootstrap.ThreatLevelLow) return
-
-  const want = threat
+  const want = (threat <= bootstrap.ThreatLevelLow) ? 0 : threat
 
   const roomServiceFlag = Game.flags['strelok_' + room.name]
   const now = this._hasAndPlanned(room, live, 'strelok') + (roomServiceFlag ? roomServiceFlag.getValue() : 0)
 
+  const selfHelp = this._canSpawn(room) && threat < bootstrap.ThreatLevelMedium
+
   this.addToQueue(
     room.name,
-    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    selfHelp ? room.name : queue.FROM_CLOSEST_ROOM,
     'strelok',
     'strelok',
     {
