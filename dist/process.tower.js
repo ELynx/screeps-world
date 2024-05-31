@@ -46,7 +46,7 @@ towerProcess.work = function (room) {
       }
     }
 
-    healers.sort((a, b) => a.localeCompare(b))
+    healers.sort((a, b) => a.id.localeCompare(b.id))
 
     if (healers.length > 0) {
       harmful = [healers[0]]
