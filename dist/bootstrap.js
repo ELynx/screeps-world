@@ -297,7 +297,7 @@ const bootstrap = {
   },
 
   _isHighwayRoomName (parsed) {
-    return parsed.length == 2 && (parsed[0] % 10 === 0 || parsed[1] % 10 === 0)
+    return parsed.length === 2 && (parsed[0] % 10 === 0 || parsed[1] % 10 === 0)
   },
 
   _isSourceKeeperRoomName (parsed) {
@@ -310,7 +310,7 @@ const bootstrap = {
   },
 
   _isSectorCenterRoomName (parsed) {
-    return parsed.length == 2 && (parsed[0] % 10 === 5 && parsed[1] % 10 === 5)
+    return parsed.length === 2 && (parsed[0] % 10 === 5 && parsed[1] % 10 === 5)
   },
 
   isHighwayRoomName (roomName) {
