@@ -124,7 +124,9 @@ Creep.prototype.march = function (direction) {
     return ERR_INVALID_ARGS
   }
 
-  if (this.moved()) {
+  const hasMoved = this.moved()
+
+  if (hasMoved) {
     this._refreshMove()
   }
 
@@ -178,7 +180,7 @@ Creep.prototype.march = function (direction) {
     needPathfinding = !findNewPathOptions.ignoreRoads
   }
 
-  if (!needPathfinding && this.moved() === false) {
+  if (!needPathfinding && hasMoved === false) {
     needPathfinding = true
   }
 
