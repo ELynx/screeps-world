@@ -144,7 +144,7 @@ const map = {
       if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
         const time = creep.memory._march.time
         if (time >= (Memory.roomOwnerChangeDetected || 0)) {
-          if (creep.memory._march.room != creep.room.name) {
+          if (creep.memory._march.room !== creep.room.name) {
             creep.memory._march.path = creep.memory._march.path.slice(1)
             creep.memory._march.room = creep.room.name
           }
@@ -164,7 +164,7 @@ const map = {
     if (route === ERR_NO_PATH) return ERR_NO_PATH
 
     let first
-    const path = ''
+    let path = ''
     for (const segment of route) {
       if (first === undefined) first = segment.exit
 
