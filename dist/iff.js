@@ -514,6 +514,11 @@ module.exports = {
         return reputation >= LowestAllyReputation
       },
 
+      isHostile (username) {
+        const reputation = getPCReputation(username)
+        return reputation < DefaultReputation
+      },
+
       associtate (activeUsername, targetUsername, amount) {
         _fillOwnUsername()
 

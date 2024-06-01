@@ -25,6 +25,7 @@ const cleanup = {
         [
           '_ttt',
           'abld',
+          'blok',
           'cook',
           'intl',
           'mlvl',

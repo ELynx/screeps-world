@@ -42,19 +42,48 @@ const map = {
     return room.__map__cache1 // not a problem if undefined
   },
 
-  routeCallback_safeTravel (roomName, _fromRoomName) {
-    if (Game.__map__safeTravel) {
-      const cached = Game.__map__safeTravel.get(roomName)
+  ___routeCallback (roomName, _fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
+    if (Game[cacheName]) {
+      const cached = Game[cacheName].get(roomName)
       if (cached !== undefined) return cached
     }
 
-    if (Game.__map__safeTravel === undefined) {
-      Game.__map__safeTravel = new Map()
+    if (Game[cacheName] === undefined) {
+      Game[cacheName] = new Map()
+    }
+
+    const roomMemory = Memory.rooms[roomName]
+    if (roomMemory && roomMemory.blok) {
+      roomMemory.nodeAccessed = Game.time
+      Game[cacheName].set(roomName, Infinity)
+      return Infinity
     }
 
     let result
 
-    const fromRoomName = roomName1 => {
+    const room = Game.rooms[roomName]
+    if (room) {
+      if (room.controller) {
+        result = byOwnerUsernameAndLevel(room.extendedOwnerUsername(), room.controller.level)
+      } else {
+        result = byRoomName(roomName)
+      }
+    } else {
+      if (roomMemory && roomMemory.ownerUsername && roomMemory.ownerLevel) {
+        roomMemory.nodeAccessed = Game.time
+        result = fromOwnerUsername(roomMemory.ownerUsername, roomMemory.ownerLevel)
+      } else {
+        result = byRoomName(roomName)
+      }
+    }
+
+    Game[cacheName].set(roomName, result)
+
+    return result
+  },
+
+  __routeCallback_safeTravel (roomName, fromRoomName) {
+    const byRoomName = roomName1 => {
       if (bootstrap.isHighwayRoomName(roomName1)) return 1
       if (bootstrap.isSourceKeeperRoomName(roomName1)) return Infinity
       if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
@@ -63,35 +92,54 @@ const map = {
       return 2
     }
 
-    const fromOwnerUsername = username => {
+    const byOwnerUsername = username => {
       if (username === undefined) return 1
       if (username === Game.iff.ownUsername) return 1
       return Game.iff.isAlly(username) ? 1 : Infinity
     }
 
-    const room = Game.rooms[roomName]
-    if (room) {
-      if (room.controller) {
-        result = fromOwnerUsername(room.extendedOwnerUsername())
-      } else {
-        result = fromRoomName(roomName)
-      }
-    } else {
-      const roomMemory = Memory.rooms[roomName]
-      if (roomMemory && roomMemory.ownerUsername) {
-        roomMemory.nodeAccessed = Game.time
-        result = fromOwnerUsername(roomMemory.ownerUsername)
-      } else {
-        result = fromRoomName(roomName)
-      }
-    }
-
-    Game.__map__safeTravel.set(roomName, result)
-
-    return result
+    return this.___routeCallback(roomName, fromRoomName, '__map__safeTravel', byRoomName, byOwnerUsername)
   },
 
-  safeTravel (creep, destinationPosition) {
+  __routeCallback_combatTravel (roomName, _fromRoomName) {
+    const byRoomName = roomName1 => {
+      if (bootstrap.isHighwayRoomName(roomName1)) return 1
+      if (bootstrap.isSourceKeeperRoomName(roomName1)) return 2.5
+      if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
+
+      // room without known owner, beware
+      return 2
+    }
+
+    const byOwnerUsernameAndLevel = (username, level) => {
+      if (username === undefined) return 1
+      if (username === Game.iff.ownUsername) return 1
+      if (Game.iff.isAlly(username)) return 1
+      if (Game.iff.isHostile(username)) {
+        // no walls and ramparts added at all
+        if (level < 2) return 1
+        // TODO account for razed rooms
+        return 2 // better bash head against enemy than source keeper
+      }
+
+      // do not bother neutrals
+      return Infinity
+    }
+
+    return this.___routeCallback(roomName, fromRoomName, '__map__combatTravel', byRoomName, byOwnerUsernameAndLevel)
+  },
+
+  __route (fromPos, toPos, mode) {
+    let routeCallback
+    if (mode === 'safe') routeCallback = (x, y) => this.__routeCallback_safeTravel(x, y)
+    if (mode === 'combat') routeCallback = (x, y) => this.__routeCallback_combatTravel(x, y)
+  },
+
+  _autoMarch (creep, destinationPosition, mode) {
+
+  },
+
+  _arrive (creep, destinationPosition) {
     return creep.moveToWrapper(
       destinationPosition,
       {
@@ -101,14 +149,20 @@ const map = {
     )
   },
 
+  _travel (creep, destinationPosition, mode) {
+    if (creep.pos.getRoomLinearDistance(destinationPosition) <= 1) {
+      return this._arrive(creep, destinationPosition)
+    }
+
+    return this._autoMarch(creep, destinationPosition, mode)
+  },
+
+  safeTravel (creep, destinationPosition) {
+    return this._travel(creep, destinationPosition, 'safe')
+  },
+
   combatTravel (creep, destinationPosition) {
-    creep.moveToWrapper(
-      controlPos,
-      {
-        range: destinationPosition.offBorderDistance(),
-        reusePath: _.random(3, 5)
-      }
-    )
+    return this._travel(creep, destinationPosition, 'combat')
   }
 }
 
