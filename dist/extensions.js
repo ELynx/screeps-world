@@ -635,24 +635,9 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
 }
 
-Room.prototype.highwayCrossing = function () {
-  if (this.controller) return false
-  return bootstrap.isHighwayCrossingRoomName(this.name)
-}
-
 Room.prototype.highway = function () {
   if (this.controller) return false
   return bootstrap.isHighwayRoomName(this.name)
-}
-
-Room.prototype.sourceKeeper = function () {
-  if (this.controller) return false
-  return bootstrap.isSourceKeeperRoomName(this.name)
-}
-
-Room.prototype.sectorCenter = function () {
-  if (this.controller) return false
-  return bootstrap.isSectorCenterRoomName(this.name)
 }
 
 Room.prototype.updateOwner = function () {
