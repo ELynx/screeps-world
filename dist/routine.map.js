@@ -88,8 +88,9 @@ const map = {
       if (bootstrap.isSourceKeeperRoomName(roomName1)) return Infinity
       if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
 
-      // room without known owner, beware
-      return 2
+      // room without known owner, let's not make new enemies
+      Game.roomsToScan.add(roomName)
+      return Infinity
     }
 
     const byOwnerUsername = username => {
@@ -107,8 +108,9 @@ const map = {
       if (bootstrap.isSourceKeeperRoomName(roomName1)) return 2.5
       if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
 
-      // room without known owner, beware
-      return 2
+      // room without known owner, let's not make new enemies
+      Game.roomsToScan.add(roomName)
+      return Infinity
     }
 
     const byOwnerUsernameAndLevel = (username, level) => {
@@ -118,7 +120,6 @@ const map = {
       if (Game.iff.isHostile(username)) {
         // no walls and ramparts added at all
         if (level < 2) return 1
-        // TODO account for razed rooms
         return 2 // better bash head against enemy than source keeper
       }
 
@@ -136,7 +137,8 @@ const map = {
   },
 
   _autoMarch (creep, destinationPosition, mode) {
-
+    // TODO
+    return this._arrive(creep, destinationPosition)
   },
 
   _arrive (creep, destinationPosition) {
