@@ -229,6 +229,12 @@ Creep.prototype.march = function (direction) {
       if (yAhead < 25) marchDirection = _.sample(PreferBottom)
       else marchDirection = _.sample(PreferTop)
     }
+
+    // avert room change by accident
+    if (this.pos.x === 1 && marchDirection === LEFT) marchDirection = RIGHT
+    if (this.pos.x === 48 && marchDirection === RIGHT) marchDirection = LEFT
+    if (this.pos.y === 1 && marchDirection === TOP) marchDirection = BOTTOM
+    if (this.pos.y === 48 && marchDirection === BOTTOM) marchDirection = TOP
   }
 
   return this.move(marchDirection)
