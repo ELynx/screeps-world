@@ -642,11 +642,22 @@ Room.prototype.highway = function () {
 
 Room.prototype.updateOwner = function () {
   this.memory.nodeAccessed = Game.time
-  this.memory.ownerUsername = this.extendedOwnerUsername()
-  this.memory.ownerLevel = this.controller ? this.controller.level : 0
+
+  const nowUsername = this.extendedOwnerUsername()
+
+  if (this.memory.ownerUsername !== nowUsername) {
+    Memory.roomOwnerChangeDetected = Game.time
+  }
+
+  this.memory.ownerUsername = nowUsername
+  this.memory.ownerLevel = this.controller.level
 }
 
 Room.prototype.eraseOwner = function () {
+  if (this.memory.ownUsername !== undefined) {
+    Memory.roomOwnerChangeDetected = Game.time
+  }
+
   this.memory.ownerUsername = undefined
   this.memory.ownerLevel = undefined
 }

@@ -292,11 +292,6 @@ const bootstrap = {
     return new RoomPosition(25, 25, roomName)
   },
 
-  isHighwayCrossingRoomName (roomName) {
-    // TODO proper handling
-    return false
-  },
-
   isHighwayRoomName (roomName) {
     // TODO proper handling
     return false
