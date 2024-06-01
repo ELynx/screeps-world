@@ -138,14 +138,14 @@ const map = {
     if (mode === 'safe') {
       routeCallback = (x, y) => {
         if (x === toPos.roomName) return 1
-        this.__routeCallback_safeTravel(x, y)
+        return this.__routeCallback_safeTravel(x, y)
       }
     }
 
     if (mode === 'combat') {
       routeCallback = (x, y) => {
         if (x === toPos.roomName) return 1
-        this.__routeCallback_combatTravel(x, y)
+        return this.__routeCallback_combatTravel(x, y)
       }
     }
 
@@ -153,6 +153,16 @@ const map = {
   },
 
   _autoMarch (creep, destinationPosition, mode) {
+    if (creep.fatigue > 0) {
+      return creep.fatigueWrapper()
+    }
+
+    if (creep.moved() === false) {
+      if (_.random(1, 6) === 1) {
+        creep.memory._march = undefined
+      }
+    }
+
     if (creep.memory._march) {
       const dest = creep.memory._march.dest
       if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
