@@ -231,6 +231,15 @@ Creep.prototype.march = function (direction) {
     }
   }
 
+  if (this.pos.x === 0 && marchDirection === TOP) marchDirection = TOP_RIGHT
+  if (this.pos.x === 0 && marchDirection === BOTTOM) marchDirection = BOTTOM_RIGHT
+  if (this.pos.x === 49 && marchDirection === TOP) marchDirection = TOP_LEFT
+  if (this.pos.x === 49 && marchDirection === BOTTOM) marchDirection = BOTTOM_LEFT
+  if (this.pos.y === 0 && marchDirection === LEFT) marchDirection = BOTTOM_LEFT
+  if (this.pos.y === 0 && marchDirection === RIGHT) marchDirection = BOTTOM_RIGHT
+  if (this.pos.y === 49 && marchDirection === LEFT) marchDirection = TOP_LEFT
+  if (this.pos.y === 49 && marchDirection === RIGHT) marchDirection = TOP_RIGHT
+
   return this.move(marchDirection)
 }
 
