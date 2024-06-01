@@ -71,7 +71,7 @@ const map = {
     } else {
       if (roomMemory && roomMemory.ownerUsername && roomMemory.ownerLevel) {
         roomMemory.nodeAccessed = Game.time
-        result = fromOwnerUsername(roomMemory.ownerUsername, roomMemory.ownerLevel)
+        result = byOwnerUsernameAndLevel(roomMemory.ownerUsername, roomMemory.ownerLevel)
       } else {
         result = byRoomName(roomName)
       }
@@ -102,7 +102,7 @@ const map = {
     return this.___routeCallback(roomName, fromRoomName, '__map__safeTravel', byRoomName, byOwnerUsername)
   },
 
-  __routeCallback_combatTravel (roomName, _fromRoomName) {
+  __routeCallback_combatTravel (roomName, fromRoomName) {
     const byRoomName = roomName1 => {
       if (bootstrap.isHighwayRoomName(roomName1)) return 1
       if (bootstrap.isSourceKeeperRoomName(roomName1)) return 2.5
