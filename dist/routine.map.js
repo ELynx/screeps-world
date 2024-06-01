@@ -1,10 +1,12 @@
 'use strict'
 
-let MapRoutineDisabled = false
+const bootstrap = require('./bootstrap')
+
+let CostMatrixDisabled = false
 
 if (!(new PathFinder.CostMatrix())._bits) {
   console.log('CostMatrix missing _bits')
-  MapRoutineDisabled = true
+  CostMatrixDisabled = true
 }
 
 PathFinder.CostMatrix.prototype.blockArray = function (blocks, visual = undefined) {
@@ -23,7 +25,7 @@ PathFinder.CostMatrix.prototype.blockArray = function (blocks, visual = undefine
 
 const map = {
   costCallback_costMatrixForRoomActivity (roomName, costMatrix) {
-    if (MapRoutineDisabled) return undefined
+    if (CostMatrixDisabled) return undefined
 
     const room = Game.rooms[roomName]
     if (room === undefined) return undefined
@@ -38,6 +40,54 @@ const map = {
     }
 
     return room.__map__cache1 // not a problem if undefined
+  },
+
+  routeCallback_safeTravel (roomName, _fromRoomName) {
+    if (Game.__map__safeTravel) {
+      const cached = Game.__map__safeTravel.get(roomName)
+      if (cached !== undefined) return cached
+    }
+
+    if (Game.__map__safeTravel === undefined) {
+      Game.__map__safeTravel = new Map()
+    }
+
+    let result
+
+    const fromRoomName = roomName1 => {
+      if (bootstrap.isHighwayRoomName(roomName1)) return 1
+      if (bootstrap.isSourceKeeperRoomName(roomName1)) return Infinity
+      if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
+
+      // room without known owner, beware
+      return 2
+    }
+
+    const fromOwnerUsername = username => {
+      if (username === undefined) return 1
+      if (username === Game.iff.ownUsername) return 1
+      return Game.iff.isAlly(username) ? 1 : Infinity
+    }
+
+    const room = Game.rooms[roomName]
+    if (room) {
+      if (room.controller) {
+        result = fromOwnerUsername(room.extendedOwnerUsername())
+      } else {
+        result = fromRoomName(roomName)
+      }
+    } else {
+      const roomMemory = Memory.rooms[roomName]
+      if (roomMemory && roomMemory.ownerUsername) {
+        result = fromOwnerUsername(roomMemory.ownerUsername)
+      } else {
+        result = fromRoomName(roomName)
+      }
+    }
+
+    Game.__map__safeTravel.set(roomName, result)
+
+    return result
   }
 }
 
