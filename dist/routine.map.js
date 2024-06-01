@@ -134,11 +134,55 @@ const map = {
     let routeCallback
     if (mode === 'safe') routeCallback = (x, y) => this.__routeCallback_safeTravel(x, y)
     if (mode === 'combat') routeCallback = (x, y) => this.__routeCallback_combatTravel(x, y)
+
+    return Game.map.findRoute(fromPos.roomName, toPos.roomName, { routeCallback })
   },
 
   _autoMarch (creep, destinationPosition, mode) {
-    // TODO
-    return this._arrive(creep, destinationPosition)
+    if (creep.memory._march) {
+      const dest = creep.memory._march.dest
+      if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
+        const time = creep.memory._march.time
+        if (time >= (Memory.roomOwnerChangeDetected || 0)) {
+          if (creep.memory._march.room != creep.room.name) {
+            creep.memory._march.path = creep.memory._march.path.slice(1)
+            creep.memory._march.room = creep.room.name
+          }
+
+          const path = creep.memory._march.path
+          if (path.length > 0) {
+            const asInt = _.parseInt(path[0])
+            return creep.march(asInt)
+          }
+        }
+      }
+    }
+
+    creep.memory._march = undefined
+
+    const route = this.__route(creep.pos, destinationPosition, mode)
+    if (route === ERR_NO_PATH) return ERR_NO_PATH
+
+    let first
+    const path = ''
+    for (const segment of route) {
+      if (first === undefined) first = segment.exit
+
+      path += segment.exit
+    }
+
+    creep.memory._march = {
+      dest: {
+        x: destinationPosition.x,
+        y: destinationPosition.y,
+        room: destinationPosition.roomName
+      },
+      time: Game.time,
+      path,
+      room: creep.room.name
+    }
+
+    return creep.march(first)
   },
 
   _arrive (creep, destinationPosition) {
