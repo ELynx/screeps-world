@@ -114,13 +114,14 @@ const PreferBottom = [TOP, BOTTOM, BOTTOM]
 const PreferLeft = [RIGHT, LEFT, LEFT]
 
 Creep.prototype.march = function (direction) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  // compatible with FIND_EXIT_...
   if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
     console.log('Unexpected march for creep ' + this + ' in direction [' + direction + ']')
     return ERR_INVALID_ARGS
-  }
-
-  if (this.fatigue > 0) {
-    return this.fatigueWrapper()
   }
 
   if (this.moved()) {
@@ -156,6 +157,7 @@ Creep.prototype.march = function (direction) {
   // https://github.com/screeps/engine/blob/97c9d12385fed686655c13b09f5f2457dd83a2bf/src/game/rooms.js#L164
   let findNewPathOptions = {
     ignoreCreeps: this.room.highway(),
+    maxRooms: 1,
     reusePath: _.random(3, 5),
     serializeMemory: true
   }
@@ -167,9 +169,9 @@ Creep.prototype.march = function (direction) {
   const yAhead = this.pos.y + delta[1]
   const maskAhead = terrain.get(xAhead, yAhead)
 
-  let needPathfinding = false
+  let needPathfinding = !this.room.highway()
 
-  if (maskAhead === TERRAIN_MASK_SWAMP) {
+  if (!needPathfinding && maskAhead === TERRAIN_MASK_SWAMP) {
     findNewPathOptions = bootstrap.moveOptionsWrapper(this, findNewPathOptions)
     optionsWrapped = true
 
