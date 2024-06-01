@@ -913,6 +913,7 @@ const extensions = {
     Game.myCreepsCount = 0
 
     Game.rooms_values = []
+    Game.roomsToScan = new Set()
 
     Game.creepsById = new Map()
     Game.storages = new Map()
