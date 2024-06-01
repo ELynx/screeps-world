@@ -222,15 +222,15 @@ function Tasked (id) {
 
   this.creepAtDestination = undefined
 
-  this.spawnFrom = function (flag) {
+  this.spawnFrom = function (_flag) {
     return spawn.FROM_CLOSEST_ROOM
   }
 
-  this.spawnPriority = function (flag) {
+  this.spawnPriority = function (_flag) {
     return 'normal'
   }
 
-  this.bodyName = function (flag) {
+  this.bodyName = function (_flag) {
     return this.id
   }
 
