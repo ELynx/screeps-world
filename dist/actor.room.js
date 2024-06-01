@@ -258,15 +258,7 @@ const roomActor =
 
           if (creep._move_ > 0) {
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
-            const rangeInDestRoom = posInDestRoom.offBorderDistance()
-
-            creep.moveToWrapper(
-              posInDestRoom,
-              {
-                range: rangeInDestRoom,
-                reusePath: _.random(3, 5)
-              }
-            )
+            mapUtils.safeTravel(creep, posInDestRoom)
           }
 
           continue

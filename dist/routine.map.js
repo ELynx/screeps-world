@@ -89,6 +89,26 @@ const map = {
     Game.__map__safeTravel.set(roomName, result)
 
     return result
+  },
+
+  safeTravel (creep, destinationPosition) {
+    return creep.moveToWrapper(
+      destinationPosition,
+      {
+        range: destinationPosition.offBorderDistance(),
+        reusePath: _.random(3, 5)
+      }
+    )
+  },
+
+  combatTravel (creep, destinationPosition) {
+    creep.moveToWrapper(
+      controlPos,
+      {
+        range: destinationPosition.offBorderDistance(),
+        reusePath: _.random(3, 5)
+      }
+    )
   }
 }
 
