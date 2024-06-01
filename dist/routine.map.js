@@ -219,7 +219,7 @@ const map = {
   },
 
   _travel (creep, destinationPosition, mode) {
-    if (creep.pos.getRoomLinearDistance(destinationPosition) <= 1) {
+    if (creep.memory._march && creep.memory._march.path.length === 1) {
       return this._arrive(creep, destinationPosition)
     }
 
