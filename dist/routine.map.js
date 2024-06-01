@@ -79,6 +79,7 @@ const map = {
     } else {
       const roomMemory = Memory.rooms[roomName]
       if (roomMemory && roomMemory.ownerUsername) {
+        roomMemory.nodeAccessed = Game.time
         result = fromOwnerUsername(roomMemory.ownerUsername)
       } else {
         result = fromRoomName(roomName)
