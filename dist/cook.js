@@ -1507,7 +1507,7 @@ cook._setWorldDemand = function (room) {
   if (!room.terminal) return
 
   const sourceLevel = room.memory.slvl || 0
-  if (sourceLevel < 2) {
+  if (room._fight_ || sourceLevel < 2) {
     const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
     const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     if (now < ideal) {

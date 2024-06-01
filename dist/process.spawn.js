@@ -73,6 +73,12 @@ spawnProcess._canSpawn = function (room) {
   return room.extendedAvailableEnergyCapacity() > 0
 }
 
+spawnProcess._hasResourcesForOptional = function (room) {
+  if (Game._war_) return false
+  if (room._fight_) return false
+  return true
+}
+
 spawnProcess.streloks = function (room, live) {
   const threat = room.memory.threat || 0
   const want = (threat <= bootstrap.ThreatLevelLow) ? 0 : threat
@@ -115,7 +121,7 @@ spawnProcess.harvesters = function (room, live) {
 
 spawnProcess.miners = function (room, live) {
   const limit = room.memory.slvl || 0
-  const want = this._canSpawn(room) ? (room.memory.mlvl || 0) : 0
+  const want = this._canSpawn(room) && this._hasResourcesForOptional(room) ? (room.memory.mlvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
   this.addToQueue(
@@ -133,7 +139,7 @@ spawnProcess.miners = function (room, live) {
 
 spawnProcess.upgraders = function (room, live) {
   const limit = room.memory.slvl || 0
-  const want = (!Game._war_ && this._canSpawn(room)) ? (room.memory.ulvl || 0) : 0
+  const want = this._canSpawn(room) && this._hasResourcesForOptional(room) ? (room.memory.ulvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
