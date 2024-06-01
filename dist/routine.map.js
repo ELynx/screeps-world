@@ -168,10 +168,7 @@ const map = {
       if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
         const time = creep.memory._march.time
         if (time >= (Memory.roomOwnerChangeDetected || 0)) {
-          // takes care of stepping into the room and running out of CPU at the same time
-          if (creep.memory._march.room !== creep.room.name &&
-              creep.pos.x !== 0 && creep.pos.x !== 49 &&
-              creep.pos.y !== 0 && creep.pos.y !== 49) {
+          if (creep.memory._march.room !== creep.room.name) {
             creep.memory._march.path = creep.memory._march.path.slice(1)
             creep.memory._march.room = creep.room.name
           }
