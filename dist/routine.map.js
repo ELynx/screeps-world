@@ -135,15 +135,18 @@ const map = {
   __route (fromPos, toPos, mode) {
     let routeCallback
 
-    if (mode === 'safe') routeCallback = (x, y) => {
-      if (x === toPos.roomName) return 1
-      this.__routeCallback_safeTravel(x, y)
-
+    if (mode === 'safe') {
+      routeCallback = (x, y) => {
+        if (x === toPos.roomName) return 1
+        this.__routeCallback_safeTravel(x, y)
+      }
     }
 
-    if (mode === 'combat') routeCallback = (x, y) => {
-      if (x === toPos.roomName) return 1
-      this.__routeCallback_combatTravel(x, y)
+    if (mode === 'combat') {
+      routeCallback = (x, y) => {
+        if (x === toPos.roomName) return 1
+        this.__routeCallback_combatTravel(x, y)
+      }
     }
 
     return Game.map.findRoute(fromPos.roomName, toPos.roomName, { routeCallback })
