@@ -1624,7 +1624,14 @@ cook._unloadActiveHarvesters = function (room) {
     let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
     if (_.some(clusterContainers, notMaxHits)) continue
 
-    let clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
+    const close2 = (a, b) => {
+      const dx = Math.abs(a.x - b.x)
+      if (dx <= 2) return true
+      const dy = Math.abs(a.y - b.y)
+      return dy <= 2
+    }
+
+    let clusterLinks = _.filter(links, link => close2(link.pos, harvester._source_.pos))
     if (_.some(clusterLinks, notMaxHits)) continue
 
     if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
