@@ -157,12 +157,6 @@ const map = {
       return creep.fatigueWrapper()
     }
 
-    if (creep.moved() === false) {
-      if (_.random(1, 6) === 1) {
-        creep.memory._march = undefined
-      }
-    }
-
     if (creep.memory._march) {
       const dest = creep.memory._march.dest
       if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
@@ -176,7 +170,10 @@ const map = {
           const path = creep.memory._march.path
           if (path.length > 0) {
             const asInt = _.parseInt(path[0])
-            return creep.march(asInt)
+            const rc = creep.march(asInt)
+            if (rc >= OK) {
+              return rc
+            }
           }
         }
       }
