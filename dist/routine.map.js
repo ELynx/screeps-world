@@ -84,9 +84,10 @@ const map = {
 
   __routeCallback_safeTravel (roomName, fromRoomName) {
     const byRoomName = roomName1 => {
-      if (bootstrap.isHighwayRoomName(roomName1)) return 1
-      if (bootstrap.isSourceKeeperRoomName(roomName1)) return Infinity
-      if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
+      const parsed = bootstrap._parseRoomName(roomName1)
+      if (bootstrap._isHighwayRoomName(parsed)) return 1
+      if (bootstrap._isSourceKeeperRoomName(parsed)) return Infinity
+      if (bootstrap._isSectorCenterRoomName(parsed)) return 1
 
       // room without known owner, let's not make new enemies
       Game.roomsToScan.add(roomName)
@@ -104,9 +105,10 @@ const map = {
 
   __routeCallback_combatTravel (roomName, fromRoomName) {
     const byRoomName = roomName1 => {
-      if (bootstrap.isHighwayRoomName(roomName1)) return 1
-      if (bootstrap.isSourceKeeperRoomName(roomName1)) return 2.5
-      if (bootstrap.isSectorCenterRoomName(roomName1)) return 1
+      const parsed = bootstrap._parseRoomName(roomName1)
+      if (bootstrap._isHighwayRoomName(parsed)) return 1
+      if (bootstrap._isSourceKeeperRoomName(parsed)) return 2.5
+      if (bootstrap._isSectorCenterRoomName(parsed)) return 1
 
       // room without known owner, let's not make new enemies
       Game.roomsToScan.add(roomName)

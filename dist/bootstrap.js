@@ -292,19 +292,40 @@ const bootstrap = {
     return new RoomPosition(25, 25, roomName)
   },
 
+  _parseRoomName (roomName) {
+    return /^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName)
+  },
+
+  _isHighwayRoomName (parsed) {
+    return parsed.length == 2 && (parsed[0] % 10 === 0 || parsed[1] % 10 === 0)
+  },
+
+  _isSourceKeeperRoomName (parsed) {
+    if (parsed.length !== 2) return false
+    const x = parsed[0] % 10
+    if (x < 4 || x > 6) return false
+    const y = parsed[1] % 10
+    if (y < 4 || y > 6) return false
+    return !(x === 5 && y === 5)
+  },
+
+  _isSectorCenterRoomName (parsed) {
+    return parsed.length == 2 && (parsed[0] % 10 === 5 && parsed[1] % 10 === 5)
+  },
+
   isHighwayRoomName (roomName) {
-    // TODO proper handling
-    return false
+    const parsed = this._parseRoomName(roomName)
+    return this._isHighwayRoomName(parsed)
   },
 
   isSourceKeeperRoomName (roomName) {
-    // TODO
-    return false
+    const parsed = this._parseRoomName(roomName)
+    return this._isSectorCenterRoomName(parsed)
   },
 
   isSectorCenterRoomName (roomName) {
-    // TODO
-    return false
+    const parsed = this._parseRoomName(roomName)
+    return this._isSectorCenterRoomName(parsed)
   }
 }
 
