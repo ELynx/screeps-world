@@ -8,6 +8,8 @@ const BreachCompleteDistance = 1
 
 const Buildable = _.keys(CONSTRUCTION_COST)
 
+beetle.combatTravel = true
+
 beetle.breachLength = function (breach) {
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/utils.js#L555
   return breach.length - 4

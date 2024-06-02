@@ -7,24 +7,24 @@ const spawn = {
 
   bodyFunctions: { },
 
-  registerBodyFunction: function (id, bodyFunction) {
+  registerBodyFunction (id, bodyFunction) {
     this.bodyFunctions[id] = bodyFunction
   },
 
-  getBodyFunction: function (id) {
+  getBodyFunction (id) {
     return this.bodyFunctions[id]
   },
 
-  makeEmptyStructure: function () {
+  makeEmptyStructure () {
     const result = { urgent: [], normal: [], lowkey: [] }
     return result
   },
 
-  noMemory: function () {
+  noMemory () {
     return _.isUndefined(Memory.spawn_v1) || _.isEmpty(Memory.spawn_v1)
   },
 
-  prepareMemory: function () {
+  prepareMemory () {
     if (this.noMemory()) {
       const emptyStructure = this.makeEmptyStructure()
 
@@ -34,7 +34,7 @@ const spawn = {
     }
   },
 
-  _add: function (target, id, body, name, memory, from, to, n) {
+  _add (target, id, body, name, memory, from, to, n) {
     const extra = this.__addExtra || 0
 
     for (let i = 0; i < n; ++i) {
@@ -56,22 +56,22 @@ const spawn = {
     this.__addExtra = extra + n
   },
 
-  addUrgent: function (id, body, name, memory, from, to, n = 1) {
+  addUrgent (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
     this._add(Memory.spawn_v1.urgent, id, body, name, memory, from, to, n)
   },
 
-  addNormal: function (id, body, name, memory, from, to, n = 1) {
+  addNormal (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
     this._add(Memory.spawn_v1.normal, id, body, name, memory, from, to, n)
   },
 
-  addLowkey: function (id, body, name, memory, from, to, n = 1) {
+  addLowkey (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
     this._add(Memory.spawn_v1.lowkey, id, body, name, memory, from, to, n)
   },
 
-  _peek: function () {
+  _peek () {
     if (this.noMemory()) {
       return undefined
     }
@@ -91,11 +91,11 @@ const spawn = {
     return undefined
   },
 
-  peek: function () {
+  peek () {
     return this._peek()
   },
 
-  _get: function () {
+  _get () {
     if (this.noMemory()) {
       return undefined
     }
@@ -115,11 +115,11 @@ const spawn = {
     return undefined
   },
 
-  get: function () {
+  get () {
     return this._get()
   },
 
-  __count: function (target, id) {
+  __count (target, id) {
     let withId = 0
     for (const stored of target) {
       if (stored.id === id) {
@@ -130,7 +130,7 @@ const spawn = {
     return withId
   },
 
-  _count: function (id) {
+  _count (id) {
     if (this.noMemory()) {
       return 0
     }
@@ -143,11 +143,11 @@ const spawn = {
     return total
   },
 
-  count: function (id) {
+  count (id) {
     return this._count(id)
   },
 
-  _erase: function (id) {
+  _erase (id) {
     if (this.noMemory()) {
       return
     }
@@ -161,12 +161,12 @@ const spawn = {
     Memory.spawn_v1.lowkey = _.filter(Memory.spawn_v1.lowkey, filter)
   },
 
-  erase: function (id) {
+  erase (id) {
     this._erase(id)
   },
 
   // internals of this function should not be used
-  __postpone: function (target) {
+  __postpone (target) {
     if (Game.__spawnRoutine_spawnPostponeN === undefined) {
       // STRATEGY how many shuffles in queue are allowed
       Game.__spawnRoutine_spawnPostponeN = Math.floor(target.length / 2)
@@ -185,7 +185,7 @@ const spawn = {
     return true
   },
 
-  _postpone: function () {
+  _postpone () {
     if (this.noMemory()) {
       return false
     }
@@ -209,7 +209,7 @@ const spawn = {
     return false
   },
 
-  postpone: function () {
+  postpone () {
     return this._postpone()
   }
 }

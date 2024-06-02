@@ -6,7 +6,9 @@ const Tasked = require('./tasked.template')
 
 const plunder = new Tasked('plunder')
 
-plunder.spawnStrategy = function (flag) {
+plunder.combatTravel = true
+
+plunder.spawnStrategy = function (_flag) {
   return spawn.FROM_ANY_ROOM
 }
 
@@ -128,6 +130,7 @@ plunder.moveAndLoad = function (creep, target) {
     creep.moveToWrapper(
       target,
       {
+        maxRooms: 1,
         range: 1,
         reusePath: _.random(3, 5)
       }

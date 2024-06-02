@@ -2,7 +2,7 @@
 
 const historyActor =
 {
-  clearCaches: function () {
+  clearCaches () {
     Game.__historyActor_getObjectById = new Map()
     Game.__historyActor_skipActors = new Map()
     Game.__historyActor_skipAttackTargets = new Map()
@@ -10,7 +10,7 @@ const historyActor =
     Game.__historyActor_healers = new Map()
   },
 
-  getObjectById: function (room, id) {
+  getObjectById (room, id) {
     // most likely case, own creep
     const ownCreep = Game.creepsById.get(id)
     if (ownCreep) return ownCreep
@@ -46,7 +46,7 @@ const historyActor =
     return null
   },
 
-  hmiName: function (something) {
+  hmiName (something) {
     let result
 
     if (something.body) result = 'Creep [' + something.name + ']'
@@ -61,24 +61,7 @@ const historyActor =
     return result
   },
 
-  _increaseSomeValue: function (something, valueName, amount) {
-    const now = something[valueName] || 0
-    something[valueName] = now + amount
-  },
-
-  increaseDirectHarm: function (something, amount) {
-    this._increaseSomeValue(something, 'directHarm', amount)
-  },
-
-  increaseSideHarm: function (something, amount) {
-    this._increaseSomeValue(something, 'sideHarm', amount)
-  },
-
-  increaseSideHarmPower: function (something, amount) {
-    this._increaseSomeValue(something, 'sideHarmPower', amount)
-  },
-
-  handle_EVENT_ATTACK: function (room, eventRecord) {
+  handle_EVENT_ATTACK (room, eventRecord) {
     // SHORTCUT fight back is automatic
     if (eventRecord.data.attackType === EVENT_ATTACK_TYPE_HIT_BACK) return
     // SHORTCUT nuke is detected elsewhere
@@ -153,8 +136,6 @@ const historyActor =
       Game.iff.markNPCHostile(attacker)
     }
 
-    this.increaseDirectHarm(attacker, eventRecord.data.damage)
-
     if (attacker.room) {
       attacker.room._fight_ = true
     }
@@ -162,7 +143,7 @@ const historyActor =
     Game._fight_ = true
   },
 
-  handle_EVENT_ATTACK_CONTROLLER: function (room, eventRecord) {
+  handle_EVENT_ATTACK_CONTROLLER (room, eventRecord) {
     // skip objects that were already examined and found unworthy
     if (Game.__historyActor_skipActors.has(eventRecord.objectId)) return
     if (Game.__historyActor_skipAttackTargets.has(room.name)) return
@@ -205,7 +186,7 @@ const historyActor =
     }
   },
 
-  handle_EVENT_HEAL: function (room, eventRecord) {
+  handle_EVENT_HEAL (room, eventRecord) {
     // skip objects that were already examined and found unworthy
     if (Game.__historyActor_skipActors.has(eventRecord.objectId)) return
     if (Game.__historyActor_skipHealTargets.has(eventRecord.data.targetId)) return
@@ -239,18 +220,15 @@ const historyActor =
       }
     }
 
-    healer.__historyActor_healedWhat = target
-    healer.__historyActor_healedHowMuch = eventRecord.data.amount
-
-    // special case, if healed self then have some harm accounted for
-    if (healer.id === target.id) {
-      this.increaseDirectHarm(healer, healer.__historyActor_healedHowMuch)
+    if (healer.id !== target.id && // if healed something else
+        healer.owner.username !== target.owner.username && // from different owner (with potentially unknown reputation)
+        healer.pc && target.pc) { // and both are PCs, just to be sure
+      healer.__historyActor_healedWhat = target
+      Game.__historyActor_healers.set(healer.id, healer)
     }
-
-    Game.__historyActor_healers.set(healer.id, healer)
   },
 
-  processRoomLog: function (room) {
+  processRoomLog (room) {
     const eventLog = room.getEventLog()
 
     for (const eventRecord of eventLog) {
@@ -270,20 +248,24 @@ const historyActor =
     }
   },
 
-  processHealers: function () {
+  processHealers () {
     for (const healer of Game.__historyActor_healers.values()) {
-      if (healer.__historyActor_healedWhat.directHarm) {
-        this.increaseSideHarm(healer, healer.__historyActor_healedWhat.directHarm)
-        this.increaseSideHarmPower(healer, healer.__historyActor_healedHowMuch)
-      }
+      // transfer reputation from heal target to owner of healer
+      const reputation = Game.iff.associate(
+        healer.owner.username, // active
+        healer.__historyActor_healedWhat.owner.username, // acted upon
+        3
+      )
+
+      console.log(this.hmiName(healer) + ' healed, had owner reputation changed to [' + reputation + ']')
     }
   },
 
-  processPostLog: function () {
+  processPostLog () {
     this.processHealers()
   },
 
-  act: function () {
+  act () {
     this.clearCaches()
 
     for (const room of Game.rooms_values) {

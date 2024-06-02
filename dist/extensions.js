@@ -6,14 +6,14 @@ Object.defineProperty(
   Creep.prototype,
   'viable',
   {
-    get: function () {
+    get () {
       if (this.spawning) return true
 
       const limit = this.__viable_value || (this.body.length * CREEP_SPAWN_TIME)
 
       return this.ticksToLive >= limit
     },
-    set: function (value) {
+    set (value) {
       this.__viable_value = value
     },
     configurable: true,
@@ -106,6 +106,138 @@ if (!Creep.prototype.__original_move) {
 
     return rc
   }
+}
+
+const PreferTop = [TOP, TOP, BOTTOM]
+const PreferRight = [RIGHT, RIGHT, LEFT]
+const PreferBottom = [TOP, BOTTOM, BOTTOM]
+const PreferLeft = [RIGHT, LEFT, LEFT]
+
+Creep.prototype.march = function (direction, exit = direction) {
+  if (this.fatigue > 0) {
+    return this.fatigueWrapper()
+  }
+
+  // compatible with FIND_EXIT_...
+  if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
+    console.log('Unexpected march for creep ' + this + ' in direction [' + direction + ']')
+    return ERR_INVALID_ARGS
+  }
+
+  const hasMoved = this.moved()
+
+  if (hasMoved) {
+    this._refreshMove()
+  }
+
+  this.rememberPosition()
+
+  if (this.memory._move) {
+    if (this.memory._move.room !== this.pos.roomName) {
+      bootstrap.imitateMoveErase(this)
+      // continue below
+    } else {
+      const followExistingPathOptions = {
+        noPathFinding: true,
+        reusePath: _.random(3, 5),
+        serializeMemory: true
+      }
+
+      const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, followExistingPathOptions)
+
+      if (rc < OK) {
+        console.log('Unexpected moveTo response for creep ' + this + ' [' + rc + ']')
+        bootstrap.imitateMoveErase(this)
+        // continue below as recovery strategy
+      } else {
+        return rc
+      }
+    }
+  }
+
+  // portals are avoided, no need to provision
+  // https://github.com/screeps/engine/blob/97c9d12385fed686655c13b09f5f2457dd83a2bf/src/game/rooms.js#L164
+  let findNewPathOptions = {
+    ignoreCreeps: this.room.highway(),
+    maxRooms: 1,
+    reusePath: _.random(3, 5),
+    serializeMemory: true
+  }
+  let optionsWrapped = false
+
+  const terrain = this.room.getTerrain()
+  const delta = bootstrap.directionToDelta[direction]
+  const xAhead = this.pos.x + delta[0]
+  const yAhead = this.pos.y + delta[1]
+  const maskAhead = terrain.get(xAhead, yAhead)
+
+  let needPathfinding = !this.room.highway()
+
+  if (!needPathfinding && maskAhead === TERRAIN_MASK_SWAMP) {
+    findNewPathOptions = bootstrap.moveOptionsWrapper(this, findNewPathOptions)
+    optionsWrapped = true
+
+    needPathfinding = !findNewPathOptions.ignoreRoads
+  }
+
+  if (!needPathfinding && hasMoved === false) {
+    needPathfinding = true
+  }
+
+  if (needPathfinding) {
+    if (!optionsWrapped) {
+      findNewPathOptions = bootstrap.moveOptionsWrapper(this, findNewPathOptions)
+      optionsWrapped = true
+    }
+
+    let xStart = 0
+    let xEnd = 49
+    let yStart = 0
+    let yEnd = 49
+
+    if (exit === TOP) yEnd = 0
+    if (exit === RIGHT) xStart = 49
+    if (exit === BOTTOM) yStart = 49
+    if (exit === LEFT) xEnd = 0
+
+    const goals = []
+    for (let x1 = xStart; x1 <= xEnd; ++x1) {
+      for (let y1 = yStart; y1 <= yEnd; ++y1) {
+        const maskOnBorder = terrain.get(x1, y1)
+        if (maskOnBorder !== TERRAIN_MASK_WALL) {
+          goals.push(new RoomPosition(x1, y1, this.pos.roomName))
+        }
+      }
+    }
+
+    if (goals.length > 0) {
+      const destination = _.sample(goals)
+      return this.moveTo(destination, findNewPathOptions)
+    }
+
+    return ERR_NOT_FOUND
+  }
+
+  let marchDirection = direction
+
+  if (maskAhead === TERRAIN_MASK_WALL) {
+    // coordinate checks inside steer creep towards center
+    if (direction === TOP || direction === BOTTOM) {
+      if (xAhead < 25) marchDirection = _.sample(PreferRight)
+      else marchDirection = _.sample(PreferLeft)
+    } else if (direction === RIGHT || direction === LEFT) {
+      if (yAhead < 25) marchDirection = _.sample(PreferBottom)
+      else marchDirection = _.sample(PreferTop)
+    }
+
+    // avert room change by accident
+    if (this.pos.x === 1 && marchDirection === LEFT) marchDirection = RIGHT
+    if (this.pos.x === 48 && marchDirection === RIGHT) marchDirection = LEFT
+    if (this.pos.y === 1 && marchDirection === TOP) marchDirection = BOTTOM
+    if (this.pos.y === 48 && marchDirection === BOTTOM) marchDirection = TOP
+  }
+
+  return this.move(marchDirection)
 }
 
 Creep.prototype.moveWrapper = function (direction, options = { }) {
@@ -369,37 +501,6 @@ Room.prototype.mineralType = function () {
   return this.memory.mnrl
 }
 
-Room.prototype.sourceKeeper = function () {
-  this.memory.nodeAccessed = Game.time
-
-  if (this.memory.srck !== undefined) {
-    return this.memory.srck
-  }
-
-  const keeperLairs = this.find(
-    FIND_STRUCTURES,
-    {
-      filter: { structureType: STRUCTURE_KEEPER_LAIR }
-    }
-  ).length
-
-  this.memory.srck = keeperLairs > 0
-
-  return this.memory.srck
-}
-
-Room.prototype.sourceEnergyCapacity = function () {
-  if (this.ownedOrReserved()) {
-    return SOURCE_ENERGY_CAPACITY
-  }
-
-  if (this.sourceKeeper()) {
-    return SOURCE_ENERGY_KEEPER_CAPACITY
-  }
-
-  return SOURCE_ENERGY_NEUTRAL_CAPACITY
-}
-
 Room.prototype.extendedAvailableEnergyCapacity = function () {
   if (!this._my_) return 0
 
@@ -540,6 +641,33 @@ Room.prototype.setLabRecepie = function (mark, isSource, resourceType, input, si
   if (silent) return
 
   console.log('Lab with mark [' + mark + '] not found in room [' + this.name + ']')
+}
+
+Room.prototype.highway = function () {
+  if (this.controller) return false
+  return bootstrap.isHighwayRoomName(this.name)
+}
+
+Room.prototype.updateOwner = function () {
+  this.memory.nodeAccessed = Game.time
+
+  const nowUsername = this.extendedOwnerUsername()
+
+  if (this.memory.ownerUsername !== nowUsername) {
+    Memory.roomOwnerChangeDetected = Game.time
+  }
+
+  this.memory.ownerUsername = nowUsername
+  this.memory.ownerLevel = this.controller.level
+}
+
+Room.prototype.eraseOwner = function () {
+  if (this.memory.ownUsername !== undefined) {
+    Memory.roomOwnerChangeDetected = Game.time
+  }
+
+  this.memory.ownerUsername = undefined
+  this.memory.ownerLevel = undefined
 }
 
 RoomPosition.prototype.offBorderDistance = function () {
@@ -742,43 +870,43 @@ StructureTerminal.prototype.autoSell = function (order, amount) {
     const has = this.store.getUsedCapacity(order.resourceType)
 
     if (has === undefined || has <= 0) {
-      return ERR_NOT_ENOUGH_RESOURCES
+      return [ERR_NOT_ENOUGH_RESOURCES, 0]
     }
 
     const canBeTransferred = this._caclTransactionAmount(order.roomName)
 
     if (canBeTransferred < 1) {
-      return ERR_NOT_ENOUGH_ENERGY
+      return [ERR_NOT_ENOUGH_ENERGY, 0]
     }
 
     const actualAmount = Math.min(amount, has, canBeTransferred, order.amount)
 
-    return Game.market.deal(order.id, actualAmount, this.room.name)
+    return [Game.market.deal(order.id, actualAmount, this.room.name), actualAmount]
   }
 
-  return ERR_INVALID_ARGS
+  return [ERR_INVALID_ARGS, undefined]
 }
 
 StructureTerminal.prototype.autoSend = function (resourceType, amount, destination, description = undefined) {
   const has = this.store.getUsedCapacity(resourceType)
 
   if (has === undefined || has <= 0) {
-    return ERR_NOT_ENOUGH_RESOURCES
+    return [ERR_NOT_ENOUGH_RESOURCES, 0]
   }
 
   const canBeTransferred = this._caclTransactionAmount(destination)
 
   if (canBeTransferred < 1) {
-    return ERR_NOT_ENOUGH_ENERGY
+    return [ERR_NOT_ENOUGH_ENERGY, 0]
   }
 
   const actualAmount = Math.min(amount, canBeTransferred)
 
-  return this.send(resourceType, actualAmount, destination, description)
+  return [this.send(resourceType, actualAmount, destination, description), actualAmount]
 }
 
 const extensions = {
-  shortcuts: function () {
+  shortcuts () {
     const cutShort = function (name) {
       const index = name.indexOf('_')
 
@@ -793,6 +921,7 @@ const extensions = {
     Game.myCreepsCount = 0
 
     Game.rooms_values = []
+    Game.roomsToScan = new Set()
 
     Game.creepsById = new Map()
     Game.storages = new Map()
@@ -808,6 +937,18 @@ const extensions = {
       const room = Game.rooms[roomName]
       // cachge property that is actually a function call
       room._my_ = room.my
+
+      // automatic intelligence recording for every room with visibility
+      if (room.controller) {
+        if (room._my_) {
+          // clear record for rooms with owned controller
+          room.eraseOwner()
+        } else {
+          // for every other room with controller, including own reserved, keep info
+          room.updateOwner()
+        }
+      }
+      // for rooms without controller rely on coordinates
 
       Game.rooms_values.push(room)
 
