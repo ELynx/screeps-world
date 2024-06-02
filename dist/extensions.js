@@ -214,7 +214,7 @@ Creep.prototype.march = function (direction, exit = direction) {
       }
 
       if (spanStart !== undefined) {
-        spans.push(spanStart, yEnd)
+        spans.push([spanStart, yEnd])
       }
 
       for (const span of spans) {
@@ -239,7 +239,7 @@ Creep.prototype.march = function (direction, exit = direction) {
       }
 
       if (spanStart !== undefined) {
-        spans.push(spanStart, xEnd)
+        spans.push([spanStart, xEnd])
       }
 
       for (const span of spans) {
