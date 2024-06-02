@@ -1584,6 +1584,12 @@ cook._setWorldDemand = function (room) {
   }
 }
 
+// to save on require call
+const DummyRepairController = {
+  id: 'repair',
+  actRange: 3
+}
+
 cook._unloadActiveHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
 
@@ -1657,7 +1663,12 @@ cook._unloadActiveHarvesters = function (room) {
 
   for (const harvester of harvesters) {
     let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
-    if (_.some(clusterContainers, notMaxHits)) continue
+    for (const container of clusterContainers) {
+      if (notMaxHits(container)) {
+        bootstrap.assignCreep(DummyRepairController, container, undefined, harvester)
+        continue
+      }
+    }
 
     const close2 = (a, b) => {
       const dx = Math.abs(a.x - b.x)
@@ -1667,7 +1678,12 @@ cook._unloadActiveHarvesters = function (room) {
     }
 
     let clusterLinks = _.filter(links, link => close2(link.pos, harvester._source_.pos))
-    if (_.some(clusterLinks, notMaxHits)) continue
+    for (const link of clusterLinks) {
+      if (notMaxHits(link)) {
+        bootstrap.assignCreep(DummyRepairController, link, undefined, harvester)
+        continue
+      }
+    }
 
     if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
 
