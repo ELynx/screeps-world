@@ -61,6 +61,11 @@ const loop = function () {
     skipTicks = 0
   }
 
+  // if last tick was not successful, reduce stress
+  if (Game.time > Memory.time + 1) {
+    Game._chill_ = true
+  }
+
   // prevent division by zero
   const myCreepsCount = Math.max(1, Game.myCreepsCount)
 
