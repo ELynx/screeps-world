@@ -131,8 +131,7 @@ const bootstrap = {
 
   // imitate _move cahce
   // https://github.com/screeps/engine/blob/78631905d975700d02786d9b666b9f97b1f6f8f9/src/game/creeps.js#L286
-  imitateMoveCreate (target, creep, path) {
-    const pos = target.pos
+  imitateMoveCreate (pos, creep, path) {
     creep.memory._move =
     {
       dest: { x: pos.x, y: pos.y, room: pos.roomName },
@@ -179,7 +178,7 @@ const bootstrap = {
     creep.memory.xtra = extra
 
     if (targetSolution) {
-      this.imitateMoveCreate(target, creep, targetSolution)
+      this.imitateMoveCreate(target.pos, creep, targetSolution)
     } else {
       this.imitateMoveErase(creep)
     }

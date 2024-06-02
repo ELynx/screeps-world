@@ -113,15 +113,10 @@ const PreferRight = [RIGHT, RIGHT, LEFT]
 const PreferBottom = [TOP, BOTTOM, BOTTOM]
 const PreferLeft = [RIGHT, LEFT, LEFT]
 
+// compatible with FIND_EXIT_...
 Creep.prototype.march = function (direction, exit = direction) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
-  }
-
-  // compatible with FIND_EXIT_...
-  if (direction !== TOP && direction !== RIGHT && direction !== BOTTOM && direction !== LEFT) {
-    console.log('Unexpected march for creep ' + this + ' in direction [' + direction + ']')
-    return ERR_INVALID_ARGS
   }
 
   const hasMoved = this.moved()
@@ -132,21 +127,21 @@ Creep.prototype.march = function (direction, exit = direction) {
 
   this.rememberPosition()
 
+  const followExistingPathOptions = {
+    noPathFinding: true,
+    reusePath: _.random(3, 5),
+    serializeMemory: true // keep serialized
+  }
+
   if (this.memory._move) {
     if (this.memory._move.room !== this.pos.roomName) {
       bootstrap.imitateMoveErase(this)
       // continue below
     } else {
-      const followExistingPathOptions = {
-        noPathFinding: true,
-        reusePath: _.random(3, 5),
-        serializeMemory: true
-      }
-
       const rc = this.moveTo(this.memory._move.dest.x, this.memory._move.dest.y, followExistingPathOptions)
 
       if (rc < OK) {
-        console.log('Unexpected moveTo response for creep ' + this + ' [' + rc + ']')
+        console.log('Unexpected moveTo continue response for creep ' + this + ' [' + rc + ']')
         bootstrap.imitateMoveErase(this)
         // continue below as recovery strategy
       } else {
@@ -161,14 +156,14 @@ Creep.prototype.march = function (direction, exit = direction) {
     ignoreCreeps: this.room.highway(),
     maxRooms: 1,
     reusePath: _.random(3, 5),
-    serializeMemory: true
+    serializeMemory: false // will be serialized inside
   }
   let optionsWrapped = false
 
-  const terrain = this.room.getTerrain()
   const delta = bootstrap.directionToDelta[direction]
   const xAhead = this.pos.x + delta[0]
   const yAhead = this.pos.y + delta[1]
+  const terrain = this.room.getTerrain()
   const maskAhead = terrain.get(xAhead, yAhead)
 
   let needPathfinding = !this.room.highway()
@@ -201,18 +196,76 @@ Creep.prototype.march = function (direction, exit = direction) {
     if (exit === LEFT) xEnd = 0
 
     const goals = []
-    for (let x1 = xStart; x1 <= xEnd; ++x1) {
-      for (let y1 = yStart; y1 <= yEnd; ++y1) {
-        const maskOnBorder = terrain.get(x1, y1)
-        if (maskOnBorder !== TERRAIN_MASK_WALL) {
-          goals.push(new RoomPosition(x1, y1, this.pos.roomName))
+
+    if (xStart === xEnd) {
+      const spans = []
+      let spanStart
+
+      for (let y = yStart; y <= yEnd; ++y) {
+        const maskAtBorder = terrain.get(xStart, y)
+        if (maskAtBorder === TERRAIN_MASK_WALL) {
+          if (spanStart === undefined) spanStart = y
+        } else {
+          if (spanStart !== undefined) {
+            spans.push([spanStart, y - 1])
+            spanStart = undefined
+          }
         }
+      }
+
+      if (spanStart !== undefined) {
+        spans.push(spanStart, yEnd)
+      }
+
+      for (const span of spans) {
+        goals.push(new RoomPosition(xStart, Math.floor((span[0] + span[1]) / 2), this.pos.roomName))
+      }
+    }
+
+    if (yStart === yEnd) {
+      const spans = []
+      let spanStart
+
+      for (let x = xStart; x <= xEnd; ++x) {
+        const maskAtBorder = terrain.get(x, yStart)
+        if (maskAtBorder === TERRAIN_MASK_WALL) {
+          if (spanStart === undefined) spanStart = x
+        } else {
+          if (spanStart !== undefined) {
+            spans.push([spanStart, x - 1])
+            spanStart = undefined
+          }
+        }
+      }
+
+      if (spanStart !== undefined) {
+        spans.push(spanStart, xEnd)
+      }
+
+      for (const span of spans) {
+        goals.push(new RoomPosition(Math.floor((span[0] + span[1]) / 2), yStart, this.pos.roomName))
       }
     }
 
     if (goals.length > 0) {
       const destination = _.sample(goals)
-      return this.moveTo(destination, findNewPathOptions)
+      const path = room.findPath(this.pos, destination, findNewPathOptions)
+
+      if (path.length > 0) {
+        const last = _.last(path)
+        const found = destination.x === last.x && destination.y === last.y
+        if (found) {
+          bootstrap.imitateMoveCreate(destination, this, path)
+          const rc = this.moveTo(destination.x, destination.y, followExistingPathOptions)
+
+          if (rc >= OK) {
+            return rc
+          }
+
+          console.log('Unexpected moveTo start response for creep ' + this + ' [' + rc + ']')
+          bootstrap.imitateMoveErase(this)
+        }
+      }
     }
 
     return ERR_NOT_FOUND
