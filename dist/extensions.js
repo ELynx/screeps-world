@@ -155,7 +155,6 @@ Creep.prototype.march = function (direction, exit = direction) {
   let findNewPathOptions = {
     ignoreCreeps: this.room.highway(),
     maxRooms: 1,
-    reusePath: _.random(3, 5),
     serializeMemory: false // will be serialized inside
   }
   let optionsWrapped = false
