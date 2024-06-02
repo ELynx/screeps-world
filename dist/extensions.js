@@ -249,7 +249,7 @@ Creep.prototype.march = function (direction, exit = direction) {
 
     if (goals.length > 0) {
       const destination = _.sample(goals)
-      const path = room.findPath(this.pos, destination, findNewPathOptions)
+      const path = this.room.findPath(this.pos, destination, findNewPathOptions)
 
       if (path.length > 0) {
         const last = _.last(path)
