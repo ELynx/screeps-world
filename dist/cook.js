@@ -1944,11 +1944,15 @@ cook._operateLabs = function (room) {
 
 // called from room actor after controllers
 cook.roomPost = function (room) {
+  this._unloadActiveHarvesters(room)
+  this._operateLinks(room)
+
   this._updateRoomRecepie(room)
   this._setWorldDemand(room)
 
-  this._unloadActiveHarvesters(room)
-  this._operateLinks(room)
+  if (Game._war_ || Game._fight_ || room._fight_) return
+  if (Game._chill_) return
+
   this._operateLabs(room)
 }
 
@@ -2182,6 +2186,7 @@ cook.globalPost = function () {
   this._performTerminalExchange()
 
   if (Game._war_) return
+  if (Game._chill_) return
 
   this._operatePowerSpawns()
   this._operateFactories()

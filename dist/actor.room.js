@@ -400,7 +400,13 @@ const roomActor =
       )
 
       if (unassignedCreeps.length > 0) {
-        const standing = this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        let standing
+        if (Game._chill_ && processKey % 2 === 1) {
+          standing = []
+        } else {
+          standing = this.roomControllersControl(roomControllers, room, unassignedCreeps)
+        }
+
         for (const creep of standing) {
           creep.blockPosition()
         }
