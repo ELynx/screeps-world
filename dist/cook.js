@@ -199,9 +199,7 @@ StructureExtension.prototype.everWant = function (resourceType) {
   return resourceType === RESOURCE_ENERGY
 }
 
-const _Reagents1 = new Set(_.keys(REACTIONS))
-const _Reagents2 = new Set(_.keys(REACTION_TIME))
-const Reagents = new Set([..._Reagents1, ..._Reagents2])
+const Reagents = new Set([..._.keys(REACTIONS), ..._.keys(REACTION_TIME)])
 
 StructureLab.prototype.everWant = function (resourceType) {
   return Reagents.has(resourceType)
