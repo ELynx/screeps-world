@@ -16,11 +16,6 @@ upgradeGenericController._check = function (room) {
     return false
   }
 
-  // don't upgrade while there is no CPU
-  if (Game._chill_) {
-    return false
-  }
-
   if (room.controller.upgradeBlocked) {
     return false
   }
@@ -61,9 +56,6 @@ upgradeSpecialistController.act = function (controller, creep) {
       }
     }
   }
-
-  // STRATEGY when CPU is lacking freeze upgraders in place
-  if (Game._chill_) return OK
 
   return this._act(controller, creep)
 }
