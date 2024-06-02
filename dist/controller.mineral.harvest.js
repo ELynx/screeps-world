@@ -39,11 +39,6 @@ mineralHarvestController.targets = function (room) {
     return []
   }
 
-  // don't mine while there is not enough CPU
-  if (Game._chill_) {
-    return []
-  }
-
   if (room.memory.mlvl === 0) {
     return []
   }
