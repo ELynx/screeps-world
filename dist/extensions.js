@@ -203,7 +203,7 @@ Creep.prototype.march = function (direction, exit = direction) {
 
       for (let y = yStart; y <= yEnd; ++y) {
         const maskAtBorder = terrain.get(xStart, y)
-        if (maskAtBorder === TERRAIN_MASK_WALL) {
+        if (maskAtBorder !== TERRAIN_MASK_WALL) {
           if (spanStart === undefined) spanStart = y
         } else {
           if (spanStart !== undefined) {
@@ -228,7 +228,7 @@ Creep.prototype.march = function (direction, exit = direction) {
 
       for (let x = xStart; x <= xEnd; ++x) {
         const maskAtBorder = terrain.get(x, yStart)
-        if (maskAtBorder === TERRAIN_MASK_WALL) {
+        if (maskAtBorder !== TERRAIN_MASK_WALL) {
           if (spanStart === undefined) spanStart = x
         } else {
           if (spanStart !== undefined) {
