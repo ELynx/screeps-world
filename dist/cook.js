@@ -201,7 +201,7 @@ StructureExtension.prototype.everWant = function (resourceType) {
 
 const _Reagents1 = new Set(_.keys(REACTIONS))
 const _Reagents2 = new Set(_.keys(REACTION_TIME))
-const Reagents = _Reagents1.union(_Reagents2)
+const Reagents = new Set([..._Reagents1, ..._Reagents2])
 
 StructureLab.prototype.everWant = function (resourceType) {
   return Reagents.has(resourceType)
