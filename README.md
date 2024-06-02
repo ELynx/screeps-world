@@ -96,14 +96,6 @@ Flag to turn verbose naming on and off.
 
 Instead of healing by towers spawn healers.
 
-No firing at things in room safe mode.
-
-* Set threat to 0.
-
-* Towers do not fire in rooms with threat 0.
-
-Ignore Invader healers if no other Invader creeps exist.
-
 Don't send military to enemy safe mode rooms.
 
 ### Technical

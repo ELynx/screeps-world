@@ -10,7 +10,7 @@ const StructureNodeMaxAge = 3 * CREEP_LIFE_TIME
 const cleanup = {
   once: true,
 
-  memoryNodeNotAccessed: function (memoryNode, age) {
+  memoryNodeNotAccessed (memoryNode, age) {
     if (memoryNode.nodeAccessed) {
       return memoryNode.nodeAccessed < (Game.time - age)
     }
@@ -18,21 +18,23 @@ const cleanup = {
     return true
   },
 
-  cleanupMemoryValues: function () {
+  cleanupMemoryValues () {
     for (const name in Memory.rooms) {
       Memory.rooms[name] = _.pick(
         Memory.rooms[name],
         [
           '_ttt',
           'abld',
+          'blok',
           'cook',
           'intl',
           'mlvl',
           'mnrl',
           'nodeAccessed',
+          'ownerLevel',
+          'ownerUsername',
           'photo',
           'slvl',
-          'srck',
           'threat',
           'ulvl',
           'wlvl',
@@ -71,7 +73,7 @@ const cleanup = {
     console.log('Memory values sanitized')
   },
 
-  cleanupMemory: function () {
+  cleanupMemory () {
     for (const name in Memory.creeps) {
       if (!Game.creeps[name]) {
         delete Memory.creeps[name]
@@ -103,7 +105,7 @@ const cleanup = {
     }
   },
 
-  cleanupFlags: function () {
+  cleanupFlags () {
     const taskIds = _.keys(bootstrap.taskControllers)
     const processIds = _.keys(bootstrap.processControllers)
     const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
@@ -114,6 +116,7 @@ const cleanup = {
       if (flagName === 'profiler') continue
       if (flagName === 'recount') continue
       if (flagName === 'war') continue
+      if (_.startsWith(flagName, 'block')) continue
 
       const controllerFound = _.some(
         flagKeys,
@@ -128,7 +131,7 @@ const cleanup = {
     }
   },
 
-  cleanup: function () {
+  cleanup () {
     if (this.once) {
       this.once = false
       this.cleanupMemoryValues()

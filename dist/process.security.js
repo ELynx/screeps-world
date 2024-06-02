@@ -28,7 +28,7 @@ secutiryProcess.work = function (room) {
   const hostileCreeps = room.find(
     FIND_CREEPS,
     {
-      filter: creep => creep.hostile
+      filter: creep => creep.hostile && creep.ticksToLive > (room.controller.safeMode || 1)
     }
   )
 
@@ -96,6 +96,12 @@ secutiryProcess.work = function (room) {
 
           console.log(notification)
           Game.notify(notification)
+
+          if (rc >= OK) {
+            threatLevel = 0
+            room._threatEscalated_ = undefined
+            console.log(room.name + ' safe more set threat level to ' + threatLevel)
+          }
 
           break
         }

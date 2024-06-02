@@ -89,6 +89,10 @@ cook.___roomSupply = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
+    if (structure.effects && structure.effects.length > 0) {
+      if (_.some(structure.effects, _.matches(PWR_DISRUPT_TERMINAL))) return 0
+    }
+
     const all = intentSolver.getAllUsedCapacity(structure)
 
     if (resourceType === RESOURCE_ENERGY) {
@@ -108,7 +112,7 @@ cook.__hasSupply = function (structure, resourceType) {
   if (structure === undefined) return false
 
   const lambda = () => this.___roomSupply(structure, resourceType)
-  const supply = intentSolver.getWithIntentCache(structure, '__cook__hasSupply', lambda)
+  const supply = intentSolver.getWithIntentCache(structure, '__cook__hasSupply_' + resourceType, lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return supply + planned > 0
@@ -171,15 +175,18 @@ cook.___hasFlush = function (structure) {
 }
 
 cook.___worldSupply = function (structure, resourceType) {
+  // if positive -> do not throw around
+  // if negative -> resource is marked as "not to give away"
+  const worldDemand = this.___worldDemand(structure, resourceType)
+  if (worldDemand !== 0) return 0
+
   if (resourceType === RESOURCE_ENERGY) {
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
     if (this.__hasEnergyDemand(structure)) return 0
-    return Math.floor(SOURCE_ENERGY_CAPACITY / 2)
+    return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
-  const mineralType = structure.room.mineralType()
-  if (resourceType !== mineralType) return 0
   return this.___roomSupply(structure, resourceType)
 }
 
@@ -270,7 +277,7 @@ cook._hasDemand = function (structure, resourceType) {
   if (structure === undefined) return false
 
   const lambda = () => this.___roomDemand(structure, resourceType)
-  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda)
   const planned = this.___plannedDelta(structure, resourceType)
 
   return demand > planned
@@ -399,8 +406,8 @@ cook._hasSpace = function (structure, resourceType, forMining = false) {
   const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
   const lambda2 = () => this.___roomDemand(structure, resourceType)
 
-  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace', lambda1)
-  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand', lambda2)
+  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace_' + resourceType, lambda1)
+  const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda2)
   const eitherOr = Math.max(space, demand)
   const planned = this.___plannedDelta(structure, resourceType)
 
@@ -440,7 +447,11 @@ cook.__worldDemandTypes = function (structure) {
   if (!structure.isActiveSimple) return []
 
   if (structure.__cook__worldDemandMap) {
-    return Array.from(structure.__cook__worldDemandMap.keys())
+    const types = []
+    for (const [type, value] of structure.__cook__worldDemandMap) {
+      if (value > 0) types.push(type)
+    }
+    return types
   }
 
   return []
@@ -719,6 +730,10 @@ cook._resourceRestock = function (room, creeps) {
     return [[], []]
   }
 
+  if (!room._my_) {
+    return [creeps, []]
+  }
+
   const unused = []
   const used = []
 
@@ -835,12 +850,31 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
   return false
 }
 
+cook.___filterOutUnderRamparts = function (room, structures) {
+  if (room.__cook__ramparts === undefined) {
+    room.__cook__ramparts = _.filter(
+      room.find(FIND_STRUCTURES),
+      structure => structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
+    )
+  }
+
+  return _.filter(
+    structures,
+    structure => {
+      return !_.some(
+        room.__cook__ramparts,
+        rampart => rampart.pos.x === structure.pos.x && rampart.pos.y === structure.pos.y
+      )
+    }
+  )
+}
+
 cook.__energyRestockSources = function (room) {
   if (room.__cook__energyRestockSources) {
     return room.__cook__energyRestockSources
   }
 
-  const sources = []
+  let sources = []
 
   for (const container of room.__cook__containers) {
     if (this.__hasSupply(container, RESOURCE_ENERGY)) {
@@ -860,6 +894,10 @@ cook.__energyRestockSources = function (room) {
 
   if (this.__hasSupply(room.storage, RESOURCE_ENERGY)) sources.push(room.storage)
   if (this.__hasSupply(room.terminal, RESOURCE_ENERGY)) sources.push(room.terminal)
+
+  if (!room._my_ && room.controller && room.controller.owner) {
+    sources = this.___filterOutUnderRamparts(room, sources)
+  }
 
   for (const source of sources) {
     source.__cook__resourceToTake = RESOURCE_ENERGY
@@ -922,7 +960,7 @@ cook.___roomNeedResource = function (room, resourceType, referenceLab = undefine
 }
 
 cook.__resourceRestockSources = function (room, count) {
-  if (count === 0) return []
+  if (!room._my_ || count === 0) return []
 
   const sources = []
 
@@ -998,7 +1036,7 @@ cook.__resourceRestockSources = function (room, count) {
     }
   }
 
-  if (Memory.flush && flushStore(room.storage)) sources.push(room.storage)
+  if (flushStore(room.storage)) sources.push(room.storage)
 
   return sources
 }
@@ -1067,7 +1105,7 @@ cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
 }
 
 cook.__harvestersPass2 = function (room, harvesters) {
-  if (room._actType_ === bootstrap.RoomActTypeMy) {
+  if (room._actType_ === bootstrap.RoomActTypeMy && room.links && room.links.size > 0) {
     // transfer energy reserves from containers to links
     for (const link of room.links.values()) {
       if (!link.__cook__cache__isSource) continue
@@ -1464,40 +1502,50 @@ cook._updateRoomRecepie = function (room) {
   }
 }
 
-cook._askWorld = function (room) {
+cook._setWorldDemand = function (room) {
   if (!room._my_) return
   if (!room.terminal) return
 
   const sourceLevel = room.memory.slvl || 0
-  if (sourceLevel < 2) {
+  if (room._fight_ || sourceLevel < 2) {
     const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
     const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     if (now < ideal) {
-      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
+      const delta = ideal - now
+      // slow down jiggling
+      if (delta >= SOURCE_ENERGY_CAPACITY / 3) {
+        this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
+      }
+    } else {
+      // mark as not ready to give energy
+      this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, -1)
     }
   }
 
   if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-    if (room.labs.size === 10) {
-      const mineralType = room.mineralType()
-
-      const lambda = resourceType => {
-        if (mineralType !== resourceType) {
-          if (!this.__hasSupply(room.terminal, resourceType)) {
-            this.___addWorldDemand(room.terminal, resourceType, 1000)
-          }
+    const mineralType = room.mineralType()
+    const lambda = resourceType => {
+      // demand and hold only foreign resources
+      if (resourceType !== mineralType) {
+        if (this.__hasSupply(room.terminal, resourceType)) {
+          // mark as not ready to give this resource
+          this.___addWorldDemand(room.terminal, resourceType, -1)
+        } else {
+          this.___addWorldDemand(room.terminal, resourceType, 1000)
         }
       }
+    }
 
+    if (room.labs.size === 10) {
       lambda(RESOURCE_ZYNTHIUM)
       lambda(RESOURCE_KEANIUM)
       lambda(RESOURCE_UTRIUM)
       lambda(RESOURCE_LEMERGIUM)
       lambda(RESOURCE_UTRIUM_LEMERGITE)
       lambda(RESOURCE_ZYNTHIUM_KEANITE)
-    } else {
-      this.___addWorldDemand(room.terminal, RESOURCE_GHODIUM, 100) // drip feed it
     }
+
+    lambda(RESOURCE_GHODIUM)
   }
 }
 
@@ -1576,7 +1624,14 @@ cook._unloadActiveHarvesters = function (room) {
     let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
     if (_.some(clusterContainers, notMaxHits)) continue
 
-    let clusterLinks = _.filter(links, link => link.pos.manhattanDistance(harvester._source_.pos) === 2)
+    const close2 = (a, b) => {
+      const dx = Math.abs(a.x - b.x)
+      if (dx <= 2) return true
+      const dy = Math.abs(a.y - b.y)
+      return dy <= 2
+    }
+
+    let clusterLinks = _.filter(links, link => close2(link.pos, harvester._source_.pos))
     if (_.some(clusterLinks, notMaxHits)) continue
 
     if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
@@ -1630,7 +1685,7 @@ cook._unloadActiveHarvesters = function (room) {
     }
     if (transferredToLink) continue // to next harvester
 
-    if (room._actType_ === bootstrap.RoomActTypeMy) {
+    if (room._actType_ === bootstrap.RoomActTypeMy && room.links && room.links.size > 0) {
       // unload to containers only when there is more energy in source
       // this is to reduce withdrawing from containers to links on way back
       const rc = harvester._source_harvest_specialist_rc_
@@ -1839,7 +1894,7 @@ cook._operateLabs = function (room) {
 // called from room actor after controllers
 cook.roomPost = function (room) {
   this._updateRoomRecepie(room)
-  this._askWorld(room)
+  this._setWorldDemand(room)
 
   this._unloadActiveHarvesters(room)
   this._operateLinks(room)
@@ -1911,9 +1966,9 @@ cook._performTerminalExchange = function () {
     return ERR_INVALID_TARGET
   }
 
-  const amount = Math.min(sourceSupply, targetDemand)
+  const exchange = Math.min(sourceSupply, targetDemand)
 
-  const rc = sourceTerminal.autoSend(sourceType, amount, targetTerminal.room.name, 'internal exchange')
+  const [rc, amount] = sourceTerminal.autoSend(sourceType, exchange, targetTerminal.room.name, 'internal exchange')
   if (rc >= OK) {
     console.log('Terminal in [' + sourceTerminal.room.name + '] helped terminal in [' + targetTerminal.room.name + '] with [' + amount + '] of [' + sourceType + ']')
     sourceTerminal._operated_ = true
@@ -2008,11 +2063,6 @@ cook.___excessToSell = function (terminal, resourceType) {
 
   if (free <= 0) return 0
 
-  if (resourceType === RESOURCE_ENERGY) {
-    free -= TerminalEnergyDemand
-    return Math.max(free, 0)
-  }
-
   if (this.___roomNeedResource(terminal.room, resourceType) > 0) return 0
 
   if (terminal.room.mineralType() === resourceType) {
@@ -2055,9 +2105,9 @@ cook.__sellTerminalExcess = function (terminal) {
   if (excess > 0) {
     const order = this.___findBuyOrder(terminal, resourceType)
     if (order) {
-      const rc = terminal.autoSell(order, excess)
+      const [rc, armount] = terminal.autoSell(order, excess)
       if (rc >= OK) {
-        console.log('Terminal in [' + terminal.room.name + '] sold up to [' + excess + '] of [' + resourceType + ']')
+        console.log('Terminal in [' + terminal.room.name + '] sold [' + armount + '] of [' + resourceType + ']')
         terminal._operated_ = true
         return rc
       }

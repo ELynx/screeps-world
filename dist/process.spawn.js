@@ -73,18 +73,24 @@ spawnProcess._canSpawn = function (room) {
   return room.extendedAvailableEnergyCapacity() > 0
 }
 
+spawnProcess._hasResourcesForOptional = function (room) {
+  if (Game._war_) return false
+  if (room._fight_) return false
+  return true
+}
+
 spawnProcess.streloks = function (room, live) {
   const threat = room.memory.threat || 0
-  if (threat <= bootstrap.ThreatLevelLow) return
-
-  const want = threat
+  const want = (threat <= bootstrap.ThreatLevelLow) ? 0 : threat
 
   const roomServiceFlag = Game.flags['strelok_' + room.name]
   const now = this._hasAndPlanned(room, live, 'strelok') + (roomServiceFlag ? roomServiceFlag.getValue() : 0)
 
+  const selfHelp = this._canSpawn(room) && threat < bootstrap.ThreatLevelMedium
+
   this.addToQueue(
     room.name,
-    this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
+    selfHelp ? room.name : queue.FROM_CLOSEST_ROOM,
     'strelok',
     'strelok',
     {
@@ -115,7 +121,7 @@ spawnProcess.harvesters = function (room, live) {
 
 spawnProcess.miners = function (room, live) {
   const limit = room.memory.slvl || 0
-  const want = this._canSpawn(room) ? (room.memory.mlvl || 0) : 0
+  const want = this._canSpawn(room) && this._hasResourcesForOptional(room) ? (room.memory.mlvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'miner')
 
   this.addToQueue(
@@ -133,7 +139,7 @@ spawnProcess.miners = function (room, live) {
 
 spawnProcess.upgraders = function (room, live) {
   const limit = room.memory.slvl || 0
-  const want = (!Game._war_ && this._canSpawn(room)) ? (room.memory.ulvl || 0) : 0
+  const want = this._canSpawn(room) && this._hasResourcesForOptional(room) ? (room.memory.ulvl || 0) : 0
   const now = this._hasAndPlanned(room, live, 'upgrader')
 
   this.addToQueue(
@@ -151,8 +157,36 @@ spawnProcess.upgraders = function (room, live) {
 }
 
 spawnProcess.workers_my = function (room, live) {
-  const limit = (room.level() < 3 ? 2 : 1) * (room.memory.slvl || 0)
-  const want = (room.memory.wwww === undefined) ? (room.level() < 7 ? 2 : 1) : room.memory.wwww
+  const level = room.level()
+
+  let limit
+  if (room.memory.slvl) {
+    const fromSources = room.memory.slvl || 0
+
+    if (level < 3) {
+      limit = fromSources * 3
+    } else if (level < 7) {
+      limit = fromSources * 2
+    } else {
+      limit = fromSources
+    }
+  } else {
+    limit = 0
+  }
+
+  let want
+  if (room.memory.wwww === undefined) {
+    if (level < 3) {
+      want = 4
+    } else if (level < 7) {
+      want = 2
+    } else {
+      want = 1
+    }
+  } else {
+    want = room.memory.wwww || 0
+  }
+
   const now = this._hasAndPlanned(room, live, 'worker')
 
   this.addToQueue(
@@ -215,7 +249,7 @@ spawnProcess.myReserved = function (room, live) {
   this.plunders(room, live)
 }
 
-spawnProcess.sourceKeeper = function (room, live) {
+spawnProcess.sourceKeeper = function (_room, _live) {
   // nothing for sourceKeeper now
 }
 
@@ -233,7 +267,7 @@ spawnProcess.neutral = function (room, live) {
   this.workers_remote(room, live, 1)
 }
 
-spawnProcess.hostile = function (room, live) {
+spawnProcess.hostile = function (_room, _live) {
   // nothing for hostile now
 }
 

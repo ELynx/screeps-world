@@ -24,6 +24,7 @@ const mapUtils = require('./routine.map')
 
 // all controllers that want to fill in creep storage
 const controllersFreeCapacity = [
+  cook.id,
   grabController.id,
   mineralHarvestController.id,
   sourceHarvestController.generic.id,
@@ -81,7 +82,7 @@ const controllersConsuming = [
 
 const roomActor =
 {
-  roomControllersFind: function (room) {
+  roomControllersFind (room) {
     if (room._actType_ === bootstrap.RoomActTypeMy) {
       return [controllersMyAuto, controllersConsuming]
     }
@@ -97,7 +98,7 @@ const roomActor =
     return [[], []]
   },
 
-  roomActType: function (room) {
+  roomActType (room) {
     if (room._my_) {
       return bootstrap.RoomActTypeMy
     }
@@ -113,7 +114,7 @@ const roomActor =
     return 0
   },
 
-  roomControllersPrepare: function (controllers, room) {
+  roomControllersPrepare (controllers, room) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
       if (controller && _.isFunction(controller.roomPrepare)) {
@@ -122,20 +123,20 @@ const roomActor =
     }
   },
 
-  _roomControllerObserveOwn: function (controller, creep) {
+  _roomControllerObserveOwn (controller, creep) {
     if (_.isFunction(controller.observeMyCreep)) {
       controller.observeMyCreep(creep)
     }
   },
 
-  roomControllersObserveOwn: function (creep) {
+  roomControllersObserveOwn (creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
       this._roomControllerObserveOwn(controller, creep)
     }
   },
 
-  roomControllersAct: function (target, creep) {
+  roomControllersAct (target, creep) {
     const controller = bootstrap.roomControllers[creep.memory.ctrl]
     if (controller) {
       const rc = controller.act(target, creep)
@@ -150,7 +151,7 @@ const roomActor =
     return false
   },
 
-  roomControllersControl: function (controllers, room, creeps) {
+  roomControllersControl (controllers, room, creeps) {
     for (const id of controllers) {
       const controller = bootstrap.roomControllers[id]
 
@@ -178,7 +179,7 @@ const roomActor =
     return creeps
   },
 
-  consumingControllersControl: function (controllers, room, creep) {
+  consumingControllersControl (controllers, room, creep) {
     let didConsume = false
     let error = false
     let warning = false
@@ -216,7 +217,7 @@ const roomActor =
     return OK
   },
 
-  act: function (room) {
+  act (room) {
     // mark initial time
     const t0 = Game.cpu.getUsed()
 
@@ -257,15 +258,7 @@ const roomActor =
 
           if (creep._move_ > 0) {
             const posInDestRoom = bootstrap.centerRoomPosition(creep.memory.crum)
-            const rangeInDestRoom = posInDestRoom.offBorderDistance()
-
-            creep.moveToWrapper(
-              posInDestRoom,
-              {
-                range: rangeInDestRoom,
-                reusePath: _.random(3, 5)
-              }
-            )
+            mapUtils.safeTravel(creep, posInDestRoom)
           }
 
           continue
@@ -288,7 +281,7 @@ const roomActor =
           creep.__roomActor_target = bootstrap.getObjectById(creep.memory.dest)
 
           if (creep.__roomActor_target) {
-            if (creep.__roomActor_target.room.name !== room.name) {
+            if (creep.__roomActor_target.pos.roomName !== room.name) {
               creep.__roomActor_atTarget = undefined
               bootstrap.unassignCreep(creep)
               continue

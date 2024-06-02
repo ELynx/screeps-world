@@ -15,21 +15,42 @@ towerProcess.work = function (room) {
 
   const hostileCreeps = _.filter(
     creeps,
-    creep => creep.hostile
+    creep => creep.hostile && creep.ticksToLive > (room.controller.safeMode || 1)
   )
 
   if (hostileCreeps.length > 0) {
     let harmful = _.filter(
       hostileCreeps,
       creep => {
-        if (creep.ticksToLive <= 1) return false
+        if (creep.pc) {
+          // STRATEGY don't attack pc border jumpers
+          const x = creep.pos.x
+          if (x === 0 || x === 49) return false
+          const y = creep.pos.y
+          if (y === 0 || y === 49) return false
+        }
 
-        if (creep.directHarm || creep.sideHarm) return true
-
-        // STRATEGY attack NPCs immediately, they have no complex tactics to reveal
-        return !creep.pc
+        return true
       }
     )
+
+    // STRATEGY laser focus towers on single healer at a time
+
+    const healers = []
+    for (const creep of harmful) {
+      for (const bodyPart of creep.body) {
+        if (bodyPart.type === HEAL) {
+          healers.push(creep)
+          break // from body part loop
+        }
+      }
+    }
+
+    healers.sort((a, b) => a.id.localeCompare(b.id))
+
+    if (healers.length > 0) {
+      harmful = [healers[0]]
+    }
 
     // STRATEGY periodically attack at random
     const pewpew = room.memory.intl + Game.time
@@ -38,16 +59,6 @@ towerProcess.work = function (room) {
     }
 
     if (harmful.length > 0) {
-      // assign zeros into empty slots
-      for (const x of harmful) {
-        x.sideHarm = x.sideHarm || 0
-        x.sideHarmPower = x.sideHarmPower || 0
-        x.directHarm = x.directHarm || 0
-      }
-
-      // STRATEGY what targets to aim first
-      harmful = _.sortByOrder(harmful, ['sideHarm', 'sideHarmPower', 'directHarm'], ['desc', 'desc', 'desc'])
-
       // step 1 - increase size to equal or greater than tower count
       while (harmful.length < towers.length) {
         harmful = harmful.concat(harmful)
@@ -60,7 +71,6 @@ towerProcess.work = function (room) {
         harmful = _.take(harmful, towers.length)
       }
 
-      // TODO? matrix solution
       harmful = _.shuffle(harmful)
 
       for (let i = 0; i < towers.length; ++i) {

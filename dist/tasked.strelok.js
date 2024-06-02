@@ -4,6 +4,8 @@ const Tasked = require('./tasked.template')
 
 const strelok = new Tasked('strelok')
 
+strelok.combatTravel = true
+
 strelok.breachedExtraCreeps = 1
 
 strelok.bodyName = function (flag) {

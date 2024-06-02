@@ -8,6 +8,7 @@ if (Game.flags.profiler) {
 
 const bootstrap = require('./bootstrap')
 
+const mapUtils = require('./routine.map')
 const spawn = require('./routine.spawn')
 
 Room.prototype.aggro = function () {
@@ -211,6 +212,8 @@ function Tasked (id) {
     **/
   this.id = id
 
+  this.combatTravel = false
+
   this.breachedExtraCreeps = 0
 
   this.prepare = undefined
@@ -219,15 +222,15 @@ function Tasked (id) {
 
   this.creepAtDestination = undefined
 
-  this.spawnFrom = function (flag) {
+  this.spawnFrom = function (_flag) {
     return spawn.FROM_CLOSEST_ROOM
   }
 
-  this.spawnPriority = function (flag) {
+  this.spawnPriority = function (_flag) {
     return 'normal'
   }
 
-  this.bodyName = function (flag) {
+  this.bodyName = function (_flag) {
     return this.id
   }
 
@@ -239,13 +242,11 @@ function Tasked (id) {
 
     if (creep._can_move_) {
       const controlPos = creep.getControlPos()
-      creep.moveToWrapper(
-        controlPos,
-        {
-          range: controlPos.offBorderDistance(),
-          reusePath: _.random(3, 5)
-        }
-      )
+      if (this.combatTravel) {
+        mapUtils.combatTravel(creep, controlPos)
+      } else {
+        mapUtils.safeTravel(creep, controlPos)
+      }
     } else {
       creep.fatigueWrapper()
     }
