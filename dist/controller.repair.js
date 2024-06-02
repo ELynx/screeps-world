@@ -99,10 +99,10 @@ repairController.targets = function (room) {
         structure.__repairController_targetHp = roadTargetHp3
         return hits < roadTargetHp3
       } else if (structureType === STRUCTURE_CONTAINER) {
-        // remote containers have special rules
-        if (room._actType_ === bootstrap.RoomActTypeRemoteHarvest) {
-          // ignore random containers
-          if (!structure.isSource()) return false
+        if (room._actType_ !== bootstrap.RoomActTypeHelp) {
+          // outside of helping, containers are assigned to repair to harvesters in cook active unload cycle
+          // obvious isn't it...
+          return false
         }
       }
 

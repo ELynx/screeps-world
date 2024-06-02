@@ -1590,6 +1590,15 @@ const DummyRepairController = {
   actRange: 3
 }
 
+const NotMaxHits = structure => structure.hits < structure.hitsMax
+
+const Close2 = (a, b) => {
+  const dx = Math.abs(a.x - b.x)
+  if (dx <= 2) return true
+  const dy = Math.abs(a.y - b.y)
+  return dy <= 2
+}
+
 cook._unloadActiveHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
 
@@ -1612,8 +1621,6 @@ cook._unloadActiveHarvesters = function (room) {
   const links = Array.from(room.links.values())
 
   if (containers.length === 0 && links.length === 0) return
-
-  const notMaxHits = structure => structure.hits < structure.hitsMax
 
   const terrain = new Room.Terrain(room.name)
   const calculateHarvestSpot = (some1, some2) => {
@@ -1664,26 +1671,13 @@ cook._unloadActiveHarvesters = function (room) {
   for (const harvester of harvesters) {
     let clusterContainers = _.filter(containers, container => container.pos.isNearTo(harvester._source_))
     for (const container of clusterContainers) {
-      if (notMaxHits(container)) {
+      if (NotMaxHits(container)) {
         bootstrap.assignCreep(DummyRepairController, container, undefined, harvester)
         continue
       }
     }
 
-    const close2 = (a, b) => {
-      const dx = Math.abs(a.x - b.x)
-      if (dx <= 2) return true
-      const dy = Math.abs(a.y - b.y)
-      return dy <= 2
-    }
-
-    let clusterLinks = _.filter(links, link => close2(link.pos, harvester._source_.pos))
-    for (const link of clusterLinks) {
-      if (notMaxHits(link)) {
-        bootstrap.assignCreep(DummyRepairController, link, undefined, harvester)
-        continue
-      }
-    }
+    let clusterLinks = _.filter(links, link => Close2(link.pos, harvester._source_.pos))
 
     if (clusterContainers.length === 0 && clusterLinks.length === 0) continue
 
