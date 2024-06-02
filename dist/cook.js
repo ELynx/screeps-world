@@ -1550,7 +1550,7 @@ cook._setWorldDemand = function (room) {
     if (now < ideal) {
       const delta = ideal - now
       // slow down jiggling
-      if (delta >= SOURCE_ENERGY_CAPACITY / 3) {
+      if (delta >= SOURCE_ENERGY_CAPACITY * 2 / 3) {
         this.___addWorldDemand(room.terminal, RESOURCE_ENERGY, ideal - now)
       }
     } else {
