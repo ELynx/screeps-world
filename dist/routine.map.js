@@ -44,6 +44,8 @@ const map = {
 
   ___routeCallback (roomName, fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
     if (Game.flags['block_' + fromRoomName + '_' + roomName]) return Infinity
+    // assume symmetry :3
+    if (Game.flags['block_' + roomName + '_' + fromRoomName]) return Infinity
 
     if (Game[cacheName]) {
       const cached = Game[cacheName].get(roomName)
