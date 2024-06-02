@@ -190,6 +190,43 @@ cook.___worldSupply = function (structure, resourceType) {
   return this.___roomSupply(structure, resourceType)
 }
 
+Structure.prototype.everWant = function (_resourceType) {
+  // by default defer to specific calculation
+  return true
+}
+
+StructureExtension.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY
+}
+
+const Reagents1 = new Set(_.keys(REACTIONS))
+const Reagents2 = new Set(_.keys(REACTION_TIME))
+const LabResources = Reagents1.union(Reagents2)
+
+StructureLab.prototype.everWant = function (resourceType) {
+  return LabResources.has(resourceType)
+}
+
+StructureLink.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY
+}
+
+StructureNuker.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY || resourceType === RESOURCE_GHODIUM
+}
+
+StructurePowerSpawn.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY || resourceType === RESOURCE_POWER
+}
+
+StructureSpawn.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY
+}
+
+StructureTower.prototype.everWant = function (resourceType) {
+  return resourceType === RESOURCE_ENERGY
+}
+
 cook.___roomDemand = function (structure, resourceType) {
   if (!structure.isActiveSimple) return 0
 
@@ -198,13 +235,10 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_EXTENSION ||
       structureType === STRUCTURE_SPAWN ||
       structureType === STRUCTURE_TOWER) {
-    if (resourceType !== RESOURCE_ENERGY) return 0
-
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
   if (structureType === STRUCTURE_LAB) {
-    if (resourceType === RESOURCE_ENERGY) return 0
     // explicit outputs do not demand in resources, only supply them
     if (structure.__cook__cache__isSource === false) return 0
     if (structure.__cook__cache__resourceType !== resourceType) return 0
@@ -243,12 +277,7 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_NUKER) {
-    if (resourceType === RESOURCE_ENERGY ||
-        resourceType === RESOURCE_GHODIUM) {
-      return intentSolver.getFreeCapacity(structure, resourceType) || 0
-    }
-
-    return 0
+    return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
 
   if (structureType === STRUCTURE_POWER_SPAWN) {
@@ -276,6 +305,9 @@ cook._hasDemand = function (structure, resourceType) {
   // save typing down the line
   if (structure === undefined) return false
 
+  // check against type before even looking at capacity
+  if (!structure.everWant(resourceType)) return false
+
   const lambda = () => this.___roomDemand(structure, resourceType)
   const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda)
   const planned = this.___plannedDelta(structure, resourceType)
@@ -286,8 +318,8 @@ cook._hasDemand = function (structure, resourceType) {
 cook.___roomSpace = function (structure, resourceType, forMining = false) {
   if (!structure.isActiveSimple) return 0
 
-  let above = 0
   const structureType = structure.structureType
+  let above = 0
 
   if (structureType === STRUCTURE_CONTAINER) {
     if (resourceType === RESOURCE_ENERGY) {
@@ -391,7 +423,6 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
   }
 
   if (structureType === STRUCTURE_LINK) {
-    if (resourceType !== RESOURCE_ENERGY) return 0
     if (!structure.__cook__cache__isSource) return 0
     return intentSolver.getFreeCapacity(structure, resourceType) || 0
   }
@@ -402,6 +433,8 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
 cook._hasSpace = function (structure, resourceType, forMining = false) {
   // save typing down the line
   if (structure === undefined) return false
+
+  if (!structure.everWant(resourceType)) return false
 
   const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
   const lambda2 = () => this.___roomDemand(structure, resourceType)
@@ -416,6 +449,7 @@ cook._hasSpace = function (structure, resourceType, forMining = false) {
 
 cook._labClusterDemandTarget = function (room, resourceType) {
   for (const lab of room.labs.values()) {
+    if (!lab.everWant(resourceType)) return [undefined, undefined]
     if (this._hasDemand(lab, resourceType)) return [lab, resourceType]
   }
 
@@ -533,6 +567,7 @@ cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resou
 
 cook.__transferFromCreepToStructure = function (structure, creep, resourceType) {
   // check first because dump mode
+  if (!structure.everWant(resourceType)) return ERR_FULL
   const canTake1 = this.___roomSpace(structure, resourceType)
   const canTake2 = this.___roomDemand(structure, resourceType)
   const canTake = Math.max(canTake1, canTake2)
@@ -921,12 +956,14 @@ cook.___roomNeedResource = function (room, resourceType, referenceLab = undefine
     return value
   }
 
-  if (room.factory) {
+  if (room.factory && room.factory.everWant(resourceType)) {
     const demand = this.___roomDemand(room.factory, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }
 
   for (const lab of room.labs.values()) {
+    if (!lab.everWant(resourceType)) break
+
     // explicitly prevent labs from cross-demand-supplying
     if (referenceLab) {
       if (lab.__cook__cache__resourceType === referenceLab.__cook__cache__resourceType) continue
@@ -936,22 +973,22 @@ cook.___roomNeedResource = function (room, resourceType, referenceLab = undefine
     if (demand > 0) return withCache(room, resourceType, demand)
   }
 
-  if (room.nuker) {
+  if (room.nuker && room.nuker.everWant(resourceType)) {
     const demand = this.___roomDemand(room.nuker, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }
 
-  if (room.powerSpawn) {
+  if (room.powerSpawn && room.powerSpawn.everWant(resourceType)) {
     const demand = this.___roomDemand(room.powerSpawn, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }
 
-  if (room.storage) {
+  if (room.storage && room.storage.everWant(resourceType)) {
     const demand = this.___roomDemand(room.storage, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }
 
-  if (room.terminal) {
+  if (room.terminal && room.terminal.everWant(resourceType)) {
     const demand = this.___roomDemand(room.terminal, resourceType)
     if (demand > 0) return withCache(room, resourceType, demand)
   }

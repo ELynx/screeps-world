@@ -99,6 +99,7 @@
       "PWR_DISRUPT_TERMINAL",
       "RAMPART_DECAY_AMOUNT",
       "RANGED_ATTACK",
+      "REACTION_TIME",
       "REACTIONS",
       "REPAIR_COST",
       "REPAIR_POWER",
