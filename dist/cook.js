@@ -1132,7 +1132,7 @@ cook.__untrap = function (room, creeps) {
   }
 }
 
-cook.__checkNoRun = function (allTargets, target, creep) {
+cook.__checkNoRun = function (_allTargets, target, creep) {
   if (!target.__cook__noEnergyRun) return true
   return target.pos.isNearTo(creep)
 }
