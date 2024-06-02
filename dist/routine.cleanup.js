@@ -116,6 +116,7 @@ const cleanup = {
       if (flagName === 'profiler') continue
       if (flagName === 'recount') continue
       if (flagName === 'war') continue
+      if (_.startsWith(flagName, 'block')) continue
 
       const controllerFound = _.some(
         flagKeys,

@@ -42,7 +42,9 @@ const map = {
     return room.__map__cache1 // not a problem if undefined
   },
 
-  ___routeCallback (roomName, _fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
+  ___routeCallback (roomName, fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
+    if (Game.flags['block_' + fromRoomName + '_' + roomName]) return Infinity
+
     if (Game[cacheName]) {
       const cached = Game[cacheName].get(roomName)
       if (cached !== undefined) return cached
