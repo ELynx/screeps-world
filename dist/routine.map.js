@@ -42,11 +42,7 @@ const map = {
     return room.__map__cache1 // not a problem if undefined
   },
 
-  ___routeCallback (roomName, fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
-    if (Game.flags['block_' + fromRoomName + '_' + roomName]) return Infinity
-    // assume symmetry :3
-    if (Game.flags['block_' + roomName + '_' + fromRoomName]) return Infinity
-
+  ___routeCallback (roomName, _fromRoomName, cacheName, byRoomName, byOwnerUsernameAndLevel) {
     if (Game[cacheName]) {
       const cached = Game[cacheName].get(roomName)
       if (cached !== undefined) return cached
@@ -141,6 +137,8 @@ const map = {
 
     if (mode === 'safe') {
       routeCallback = (x, y) => {
+        if (Game.flags['block_' + x + '_' + y]) return Infinity
+        if (Game.flags['block_' + y + '_' + x]) return Infinity
         if (x === toPos.roomName) return 1
         return this.__routeCallback_safeTravel(x, y)
       }
@@ -148,6 +146,8 @@ const map = {
 
     if (mode === 'combat') {
       routeCallback = (x, y) => {
+        if (Game.flags['block_' + x + '_' + y]) return Infinity
+        if (Game.flags['block_' + y + '_' + x]) return Infinity
         if (x === toPos.roomName) return 1
         return this.__routeCallback_combatTravel(x, y)
       }
