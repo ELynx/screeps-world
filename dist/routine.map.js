@@ -69,7 +69,7 @@ const map = {
         result = byRoomName(roomName)
       }
     } else {
-      if (roomMemory && /* roomMemory.ownerUsername && */ roomMemory.ownerLevel) {
+      if (roomMemory && roomMemory.ownerLevel !== undefined) {
         roomMemory.nodeAccessed = Game.time
         result = byOwnerUsernameAndLevel(roomMemory.ownerUsername, roomMemory.ownerLevel)
       } else {
