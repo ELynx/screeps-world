@@ -113,7 +113,7 @@ const PreferRight = [RIGHT, RIGHT, LEFT]
 const PreferBottom = [TOP, BOTTOM, BOTTOM]
 const PreferLeft = [RIGHT, LEFT, LEFT]
 
-Creep.prototype.march = function (direction) {
+Creep.prototype.march = function (direction, exit = direction) {
   if (this.fatigue > 0) {
     return this.fatigueWrapper()
   }
@@ -195,10 +195,10 @@ Creep.prototype.march = function (direction) {
     let yStart = 0
     let yEnd = 49
 
-    if (direction === TOP) yEnd = 0
-    if (direction === RIGHT) xStart = 49
-    if (direction === BOTTOM) yStart = 49
-    if (direction === LEFT) xEnd = 0
+    if (exit === TOP) yEnd = 0
+    if (exit === RIGHT) xStart = 49
+    if (exit === BOTTOM) yStart = 49
+    if (exit === LEFT) xEnd = 0
 
     const goals = []
     for (let x1 = xStart; x1 <= xEnd; ++x1) {

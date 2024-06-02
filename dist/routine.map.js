@@ -166,18 +166,22 @@ const map = {
       if (dest.x === destinationPosition.x && dest.y === destinationPosition.y && dest.room === destinationPosition.roomName) {
         const time = creep.memory._march.time
         if (time >= (Memory.roomOwnerChangeDetected || 0)) {
+          let exitIndex = 0
           if (creep.memory._march.room !== creep.room.name) {
             // push movement at least one step into the room before slicing the path
             if (creep.pos.x > 0 && creep.pos.x < 49 && creep.pos.y > 0 && creep.pos.y < 49) {
               creep.memory._march.path = creep.memory._march.path.slice(1)
               creep.memory._march.room = creep.room.name
+            } else {
+              exitIndex = 1
             }
           }
 
           const path = creep.memory._march.path
           if (path.length > 0) {
             const direction = _.parseInt(path[0])
-            const rc = creep.march(direction)
+            const exit = path.length > exitIndex ? _.parseInt(path[exitIndex]) : undefined
+            const rc = creep.march(direction, exit)
             if (rc >= OK) {
               return rc
             }
