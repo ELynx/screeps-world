@@ -54,7 +54,8 @@ Creep.prototype.moved = function () {
 
   if (_pos === undefined) return undefined
 
-  if (Game.time > _pos.time + 1) {
+  // count against completed ticks only
+  if (Memory.time > _pos.time) {
     this.forgetPosition()
     return undefined
   }

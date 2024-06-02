@@ -94,6 +94,9 @@ const loop = function () {
       Memory.eval = undefined
     }
   }
+
+  // keep the pace of time in check
+  Memory.time = Game.time
 }
 
 let loopOfChoice
