@@ -1137,6 +1137,18 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   return targets
 }
 
+cook.__plunderEnergyDropTargets = function (room) {
+  const isAndHasEnergySpace = structure => {
+    if (structure === undefined) return false
+    return this._hasSpace(structure, RESOURCE_ENERGY)
+  }
+
+  if (isAndHasEnergySpace(room.terminal)) return [room.terminal]
+  if (isAndHasEnergySpace(room.storage)) return [room.storage]
+
+  return []
+}
+
 cook.extra = function (target) {
   if (target.__cook__resourceToTake !== undefined &&
       target.__cook__restockToTakeAmount !== undefined) {
@@ -1345,6 +1357,28 @@ cook._controlPass2 = function (room, creeps) {
         }
 
         restockedPrio3 = used.length > 0
+      }
+
+      const stuckPlunders = []
+      for (const creep of withEnergy) {
+        if (creep.__cook__pass2__used) continue
+        if (creep.shortcut === 'plunder') {
+          stuckPlunders.push(creep)
+        }
+      }
+
+      if (stuckPlunders.length > 0) {
+        const energyDumpds = this.__plunderEnergyDropTargets(room)
+        if (energyDumpds.length > 0) {
+          this.__cook__energyRestockAssign = true
+          // eslint-disable-next-line no-unused-vars
+          const [unused, used] = this.assignCreeps(room, stuckPlunders, energyDumpds)
+          this.__cook__energyRestockAssign = undefined
+
+          for (const creep of used) {
+            creep.__cook__pass2__used = true
+          }
+        }
       }
     }
 
