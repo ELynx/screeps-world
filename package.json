@@ -166,6 +166,7 @@
       "TOP",
       "TOUGH",
       "TOWER_CAPACITY",
+      "TOWER_ENERGY_COST",
       "UPGRADE_CONTROLLER_POWER",
       "WORK"
     ]
