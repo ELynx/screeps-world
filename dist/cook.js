@@ -670,41 +670,46 @@ cook._energyRestockPass1 = function (room, creeps) {
     return [[], []]
   }
 
-  const prio1 = []
-
-  for (const spawn of room.spawns.values()) {
-    if (this.__hasEnergyDemand(spawn)) {
-      prio1.push(spawn)
-    }
-  }
-
-  // this is so numerous that any speedup helps
-  for (const extension of room.extensions.values()) {
-    if (extension.__cook__hasEnergyDemand === true) {
-      prio1.push(extension)
-      continue
-    }
-
-    if (extension.__cook__hasEnergyDemand === false) {
-      continue
-    }
-
-    if (this.__hasEnergyDemand(extension)) {
-      prio1.push(extension)
-    }
-  }
-
   let unused
   let used
 
-  if (prio1.length > 0) {
-    const [prio1Unused, prio1Used] = this.assignCreeps(room, creeps, prio1)
-    if (prio1Unused.length === 0) {
-      return [prio1Unused, prio1Used]
+  if (room.energyAvailable < room.energyCapacityAvailable) {
+    const prio1 = []
+
+    for (const spawn of room.spawns.values()) {
+      if (this.__hasEnergyDemand(spawn)) {
+        prio1.push(spawn)
+      }
     }
 
-    unused = prio1Unused
-    used = prio1Used
+    // this is so numerous that any speedup helps
+    for (const extension of room.extensions.values()) {
+      if (extension.__cook__hasEnergyDemand === true) {
+        prio1.push(extension)
+        continue
+      }
+
+      if (extension.__cook__hasEnergyDemand === false) {
+        continue
+      }
+
+      if (this.__hasEnergyDemand(extension)) {
+        prio1.push(extension)
+      }
+    }
+
+    if (prio1.length > 0) {
+      const [prio1Unused, prio1Used] = this.assignCreeps(room, creeps, prio1)
+      if (prio1Unused.length === 0) {
+        return [prio1Unused, prio1Used]
+      }
+
+      unused = prio1Unused
+      used = prio1Used
+    } else {
+      unused = creeps
+      used = []
+    }
   } else {
     unused = creeps
     used = []
