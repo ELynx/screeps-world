@@ -567,7 +567,7 @@ cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resou
 cook.__transferFromCreepToStructure = function (structure, creep, resourceType) {
   // check first because dump mode
   if (!structure.everWant(resourceType)) return ERR_FULL
-  const canTake1 = this.___roomSpace(structure, resourceType)
+  const canTake1 = this.___roomSpace(structure, resourceType, undefined, creep.shortcut === 'plunder')
   const canTake2 = this.___roomDemand(structure, resourceType)
   const canTake = Math.max(canTake1, canTake2)
   if (canTake <= 0) return ERR_FULL
