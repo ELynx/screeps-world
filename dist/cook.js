@@ -792,46 +792,59 @@ cook._resourceRestock = function (room, creeps) {
 
 cook._controlPass1 = function (room, creeps) {
   // qualify
-  const empty = []
-  const creepsWithSomeEnergy = []
-  const creepsWithOnlyNonEnergy = []
+
+  const withEnergy = []
+  const withResources = []
 
   for (const creep of creeps) {
     const all = intentSolver.getAllUsedCapacity(creep)
     const total = all.get('total') || 0
 
     if (total <= 0) {
-      empty.push(creep)
       continue
     }
 
     const energy = all.get(RESOURCE_ENERGY) || 0
+
     if (energy > 0) {
-      creepsWithSomeEnergy.push(creep)
-    } else {
-      creepsWithOnlyNonEnergy.push(creep)
+      creep.__cook__pass1__energy = true
+      withEnergy.push(creep)
     }
+
+    if (energy < total) withResources.push(creep)
   }
 
   // unload
 
-  if (_.some(creepsWithSomeEnergy, 'memory.atds')) {
+  if (_.some(withEnergy, 'memory.atds')) {
     this.validateTarget = this._validateTarget
   } else {
     this.validateTarget = undefined
   }
   room.__cook__energyRestockAssign = true
-  const [energyUnused, energyUsed] = this._energyRestockPass1(room, creepsWithSomeEnergy)
+  // eslint-disable-next-line no-unused-vars
+  const [energyUnused, energyUsed] = this._energyRestockPass1(room, withEnergy)
   room.__cook__energyRestockAssign = undefined
+  for (const creep of energyUsed) {
+    creep.__cook__pass1__used = true
+  }
 
-  const creepsToResource = creepsWithOnlyNonEnergy.concat(energyUnused)
-  if (_.some(creepsToResource, 'memory.atds')) {
+  const withResourceNotTaken = []
+  for (const creep of withResources) {
+    if (creep.__cook__pass1__used) continue
+    withResourceNotTaken.push(creep)
+  }
+
+  if (_.some(withResourceNotTaken, 'memory.atds')) {
     this.validateTarget = this._validateTarget
   } else {
     this.validateTarget = undefined
   }
-  const [resourceUnused, resourceUsed] = this._resourceRestock(room, creepsToResource)
+  const [resourceUnused, resourceUsed] = this._resourceRestock(room, withResourceNotTaken)
   this.validateTarget = undefined
+  for (const creep of resourceUsed) {
+    creep.__cook__pass1__used = true
+  }
 
   for (const creep of resourceUnused) {
     // because drop has priority
@@ -844,20 +857,24 @@ cook._controlPass1 = function (room, creeps) {
     this.wrapIntent(creep, 'drop', resourceType)
   }
 
-  const unused = empty.concat(resourceUnused)
-  const used = energyUsed.concat(resourceUsed)
-
-  // assign energy traps to workers
-
-  // STRATEGY trap only when there is no other workers with energy
+  const unused = []
+  const used = []
   let hasUnusedWorkerWithEnergy = false
-  for (const creep of energyUnused) {
-    if (creep.memory.btyp === 'worker') {
-      hasUnusedWorkerWithEnergy = true
-      break
+
+  for (const creep of creeps) {
+    if (creep.__cook__pass1__used) {
+      used.push(creep)
+    } else {
+      unused.push(creep)
+
+      // STRATEGY trap only when there is no other workers with energy
+      if (creep.__cook__pass1__energy && creep.memory.btyp === 'worker') {
+        hasUnusedWorkerWithEnergy = true
+      }
     }
   }
 
+  // assign energy traps to workers
   if (!hasUnusedWorkerWithEnergy) {
     for (const creep of unused) {
       if (creep.memory.btyp === 'worker') {
@@ -870,15 +887,17 @@ cook._controlPass1 = function (room, creeps) {
 }
 
 cook.__hasPrio1And2EnergyRestockTargets = function (room) {
-  for (const spawn of room.spawns.values()) {
-    if (this.__hasEnergyDemand(spawn)) return true
-  }
+  if (room.energyAvailable < room.energyCapacityAvailable) {
+    for (const spawn of room.spawns.values()) {
+      if (this.__hasEnergyDemand(spawn)) return true
+    }
 
-  // this is so numerous that any speedup helps
-  for (const extension of room.extensions.values()) {
-    if (extension.__cook__hasEnergyDemand === true) return true
-    if (extension.__cook__hasEnergyDemand === false) continue
-    if (this.__hasEnergyDemand(extension)) return true
+    // this is so numerous that any speedup helps
+    for (const extension of room.extensions.values()) {
+      if (extension.__cook__hasEnergyDemand === true) return true
+      if (extension.__cook__hasEnergyDemand === false) continue
+      if (this.__hasEnergyDemand(extension)) return true
+    }
   }
 
   for (const tower of room.towers.values()) {
