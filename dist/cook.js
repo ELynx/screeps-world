@@ -1594,7 +1594,7 @@ const NotMaxHits = structure => structure.hits < structure.hitsMax
 
 const Close2 = (a, b) => {
   const dx = Math.abs(a.x - b.x)
-  if (dx <= 2) return true
+  if (dx > 2) return false
   const dy = Math.abs(a.y - b.y)
   return dy <= 2
 }
