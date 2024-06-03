@@ -7,7 +7,13 @@ const towerProcess = new Process('tower')
 towerProcess.work = function (room) {
   if (!room._my_) return
 
-  const towers = _.filter(Array.from(room.towers.values()), _.property('isActiveSimple'))
+  const towers = []
+  for (const tower of room.towers.values()) {
+    if (!tower.isActiveSimple) continue
+    if (tower.store.getUsedCapacity(RESOURCE_ENERGY) >= TOWER_ENERGY_COST) {
+      towers.push(tower)
+    }
+  }
 
   if (towers.length === 0) return
 
