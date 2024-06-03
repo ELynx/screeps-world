@@ -313,7 +313,7 @@ cook._hasDemand = function (structure, resourceType) {
   return demand > planned
 }
 
-cook.___roomSpace = function (structure, resourceType, forMining = false) {
+cook.___roomSpace = function (structure, resourceType, forMining = false, forPlunder = false) {
   if (!structure.isActiveSimple) return 0
 
   const structureType = structure.structureType
@@ -351,7 +351,8 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
   }
 
   if (structureType === STRUCTURE_STORAGE) {
-    if (resourceType === RESOURCE_OPS ||
+    if (forPlunder ||
+        resourceType === RESOURCE_OPS ||
         resourceType === RESOURCE_POWER) {
       above = intentSolver.getFreeCapacity(structure, resourceType) || 0
     }
@@ -428,16 +429,16 @@ cook.___roomSpace = function (structure, resourceType, forMining = false) {
   return above
 }
 
-cook._hasSpace = function (structure, resourceType, forMining = false) {
+cook._hasSpace = function (structure, resourceType, forMining = false, forPlunder = false) {
   // save typing down the line
   if (structure === undefined) return false
 
   if (!structure.everWant(resourceType)) return false
 
-  const lambda1 = () => this.___roomSpace(structure, resourceType, forMining)
+  const lambda1 = () => this.___roomSpace(structure, resourceType, forMining, forPlunder)
   const lambda2 = () => this.___roomDemand(structure, resourceType)
 
-  const space = forMining ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace_' + resourceType, lambda1)
+  const space = (forMining || forPlunder) ? lambda1() : intentSolver.getWithIntentCache(structure, '__cook__hasSpace_' + resourceType, lambda1)
   const demand = intentSolver.getWithIntentCache(structure, '__cook__hasDemand_' + resourceType, lambda2)
   const eitherOr = Math.max(space, demand)
   const planned = this.___plannedDelta(structure, resourceType)
@@ -1140,7 +1141,7 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 cook.__plunderEnergyDropTargets = function (room) {
   const isAndHasEnergySpace = structure => {
     if (structure === undefined) return false
-    return this._hasSpace(structure, RESOURCE_ENERGY)
+    return this._hasSpace(structure, RESOURCE_ENERGY, undefined, true)
   }
 
   if (isAndHasEnergySpace(room.terminal)) return [room.terminal]
