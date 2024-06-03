@@ -97,28 +97,33 @@ plunder.getSomeOwnRoomName = function (creep) {
   return backupRoomName
 }
 
-plunder.findTarget = function (creep, targets) {
-  for (const target of targets) {
-    for (const resourceType in target.store) {
-      const stored = target.store.getUsedCapacity(resourceType)
-      target.__stored = (target.__stored || 0) + stored
-    }
-  }
+const FunFactor = new Map(
+  [
+    [RESOURCE_POWER, 100],
+    [RESOURCE_OPS, 50],
+    [RESOURCE_GHODIUM, 10],
+    [RESOURCE_ENERGY, 0.1]
+  ]
+)
 
-  targets.sort(
+plunder.findTarget = function (creep, targets) {
+  return _.filter(
+    targets,
+    target => (target.__plunder__str || 0) > 0 && (target.__plunder__fun || 0) > 0
+  ).sort(
     (t1, t2) => {
-      const s1 = t1.__stored || 0
-      const s2 = t2.__stored || 0
+      const s1 = t1.__plunder__fun || 0
+      const s2 = t2.__plunder__fun || 0
 
       return s2 - s1
     }
-  )
-
-  return targets[0]
+  )[0]
 }
 
 plunder.moveAndLoad = function (creep, target) {
-  target.__stored = (target.__stored || 0) - creep.store.getFreeCapacity()
+  const free = creep.store.getFreeCapacity()
+  target.__plunder__str = (target.__plunder__str || 0) - free
+  target.__plunder__fun = (target.__plunder__fun || 0) - free // rough estimate :)
 
   if (creep.pos.isNearTo(target)) {
     const resourceTypes = _.shuffle(_.keys(target.store))
@@ -163,14 +168,16 @@ plunder.creepAtOtherRooms = function (creep) {
         // spawn energy self-refill should be kept in check
         if (candiadate.structureType && candiadate.structureType === STRUCTURE_SPAWN && candiadate.store[RESOURCE_ENERGY] < 10) return false
 
-        let hasResources = false
         for (const resourceType in candiadate.store) {
-          if (candiadate.store[resourceType] > 0) {
-            hasResources = true
-            break
-          }
+          const str = candiadate.store.getUsedCapacity(resourceType)
+          const fun = str * (FunFactor.get(resourceType) || 1)
+
+          candiadate.__plunder__str = (candiadate.__plunder__str || 0) + str
+          candiadate.__plunder__fun = (candiadate.__plunder__fun || 0) + fun
         }
-        if (!hasResources) return false
+
+        if ((candiadate.__plunder__str || 0) <= 0) return false
+        if ((candiadate.__plunder__fun || 0) <= 0) return false
 
         const hasRamp = _.some(
           ramparts,
