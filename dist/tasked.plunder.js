@@ -106,16 +106,16 @@ const FunFactor = new Map(
   ]
 )
 
-plunder.findTarget = function (creep, targets) {
+plunder.findTarget = function (_creep, targets) {
   return _.filter(
     targets,
     target => (target.__plunder__str || 0) > 0 && (target.__plunder__fun || 0) > 0
   ).sort(
     (t1, t2) => {
-      const s1 = t1.__plunder__fun || 0
-      const s2 = t2.__plunder__fun || 0
+      const f1 = t1.__plunder__fun || 0
+      const f2 = t2.__plunder__fun || 0
 
-      return s2 - s1
+      return f2 - f1
     }
   )[0]
 }
@@ -126,6 +126,11 @@ plunder.moveAndLoad = function (creep, target) {
   target.__plunder__fun = (target.__plunder__fun || 0) - free // rough estimate :)
 
   if (creep.pos.isNearTo(target)) {
+    if (target.resourceType) {
+      creep.pickup(target)
+      return
+    }
+
     const resourceTypes = _.shuffle(_.keys(target.store))
     for (const resourceType of resourceTypes) {
       const rc = creep.withdraw(target, resourceType)
@@ -145,9 +150,11 @@ plunder.moveAndLoad = function (creep, target) {
 
 plunder.creepAtOtherRooms = function (creep) {
   let targets = this.roomTargets[creep.room.name]
+
   if (targets === undefined) {
     const allStructures = creep.room.find(FIND_STRUCTURES)
     const allRuins = creep.room.find(FIND_RUINS)
+    const allResources = creep.room.highway() ? creep.room.find(FIND_DROPPED_RESOURCES) : []
 
     const ramparts = _.filter(
       allStructures,
@@ -156,11 +163,22 @@ plunder.creepAtOtherRooms = function (creep) {
       }
     )
 
-    const candidateTargets = allStructures.concat(allRuins)
+    const candidateTargets = allStructures.concat(allRuins).concat(allResources)
 
     targets = _.filter(
       candidateTargets,
       candiadate => {
+        if (candiadate.resourceType) {
+          if (candiadate.resourceType === RESOURCE_POWER) {
+            candiadate.__plunder__str = candiadate.amount
+            candiadate.__plunder__fun = candiadate.amount * (FunFactor.get(candiadate.resourceType) || 1)
+
+            return true
+          }
+
+          return false
+        }
+
         if (candiadate.store === undefined) return false
         // nuker is no-withdraw
         if (candiadate.structureType && candiadate.structureType === STRUCTURE_NUKER) return false
@@ -197,11 +215,15 @@ plunder.creepAtOtherRooms = function (creep) {
     this.roomBoring[creep.room.name] = true
   }
 
+  const setupGoBack = x => {
+    x.setControlRoom(this.getSomeOwnRoomName(x))
+    x.memory._rt0 = Game.time
+    x.memory._rt1 = undefined
+    x.memory._plT = undefined
+  }
+
   if (targets.length === 0 || creep.store.getFreeCapacity() === 0) {
-    creep.setControlRoom(this.getSomeOwnRoomName(creep))
-    creep.memory._rt0 = Game.time
-    creep.memory._rt1 = undefined
-    creep.memory._plT = undefined
+    setupGoBack(creep)
     return
   }
 
@@ -213,9 +235,14 @@ plunder.creepAtOtherRooms = function (creep) {
 
   if (target === undefined) {
     target = this.findTarget(creep, targets)
-    creep.memory._plT = target.id
   }
 
+  if (target === undefined) {
+    setupGoBack(creep)
+    return
+  }
+
+  creep.memory._plT = target.id
   this.moveAndLoad(creep, target)
 }
 
@@ -235,6 +262,11 @@ plunder.creepRoomTravel = function (creep) {
       // forget
       if (creep.memory.arum === creep.room.name) creep.memory.arum = undefined
       if (creep.memory.hrum === creep.room.name) creep.memory.hrum = undefined
+
+      if (creep.flag) {
+        if (creep.flag.memory.arum === creep.room.name) creep.flag.memory.arum = undefined
+        if (creep.flag.memory.hrum === creep.room.name) creep.flag.memory.hrum = undefined
+      }
 
       this._creepRoomTravel(creep)
       return
