@@ -75,15 +75,18 @@ const cleanup = {
 
   cleanupMemory () {
     for (const name in Memory.creeps) {
-      if (!Game.creeps[name]) {
+      if (!Game.creepsById.has(name)) {
         delete Memory.creeps[name]
       }
     }
 
-    for (const name in Memory.rooms) {
-      if (!Game.rooms[name]) {
-        if (this.memoryNodeNotAccessed(Memory.rooms[name], RoomNodeMaxAge)) {
-          delete Memory.rooms[name]
+    // save some CPU on very rare stuff
+    if (Game.time % RoomNodeMaxAge === 0) {
+      for (const name in Memory.rooms) {
+        if (!Game.rooms[name]) {
+          if (this.memoryNodeNotAccessed(Memory.rooms[name], RoomNodeMaxAge)) {
+            delete Memory.rooms[name]
+          }
         }
       }
     }
@@ -94,11 +97,13 @@ const cleanup = {
       }
     }
 
-    if (Memory.structures) {
-      for (const id in Memory.structures) {
-        if (!Game.structures[id]) {
-          if (this.memoryNodeNotAccessed(Memory.structures[id], StructureNodeMaxAge)) {
-            delete Memory.structures[id]
+    if (Game.time % StructureNodeMaxAge === 0) {
+      if (Memory.structures) {
+        for (const id in Memory.structures) {
+          if (!Game.structures[id]) {
+            if (this.memoryNodeNotAccessed(Memory.structures[id], StructureNodeMaxAge)) {
+              delete Memory.structures[id]
+            }
           }
         }
       }
@@ -134,11 +139,17 @@ const cleanup = {
   cleanup () {
     if (this.once) {
       this.once = false
+
       this.cleanupMemoryValues()
+      this.cleanupFlags()
     }
 
     this.cleanupMemory()
-    this.cleanupFlags()
+
+    // don't clean up so often
+    if (Game.time % 100 === 0) {
+      this.cleanupFlags()
+    }
   }
 }
 
