@@ -75,7 +75,7 @@ const cleanup = {
 
   cleanupMemory () {
     for (const name in Memory.creeps) {
-      if (!Game.creepsById.has(name)) {
+      if (!Game.creeps[name]) {
         delete Memory.creeps[name]
       }
     }
