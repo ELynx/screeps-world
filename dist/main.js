@@ -35,8 +35,8 @@ if (Game.flags.profiler) {
 
 const loop = function () {
   iff.convenience()
-  cleanup.cleanup()
   extensions.shortcuts()
+  cleanup.cleanup()
 
   historyActor.act()
 
