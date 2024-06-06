@@ -6,13 +6,15 @@ const UsernamePublic = 'Public'
 const UsernameScreeps = SYSTEM_USERNAME
 const UsernameSourceKeeper = 'Source Keeper'
 
-const NPCs = [
-  UsernameInvader,
-  UsernamePowerBank,
-  UsernamePublic,
-  UsernameScreeps,
-  UsernameSourceKeeper
-]
+const NPCs = new Set(
+  [
+    UsernameInvader,
+    UsernamePowerBank,
+    UsernamePublic,
+    UsernameScreeps,
+    UsernameSourceKeeper
+  ]
+)
 
 const MaxReputation = 100
 const LowestAllyReputation = 25
@@ -130,8 +132,12 @@ const adjustPCReputation = function (username, amount) {
   return setPCReputation(username, toSet)
 }
 
+const _isNPC = function (username) {
+  return NPCs.has(username)
+}
+
 const _isPC = function (username) {
-  return !_.some(NPCs, _.matches(username))
+  return !NPCs.has(username)
 }
 
 const isPC = function (something) {
@@ -517,6 +523,10 @@ module.exports = {
       isHostile (username) {
         const reputation = getPCReputation(username)
         return reputation < DefaultReputation
+      },
+
+      isNPC (username) {
+        return _isNPC(username)
       },
 
       associtate (activeUsername, targetUsername, amount) {

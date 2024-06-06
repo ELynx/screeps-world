@@ -82,7 +82,30 @@ const map = {
     return result
   },
 
-  __routeCallback_safeTravel (roomName, fromRoomName) {
+  __routeCallback_safeTravel_sk (roomName, fromRoomName) {
+    const byRoomName = roomName1 => {
+      const parsed = bootstrap._parseRoomName(roomName1)
+      if (bootstrap._isHighwayRoomName(parsed)) return 1
+      if (bootstrap._isSourceKeeperRoomName(parsed)) return 2.5
+      if (bootstrap._isSectorCenterRoomName(parsed)) return 1
+
+      // room without known owner, let's not make new enemies
+      Game.roomsToScan.add(roomName)
+      return Infinity
+    }
+
+    const byOwnerUsername = username => {
+      if (username === undefined) return 1
+      if (username === Game.iff.ownUsername) return 1
+      if (Game.iff.isNPC(username)) return 1
+
+      return Game.iff.isAlly(username) ? 1 : Infinity
+    }
+
+    return this.___routeCallback(roomName, fromRoomName, '__map__safeTravel_sk', byRoomName, byOwnerUsername)
+  },
+
+  __routeCallback_safeTravel_notSk (roomName, fromRoomName) {
     const byRoomName = roomName1 => {
       const parsed = bootstrap._parseRoomName(roomName1)
       if (bootstrap._isHighwayRoomName(parsed)) return 1
@@ -97,10 +120,12 @@ const map = {
     const byOwnerUsername = username => {
       if (username === undefined) return 1
       if (username === Game.iff.ownUsername) return 1
+      if (Game.iff.isNPC(username)) return 1
+
       return Game.iff.isAlly(username) ? 1 : Infinity
     }
 
-    return this.___routeCallback(roomName, fromRoomName, '__map__safeTravel', byRoomName, byOwnerUsername)
+    return this.___routeCallback(roomName, fromRoomName, '__map__safeTravel_notSk', byRoomName, byOwnerUsername)
   },
 
   __routeCallback_combatTravel (roomName, fromRoomName) {
@@ -118,7 +143,10 @@ const map = {
     const byOwnerUsernameAndLevel = (username, level) => {
       if (username === undefined) return 1
       if (username === Game.iff.ownUsername) return 1
+      if (Game.iff.isNPC(username)) return 1
+
       if (Game.iff.isAlly(username)) return 1
+
       if (Game.iff.isHostile(username)) {
         // no walls and ramparts added at all
         if (level < 2) return 1
@@ -133,14 +161,35 @@ const map = {
   },
 
   __route (fromPos, toPos, mode) {
+    const fromRoom = fromPos.roomName
+    const toRoom = toPos.roomName
+
     let routeCallback
 
     if (mode === 'safe') {
+      let toSk = false
+
+      const parsedTo = bootstrap._parseRoomName(toRoom)
+      if (!toSk && bootstrap._isSectorCenterRoomName(parsedTo)) toSk = true
+      if (!toSk && bootstrap._isSourceKeeperRoomName(parsedTo)) toSk = true
+
+      let fromSk
+      if (!toSk) {
+        const parsedFrom = bootstrap._parseRoomName(fromRoom)
+        if (!fromSk && bootstrap._isSectorCenterRoomName(parsedFrom)) fromSk = true
+        if (!fromSk && bootstrap._isSourceKeeperRoomName(parsedFrom)) fromSk = true
+      }
+
+      let toFromSk = toSk === true || fromSk === true
+
       routeCallback = (x, y) => {
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
-        if (x === toPos.roomName) return 1
-        return this.__routeCallback_safeTravel(x, y)
+
+        if (x === toRoom) return 1
+
+        if (toFromSk) return this.__routeCallback_safeTravel_sk(x, y)
+        else return this.__routeCallback_safeTravel_notSk(x, y)
       }
     }
 
@@ -148,12 +197,12 @@ const map = {
       routeCallback = (x, y) => {
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
-        if (x === toPos.roomName) return 1
+        if (x === toRoom) return 1
         return this.__routeCallback_combatTravel(x, y)
       }
     }
 
-    return Game.map.findRoute(fromPos.roomName, toPos.roomName, { routeCallback })
+    return Game.map.findRoute(fromRoom, toRoom, { routeCallback })
   },
 
   _autoMarch (creep, destinationPosition, mode) {
