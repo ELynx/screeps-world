@@ -2,6 +2,10 @@
 
 const bootstrap = require('./bootstrap')
 
+if (Game.flags.profiler) {
+  profiler = require('./screeps-profiler')
+}
+
 Object.defineProperty(
   Creep.prototype,
   'viable',
@@ -106,6 +110,10 @@ if (!Creep.prototype.__original_move) {
     }
 
     return rc
+  }
+
+  if (profiler) {
+    profiler.replaceAction('Creep.move', 'Creep.__original_move')
   }
 }
 
