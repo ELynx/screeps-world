@@ -231,7 +231,11 @@ const historyActor =
   processRoomLog (room) {
     const eventLog = room.getEventLog()
 
-    for (const eventRecord of eventLog) {
+    // this cycle is executed early, for a long list of events
+    // it should be as optimized as possible
+    for (let i = 0, n = eventLog.length; i < n; ++i) {
+      const eventRecord = eventLog[i]
+
       switch (eventRecord.event) {
         case EVENT_ATTACK:
           this.handle_EVENT_ATTACK(room, eventRecord)
