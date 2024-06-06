@@ -1,10 +1,12 @@
 'use strict'
 
-const bootstrap = require('./bootstrap')
+let profiler
 
 if (Game.flags.profiler) {
   profiler = require('./screeps-profiler')
 }
+
+const bootstrap = require('./bootstrap')
 
 Object.defineProperty(
   Creep.prototype,
