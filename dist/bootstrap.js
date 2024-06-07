@@ -84,24 +84,24 @@ const bootstrap = {
   /**
     Object holding references to all registered room controllers.
     **/
-  roomControllers: { },
+  roomControllers: new Map(),
 
   /**
     Object holding references to all registeded task controllers.
     **/
-  taskControllers: { },
+  taskControllers: new Map(),
 
   /**
     Object holding references to all registered process controllers.
     **/
-  processControllers: { },
+  processControllers: new Map(),
 
   /**
     Add a controller to list of room controllers.
     @param {Controller} controller
     **/
   registerRoomController (controller) {
-    this.roomControllers[controller.id] = controller
+    this.roomControllers.set(controller.id, controller)
   },
 
   /**
@@ -109,7 +109,7 @@ const bootstrap = {
     @param {Tasked} tasked
     **/
   registerTaskController (tasked) {
-    this.taskControllers[tasked.id] = tasked
+    this.taskControllers.set(tasked.id, tasked)
   },
 
   /**
@@ -117,7 +117,7 @@ const bootstrap = {
     @param {Process} process
     **/
   registerProcessController (processController) {
-    this.processControllers[processController.id] = processController
+    this.processControllers.set(processController.id, processController)
   },
 
   rememberPositionAsStop (creep, stop) {

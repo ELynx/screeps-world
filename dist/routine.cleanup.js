@@ -111,8 +111,8 @@ const cleanup = {
   },
 
   cleanupFlags () {
-    const taskIds = _.keys(bootstrap.taskControllers)
-    const processIds = _.keys(bootstrap.processControllers)
+    const taskIds = Array.from(bootstrap.taskControllers.keys())
+    const processIds = Array.from(bootstrap.processControllers.keys())
     const flagKeys = _.map(taskIds.concat(processIds), id => id + '_')
 
     for (const flagName in Game.flags) {
