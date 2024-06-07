@@ -19,20 +19,43 @@ MEMO - constants
 CONTROLLER_MAX_UPGRADE_PER_TICK 15
 **/
 
+const MakeWCM = (work, carry, move = work + carry) => {
+  const partsWork = new Array(work)
+  partsWork.fill(WORK)
+
+  const partsCarry = new Array(carry)
+  partsCarry.fill(CARRY)
+
+  const partsMove = new Array(move)
+  partsMove.fill(MOVE)
+
+  return partsWork.concat(partsCarry).concat(partsMove)
+}
+
+const Body11x = MakeWCM(1, 1)
+const Body22x = MakeWCM(2, 2)
+const Body33x = MakeWCM(3, 3)
+const Body66x = MakeWCM(6, 6)
+const BodyBBx = MakeWCM(12, 12)
+
+const Body616 = MakeWCM(6, 1, 6)
+const Body211 = MakeWCM(2, 1, 1)
+const Body412 = MakeWCM(4, 1, 2)
+const Body613 = MakeWCM(6, 1, 3)
+const BodyB26 = MakeWCM(12, 2, 6)
+const BodyH39 = MakeWCM(18, 3, 9)
+
+const Body666 = MakeWCM(6, 6, 6)
+const Body888 = MakeWCM(8, 8, 8)
+const Body333 = MakeWCM(3, 3, 3)
+
+const Body5A5 = MakeWCM(5, 10, 5)
+const BodyAJA = MakeWCM(10, 20, 10)
+
+const BodyA24 = MakeWCM(10, 2, 4)
+const BodyE36 = MakeWCM(15, 3, 6)
+
 const bodywork = {
-  makeWCM (work, carry, move = work + carry) {
-    const partsWork = new Array(work)
-    partsWork.fill(WORK)
-
-    const partsCarry = new Array(carry)
-    partsCarry.fill(CARRY)
-
-    const partsMove = new Array(move)
-    partsMove.fill(MOVE)
-
-    return _.shuffle(partsWork.concat(partsCarry).concat(partsMove))
-  },
-
   worker (room) {
     const energy = room.extendedAvailableEnergyCapacity()
     const sourceLevel = room.memory.slvl || 0
@@ -42,31 +65,31 @@ const bodywork = {
     // call for new or foreign room
     if (energy === 0) {
       // 750
-      return this.makeWCM(3, 3)
+      return _.shuffle(Body33x)
     }
 
     if (energy < 500) {
       // 250
-      return this.makeWCM(1, 1)
+      return _.shuffle(Body11x)
     }
 
     if (energy < 750) {
       // 500
-      return this.makeWCM(2, 2)
+      return _.shuffle(Body22x)
     }
 
     if (energy < 1500) {
       // 750
-      return this.makeWCM(3, 3)
+      return _.shuffle(Body33x)
     }
 
     if (energy < 3000 || sourceLevel < 2) {
       // 1500
-      return this.makeWCM(6, 6)
+      return _.shuffle(Body66x)
     }
 
     // 3000 / 48 parts
-    return this.makeWCM(12, 12)
+    return _.shuffle(BodyBBx)
   },
 
   harvester_my (room) {
@@ -77,38 +100,38 @@ const bodywork = {
     if (energy === 0) {
       // target is "default" speed
       // target is zero fatigue empty, fast arrival
-      return this.makeWCM(6, 1, 6)
+      return _.shuffle(Body616)
     }
 
     if (energy < 550) {
       // target is half speed empty
       // 300
-      return this.makeWCM(2, 1, 1)
+      return _.shuffle(Body211)
     }
 
     if (energy < 800) {
       // 550
-      return this.makeWCM(4, 1, 2)
+      return _.shuffle(Body412)
     }
 
     if (energy < 1600) {
       // target is a bit above optimal harvest speed
       // target is half speed empty
       // 800
-      return this.makeWCM(6, 1, 3)
+      return _.shuffle(Body613)
     }
 
     if (energy < 2400 || sourceLevel < 2) {
       // target is double of above
       // target is half speed empty
       // 1600
-      return this.makeWCM(12, 2, 6)
+      return _.shuffle(BodyB26)
     }
 
     // target is triple of above
     // target is half speed empty
     // 2400
-    return this.makeWCM(18, 3, 9)
+    return _.shuffle(BodyH39)
   },
 
   harvester_other (room) {
@@ -119,16 +142,16 @@ const bodywork = {
 
     if (room.ownedOrReserved()) {
       // target is 3000 / 250 / 2 = 6 WORK body parts
-      return this.makeWCM(6, 6, 6)
+      return t_.shuffle(Body666)
     }
 
     if (room.sourceKeeper()) {
       // target is 4000 / 250 / 2 = 8 WORK body parts
-      return this.makeWCM(8, 8, 8)
+      return _.shuffle(Body888)
     }
 
     // target is 1500 / 250 / 2 = 3 WORK body parts
-    return this.makeWCM(3, 3, 3)
+    return _.shuffle(Body333)
   },
 
   miner (room) {
@@ -146,11 +169,11 @@ const bodywork = {
 
     if (energy < 2500 || sourceLevel < 2) {
       // 1250
-      return this.makeWCM(5, 10, 5)
+      return _.shuffle(Body5A5)
     }
 
     // 2500
-    return this.makeWCM(10, 20, 10)
+    return _.shuffle(BodyAJA)
   },
 
   upgrader (room) {
@@ -165,7 +188,7 @@ const bodywork = {
 
       // target is third speed
       // 1300
-      return this.makeWCM(10, 2, 4)
+      return _.shuffle(BodyA24)
     }
 
     if (energy < 1950) {
@@ -177,7 +200,7 @@ const bodywork = {
     // target is third speed
 
     // 1950
-    return this.makeWCM(15, 3, 6)
+    return _.shuffle(BodyE36)
   }
 }
 
