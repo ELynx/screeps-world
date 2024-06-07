@@ -30,7 +30,7 @@ function Controller (id) {
 
   this._excludedTargets = undefined
 
-  this._prepareExcludedTargets = function (room) {
+  this._prepareExcludedTargets = function (_room) {
     this._creepPerTarget = true
     this._excludedTargets = []
   }
