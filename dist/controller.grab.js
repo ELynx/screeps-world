@@ -17,8 +17,8 @@ grabController.roomPrepare = function (room) {
 
   // cache of room coordinates where creeps can maybe reach something
   this.fastCheck = false
-  this.fastCheckX = new Map()
-  this.fastCheckY = new Map()
+  this.fastCheckX = new Set()
+  this.fastCheckY = new Set()
 }
 
 grabController.act = function (room, creep) {
@@ -93,13 +93,13 @@ grabController.targets = function (room) {
           }
         )
 
-        this.fastCheckX.set((tombstone.pos.x - 1), true)
-        this.fastCheckX.set((tombstone.pos.x), true)
-        this.fastCheckX.set((tombstone.pos.x + 1), true)
+        this.fastCheckX.add((tombstone.pos.x - 1))
+        this.fastCheckX.add((tombstone.pos.x))
+        this.fastCheckX.add((tombstone.pos.x + 1))
 
-        this.fastCheckY.set((tombstone.pos.y - 1), true)
-        this.fastCheckY.set((tombstone.pos.y), true)
-        this.fastCheckY.set((tombstone.pos.y + 1), true)
+        this.fastCheckY.add((tombstone.pos.y - 1))
+        this.fastCheckY.add((tombstone.pos.y))
+        this.fastCheckY.add((tombstone.pos.y + 1))
       }
     }
   }
@@ -116,13 +116,13 @@ grabController.targets = function (room) {
           }
         )
 
-        this.fastCheckX.set((ruin.pos.x - 1), true)
-        this.fastCheckX.set((ruin.pos.x), true)
-        this.fastCheckX.set((ruin.pos.x + 1), true)
+        this.fastCheckX.add((ruin.pos.x - 1))
+        this.fastCheckX.add((ruin.pos.x))
+        this.fastCheckX.add((ruin.pos.x + 1))
 
-        this.fastCheckY.set((ruin.pos.y - 1), true)
-        this.fastCheckY.set((ruin.pos.y), true)
-        this.fastCheckY.set((ruin.pos.y + 1), true)
+        this.fastCheckY.add((ruin.pos.y - 1))
+        this.fastCheckY.add((ruin.pos.y))
+        this.fastCheckY.add((ruin.pos.y + 1))
       }
     }
   }
@@ -137,13 +137,13 @@ grabController.targets = function (room) {
         }
       )
 
-      this.fastCheckX.set((resource.pos.x - 1), true)
-      this.fastCheckX.set((resource.pos.x), true)
-      this.fastCheckX.set((resource.pos.x + 1), true)
+      this.fastCheckX.add((resource.pos.x - 1))
+      this.fastCheckX.add((resource.pos.x))
+      this.fastCheckX.add((resource.pos.x + 1))
 
-      this.fastCheckY.set((resource.pos.y - 1), true)
-      this.fastCheckY.set((resource.pos.y), true)
-      this.fastCheckY.set((resource.pos.y + 1), true)
+      this.fastCheckY.add((resource.pos.y - 1))
+      this.fastCheckY.add((resource.pos.y))
+      this.fastCheckY.add((resource.pos.y + 1))
     }
   }
 
