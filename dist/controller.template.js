@@ -58,7 +58,7 @@ function Controller (id) {
     )
   }
 
-  this._roomPrepare = function (room) {
+  this._roomPrepare = function (_room) {
     this.__controllerTemplate_targetCache = undefined
   }
 
@@ -114,7 +114,7 @@ function Controller (id) {
     return this._isTargetWithinRange(target, creep, this.actRange)
   }
 
-  this._validateTarget = function (allTargets, target, creep) {
+  this._validateTarget = function (_allTargets, target, creep) {
     if (this._isStationarySpecialist(creep) && this._isAtDestination(creep)) {
       return this._isTargetWithinActingRange(target, creep)
     }
