@@ -142,7 +142,7 @@ const bodywork = {
 
     if (room.ownedOrReserved()) {
       // target is 3000 / 250 / 2 = 6 WORK body parts
-      return t_.shuffle(Body666)
+      return _.shuffle(Body666)
     }
 
     if (room.sourceKeeper()) {
