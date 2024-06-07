@@ -5,14 +5,14 @@ const spawn = {
   FROM_CLOSEST_ROOM: 'CLOSEST',
   FROM_STRONGEST_ROOM: 'STRONGEST',
 
-  bodyFunctions: { },
+  bodyFunctions: new Map(),
 
   registerBodyFunction (id, bodyFunction) {
-    this.bodyFunctions[id] = bodyFunction
+    this.bodyFunctions.set(id, bodyFunction)
   },
 
   getBodyFunction (id) {
-    return this.bodyFunctions[id]
+    return this.bodyFunctions.get(id)
   },
 
   makeEmptyStructure () {
