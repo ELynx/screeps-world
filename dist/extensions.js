@@ -725,6 +725,8 @@ Room.prototype.updateOwner = function () {
 }
 
 Room.prototype.eraseOwner = function () {
+  this.memory.nodeAccessed = Game.time
+
   if (this.memory.ownUsername !== undefined) {
     Memory.roomOwnerChangeDetected = Game.time
   }
