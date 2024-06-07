@@ -28,7 +28,7 @@ outlast._defaultAction = function (creep) {
   }
 
   if (creep.__canMelee) {
-    const allCreeps = creep.room.fin(FIND_CREEPS)
+    const allCreeps = creep.room.find(FIND_CREEPS)
     const hostileCreeps = _.filter(allCreeps, someCreep => someCreep.hostile)
 
     if (hostileCreeps.length > 0) {
