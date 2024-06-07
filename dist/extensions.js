@@ -987,13 +987,13 @@ const extensions = {
     Game.roomsToScan = new Set()
 
     Game.creepsById = new Map()
-    Game.storages = new Map()
-    Game.extractors = new Map()
-    Game.labs = new Map()
+    // Game.storages = new Map()
+    // Game.extractors = new Map()
+    // Game.labs = new Map()
     Game.terminals = new Map()
-    Game.factories = new Map()
+    // Game.factories = new Map()
     Game.observers = new Map()
-    Game.powerSpawns = new Map()
+    // Game.powerSpawns = new Map()
     Game.nukers = new Map()
 
     for (const roomName in Game.rooms) {
@@ -1073,25 +1073,25 @@ const extensions = {
         case STRUCTURE_TOWER:
           structure.room.towers.set(structure.id, structure)
           break
-        case STRUCTURE_STORAGE:
-          Game.storages.set(structure.id, structure)
-          break
+        // case STRUCTURE_STORAGE:
+        //  Game.storages.set(structure.id, structure)
+        //  break
         case STRUCTURE_LINK:
           structure.room.links.set(structure.id, structure)
           break
-        case STRUCTURE_EXTRACTOR:
-          Game.extractors.set(structure.id, structure)
-          structure.room.extractor = structure
+        // case STRUCTURE_EXTRACTOR:
+        //  Game.extractors.set(structure.id, structure)
+        //  structure.room.extractor = structure
           break
         case STRUCTURE_LAB:
-          Game.labs.set(structure.id, structure)
+          // Game.labs.set(structure.id, structure)
           structure.room.labs.set(structure.id, structure)
           break
         case STRUCTURE_TERMINAL:
           Game.terminals.set(structure.id, structure)
           break
         case STRUCTURE_FACTORY:
-          Game.factories.set(structure.id, structure)
+          // Game.factories.set(structure.id, structure)
           structure.room.factory = structure
           break
         case STRUCTURE_OBSERVER:
@@ -1099,7 +1099,7 @@ const extensions = {
           structure.room.observer = structure
           break
         case STRUCTURE_POWER_SPAWN:
-          Game.powerSpawns.set(structure.id, structure)
+          // Game.powerSpawns.set(structure.id, structure)
           structure.room.powerSpawn = structure
           break
         case STRUCTURE_NUKER:
