@@ -1084,7 +1084,7 @@ const extensions = {
         // case STRUCTURE_EXTRACTOR:
         //  Game.extractors.set(structure.id, structure)
         //  structure.room.extractor = structure
-          break
+        //  break
         case STRUCTURE_LAB:
           // Game.labs.set(structure.id, structure)
           structure.room.labs.set(structure.id, structure)
