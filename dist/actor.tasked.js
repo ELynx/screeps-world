@@ -32,8 +32,8 @@ const taskedActor =
 {
   taskControllersControl () {
     for (const id of taskedAuto) {
-      const tasked = bootstrap.taskControllers[id]
-      if (tasked === undefined) continue
+      const tasked = bootstrap.taskControllers.get(id)
+      if (!tasked) continue
 
       tasked.act()
     }

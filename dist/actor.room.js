@@ -116,7 +116,7 @@ const roomActor =
 
   roomControllersPrepare (controllers, room) {
     for (const id of controllers) {
-      const controller = bootstrap.roomControllers[id]
+      const controller = bootstrap.roomControllers.get(id)
       if (controller && _.isFunction(controller.roomPrepare)) {
         controller.roomPrepare(room)
       }
@@ -130,14 +130,14 @@ const roomActor =
   },
 
   roomControllersObserveOwn (creep) {
-    const controller = bootstrap.roomControllers[creep.memory.ctrl]
+    const controller = bootstrap.roomControllers.get(creep.memory.ctrl)
     if (controller) {
       this._roomControllerObserveOwn(controller, creep)
     }
   },
 
   roomControllersAct (target, creep) {
-    const controller = bootstrap.roomControllers[creep.memory.ctrl]
+    const controller = bootstrap.roomControllers.get(creep.memory.ctrl)
     if (controller) {
       const rc = controller.act(target, creep)
 
@@ -153,7 +153,7 @@ const roomActor =
 
   roomControllersControl (controllers, room, creeps) {
     for (const id of controllers) {
-      const controller = bootstrap.roomControllers[id]
+      const controller = bootstrap.roomControllers.get(id)
 
       if (controller === undefined) {
         console.log('Unknown controller [' + id + ']')
@@ -184,7 +184,7 @@ const roomActor =
     let error = false
     let warning = false
     for (const id of controllers) {
-      const controller = bootstrap.roomControllers[id]
+      const controller = bootstrap.roomControllers.get(id)
 
       if (controller === undefined) {
         console.log('Unknown controller [' + id + ']')
