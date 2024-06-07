@@ -52,13 +52,10 @@ mineralHarvestController.targets = function (room) {
     }
   }
 
-  return room.find(
-    FIND_STRUCTURES,
-    {
-      filter: structure => {
-        return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
-      }
-    }
+  const structures = room.find(FIND_STRUCTURES)
+  return _.filter(
+    structures,
+    structure => structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
   )
 }
 

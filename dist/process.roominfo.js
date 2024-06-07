@@ -26,25 +26,18 @@ roomInfoProcess.miningLevel = function (room) {
     if (room.extractor === undefined || room.extractor.isActiveSimple === false) return 0
     if (!cook.roomCanMine(room)) return 0
   } else {
-    const extractors = room.find(
-      FIND_STRUCTURES,
-      {
-        filter: structure => {
-          return structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
-        }
-      }
+    const structures = room.find(FIND_STRUCTURES)
+    const extractors = _.filter(
+      structures,
+      structure => structure.structureType === STRUCTURE_EXTRACTOR && structure.isActiveSimple
     )
 
     if (extractors.length === 0) return 0
   }
 
-  const minerals = room.find(
-    FIND_MINERALS,
-    {
-      filter: mineral => {
-        return mineral.mineralAmount > 0
-      }
-    }
+  const minerals = _.filter(
+    room.find(FIND_MINERALS),
+    mineral => mineral.mineralAmount > 0
   )
 
   if (minerals.length === 0) return 0
@@ -53,13 +46,10 @@ roomInfoProcess.miningLevel = function (room) {
 }
 
 roomInfoProcess._wallLevel = function (room) {
-  const walls = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: structure => {
-        return structure.structureType === STRUCTURE_WALL && structure.hits && structure.hitsMax
-      }
-    }
+  const structures = room.find(FIND_STRUCTURES)
+  const walls = _.filter(
+    structures,
+    structure => structure.structureType === STRUCTURE_WALL && structure.hits && structure.hitsMax
   )
 
   if (walls.length === 0) {

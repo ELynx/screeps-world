@@ -14,33 +14,25 @@ outlast._defaultAction = function (creep) {
     const rc = creep.heal(creep)
     creep.__canMelee = creep.__canMelee && rc !== OK
   } else {
-    const creeps = creep.room.find(
-      FIND_CREEPS,
-      {
-        filter: _.bind(
-          someCreep => {
-            return someCreep.myOrAlly() &&
-                   someCreep.hits < someCreep.hitsMax &&
-                   someCreep.pos.inRangeTo(this, 3)
-          },
-          creep
-        )
+    const allCreeps = creep.room.find(FIND_CREEPS)
+    const damagedCreeps = _.filter(
+      allCreeps,
+      someCreep => {
+        return someCreep.myOrAlly() &&
+               someCreep.hits < someCreep.hitsMax &&
+               someCreep.pos.inRangeTo(creep, 3)
       }
     )
-    const rc = creep.healClosest(creeps)
+    const rc = creep.healClosest(damagedCreeps)
     creep.__canMelee = creep.__canMelee && rc !== OK
   }
 
   if (creep.__canMelee) {
-    const creeps = creep.room.find(
-      FIND_CREEPS,
-      {
-        filter: someCreep => someCreep.hostile
-      }
-    )
+    const allCreeps = creep.room.fin(FIND_CREEPS)
+    const hostileCreeps = _.filter(allCreeps, someCreep => someCreep.hostile)
 
-    if (creeps.length > 0) {
-      creep.meleeAdjacent(creeps)
+    if (hostileCreeps.length > 0) {
+      creep.meleeAdjacent(hostileCreeps)
     }
   }
 }

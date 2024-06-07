@@ -58,15 +58,14 @@ repairController.targets = function (room) {
   const roadTargetHp2 = Math.ceil(RoadMaxHp2 * roadMult)
   const roadTargetHp3 = Math.ceil(RoadMaxHp3 * roadMult)
 
-  const structuresWithHits = room.find(
-    FIND_STRUCTURES,
-    {
-      filter: structure => {
-        return structure.hits &&
-               structure.hitsMax &&
-               structure.isActiveSimple &&
-               structure.hits < structure.hitsMax
-      }
+  const structures = room.find(FIND_STRUCTURES)
+  const structuresWithHits = _.filter(
+    structures,
+    structure => {
+      return structure.hits &&
+             structure.hitsMax &&
+             structure.isActiveSimple &&
+             structure.hits < structure.hitsMax
     }
   )
 

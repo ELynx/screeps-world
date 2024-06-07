@@ -25,11 +25,10 @@ secutiryProcess.work = function (room) {
   let threatLevel = threatWas || 0
   let threatTimer = room.memory._ttt || (Game.time - ThreatStep)
 
-  const hostileCreeps = room.find(
-    FIND_CREEPS,
-    {
-      filter: creep => creep.hostile && creep.ticksToLive > (room.controller.safeMode || 1)
-    }
+  const allCreeps = room.find(FIND_CREEPS)
+  const hostileCreeps = _.filter(
+    allCreeps,
+    creep => creep.hostile && creep.ticksToLive > (room.controller.safeMode || 1)
   )
 
   if (hostileCreeps.length > 0) {

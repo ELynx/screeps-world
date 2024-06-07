@@ -43,8 +43,8 @@ sourceHarvestGenericController.validateTarget = function (allTargets, target, cr
 }
 
 sourceHarvestGenericController.targets = function (room) {
-  const allSources = room.find(FIND_SOURCES)
-  return _.filter(allSources, source => intentSolver.getEnergy(source) > 0)
+  const sources = room.find(FIND_SOURCES)
+  return _.filter(sources, source => intentSolver.getEnergy(source) > 0)
 }
 
 sourceHarvestGenericController.filterCreep = function (creep) {

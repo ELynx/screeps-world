@@ -23,16 +23,16 @@ rampupController.act = function (target, creep) {
 }
 
 rampupController.targets = function (room) {
-  return room.find(FIND_STRUCTURES,
-    {
-      filter: structure => {
-        return (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) &&
-          structure.hits &&
-          structure.hitsMax &&
-          structure.isActiveSimple &&
-          structure.hits < RampupHits &&
-          structure.hits < structure.hitsMax
-      }
+  const structures = room.find(FIND_STRUCTURES)
+  return _.filter(
+    structures,
+    structure => {
+      return (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) &&
+        structure.hits &&
+        structure.hitsMax &&
+        structure.isActiveSimple &&
+        structure.hits < RampupHits &&
+        structure.hits < structure.hitsMax
     }
   )
 }
