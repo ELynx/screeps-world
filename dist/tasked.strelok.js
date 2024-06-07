@@ -48,37 +48,36 @@ strelok.creepAtDestination = function (creep) {
       creep1 => creep1.hostile
     )
 
-    const targetStructures = creep.room.find(
-      FIND_STRUCTURES,
-      {
-        filter: structure => {
-          // ignore everything without hit points
-          if (!structure.hits) return false
+    const structures = creep.room.find(FIND_STRUCTURES)
+    const targetStructures = _.filter(
+      structures,
+      structure => {
+        // ignore everything without hit points
+        if (!structure.hits) return false
 
-          // STRATEGY ignore resource management, even though it can be military
-          if (structure.structureType === STRUCTURE_CONTAINER ||
-              structure.structureType === STRUCTURE_EXTRACTOR ||
-              structure.structureType === STRUCTURE_FACTORY ||
-              structure.structureType === STRUCTURE_LAB ||
-              structure.structureType === STRUCTURE_LINK ||
-              structure.structureType === STRUCTURE_STORAGE ||
-              structure.structureType === STRUCTURE_TERMINAL) {
-            return false
-          }
-
-          // STRATEGY only aggro can make this target walls
-          if (structure.structureType === STRUCTURE_WALL) {
-            return false
-          }
-
-          // please don't hunt these...
-          if (structure.structureType === STRUCTURE_ROAD ||
-              structure.structureType === STRUCTURE_PORTAL) {
-            return false
-          }
-
-          return structure.hostile
+        // STRATEGY ignore resource management, even though it can be military
+        if (structure.structureType === STRUCTURE_CONTAINER ||
+            structure.structureType === STRUCTURE_EXTRACTOR ||
+            structure.structureType === STRUCTURE_FACTORY ||
+            structure.structureType === STRUCTURE_LAB ||
+            structure.structureType === STRUCTURE_LINK ||
+            structure.structureType === STRUCTURE_STORAGE ||
+            structure.structureType === STRUCTURE_TERMINAL) {
+          return false
         }
+
+        // STRATEGY only aggro can make this target walls
+        if (structure.structureType === STRUCTURE_WALL) {
+          return false
+        }
+
+        // please don't hunt these...
+        if (structure.structureType === STRUCTURE_ROAD ||
+            structure.structureType === STRUCTURE_PORTAL) {
+          return false
+        }
+
+        return structure.hostile
       }
     )
 

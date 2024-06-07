@@ -603,8 +603,10 @@ cook.validateTarget = undefined
 cook.roomPrepare = function (room) {
   room.__cook__pass = 0
 
+  room.__cook__structures = room.find(FIND_STRUCTURES)
+
   room.__cook__containers = _.filter(
-    room.find(FIND_STRUCTURES),
+    room.__cook__structures,
     structure => structure.structureType === STRUCTURE_CONTAINER
   )
 
@@ -911,7 +913,7 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
 cook.___filterOutUnderRamparts = function (room, structures) {
   if (room.__cook__ramparts === undefined) {
     room.__cook__ramparts = _.filter(
-      room.find(FIND_STRUCTURES),
+      room.__cook__structures,
       structure => structure.structureType === STRUCTURE_RAMPART && !structure.isPublic
     )
   }
