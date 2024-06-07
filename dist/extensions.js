@@ -993,9 +993,9 @@ const extensions = {
     // Game.extractors = new Map()
     // Game.labs = new Map()
     Game.terminals = new Map()
-    // Game.factories = new Map()
+    Game.factories = new Map()
     Game.observers = new Map()
-    // Game.powerSpawns = new Map()
+    Game.powerSpawns = new Map()
     Game.nukers = new Map()
 
     for (const roomName in Game.rooms) {
@@ -1093,7 +1093,7 @@ const extensions = {
           Game.terminals.set(structure.id, structure)
           break
         case STRUCTURE_FACTORY:
-          // Game.factories.set(structure.id, structure)
+          Game.factories.set(structure.id, structure)
           structure.room.factory = structure
           break
         case STRUCTURE_OBSERVER:
@@ -1101,7 +1101,7 @@ const extensions = {
           structure.room.observer = structure
           break
         case STRUCTURE_POWER_SPAWN:
-          // Game.powerSpawns.set(structure.id, structure)
+          Game.powerSpawns.set(structure.id, structure)
           structure.room.powerSpawn = structure
           break
         case STRUCTURE_NUKER:
