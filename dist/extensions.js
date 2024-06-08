@@ -103,8 +103,8 @@ if (!Creep.prototype.__original_move) {
     if (rc === OK) {
       if (_.isFinite(creepOrDirection)) {
         this._direction_ = creepOrDirection
-        const [dx, dy] = bootstrap.directionToDelta[this._direction_]
-        this._next_pos_ = new RoomPosition(this.pos.x + dx, this.pos.y + dy, this.pos.roomName)
+        const delta = bootstrap.directionToDelta[this._direction_]
+        this._next_pos_ = new RoomPosition(this.pos.x + delta[0], this.pos.y + delta[1], this.pos.roomName)
       } else if (_.isObject(creepOrDirection)) {
         this._next_pos_ = creepOrDirection.pos
         this._direction_ = this.pos.getDirectionTo(this._next_pos_)
