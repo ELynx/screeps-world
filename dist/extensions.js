@@ -1081,10 +1081,10 @@ const extensions = {
         case STRUCTURE_LINK:
           structure.room.links.set(structure.id, structure)
           break
-        // case STRUCTURE_EXTRACTOR:
+        case STRUCTURE_EXTRACTOR:
         //  Game.extractors.set(structure.id, structure)
-        //  structure.room.extractor = structure
-        //  break
+          structure.room.extractor = structure
+          break
         case STRUCTURE_LAB:
           // Game.labs.set(structure.id, structure)
           structure.room.labs.set(structure.id, structure)
