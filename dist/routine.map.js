@@ -183,6 +183,7 @@ const map = {
       let toFromSk = toSk === true || fromSk === true
 
       routeCallback = (x, y) => {
+        if (Game.flags['block_' + x]) return Infinity
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
 
@@ -195,9 +196,12 @@ const map = {
 
     if (mode === 'combat') {
       routeCallback = (x, y) => {
+        if (Game.flags['block_' + x]) return Infinity
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
+
         if (x === toRoom) return 1
+
         return this.__routeCallback_combatTravel(x, y)
       }
     }
