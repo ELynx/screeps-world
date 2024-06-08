@@ -34,6 +34,11 @@ strelok.creepPrepare = function (creep) {
   // check is early to be caught in following code
   if (creep.hits < creep.hitsMax) {
     creep.setControlRoom(creep.room.name)
+  } else {
+    if (creep.flag) {
+      // when healed, continue
+      creep.setControlRoom(creep.flag.pos.roomName)
+    }
   }
 }
 
