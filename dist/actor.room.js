@@ -420,9 +420,7 @@ const roomActor =
       cook.roomPost(room)
     }
 
-    if (bootstrap.hardCpuUsed(t0) <= room._cpuLimit_) {
-      autobuildProcess.work(room)
-    }
+    autobuildProcess.work(room)
   } // end of act method
 }
 
