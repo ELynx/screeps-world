@@ -2017,7 +2017,7 @@ cook._logActionCost = function (rc) {
 cook._outOfCpu = function () {
   // this turns out to be an expensive call, cache it
   if (Game.__cook__cpuUsedBudget === undefined) {
-    Game.__cook__cpuUsedBudget = PostCPUTarget - Game.cou.getUsed()
+    Game.__cook__cpuUsedBudget = PostCPUTarget - Game.cpu.getUsed()
   }
 
   if (Game.__cook__cpuUsedBudget <= 0) return true
