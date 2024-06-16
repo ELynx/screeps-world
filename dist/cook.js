@@ -2007,8 +2007,23 @@ cook.roomPost = function (room) {
   this._operateLabs(room)
 }
 
+cook._logActionCost = function (rc) {
+  if (rc < OK) return
+
+  const now = Game.__cook__cpuUsed || 0
+  Game.__cook__cpuUsed = now + 0.2
+}
+
 cook._outOfCpu = function () {
-  return Game.cpu.getUsed() >= PostCPUTarget
+  // this turns out to be an expensive call, cache it
+  if (Game.__cook__cpuUsedBudget === undefined) {
+    Game.__cook__cpuUsedBudget = PostCPUTarget - Game.cou.getUsed()
+  }
+
+  if (Game.__cook__cpuUsedBudget <= 0) return true
+  if (Game.__cook__cpuUsed === undefined) return false
+
+  return Game.__cook__cpuUsed < Game.__cook__cpuUsedBudget
 }
 
 cook._performTerminalExchange = function () {
@@ -2094,7 +2109,7 @@ cook.__operatePowerSpawn = function (powerSpawn) {
 cook._operatePowerSpawns = function () {
   for (const powerSpawn of Game.powerSpawns.values()) {
     if (this._outOfCpu()) break
-    this.__operatePowerSpawn(powerSpawn)
+    this._logActionCost(this.__operatePowerSpawn(powerSpawn))
   }
 }
 
@@ -2126,7 +2141,7 @@ cook.__operateFactory = function (factory) {
 cook._operateFactories = function () {
   for (const factory of Game.factories.values()) {
     if (this._outOfCpu()) break
-    this.__operateFactory(factory)
+    this._logActionCost(this.__operateFactory(factory))
   }
 }
 
@@ -2226,7 +2241,7 @@ cook.__sellTerminalExcess = function (terminal) {
 cook._sellTerminalsExcess = function () {
   for (const terminal of Game.terminals.values()) {
     if (this._outOfCpu()) break
-    this.__sellTerminalExcess(terminal)
+    this._logActionCost(this.__sellTerminalExcess(terminal))
   }
 }
 
