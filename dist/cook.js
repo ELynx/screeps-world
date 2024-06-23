@@ -1189,6 +1189,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
       const canTake = intentSolver.getFreeCapacityMin(link, RESOURCE_ENERGY) || 0
       if (canTake <= 0) continue
 
+      let foundHarvester = false
       for (const harvester of harvesters) {
         if (!harvester.pos.isNearTo(link)) continue
         const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
@@ -1197,6 +1198,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
           const rc = this.wrapIntent(harvester, 'transfer', link, RESOURCE_ENERGY, amount)
           if (rc >= OK) {
             harvester.__cook__pass2__used = true
+            foundHarvester = true
             break // from harvesters loop
           }
         } else {
@@ -1207,11 +1209,29 @@ cook.__harvestersPass2 = function (room, harvesters) {
             const rc1 = this.wrapIntent(harvester, 'withdraw', container, RESOURCE_ENERGY)
             if (rc1 >= OK) {
               harvester.__cook__pass2__used = true
+              foundHarvester = true
               break // from containers loop
             }
           }
 
           if (harvester.__cook__pass2__used === true) break // from harvesters loop
+        }
+      }
+
+      if (foundHarvester === false) {
+        for (const harvester of harvesters) {
+          if (Close2(harvester.pos, link.pos) && harvester.memory._est) {
+            const source = bootstrap.getObjectById(harvester.memory._est)
+            if (source && Close2(source.pos, link.pos)) {
+              const direction = harvester.pos.getDirectionTo(link.pos)
+              const rc = harvester.moveWrapper(direction, { jiggle: true })
+              if (rc >= OK) {
+                harvester.__cook__pass2__used = true
+                foundHarvester = true
+                break // from harvesters loop
+              }
+            }
+          }
         }
       }
     }
@@ -1684,7 +1704,7 @@ cook._unloadActiveHarvesters = function (room) {
   if (containers.length === 0 && links.length === 0) return
 
   const terrain = new Room.Terrain(room.name)
-  const calculateHarvestSpot = (some1, some2) => {
+  const calculateHarvestSpotBetween = (some1, some2) => {
     const dx = some2.pos.x - some1.pos.x
     const dy = some2.pos.y - some1.pos.y
     const absDx = Math.abs(dx)
@@ -1754,7 +1774,7 @@ cook._unloadActiveHarvesters = function (room) {
       }
 
       const link = clusterLinks[0]
-      harvestSpot = calculateHarvestSpot(harvester._source_, link)
+      harvestSpot = calculateHarvestSpotBetween(harvester._source_, link)
     }
 
     if (harvestSpot === undefined && clusterContainers.length > 0) {
