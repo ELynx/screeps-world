@@ -1220,7 +1220,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
 
       if (foundHarvester === false) {
         for (const harvester of harvesters) {
-          if (Close2(harvester.pos, link.pos) && harvester.memory._est) {
+          if (harvester.memory.sptx === undefined && harvester.memory.spty === undefined && Close2(harvester.pos, link.pos) && harvester.memory._est) {
             const source = bootstrap.getObjectById(harvester.memory._est)
             if (source && Close2(source.pos, link.pos)) {
               const direction = harvester.pos.getDirectionTo(link.pos)
