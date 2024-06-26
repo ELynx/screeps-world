@@ -1192,6 +1192,7 @@ cook.__harvestersPass2 = function (room, harvesters) {
       let foundHarvester = false
       for (const harvester of harvesters) {
         if (!harvester.pos.isNearTo(link)) continue
+
         const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
         if (canGive > 0) {
           const amount = Math.min(canTake, canGive)
@@ -1235,22 +1236,24 @@ cook.__harvestersPass2 = function (room, harvesters) {
         }
       }
     }
-  } else {
-    for (const harvester of harvesters) {
-      const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
-      if (canGive > 0) {
-        for (const container of room.__cook__containers) {
-          if (!container.isSource()) continue
-          if (!harvester.pos.isNearTo(container)) continue
+  }
 
-          const canTake = intentSolver.getFreeCapacityMin(container, RESOURCE_ENERGY) || 0
-          if (canTake > 0) {
-            const amount = Math.min(canGive, canTake)
-            const rc = this.wrapIntent(harvester, 'transfer', container, RESOURCE_ENERGY, amount)
-            if (rc >= OK) {
-              harvester.__cook__pass2__used = true
-              break // from containers loop
-            }
+  for (const harvester of harvesters) {
+    if (harvester.__cook__pass2__used) continue
+
+    const canGive = intentSolver.getUsedCapacityMin(harvester, RESOURCE_ENERGY) || 0
+    if (canGive > 0) {
+      for (const container of room.__cook__containers) {
+        if (!container.isSource()) continue
+        if (!harvester.pos.isNearTo(container)) continue
+
+        const canTake = intentSolver.getFreeCapacityMin(container, RESOURCE_ENERGY) || 0
+        if (canTake > 0) {
+          const amount = Math.min(canGive, canTake)
+          const rc = this.wrapIntent(harvester, 'transfer', container, RESOURCE_ENERGY, amount)
+          if (rc >= OK) {
+            harvester.__cook__pass2__used = true
+            break // from containers loop
           }
         }
       }
@@ -1811,7 +1814,7 @@ cook._unloadActiveHarvesters = function (room) {
     }
     if (transferredToLink) continue // to next harvester
 
-    if (room._actType_ === bootstrap.RoomActTypeMy && room.links && room.links.size > 0) {
+    if (room._actType_ === bootstrap.RoomActTypeMy && clusterLinks.size > 0) {
       // unload to containers only when there is more energy in source
       // this is to reduce withdrawing from containers to links on way back
       const rc = harvester._source_harvest_specialist_rc_
