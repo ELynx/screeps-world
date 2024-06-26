@@ -1169,9 +1169,19 @@ cook.__untrap = function (room, creeps) {
   }
 }
 
+const HowFarToGoForEnergy = 10
+
 cook.__checkNoRun = function (_allTargets, target, creep) {
   if (!target.__cook__noEnergyRun) return true
-  return target.pos.isNearTo(creep)
+  // strict
+  // return target.pos.isNearTo(creep)
+
+  // relaxed
+  const dx = Math.abs(target.pos.x - creep.pos.x)
+  if (dx > HowFarToGoForEnergy) return false
+
+  const dy = Math.abs(target.pos.y - creep.pos.y)
+  return dy <= HowFarToGoForEnergy
 }
 
 cook.__checkNoRunAndDefault = function (allTargets, target, creep) {
