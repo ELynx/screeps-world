@@ -11,7 +11,7 @@ const cook = new Controller('cook')
 // STRATEGY demands and supplies
 const TerminalEnergyDemand = 30000
 const TerminalRoomMineralStore = 200000
-const TerminalNukeReagentStore = 5000
+const TerminalBaseReagentStore = 5000
 const TerminalOtherStuffStore = 25000
 
 const FactoryAnyReagentDemand = 10000
@@ -358,6 +358,7 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
     }
   }
 
+  // CHEMISTRY add base reagents here
   if (structureType === STRUCTURE_TERMINAL) {
     // it is handled in demand
     if (resourceType !== RESOURCE_ENERGY) {
@@ -369,19 +370,31 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
       }
 
       if (resourceType === RESOURCE_KEANIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_LEMERGIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_UTRIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_ZYNTHIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_CATALYST) {
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_HYDROGEN) {
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_OXYGEN) {
+        allowed += TerminalBaseReagentStore
       }
 
       // one of resources kept by name
@@ -394,15 +407,19 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
         const all = intentSolver.getAllUsedCapacity(structure)
         const useful = new Map()
 
-        useful.set(RESOURCE_KEANIUM, Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
+        // CHEMISTRY add base reagents here
+        useful.set(RESOURCE_KEANIUM, Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_CATALYST, Math.min(all.get(RESOURCE_CATALYST) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_HYDROGEN, Math.min(all.get(RESOURCE_HYDROGEN) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_OXYGEN, Math.min(all.get(RESOURCE_OXYGEN) || 0, TerminalBaseReagentStore))
 
         useful.set(RESOURCE_ENERGY, Math.min(all.get(RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
         // `useful` can be tricked to know if mineralType is one of nuke reagents
-        const mineralTypeMax = TerminalRoomMineralStore + (useful.has(mineralType) ? TerminalNukeReagentStore : 0)
+        const mineralTypeMax = TerminalRoomMineralStore + (useful.has(mineralType) ? TerminalBaseReagentStore : 0)
         useful.set(mineralType, Math.min(all.get(mineralType) || 0, mineralTypeMax))
 
         let usedByUseful = 0
@@ -1116,14 +1133,12 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (isAndHasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
 
-  /* v unpack later if needed v
   for (const lab of room.labs.values()) {
     if (this.__hasEnergyDemand(lab)) {
       targets.push(lab)
       if (targets.length >= count) return targets
     }
   }
-  */
 
   if (isAndHasEnergyDemand(room.nuker)) targets.push(room.nuker)
   if (targets.length >= count) return targets
@@ -1595,9 +1610,9 @@ cook.___resetRoomRecepie = function (room) {
   room.setLabRecepie('A', undefined, undefined, undefined, true)
 }
 
-cook.___setRoomRecepieNuke = function (room) {
-  // input order is not important, just used to amortise checks
+// input order is not important, just used to amortise checks
 
+cook.___setRoomRecepieNuke = function (room) {
   room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
   room.setLabRecepie('3', true, RESOURCE_KEANIUM)
   room.setLabRecepie('5', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
@@ -1612,9 +1627,35 @@ cook.___setRoomRecepieNuke = function (room) {
   room.setLabRecepie('A', false, RESOURCE_GHODIUM, '8,7,6,5')
 }
 
+cook.___setRoomRecepieWallup = function (room) {
+  room.setLabRecepie('1', false, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  if (room.labs.size < 2) return
+
+  room.setLabRecepie('2', false, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  if (room.labs.size < 10) return
+
+  room.setLabRecepie('1', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '3,4')
+  room.setLabRecepie('2', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '4,3')
+
+  room.setLabRecepie('3', true, RESOURCE_CATALYST)
+  room.setLabRecepie('7', true, RESOURCE_LEMERGIUM)
+  room.setLabRecepie('8', true, RESOURCE_OXYGEN)
+  room.setLabRecepie('9', true, RESOURCE_HYDROGEN)
+  room.setLabRecepie('A', true, RESOURCE_HYDROGEN)
+
+  room.setLabRecepie('4', undefined, RESOURCE_LEMERGIUM_ACID, '5,6')
+  room.setLabRecepie('5', undefined, RESOURCE_LEMERGIUM_HYDRIDE, '7,9')
+  room.setLabRecepie('6', undefined, RESOURCE_HYDROXIDE, '8,A')
+}
+
 cook.__updateRoomRecepie = function (room) {
   if (room.labs.size === 10 && this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
     this.___setRoomRecepieNuke(room)
+    return
+  }
+
+  if (Game.flags['wallup_' + room.name]) {
+    this.___setRoomRecepieWallup(room)
     return
   }
 
@@ -1651,20 +1692,20 @@ cook._setWorldDemand = function (room) {
     }
   }
 
-  if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-    const mineralType = room.mineralType()
-    const lambda = resourceType => {
-      // demand and hold only foreign resources
-      if (resourceType !== mineralType) {
-        if (this.__hasSupply(room.terminal, resourceType)) {
-          // mark as not ready to give this resource
-          this.___addWorldDemand(room.terminal, resourceType, -1)
-        } else {
-          this.___addWorldDemand(room.terminal, resourceType, 1000)
-        }
+  const mineralType = room.mineralType()
+  const lambda = (resourceType, factor = 1) => {
+    // demand and hold only foreign resources
+    if (resourceType !== mineralType) {
+      if (this.__hasSupply(room.terminal, resourceType)) {
+        // mark as not ready to give this resource
+        this.___addWorldDemand(room.terminal, resourceType, -1)
+      } else {
+        this.___addWorldDemand(room.terminal, resourceType, factor * 1000)
       }
     }
+  }
 
+  if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
     if (room.labs.size === 10) {
       lambda(RESOURCE_ZYNTHIUM)
       lambda(RESOURCE_KEANIUM)
@@ -1675,6 +1716,20 @@ cook._setWorldDemand = function (room) {
     }
 
     lambda(RESOURCE_GHODIUM)
+  }
+
+  if (Game.flags['wallup_' + room.name]) {
+    if (room.labs.size === 10) {
+      lambda(RESOURCE_LEMERGIUM)
+      lambda(RESOURCE_CATALYST)
+      lambda(RESOURCE_HYDROGEN, 2)
+      lambda(RESOURCE_OXYGEN)
+      lambda(RESOURCE_HYDROXIDE)
+      lambda(RESOURCE_LEMERGIUM_HYDRIDE)
+      lambda(RESOURCE_LEMERGIUM_ACID)
+    }
+
+    lambda(RESOURCE_CATALYZED_LEMERGIUM_ACID)
   }
 }
 
@@ -2202,10 +2257,15 @@ cook.___findBuyOrder = function (terminal, resourceType) {
 }
 
 cook.___excessToSell = function (terminal, resourceType) {
+  // CHEMISTRY produce not to sell explicitly
   if (resourceType === RESOURCE_BATTERY) return 0
+  if (resourceType === RESOURCE_CATALYZED_LEMERGIUM_ACID) return 0
   if (resourceType === RESOURCE_ENERGY) return 0
   if (resourceType === RESOURCE_GHODIUM_MELT) return 0
   if (resourceType === RESOURCE_GHODIUM) return 0
+  if (resourceType === RESOURCE_HYDROXIDE) return 0
+  if (resourceType === RESOURCE_LEMERGIUM_ACID) return 0
+  if (resourceType === RESOURCE_LEMERGIUM_HYDRIDE) return 0
   if (resourceType === RESOURCE_OPS) return 0
   if (resourceType === RESOURCE_POWER) return 0
   if (resourceType === RESOURCE_UTRIUM_LEMERGITE) return 0
@@ -2223,20 +2283,33 @@ cook.___excessToSell = function (terminal, resourceType) {
     free -= TerminalRoomMineralStore
   }
 
+  // CHEMISTRY base reagents decrease
   if (resourceType === RESOURCE_KEANIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_LEMERGIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_UTRIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_ZYNTHIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_CATALYST) {
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_HYDROGEN) {
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_OXYGEN) {
+    free -= TerminalBaseReagentStore
   }
 
   return Math.max(free, 0)
