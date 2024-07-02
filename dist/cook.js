@@ -1628,21 +1628,26 @@ cook.___setRoomRecepieNuke = function (room) {
 }
 
 cook.___setRoomRecepieWallup = function (room) {
-  room.setLabRecepie('1', false, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  // demand + no supply, XLH2O, (no inputs)
+  room.setLabRecepie('1', true, RESOURCE_CATALYZED_LEMERGIUM_ACID)
   if (room.labs.size < 2) return
 
-  room.setLabRecepie('2', false, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  // demand + no supply, XLH2O, (no inputs)
+  room.setLabRecepie('2', true, RESOURCE_CATALYZED_LEMERGIUM_ACID)
   if (room.labs.size < 10) return
 
+  // no demand + supply, XLH2O, from 3 and 4
   room.setLabRecepie('1', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '3,4')
   room.setLabRecepie('2', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '4,3')
 
+  // demand + no supply, basic reagents, (no input)
   room.setLabRecepie('3', true, RESOURCE_CATALYST)
   room.setLabRecepie('7', true, RESOURCE_LEMERGIUM)
   room.setLabRecepie('8', true, RESOURCE_OXYGEN)
   room.setLabRecepie('9', true, RESOURCE_HYDROGEN)
   room.setLabRecepie('A', true, RESOURCE_HYDROGEN)
 
+  // internal processing as needed, intermediate reagents, from previous steps
   room.setLabRecepie('4', undefined, RESOURCE_LEMERGIUM_ACID, '5,6')
   room.setLabRecepie('5', undefined, RESOURCE_LEMERGIUM_HYDRIDE, '7,9')
   room.setLabRecepie('6', undefined, RESOURCE_HYDROXIDE, '8,A')
