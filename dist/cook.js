@@ -898,7 +898,7 @@ cook._controlPass1 = function (room, creeps) {
 
   for (const creep of creeps) {
     if (checkBoost) {
-      if (this.__maybeBoost(creep) >= OK) {
+      if (this.__maybeBoost(room, creep) >= OK) {
         creep.__cook__pass1__used = true
       }
     }
