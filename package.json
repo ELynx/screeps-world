@@ -74,6 +74,8 @@
       "HARVEST_POWER",
       "HEAL_POWER",
       "HEAL",
+      "LAB_BOOST_ENERGY",
+      "LAB_BOOST_MINERAL",
       "LAB_MINERAL_CAPACITY",
       "LEFT",
       "LINK_CAPACITY",

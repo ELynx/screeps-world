@@ -85,7 +85,7 @@ cook.___roomSupply = function (structure, resourceType) {
     // explicit inputs do not give back
     if (structure.__cook__cache__isSource === true) return 0
 
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    return intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -823,6 +823,7 @@ cook._resourceRestock = function (room, creeps) {
     if (target) {
       bootstrap.assignCreep(this, target, undefined, creep)
       // since non-"matrix" assignment is used, force _hasDemand to false
+      // do so by promising a lot of energy
       this.__adjustPlannedDelta(target, resourceType, MadeUpLargeNumber)
       used.push(creep)
     } else {
@@ -833,13 +834,62 @@ cook._resourceRestock = function (room, creeps) {
   return [unused, used]
 }
 
+cook.__maybeBoost = function (room, creep) {
+  if (creep.memory.bst1) {
+    if (creep.ticksToLive < 0.9 * CREEP_LIFE_TIME) {
+      creep.memory.bst1 = undefined
+      return ERR_TIRED
+    }
+
+    for (const lab of room.labs.values()) {
+      // STRATEGY boost on anything
+      if (lab.mineralType === creep.memory.bst1) {
+        // TODO? not only work
+        const energyNeed = creep._work_ * LAB_BOOST_ENERGY
+        const mineralNeed = creep._work_ * LAB_BOOST_MINERAL
+
+        const all = intentSolver.getAllUsedCapacity(lab)
+        const energyNow = all.get(RESOURCE_ENERGY) || 0
+        const mineralNow = all.get(creep.memory.bst1) || 0
+
+        if (energyNeed > energyNow || mineralNeed > mineralNow) continue
+
+        // simplification - keep check only on mineral; do not expect energy decrease without mineral decrease
+
+        const mineralDelta = this.___plannedDelta(lab, creep.memory.bst1)
+        if (mineralDelta < 0) {
+          if (mineralNow + mineralDelta < mineralNeed) continue
+        }
+
+        lab.__cook__resourceToTake = creep.memory.bst1
+        lab.__cook__restockToTakeAmount = mineralNeed
+
+        bootstrap.assignCreep(this, lab, undefined, creep, this.extra(lab))
+        // since non-"matrix" assignment is used, reserve manually
+        this.__adjustPlannedDelta(lab, lab.__cook__resourceToTake, -1 * lab.__cook__restockToTakeAmount)
+
+        return OK
+      }
+    }
+  }
+
+  return ERR_INVALID_TARGET
+}
+
 cook._controlPass1 = function (room, creeps) {
   // qualify
 
+  const checkBoost = room.labs.size > 0
   const withEnergy = []
   const withResources = []
 
   for (const creep of creeps) {
+    if (checkBoost) {
+      if (this.__maybeBoost(creep) >= OK) {
+        creep.__cook__pass1__used = true
+      }
+    }
+
     const all = intentSolver.getAllUsedCapacity(creep)
     const total = all.get('total') || 0
 
