@@ -189,7 +189,7 @@ spawnProcess.workers_my = function (room, live) {
 
   const now = this._hasAndPlanned(room, live, 'worker')
 
-  let boost = undefined
+  let boost
   const wallupFlag = Game.flags['wallup_' + room.name]
   if (wallupFlag && !wallupFlag._removed_) {
     boost = RESOURCE_CATALYZED_LEMERGIUM_ACID
