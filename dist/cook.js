@@ -202,6 +202,7 @@ StructureExtension.prototype.everWant = function (resourceType) {
 const Reagents = new Set([..._.keys(REACTIONS), ..._.keys(REACTION_TIME)])
 
 StructureLab.prototype.everWant = function (resourceType) {
+  if (resourceType === RESOURCE_ENERGY) return true
   return Reagents.has(resourceType)
 }
 
@@ -237,6 +238,11 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
+    // load with energy to boost
+    if (resourceType === RESOURCE_ENERGY) {
+      return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    }
+
     // explicit outputs do not demand in resources, only supply them
     if (structure.__cook__cache__isSource === false) return 0
     if (structure.__cook__cache__resourceType !== resourceType) return 0
@@ -598,16 +604,25 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
 }
 
 cook._controllerTransferFromCreepToStructure = function (structure, creep) {
+  // by default, all is bad
+  let rc = ERR_NOT_ENOUGH_RESOURCES
+
   for (const resourceType in creep.store) {
-    const rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
-    // to avoid observe calls
+    // another pass in, maybe more to unload
+    if (rc >= OK) return OK
+
+    rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
+
     if (rc >= OK) {
       creep.__cook__withdrawOrTransfer = true
-      return bootstrap.ERR_TERMINATED
     }
   }
 
-  return ERR_NOT_ENOUGH_RESOURCES
+  // single pass, release
+  if (rc >= OK) {
+    // to avoid observe calls
+    return bootstrap.ERR_TERMINATED
+  }
 }
 
 // << controller
