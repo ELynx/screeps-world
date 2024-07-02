@@ -90,7 +90,7 @@ const TargetBarrierHp = [
 roomInfoProcess.wallLevel = function (room) {
   if (!room._my_) return 0
 
-  let wallupFlag = Game.flags['wallup_' + room.name]
+  const wallupFlag = Game.flags['wallup_' + room.name]
 
   const baseLevel = room.level()
   const boostLevel = baseLevel + (wallupFlag === undefined ? 0 : 1)
