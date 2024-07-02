@@ -561,11 +561,18 @@ cook._expectFromCreepToStructure = function (structure, creep) {
   }
 }
 
-cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
+cook.__withdrawOrBoostFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
   const [resourceType, resoureAmount] = this.__processExtra(structure, creep, resourceTypeAndAmount)
   if (resourceType === undefined || resoureAmount === undefined) {
     bootstrap.unassignCreep(creep)
     return ERR_INVALID_ARGS
+  }
+
+  if (structure.structureType === STRUCTURE_LAB &&
+      structure.mineralType === resourceType &&
+      creep.memory.bst1 === resourceType) {
+    // TODO wrap intent
+    return structure.boostCreep(creep)
   }
 
   const canTake = intentSolver.getFreeCapacityMin(creep, resourceType) || 0
@@ -579,9 +586,9 @@ cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAn
   return this.wrapIntent(creep, 'withdraw', structure, resourceType, amount)
 }
 
-cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resourceType) {
-  const rc = this.__withdrawFromStructureToCreep(structure, creep, resourceType)
-  // to avoid observe calls
+cook._controllerWithdrawOrBoostFromStructureToCreep = function (structure, creep, resourceType) {
+  const rc = this.__withdrawOrBoostFromStructureToCreep(structure, creep, resourceType)
+  // to avoid "observe" calls
   if (rc >= OK) {
     creep.__cook__withdrawOrTransfer = true
     return bootstrap.ERR_TERMINATED
@@ -607,25 +614,31 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
 }
 
 cook._controllerTransferFromCreepToStructure = function (structure, creep) {
-  // by default, all is bad
+  // by default, nothing is needed
   let rc = ERR_NOT_ENOUGH_RESOURCES
 
   for (const resourceType in creep.store) {
-    // another pass in, maybe more to unload
+    // may be only on second resourceType
+    // if more than one resource, stay and try to give out another one
     if (rc >= OK) return OK
 
+    // save RC for this resourceType
     rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
 
     if (rc >= OK) {
+      // let other logic know, always
       creep.__cook__withdrawOrTransfer = true
     }
   }
 
-  // single pass, release
+  // did not exit in loop, transfer complete
+
+  // to avoid "observe" calls
   if (rc >= OK) {
-    // to avoid observe calls
     return bootstrap.ERR_TERMINATED
   }
+
+  return rc
 }
 
 // << controller
@@ -682,7 +695,7 @@ cook.observeMyCreep = function (creep) {
 
 cook.act = function (structure, creep) {
   if (creep.memory.xtra) {
-    return this._controllerWithdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
+    return this._controllerWithdrawOrBoostFromStructureToCreep(structure, creep, creep.memory.xtra)
   } else {
     return this._controllerTransferFromCreepToStructure(structure, creep)
   }
