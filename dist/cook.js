@@ -240,14 +240,20 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_LAB) {
     // load with energy to boost
     if (resourceType === RESOURCE_ENERGY) {
-      return intentSolver.getFreeCapacity(structure, resourceType) || 0
+      const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
+      // STRATEGY avoid repeated trips
+      if (demand < 1200) return 0
+      return demand
     }
 
     // explicit outputs do not demand in resources, only supply them
     if (structure.__cook__cache__isSource === false) return 0
     if (structure.__cook__cache__resourceType !== resourceType) return 0
 
-    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
+    // STRATEGY avoid repeated trips
+    if (demand < 1200) return 0
+    return demand
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -288,14 +294,14 @@ cook.___roomDemand = function (structure, resourceType) {
     if (resourceType === RESOURCE_ENERGY) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips, 300 or 600 is worker capacity on level 8
-      if (demand <= 2400) return 0
+      if (demand < 2400) return 0
       return demand
     }
 
     if (resourceType === RESOURCE_POWER) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips
-      if (demand <= 50) return 0
+      if (demand < 50) return 0
       return demand
     }
 
