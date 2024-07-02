@@ -71,18 +71,20 @@ roomInfoProcess._wallLevel = function (room) {
   return hits[Math.floor(hits.length / 2)]
 }
 
+const TargetBarrierHp = [
+  0,
+  5,
+  10,
+  15,
+  20,
+  25
+]
+
+const WallupHp = 100000;
+
 // STRATEGY wall build-up, basis levels
 roomInfoProcess.wallLevel = function (room) {
   if (!room._my_) return 0
-
-  const TargetBarrierHp = [
-    0,
-    5,
-    10,
-    15,
-    20,
-    25
-  ]
 
   let level = room.level()
   if (level >= TargetBarrierHp.length) level = TargetBarrierHp.length - 1
@@ -95,6 +97,18 @@ roomInfoProcess.wallLevel = function (room) {
   const roomPlanned = room.memory.wlvl
   if (roomPlanned) {
     const roomHas = this._wallLevel(room)
+
+    const wallupFlag = Game.flags['wallup_' + room.name]
+    if (wallupFlag) {
+      if (roomHas >= wallupFlag) {
+        wallupFlag.remove()
+        // and continue as normal
+      }
+      else {
+        // we have a goal set, gogogo
+        return WallupHp;
+      }
+    }
 
     // if walls are under-level, build up from what is available
     if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) return roomHas + 1
