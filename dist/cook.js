@@ -240,10 +240,7 @@ cook.___roomDemand = function (structure, resourceType) {
   if (structureType === STRUCTURE_LAB) {
     // load with energy to boost
     if (resourceType === RESOURCE_ENERGY) {
-      const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
-      // STRATEGY avoid repeated trips
-      if (demand < 1200) return 0
-      return demand
+      return intentSolver.getFreeCapacity(structure, resourceType) || 0
     }
 
     // explicit outputs do not demand in resources, only supply them
@@ -251,7 +248,7 @@ cook.___roomDemand = function (structure, resourceType) {
     if (structure.__cook__cache__resourceType !== resourceType) return 0
 
     const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
-    // STRATEGY avoid repeated trips
+    // STRATEGY avoid repeated trips because reactions take by 5 units
     if (demand < 1200) return 0
     return demand
   }
