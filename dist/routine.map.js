@@ -180,7 +180,7 @@ const map = {
         if (!fromSk && bootstrap._isSourceKeeperRoomName(parsedFrom)) fromSk = true
       }
 
-      let toFromSk = toSk === true || fromSk === true
+      const toFromSk = toSk === true || fromSk === true
 
       routeCallback = (x, y) => {
         if (Game.flags['block_' + x]) return Infinity
