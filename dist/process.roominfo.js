@@ -105,13 +105,12 @@ roomInfoProcess.wallLevel = function (room) {
     if (boostLevel > 8 && roomHas >= targetByEnergyLevel && wallupFlag) {
       // mark as inactive
       wallupFlag._removed_ = wallupFlag.remove() === OK
-      wallupFlag = undefined
       // continue as usual
     }
 
     // if walls are under-level, build up from what is available
     if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) {
-      if (wallupFlag) {
+      if (wallupFlag && !wallupFlag._removed_) {
         return roomHas + TargetBarrierHp[5]
       } else {
         return roomHas + TargetBarrierHp[1]

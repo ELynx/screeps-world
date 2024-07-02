@@ -662,6 +662,11 @@ cook.roomPrepare = function (room) {
       if (link.pos.isNearTo(container)) container.__cook__noEnergyRun = true
     }
   }
+
+  const wallupFlag = Game.flags['wallup_' + room.name]
+  if (wallupFlag && !wallupFlag._removed_) {
+    room.__cook__wallup = true
+  }
 }
 
 cook.observeMyCreep = function (creep) {
@@ -1684,7 +1689,7 @@ cook.__updateRoomRecepie = function (room) {
     return
   }
 
-  if (Game.flags['wallup_' + room.name]) {
+  if (room.__cook__wallup) {
     this.___setRoomRecepieWallup(room)
     return
   }
@@ -1748,7 +1753,7 @@ cook._setWorldDemand = function (room) {
     lambda(RESOURCE_GHODIUM)
   }
 
-  if (Game.flags['wallup_' + room.name]) {
+  if (room.__cook__wallup) {
     if (room.labs.size === 10) {
       lambda(RESOURCE_LEMERGIUM)
       lambda(RESOURCE_CATALYST)
