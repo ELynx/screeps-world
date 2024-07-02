@@ -1184,6 +1184,13 @@ cook.__untrap = function (room, creeps) {
   }
 }
 
+const Close2 = (a, b) => {
+  const dx = Math.abs(a.x - b.x)
+  if (dx > 2) return false
+  const dy = Math.abs(a.y - b.y)
+  return dy <= 2
+}
+
 const HowFarToGoForEnergy = 10
 
 cook.__checkNoRun = function (_allTargets, target, creep) {
@@ -1745,13 +1752,6 @@ const DummyRepairController = {
 }
 
 const NotMaxHits = structure => structure.hits < structure.hitsMax
-
-const Close2 = (a, b) => {
-  const dx = Math.abs(a.x - b.x)
-  if (dx > 2) return false
-  const dy = Math.abs(a.y - b.y)
-  return dy <= 2
-}
 
 cook._unloadActiveHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
