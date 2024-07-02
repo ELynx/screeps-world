@@ -85,24 +85,28 @@ const TargetBarrierHp = [
 ]
 
 // STRATEGY wall build-up, basis levels
+// walls can be inherited and force room into over-repair
+// control the wlvl to not increment in great steps
 roomInfoProcess.wallLevel = function (room) {
   if (!room._my_) return 0
 
   let wallupFlag = Game.flags['wallup_' + room.name]
-  const level = room.level() + ((wallupFlag === undefined) ? 0 : 1)
 
-  const targetByEnergyLevel = TargetBarrierHp[level]
+  const baseLevel = room.level()
+  const boostLevel = baseLevel + (wallupFlag === undefined ? 0 : 1)
 
-  // walls can be inherited and force room into over-repair
-  // control the wlvl to not increment in great steps
+  const targetByEnergyLevel = TargetBarrierHp[boostLevel]
 
   const roomPlanned = room.memory.wlvl
   if (roomPlanned) {
     const roomHas = this._wallLevel(room)
 
-    if (level > 8 && roomHas >= targetByEnergyLevel && wallupFlag) {
-      wallupFlag.remove()
+    // build walls all the way
+    if (boostLevel > 8 && roomHas >= targetByEnergyLevel && wallupFlag) {
+      // mark as inactive
+      wallupFlag._removed_ = wallupFlag.remove() === OK
       wallupFlag = undefined
+      // continue as usual
     }
 
     // if walls are under-level, build up from what is available
@@ -126,7 +130,8 @@ roomInfoProcess.wallLevel = function (room) {
     // no growth
     return roomPlanned
   } else {
-    return targetByEnergyLevel
+    // don't force super high values from the start
+    return TargetBarrierHp[baseLevel]
   }
 }
 
