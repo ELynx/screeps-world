@@ -517,7 +517,13 @@ cook.__worldDemandTypes = function (structure) {
 }
 
 cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
-  const asWords = _.words(resourceTypeAndAmount)
+  let asWords = _.words(resourceTypeAndAmount)
+
+  // it be chewing digits, try "decode"
+  if (asWords.length === 4) {
+    asWords = [asWords[0] + asWords[1] + asWords[2], asWords[3]]
+  }
+
   if (asWords.length !== 2) {
     console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', whole, [' + resourceTypeAndAmount + ']')
     return [undefined, undefined]
