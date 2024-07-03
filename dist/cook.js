@@ -790,6 +790,12 @@ cook._energyRestockPass1 = function (room, creeps) {
       }
     }
 
+    for (const lab of room.labs.values()) {
+      if (this.__hasEnergyDemand(lab)) {
+        prio2.push(lab)
+      }
+    }
+
     if (prio2.length > 0) {
       const [prio2Unused, prio2Used] = this.assignCreeps(room, unused, prio2)
       return [prio2Unused, used.concat(prio2Used)]
@@ -1020,6 +1026,10 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
     if (this.__hasEnergyDemand(tower)) return true
   }
 
+  for (const lab of room.labs.values()) {
+    if (this.__hasEnergyDemand(lab)) return true
+  }
+
   return false
 }
 
@@ -1228,13 +1238,6 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
 
   if (isAndHasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
-
-  for (const lab of room.labs.values()) {
-    if (this.__hasEnergyDemand(lab)) {
-      targets.push(lab)
-      if (targets.length >= count) return targets
-    }
-  }
 
   if (isAndHasEnergyDemand(room.nuker)) targets.push(room.nuker)
   if (targets.length >= count) return targets
