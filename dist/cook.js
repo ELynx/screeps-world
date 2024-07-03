@@ -181,9 +181,13 @@ cook.___worldSupply = function (structure, resourceType) {
   if (worldDemand !== 0) return 0
 
   if (resourceType === RESOURCE_ENERGY) {
+    if (structure.room.__cook__wallup) return 0
+
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
+
     if (this.__hasEnergyDemand(structure)) return 0
+
     return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
@@ -1797,7 +1801,7 @@ cook._setWorldDemand = function (room) {
   if (!room.terminal) return
 
   const sourceLevel = room.memory.slvl || 0
-  if (room._fight_ || sourceLevel < 2) {
+  if (room._fight_ || room.__cook__wallup || sourceLevel < 2) {
     const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
     const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     if (now < ideal) {
