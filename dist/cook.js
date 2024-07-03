@@ -520,8 +520,17 @@ cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
   let asWords = _.words(resourceTypeAndAmount)
 
   // it be chewing digits, try "decode"
-  if (asWords.length === 4) {
+  if (asWords.length === 3 && asWords[1] === '2') {
+    asWords = [asWords[0] + asWords[1], asWords[2]]
+  }
+
+  if (asWords.length === 4 && asWords[1] === '2') {
     asWords = [asWords[0] + asWords[1] + asWords[2], asWords[3]]
+  }
+
+  // it be chewing udnerlines, try "decode"
+  if (asWords.length === 3 && _.includes(resourceTypeAndAmount, '_')) {
+    asWords = [asWords[0] + '_' + asWords[1], asWords[2]]
   }
 
   if (asWords.length !== 2) {
