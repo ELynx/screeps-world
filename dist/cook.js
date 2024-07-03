@@ -572,7 +572,11 @@ cook.__withdrawOrBoostFromStructureToCreep = function (structure, creep, resourc
       structure.mineralType === resourceType &&
       creep.memory.bst1 === resourceType) {
     // TODO wrap intent
-    return structure.boostCreep(creep)
+    const rc = structure.boostCreep(creep)
+    if (rc >= OK) {
+      creep.memory.bst1 = undefined
+    }
+    return rc
   }
 
   const canTake = intentSolver.getFreeCapacityMin(creep, resourceType) || 0
