@@ -22,6 +22,9 @@ observe.creepAtDestination = function (creep) {
 }
 
 observe.flagPrepare = function (flag) {
+  // spawn forces
+  if (flag.name.indexOf('!') !== -1) return this.FLAG_SPAWN
+
   if (flag.room) return this.FLAG_IGNORE
   return this.FLAG_SPAWN
 }
