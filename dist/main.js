@@ -62,7 +62,7 @@ const loop = function () {
   }
 
   let taskedActed = false
-  if (Game._war_ && Game.time % 2 == 0) {
+  if (Game._war_ && Game.time % 2 === 0) {
     taskedActor.act()
     taskedActed = true
   }
