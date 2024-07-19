@@ -31,6 +31,7 @@ const cleanup = {
           'mlvl',
           'mnrl',
           'nodeAccessed',
+          'nothreat',
           'ownerLevel',
           'ownerUsername',
           'photo',
