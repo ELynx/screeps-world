@@ -114,8 +114,16 @@ strelok.creepAtDestination = function (creep) {
 
   const rushPos = creep.getControlPos()
   const targets = this.roomTargets[dest]
+  let primaryTargets = undefined
 
-  const fireTarget = creep.pos.findClosestByRange(targets)
+  // sneek
+  if (creep.memory.btyp.indexOf('outlast') !== -1) {
+    if (creep.room.aggro().length > 0) {
+      primaryTargets = creep.room.aggro()
+    }
+  }
+
+  const fireTarget = creep.pos.findClosestByRange(primaryTargets || targets)
 
   let moveTarget
   const prio = _.filter(
@@ -182,10 +190,10 @@ strelok.creepAtDestination = function (creep) {
         if (targetIsStructure && fireTarget._aggro_) {
           if (rangeToFireTarget > 2) {
             flee = false
-            range = 2
+            range = creep.__canRanged ? 2 : 1
           } else if (rangeToFireTarget < 2) {
-            flee = true
-            range = 2
+            flee = creep.__canRanged ? true : false
+            range = creep.__canRanged ? 2 : 1
           }
         } else if (targetIsStructure || targetIsNotMelee) {
           if (rangeToFireTarget > 1) {
@@ -195,10 +203,10 @@ strelok.creepAtDestination = function (creep) {
         } else {
           if (rangeToFireTarget >= 3) {
             flee = false
-            range = 2
+            range = creep.__canRanged ? 2 : 1
           } else {
-            flee = true
-            range = 2
+            flee = creep.__canRanged ? true : false
+            range = creep.__canRanged ? 2 : 1
           }
         }
 
@@ -217,7 +225,7 @@ strelok.creepAtDestination = function (creep) {
         // STRATEGY follow creep tightly
         const reusePath = moveTarget.structureType ? _.random(3, 5) : 0
         // STRATEGY bump into structure
-        const range = moveTarget.structureType ? 1 : 3
+        const range = moveTarget.structureType ? 1 : creep.__canRanged ? 3 : 1
 
         creep.moveToWrapper(
           moveTarget,
