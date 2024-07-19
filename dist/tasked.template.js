@@ -409,7 +409,7 @@ function Tasked (id) {
           ctrv = Game.iff.isHostile(flag.room.controller.owner.username)
         }
       } else {
-        const roomMemory = Memory.rooms[roomName]
+        const roomMemory = Memory.rooms[flag.pos.roomName]
         if (roomMemory) {
           roomMemory.nodeAccessed = Game.time
 
