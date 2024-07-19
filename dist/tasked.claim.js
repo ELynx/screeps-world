@@ -7,7 +7,7 @@ const claimTasked = new Tasked('claim')
 claimTasked.bodyName = function (flag) {
   if (flag.name.indexOf('!') !== -1) return this.id + '_2'
 
-   return this.id
+  return this.id
 }
 
 claimTasked._onProblemDetected = function (creep) {
