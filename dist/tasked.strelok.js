@@ -294,7 +294,7 @@ strelok.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-strelok.makeBody = function (room) {
+strelok.makeBody = function (room, limit = undefined) {
   const energy = room.extendedAvailableEnergyCapacity()
 
   if (energy < 500) {
@@ -311,9 +311,10 @@ strelok.makeBody = function (room) {
     this.__bodyCache = { }
   }
 
-  const elvl = Math.ceil((energy - 300) / 500)
+  const roomLimit = Math.ceil((energy - 300) / 500)
+  const stepLimit = limit ? Math.min(roomLimit, limit) : roomLimit
 
-  const cached = this.__bodyCache[elvl]
+  const cached = this.__bodyCache[stepLimit]
   if (cached) {
     return cached
   }
@@ -325,7 +326,7 @@ strelok.makeBody = function (room) {
   let heal = 0
 
   // 700 for base combo and 250 per next level
-  let budget = 700 + 250 * elvl
+  let budget = 700 + 250 * stepLimit
 
   // add heal + two ranged combo
   // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
@@ -391,15 +392,15 @@ strelok.makeBody = function (room) {
 
   const body = partsTough.concat(partsMove).concat(partsRanged).concat(partsMelee).concat(partsHeal)
 
-  this.__bodyCache[elvl] = body
+  this.__bodyCache[stepLimit] = body
 
   return body
 }
 
 // room service, melee strelok...
-strelok.makeBody_2 = function (room) {
+strelok.makeBody_2 = function (room, limit = undefined) {
   const energy = room.extendedAvailableEnergyCapacity()
-  const pairs = Math.min(Math.floor(energy / 130), 25)
+  const pairs = Math.min(Math.floor(energy / 130), limit || 25)
 
   const partsMove = new Array(pairs)
   partsMove.fill(MOVE)
@@ -412,6 +413,24 @@ strelok.makeBody_2 = function (room) {
   return body
 }
 
-strelok.register()
+// before profiler wrap
+const patrol = _.assign({ }, strelok)
 
-module.exports = strelok
+const PatrolLimit = 5
+
+patrol.makeBody = function (room) {
+  return strelok.makeBody(room, PatrolLimit)
+}
+
+patrol.makeBody_2 = function (room) {
+  return strelok.makeBody_2(room, PatrolLimit)
+}
+
+strelok.register()
+patrol.register()
+
+module.exports =
+{
+  strelok,
+  patrol
+}
