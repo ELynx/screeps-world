@@ -114,7 +114,7 @@ strelok.creepAtDestination = function (creep) {
 
   const rushPos = creep.getControlPos()
   const targets = this.roomTargets[dest]
-  let primaryTargets = undefined
+  let primaryTargets
 
   // sneek
   if (creep.memory.btyp.indexOf('outlast') !== -1) {
@@ -192,7 +192,7 @@ strelok.creepAtDestination = function (creep) {
             flee = false
             range = creep.__canRanged ? 2 : 1
           } else if (rangeToFireTarget < 2) {
-            flee = creep.__canRanged ? true : false
+            flee = !!creep.__canRanged
             range = creep.__canRanged ? 2 : 1
           }
         } else if (targetIsStructure || targetIsNotMelee) {
@@ -205,7 +205,7 @@ strelok.creepAtDestination = function (creep) {
             flee = false
             range = creep.__canRanged ? 2 : 1
           } else {
-            flee = creep.__canRanged ? true : false
+            flee = !!creep.__canRanged
             range = creep.__canRanged ? 2 : 1
           }
         }
