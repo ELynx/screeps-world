@@ -416,6 +416,8 @@ strelok.makeBody_2 = function (room, limit = undefined) {
 // before profiler wrap
 const patrol = _.assign({ }, strelok)
 
+patrol.id = 'patrol'
+
 const PatrolLimit = 5
 
 patrol.makeBody = function (room) {
