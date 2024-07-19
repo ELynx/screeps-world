@@ -4,6 +4,12 @@ const Tasked = require('./tasked.template')
 
 const claimTasked = new Tasked('claim')
 
+claimTasked.bodyName = function (flag) {
+  if (flag.name.indexOf('!') !== -1) return this.id + '_2'
+
+   return this.id
+}
+
 claimTasked._onProblemDetected = function (creep) {
   const flag = creep.flag
   if (flag) {
@@ -228,6 +234,16 @@ claimTasked.makeBody = function (room) {
   // on swamp move 1 unit per 1 tick
   // 1700
   return this.makeClaimM(2, 10)
+}
+
+claimTasked.makeBody_2 = function (room) {
+  const energy = room.extendedAvailableEnergyCapacity()
+
+  if (energy < 6800) return []
+
+  // on swamp move 1 unit per 1 tick
+  // 6800
+  return this.makeClaimM(8, 40)
 }
 
 claimTasked.register()
