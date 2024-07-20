@@ -102,7 +102,10 @@ const spawn = {
   },
 
   __get (target, index) {
-    if (index === 0) return [target.shift(), target]
+    if (index === 0) {
+      const item = target.shift()
+      return [item, target]
+    }
 
     const item = target[index]
     const without = target.splice(index, 1)
