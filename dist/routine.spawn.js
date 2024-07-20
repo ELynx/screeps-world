@@ -76,16 +76,22 @@ const spawn = {
       return undefined
     }
 
-    if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.urgent[0], { priority: 'urgent' })
-    }
+    let postponed = Game.__spawnRoutine_spawnPostponeN || 0
 
-    if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.normal[0], { priority: 'normal' })
+    const ul = Memory.spawn_v1.urgent.length
+    if (ul > postponed) {
+      return _.extend({ }, Memory.spawn_v1.urgent[postponed], { priority: 'urgent' })
     }
+    postponed -= ul
 
-    if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
+    const nl = Memory.spawn_v1.normal.length
+    if (nl > postponed) {
+      return _.extend({ }, Memory.spawn_v1.normal[postponed], { priority: 'normal' })
+    }
+    postponed -= nl
+
+    if (Memory.spawn_v1.lowkey.length > postponed) {
+      return _.extend({ }, Memory.spawn_v1.lowkey[postponed], { priority: 'lowkey' })
     }
 
     return undefined
@@ -95,21 +101,42 @@ const spawn = {
     return this._peek()
   },
 
+  __get (target, index) {
+    if (index === 0) return [target.shift(), target]
+
+    const item = target[index]
+    const without = target.splice(index, 1)
+
+    return [item, without]
+  },
+
   _get () {
     if (this.noMemory()) {
       return undefined
     }
 
-    if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend(Memory.spawn_v1.urgent.shift(), { priority: 'urgent' })
-    }
+    let postponed = Game.__spawnRoutine_spawnPostponeN || 0
 
-    if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend(Memory.spawn_v1.normal.shift(), { priority: 'normal' })
+    const ul = Memory.spawn_v1.urgent.length
+    if (ul > postponed) {
+      const [item, without] = this.__get(Memory.spawn_v1.urgent, postponed)
+      Memory.spawn_v1.urgent = without
+      return _.extend(item, { priority: 'urgent' })
     }
+    postponed -= ul
 
-    if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend(Memory.spawn_v1.lowkey.shift(), { priority: 'lowkey' })
+    const nl = Memory.spawn_v1.normal.length
+    if (nl > postponed) {
+      const [item, without] = this.__get(Memory.spawn_v1.normal, postponed)
+      Memory.spawn_v1.normal = without
+      return _.extend(item, { priority: 'normal' })
+    }
+    postponed -= nl
+
+    if (Memory.spawn_v1.lowkey.length > postponed) {
+      const [item, without] = this.__get(Memory.spawn_v1.lowkey, postponed)
+      Memory.spawn_v1.lowkey = without
+      return _.extend(item, { priority: 'lowkey' })
     }
 
     return undefined
@@ -165,48 +192,38 @@ const spawn = {
     this._erase(id)
   },
 
-  // internals of this function should not be used
-  __postpone (target) {
-    if (Game.__spawnRoutine_spawnPostponeN === undefined) {
-      // STRATEGY how many shuffles in queue are allowed
-      Game.__spawnRoutine_spawnPostponeN = Math.floor(target.length / 2)
-    }
-
-    // denied
-    if (Game.__spawnRoutine_spawnPostponeN === 0) {
-      return false
-    }
-
-    Game.__spawnRoutine_spawnPostponeN = Game.__spawnRoutine_spawnPostponeN - 1
-
-    const taken = target.shift()
-    target.push(taken)
-
-    return true
-  },
-
   _postpone () {
     if (this.noMemory()) {
       return false
     }
 
-    // logic
-    // if priority list is empty, skip it
-    // if has one element, sorry, no postpone
-    // if more than one, postpone within single priority
+    if (Game.__spawnRoutine_spawnPostponeN === undefined) {
+      Game.__spawnRoutine_spawnPostponeN = 0
+    }
 
-    const lu = Memory.spawn_v1.urgent.length
-    if (lu === 1) return false
-    if (lu > 1) return this.__postpone(Memory.spawn_v1.urgent)
+    // STRATEGY how many shuffles in queue are allowed
+    const allowed = Math.ceil(
+      Math.max(
+        Memory.spawn_v1.urgent.length,
+        Memory.spawn_v1.normal.length,
+        Memory.spawn_v1.lowkey.length
+      ) / 2
+    )
 
-    const ln = Memory.spawn_v1.normal.length
-    if (ln === 1) return false
-    if (ln > 1) return this.__postpone(Memory.spawn_v1.normal)
+    // check edge case
+    if (allowed === 1) {
+      // this means max length is 1 or 2
+      // check if there is some place to shuffle
+      if (Memory.spawn_v1.urgent.length + Memory.spawn_v1.normal.length + Memory.spawn_v1.lowkey.length <= allowed) {
+        return false
+      }
+    }
 
-    const ll = Memory.spawn_v1.lowkey.length
-    if (ll > 1) return this.__postpone(Memory.spawn_v1.lowkey)
+    // increase counter to be reflected on getters
+    Game.__spawnRoutine_spawnPostponeN = Game.__spawnRoutine_spawnPostponeN + 1
 
-    return false
+    // allow next getter to happen
+    return true
   },
 
   postpone () {
