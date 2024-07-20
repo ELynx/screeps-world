@@ -22,8 +22,6 @@ Proprietary and confidential.
 
 In emergency, release stored energy.
 
-Spawn blocked in one room starves other rooms.
-
 Movement and positioning:
 
 * Step away.
