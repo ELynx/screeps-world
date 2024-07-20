@@ -63,6 +63,11 @@ strelok.creepAtDestination = function (creep) {
 
         const structureType = structure.structureType
 
+        // shortcut - only attack creeps not under ramparts
+        if (this.id === 'patrol') {
+          return structureType === STRUCTURE_RAMPART
+        }
+
         // STRATEGY ignore resource management, even though it can be military
         if (structureType === STRUCTURE_CONTAINER ||
             structureType === STRUCTURE_EXTRACTOR ||
@@ -91,10 +96,19 @@ strelok.creepAtDestination = function (creep) {
       }
     )
 
-    let targets = targetCreeps.concat(targetStructures)
+    let targets
 
-    if (creep.room.aggro().length > 0) {
-      targets = targets.concat(creep.room.aggro())
+    if (this.id === 'patrol') {
+      targets = _.filter(
+        targetCreeps,
+        creep1 => !_.some(targetStructures, someRampart => someRampart.pos.x === creep1.pos.x && someRampart.pos.y === creep1.pos.y)
+      )
+    } else {
+      targets = targetCreeps.concat(targetStructures)
+
+      if (creep.room.aggro().length > 0) {
+        targets = targets.concat(creep.room.aggro())
+      }
     }
 
     const wounded = _.filter(
