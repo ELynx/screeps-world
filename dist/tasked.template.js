@@ -405,7 +405,7 @@ function Tasked (id) {
 
       let ctrv
       if (flag.room) {
-        if (!flag.room._my_ && flag.room.controller) {
+        if (!flag.room._my_ && flag.room.controller && flag.room.controller.owner) {
           ctrv = Game.iff.isHostile(flag.room.controller.owner.username)
         }
       } else {
