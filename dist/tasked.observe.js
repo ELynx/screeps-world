@@ -11,7 +11,7 @@ observe.spawnPriority = function (_flag) {
 observe.creepAtDestination = function (creep) {
   let pos
 
-  if (creep.flag.indexOf('stomp') !== -1) {
+  if (creep.memory.flag.indexOf('stomp') !== -1) {
     if (creep.room._observe_stomps_ === undefined) {
       creep.room._observe_stomps_ = creep.room.find(FIND_CONSTRUCTION_SITES)
     }
