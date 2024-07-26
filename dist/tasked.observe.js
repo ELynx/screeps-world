@@ -9,7 +9,20 @@ observe.spawnPriority = function (_flag) {
 }
 
 observe.creepAtDestination = function (creep) {
-  const pos = creep.getControlPos()
+  let pos
+
+  if (creep.flag.indexOf('stomp') !== -1) {
+    if (creep.room._observe_stomps_ === undefined) {
+      creep.room._observe_stomps_ = creep.room.find(FIND_CONSTRUCTION_SITES)
+    }
+
+    pos = creep.pos.findClosestByRange(creep.room._observe_stomps_)
+  }
+
+  if (pos === undefined) {
+    pos = creep.getControlPos()
+  }
+
   if (creep.pos.x !== pos.x || creep.pos.y !== pos.y) {
     creep.moveToWrapper(
       pos,
