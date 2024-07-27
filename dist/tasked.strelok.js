@@ -197,17 +197,18 @@ strelok.creepAtDestination = function (creep) {
       if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
         let flee
         let range
+        const range2or1 = creep.__canRanged ? 2 : 1
 
         const targetIsStructure = fireTarget.structureType !== undefined
         const targetIsNotMelee = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK))
 
         if (targetIsStructure && fireTarget._aggro_) {
-          if (rangeToFireTarget > 2) {
+          if (rangeToFireTarget > range2or1) {
             flee = false
-            range = creep.__canRanged ? 2 : 1
-          } else if (rangeToFireTarget < 2) {
-            flee = !!creep.__canRanged
-            range = creep.__canRanged ? 2 : 1
+            range = range2or1
+          } else if (rangeToFireTarget < range2or1) {
+            flee = creep.__canRanged
+            range = range2or1
           }
         } else if (targetIsStructure || targetIsNotMelee) {
           if (rangeToFireTarget > 1) {
@@ -217,10 +218,10 @@ strelok.creepAtDestination = function (creep) {
         } else {
           if (rangeToFireTarget >= 3) {
             flee = false
-            range = creep.__canRanged ? 2 : 1
+            range = range2or1
           } else {
-            flee = !!creep.__canRanged
-            range = creep.__canRanged ? 2 : 1
+            flee = creep.__canRanged
+            range = range2or1
           }
         }
 
