@@ -20,9 +20,15 @@ Proprietary and confidential.
 
 ## TODO
 
+Store energy.
+
 In emergency, release stored energy.
 
-Movement and positioning:
+World movement:
+
+* Detect and avoid Stronghold rooms.
+
+Room movement and positioning:
 
 * Step away.
 
@@ -34,7 +40,11 @@ Movement and positioning:
 
 * Worker creeps avoid hostile areas.
 
+* All creeps avoid SK when travelling.
+
 React to PowerCreeps.
+
+Boost in intent pre-calculation.
 
 ## Intents
 
