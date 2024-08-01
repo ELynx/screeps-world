@@ -242,7 +242,13 @@ function Tasked (id) {
 
     if (creep._can_move_) {
       const controlPos = creep.getControlPos()
-      if (this.combatTravel) {
+
+      let specificCombatTravel = this.combatTravel
+      if (creep.memory.ctrv !== undefined) {
+        specificCombatTravel = creep.memory.ctrv
+      }
+
+      if (specificCombatTravel) {
         mapUtils.combatTravel(creep, controlPos)
       } else {
         mapUtils.safeTravel(creep, controlPos)
@@ -397,9 +403,26 @@ function Tasked (id) {
       const spawnPriorityStrategy = this.spawnPriority(flag)
       const bodyNameStrategy = this.bodyName(flag)
 
+      let ctrv
+      if (flag.room) {
+        if (!flag.room._my_ && flag.room.controller && flag.room.controller.owner) {
+          ctrv = Game.iff.isHostile(flag.room.controller.owner.username)
+        }
+      } else {
+        const roomMemory = Memory.rooms[flag.pos.roomName]
+        if (roomMemory) {
+          roomMemory.nodeAccessed = Game.time
+
+          if (roomMemory.ownerUsername) {
+            ctrv = Game.iff.isHostile(roomMemory.ownerUsername)
+          }
+        }
+      }
+
       const creepMemory = {
         btyp: bodyNameStrategy,
         crum: flag.pos.roomName,
+        ctrv,
         flag: flag.name
       }
 

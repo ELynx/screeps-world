@@ -61,6 +61,12 @@ const loop = function () {
     skipTicks = 0
   }
 
+  let taskedActed = false
+  if (Game._war_ && Game.time % 2 === 0) {
+    taskedActor.act()
+    taskedActed = true
+  }
+
   // prevent division by zero
   const myCreepsCount = Math.max(1, Game.myCreepsCount)
 
@@ -79,7 +85,9 @@ const loop = function () {
     }
   }
 
-  taskedActor.act()
+  if (!taskedActed) {
+    taskedActor.act()
+  }
 
   cook.globalPost()
 

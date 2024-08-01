@@ -31,6 +31,7 @@ const cleanup = {
           'mlvl',
           'mnrl',
           'nodeAccessed',
+          'nothreat',
           'ownerLevel',
           'ownerUsername',
           'photo',
@@ -128,6 +129,7 @@ const cleanup = {
       if (flagName === 'recount') continue
       if (flagName === 'war') continue
       if (_.startsWith(flagName, 'block')) continue
+      if (_.startsWith(flagName, 'wallup')) continue
 
       const controllerFound = _.some(
         flagKeys,

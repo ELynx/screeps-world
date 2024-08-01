@@ -11,7 +11,7 @@ const cook = new Controller('cook')
 // STRATEGY demands and supplies
 const TerminalEnergyDemand = 30000
 const TerminalRoomMineralStore = 200000
-const TerminalNukeReagentStore = 5000
+const TerminalBaseReagentStore = 5000
 const TerminalOtherStuffStore = 25000
 
 const FactoryAnyReagentDemand = 10000
@@ -85,7 +85,7 @@ cook.___roomSupply = function (structure, resourceType) {
     // explicit inputs do not give back
     if (structure.__cook__cache__isSource === true) return 0
 
-    return intentSolver.getUsedCapacity(structure, resourceType) || 0
+    return intentSolver.getAllUsedCapacity(structure).get(resourceType) || 0
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -181,9 +181,13 @@ cook.___worldSupply = function (structure, resourceType) {
   if (worldDemand !== 0) return 0
 
   if (resourceType === RESOURCE_ENERGY) {
+    if (structure.room.__cook__wallup) return 0
+
     const sourceLevel = structure.room.memory.slvl || 0
     if (sourceLevel < 2) return 0
+
     if (this.__hasEnergyDemand(structure)) return 0
+
     return Math.floor(SOURCE_ENERGY_CAPACITY / 3)
   }
 
@@ -202,6 +206,7 @@ StructureExtension.prototype.everWant = function (resourceType) {
 const Reagents = new Set([..._.keys(REACTIONS), ..._.keys(REACTION_TIME)])
 
 StructureLab.prototype.everWant = function (resourceType) {
+  if (resourceType === RESOURCE_ENERGY) return true
   return Reagents.has(resourceType)
 }
 
@@ -237,11 +242,19 @@ cook.___roomDemand = function (structure, resourceType) {
   }
 
   if (structureType === STRUCTURE_LAB) {
+    // load with energy to boost
+    if (resourceType === RESOURCE_ENERGY) {
+      return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    }
+
     // explicit outputs do not demand in resources, only supply them
     if (structure.__cook__cache__isSource === false) return 0
     if (structure.__cook__cache__resourceType !== resourceType) return 0
 
-    return intentSolver.getFreeCapacity(structure, resourceType) || 0
+    const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
+    // STRATEGY avoid repeated trips because reactions take by 5 units
+    if (demand < 1200) return 0
+    return demand
   }
 
   if (structureType === STRUCTURE_TERMINAL) {
@@ -282,14 +295,14 @@ cook.___roomDemand = function (structure, resourceType) {
     if (resourceType === RESOURCE_ENERGY) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips, 300 or 600 is worker capacity on level 8
-      if (demand <= 2400) return 0
+      if (demand < 2400) return 0
       return demand
     }
 
     if (resourceType === RESOURCE_POWER) {
       const demand = intentSolver.getFreeCapacity(structure, resourceType) || 0
       // STRATEGY avoid repeated trips
-      if (demand <= 50) return 0
+      if (demand < 50) return 0
       return demand
     }
 
@@ -358,6 +371,7 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
     }
   }
 
+  // CHEMISTRY add base reagents here
   if (structureType === STRUCTURE_TERMINAL) {
     // it is handled in demand
     if (resourceType !== RESOURCE_ENERGY) {
@@ -369,19 +383,31 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
       }
 
       if (resourceType === RESOURCE_KEANIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_LEMERGIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_UTRIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
       }
 
       if (resourceType === RESOURCE_ZYNTHIUM) {
-        allowed += TerminalNukeReagentStore
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_CATALYST) {
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_HYDROGEN) {
+        allowed += TerminalBaseReagentStore
+      }
+
+      if (resourceType === RESOURCE_OXYGEN) {
+        allowed += TerminalBaseReagentStore
       }
 
       // one of resources kept by name
@@ -394,15 +420,19 @@ cook.___roomSpace = function (structure, resourceType, forMining = false, forPlu
         const all = intentSolver.getAllUsedCapacity(structure)
         const useful = new Map()
 
-        useful.set(RESOURCE_KEANIUM, Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalNukeReagentStore))
-        useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalNukeReagentStore))
+        // CHEMISTRY add base reagents here
+        useful.set(RESOURCE_KEANIUM, Math.min(all.get(RESOURCE_KEANIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_LEMERGIUM, Math.min(all.get(RESOURCE_LEMERGIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_UTRIUM, Math.min(all.get(RESOURCE_UTRIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_ZYNTHIUM, Math.min(all.get(RESOURCE_ZYNTHIUM) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_CATALYST, Math.min(all.get(RESOURCE_CATALYST) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_HYDROGEN, Math.min(all.get(RESOURCE_HYDROGEN) || 0, TerminalBaseReagentStore))
+        useful.set(RESOURCE_OXYGEN, Math.min(all.get(RESOURCE_OXYGEN) || 0, TerminalBaseReagentStore))
 
         useful.set(RESOURCE_ENERGY, Math.min(all.get(RESOURCE_ENERGY) || 0, TerminalEnergyDemand))
 
         // `useful` can be tricked to know if mineralType is one of nuke reagents
-        const mineralTypeMax = TerminalRoomMineralStore + (useful.has(mineralType) ? TerminalNukeReagentStore : 0)
+        const mineralTypeMax = TerminalRoomMineralStore + (useful.has(mineralType) ? TerminalBaseReagentStore : 0)
         useful.set(mineralType, Math.min(all.get(mineralType) || 0, mineralTypeMax))
 
         let usedByUseful = 0
@@ -491,7 +521,22 @@ cook.__worldDemandTypes = function (structure) {
 }
 
 cook.__processExtra = function (structure, creep, resourceTypeAndAmount) {
-  const asWords = _.words(resourceTypeAndAmount)
+  let asWords = _.words(resourceTypeAndAmount)
+
+  // it be chewing digits, try "decode"
+  if (asWords.length === 3 && asWords[1] === '2') {
+    asWords = [asWords[0] + asWords[1], asWords[2]]
+  }
+
+  if (asWords.length === 4 && asWords[1] === '2') {
+    asWords = [asWords[0] + asWords[1] + asWords[2], asWords[3]]
+  }
+
+  // it be chewing udnerlines, try "decode"
+  if (asWords.length === 3 && _.includes(resourceTypeAndAmount, '_')) {
+    asWords = [asWords[0] + '_' + asWords[1], asWords[2]]
+  }
+
   if (asWords.length !== 2) {
     console.log('Unexpected xtra for creep ' + creep + ' and ' + structure + ', whole, [' + resourceTypeAndAmount + ']')
     return [undefined, undefined]
@@ -535,11 +580,22 @@ cook._expectFromCreepToStructure = function (structure, creep) {
   }
 }
 
-cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
+cook.__withdrawOrBoostFromStructureToCreep = function (structure, creep, resourceTypeAndAmount) {
   const [resourceType, resoureAmount] = this.__processExtra(structure, creep, resourceTypeAndAmount)
   if (resourceType === undefined || resoureAmount === undefined) {
     bootstrap.unassignCreep(creep)
     return ERR_INVALID_ARGS
+  }
+
+  if (structure.structureType === STRUCTURE_LAB &&
+      structure.mineralType === resourceType &&
+      creep.memory.bst1 === resourceType) {
+    // TODO wrap intent
+    const rc = structure.boostCreep(creep)
+    if (rc >= OK) {
+      creep.memory.bst1 = undefined
+    }
+    return rc
   }
 
   const canTake = intentSolver.getFreeCapacityMin(creep, resourceType) || 0
@@ -553,9 +609,9 @@ cook.__withdrawFromStructureToCreep = function (structure, creep, resourceTypeAn
   return this.wrapIntent(creep, 'withdraw', structure, resourceType, amount)
 }
 
-cook._controllerWithdrawFromStructureToCreep = function (structure, creep, resourceType) {
-  const rc = this.__withdrawFromStructureToCreep(structure, creep, resourceType)
-  // to avoid observe calls
+cook._controllerWithdrawOrBoostFromStructureToCreep = function (structure, creep, resourceType) {
+  const rc = this.__withdrawOrBoostFromStructureToCreep(structure, creep, resourceType)
+  // to avoid "observe" calls
   if (rc >= OK) {
     creep.__cook__withdrawOrTransfer = true
     return bootstrap.ERR_TERMINATED
@@ -581,16 +637,31 @@ cook.__transferFromCreepToStructure = function (structure, creep, resourceType) 
 }
 
 cook._controllerTransferFromCreepToStructure = function (structure, creep) {
+  // by default, nothing is needed
+  let rc = ERR_NOT_ENOUGH_RESOURCES
+
   for (const resourceType in creep.store) {
-    const rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
-    // to avoid observe calls
+    // may be only on second resourceType
+    // if more than one resource, stay and try to give out another one
+    if (rc >= OK) return OK
+
+    // save RC for this resourceType
+    rc = this.__transferFromCreepToStructure(structure, creep, resourceType)
+
     if (rc >= OK) {
+      // let other logic know, always
       creep.__cook__withdrawOrTransfer = true
-      return bootstrap.ERR_TERMINATED
     }
   }
 
-  return ERR_NOT_ENOUGH_RESOURCES
+  // did not exit in loop, transfer complete
+
+  // to avoid "observe" calls
+  if (rc >= OK) {
+    return bootstrap.ERR_TERMINATED
+  }
+
+  return rc
 }
 
 // << controller
@@ -627,6 +698,11 @@ cook.roomPrepare = function (room) {
       if (link.pos.isNearTo(container)) container.__cook__noEnergyRun = true
     }
   }
+
+  const wallupFlag = Game.flags['wallup_' + room.name]
+  if (wallupFlag && !wallupFlag._removed_) {
+    room.__cook__wallup = true
+  }
 }
 
 cook.observeMyCreep = function (creep) {
@@ -642,7 +718,7 @@ cook.observeMyCreep = function (creep) {
 
 cook.act = function (structure, creep) {
   if (creep.memory.xtra) {
-    return this._controllerWithdrawFromStructureToCreep(structure, creep, creep.memory.xtra)
+    return this._controllerWithdrawOrBoostFromStructureToCreep(structure, creep, creep.memory.xtra)
   } else {
     return this._controllerTransferFromCreepToStructure(structure, creep)
   }
@@ -727,6 +803,12 @@ cook._energyRestockPass1 = function (room, creeps) {
       }
     }
 
+    for (const lab of room.labs.values()) {
+      if (this.__hasEnergyDemand(lab)) {
+        prio2.push(lab)
+      }
+    }
+
     if (prio2.length > 0) {
       const [prio2Unused, prio2Used] = this.assignCreeps(room, unused, prio2)
       return [prio2Unused, used.concat(prio2Used)]
@@ -783,6 +865,7 @@ cook._resourceRestock = function (room, creeps) {
     if (target) {
       bootstrap.assignCreep(this, target, undefined, creep)
       // since non-"matrix" assignment is used, force _hasDemand to false
+      // do so by promising a lot of energy
       this.__adjustPlannedDelta(target, resourceType, MadeUpLargeNumber)
       used.push(creep)
     } else {
@@ -793,13 +876,62 @@ cook._resourceRestock = function (room, creeps) {
   return [unused, used]
 }
 
+cook.__maybeBoost = function (room, creep) {
+  if (creep.memory.bst1) {
+    if (creep.ticksToLive < 0.9 * CREEP_LIFE_TIME) {
+      creep.memory.bst1 = undefined
+      return ERR_TIRED
+    }
+
+    for (const lab of room.labs.values()) {
+      // STRATEGY boost on anything
+      if (lab.mineralType === creep.memory.bst1) {
+        // TODO? not only work
+        const energyNeed = creep._work_ * LAB_BOOST_ENERGY
+        const mineralNeed = creep._work_ * LAB_BOOST_MINERAL
+
+        const all = intentSolver.getAllUsedCapacity(lab)
+        const energyNow = all.get(RESOURCE_ENERGY) || 0
+        const mineralNow = all.get(creep.memory.bst1) || 0
+
+        if (energyNeed > energyNow || mineralNeed > mineralNow) continue
+
+        // simplification - keep check only on mineral; do not expect energy decrease without mineral decrease
+
+        const mineralDelta = this.___plannedDelta(lab, creep.memory.bst1)
+        if (mineralDelta < 0) {
+          if (mineralNow + mineralDelta < mineralNeed) continue
+        }
+
+        lab.__cook__resourceToTake = creep.memory.bst1
+        lab.__cook__restockToTakeAmount = mineralNeed
+
+        bootstrap.assignCreep(this, lab, undefined, creep, this.extra(lab))
+        // since non-"matrix" assignment is used, reserve manually
+        this.__adjustPlannedDelta(lab, lab.__cook__resourceToTake, -1 * lab.__cook__restockToTakeAmount)
+
+        return OK
+      }
+    }
+  }
+
+  return ERR_INVALID_TARGET
+}
+
 cook._controlPass1 = function (room, creeps) {
   // qualify
 
+  const checkBoost = room.labs.size > 0
   const withEnergy = []
   const withResources = []
 
   for (const creep of creeps) {
+    if (checkBoost) {
+      if (this.__maybeBoost(room, creep) >= OK) {
+        creep.__cook__pass1__used = true
+      }
+    }
+
     const all = intentSolver.getAllUsedCapacity(creep)
     const total = all.get('total') || 0
 
@@ -905,6 +1037,10 @@ cook.__hasPrio1And2EnergyRestockTargets = function (room) {
 
   for (const tower of room.towers.values()) {
     if (this.__hasEnergyDemand(tower)) return true
+  }
+
+  for (const lab of room.labs.values()) {
+    if (this.__hasEnergyDemand(lab)) return true
   }
 
   return false
@@ -1116,15 +1252,6 @@ cook.__prio3EnergyRestockTargets = function (room, count) {
   if (isAndHasEnergyDemand(room.terminal)) targets.push(room.terminal)
   if (targets.length >= count) return targets
 
-  /* v unpack later if needed v
-  for (const lab of room.labs.values()) {
-    if (this.__hasEnergyDemand(lab)) {
-      targets.push(lab)
-      if (targets.length >= count) return targets
-    }
-  }
-  */
-
   if (isAndHasEnergyDemand(room.nuker)) targets.push(room.nuker)
   if (targets.length >= count) return targets
 
@@ -1167,6 +1294,13 @@ cook.__untrap = function (room, creeps) {
     creep._was_trap_ = undefined
     creep._trap_ = undefined
   }
+}
+
+const Close2 = (a, b) => {
+  const dx = Math.abs(a.x - b.x)
+  if (dx > 2) return false
+  const dy = Math.abs(a.y - b.y)
+  return dy <= 2
 }
 
 const HowFarToGoForEnergy = 10
@@ -1595,9 +1729,9 @@ cook.___resetRoomRecepie = function (room) {
   room.setLabRecepie('A', undefined, undefined, undefined, true)
 }
 
-cook.___setRoomRecepieNuke = function (room) {
-  // input order is not important, just used to amortise checks
+// input order is not important, just used to amortise checks
 
+cook.___setRoomRecepieNuke = function (room) {
   room.setLabRecepie('1', true, RESOURCE_ZYNTHIUM)
   room.setLabRecepie('3', true, RESOURCE_KEANIUM)
   room.setLabRecepie('5', undefined, RESOURCE_ZYNTHIUM_KEANITE, '1,3')
@@ -1612,9 +1746,40 @@ cook.___setRoomRecepieNuke = function (room) {
   room.setLabRecepie('A', false, RESOURCE_GHODIUM, '8,7,6,5')
 }
 
+cook.___setRoomRecepieWallup = function (room) {
+  // demand + no supply, XLH2O, (no inputs)
+  room.setLabRecepie('1', true, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  if (room.labs.size < 2) return
+
+  // demand + no supply, XLH2O, (no inputs)
+  room.setLabRecepie('2', true, RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  if (room.labs.size < 10) return
+
+  // no demand + supply, XLH2O, from 3 and 4
+  room.setLabRecepie('1', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '3,4')
+  room.setLabRecepie('2', false, RESOURCE_CATALYZED_LEMERGIUM_ACID, '4,3')
+
+  // demand + no supply, basic reagents, (no input)
+  room.setLabRecepie('3', true, RESOURCE_CATALYST)
+  room.setLabRecepie('7', true, RESOURCE_LEMERGIUM)
+  room.setLabRecepie('8', true, RESOURCE_OXYGEN)
+  room.setLabRecepie('9', true, RESOURCE_HYDROGEN)
+  room.setLabRecepie('A', true, RESOURCE_HYDROGEN)
+
+  // internal processing as needed, intermediate reagents, from previous steps
+  room.setLabRecepie('4', undefined, RESOURCE_LEMERGIUM_ACID, '5,6')
+  room.setLabRecepie('5', undefined, RESOURCE_LEMERGIUM_HYDRIDE, '7,9')
+  room.setLabRecepie('6', undefined, RESOURCE_HYDROXIDE, '8,A')
+}
+
 cook.__updateRoomRecepie = function (room) {
   if (room.labs.size === 10 && this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
     this.___setRoomRecepieNuke(room)
+    return
+  }
+
+  if (room.__cook__wallup) {
+    this.___setRoomRecepieWallup(room)
     return
   }
 
@@ -1636,7 +1801,7 @@ cook._setWorldDemand = function (room) {
   if (!room.terminal) return
 
   const sourceLevel = room.memory.slvl || 0
-  if (room._fight_ || sourceLevel < 2) {
+  if (room._fight_ || room.__cook__wallup || sourceLevel < 2) {
     const now = intentSolver.getUsedCapacity(room.terminal, RESOURCE_ENERGY)
     const ideal = TerminalEnergyDemand + SOURCE_ENERGY_CAPACITY
     if (now < ideal) {
@@ -1651,20 +1816,20 @@ cook._setWorldDemand = function (room) {
     }
   }
 
-  if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
-    const mineralType = room.mineralType()
-    const lambda = resourceType => {
-      // demand and hold only foreign resources
-      if (resourceType !== mineralType) {
-        if (this.__hasSupply(room.terminal, resourceType)) {
-          // mark as not ready to give this resource
-          this.___addWorldDemand(room.terminal, resourceType, -1)
-        } else {
-          this.___addWorldDemand(room.terminal, resourceType, 1000)
-        }
+  const mineralType = room.mineralType()
+  const lambda = (resourceType, factor = 1) => {
+    // demand and hold only foreign resources
+    if (resourceType !== mineralType) {
+      if (this.__hasSupply(room.terminal, resourceType)) {
+        // mark as not ready to give this resource
+        this.___addWorldDemand(room.terminal, resourceType, -1)
+      } else {
+        this.___addWorldDemand(room.terminal, resourceType, factor * 1000)
       }
     }
+  }
 
+  if (this._hasDemand(room.nuker, RESOURCE_GHODIUM)) {
     if (room.labs.size === 10) {
       lambda(RESOURCE_ZYNTHIUM)
       lambda(RESOURCE_KEANIUM)
@@ -1676,6 +1841,20 @@ cook._setWorldDemand = function (room) {
 
     lambda(RESOURCE_GHODIUM)
   }
+
+  if (room.__cook__wallup) {
+    if (room.labs.size === 10) {
+      lambda(RESOURCE_LEMERGIUM)
+      lambda(RESOURCE_CATALYST)
+      lambda(RESOURCE_HYDROGEN, 2)
+      lambda(RESOURCE_OXYGEN)
+      lambda(RESOURCE_HYDROXIDE)
+      lambda(RESOURCE_LEMERGIUM_HYDRIDE)
+      lambda(RESOURCE_LEMERGIUM_ACID)
+    }
+
+    lambda(RESOURCE_CATALYZED_LEMERGIUM_ACID)
+  }
 }
 
 // to save on require call
@@ -1685,13 +1864,6 @@ const DummyRepairController = {
 }
 
 const NotMaxHits = structure => structure.hits < structure.hitsMax
-
-const Close2 = (a, b) => {
-  const dx = Math.abs(a.x - b.x)
-  if (dx > 2) return false
-  const dy = Math.abs(a.y - b.y)
-  return dy <= 2
-}
 
 cook._unloadActiveHarvesters = function (room) {
   const roomCreeps = room.getRoomControlledCreeps()
@@ -2202,10 +2374,15 @@ cook.___findBuyOrder = function (terminal, resourceType) {
 }
 
 cook.___excessToSell = function (terminal, resourceType) {
+  // CHEMISTRY produce not to sell explicitly
   if (resourceType === RESOURCE_BATTERY) return 0
+  if (resourceType === RESOURCE_CATALYZED_LEMERGIUM_ACID) return 0
   if (resourceType === RESOURCE_ENERGY) return 0
   if (resourceType === RESOURCE_GHODIUM_MELT) return 0
   if (resourceType === RESOURCE_GHODIUM) return 0
+  if (resourceType === RESOURCE_HYDROXIDE) return 0
+  if (resourceType === RESOURCE_LEMERGIUM_ACID) return 0
+  if (resourceType === RESOURCE_LEMERGIUM_HYDRIDE) return 0
   if (resourceType === RESOURCE_OPS) return 0
   if (resourceType === RESOURCE_POWER) return 0
   if (resourceType === RESOURCE_UTRIUM_LEMERGITE) return 0
@@ -2223,20 +2400,33 @@ cook.___excessToSell = function (terminal, resourceType) {
     free -= TerminalRoomMineralStore
   }
 
+  // CHEMISTRY base reagents decrease
   if (resourceType === RESOURCE_KEANIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_LEMERGIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_UTRIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
   }
 
   if (resourceType === RESOURCE_ZYNTHIUM) {
-    free -= TerminalNukeReagentStore
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_CATALYST) {
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_HYDROGEN) {
+    free -= TerminalBaseReagentStore
+  }
+
+  if (resourceType === RESOURCE_OXYGEN) {
+    free -= TerminalBaseReagentStore
   }
 
   return Math.max(free, 0)

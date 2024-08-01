@@ -71,54 +71,73 @@ roomInfoProcess._wallLevel = function (room) {
   return hits[Math.floor(hits.length / 2)]
 }
 
+const TargetBarrierHp = [
+  0, // 0
+  5, // 1
+  10, // 2
+  15, // 3
+  20, // 4
+  25, // 5
+  30, // 6
+  1000, // 7
+  3000, // 8
+  66600 // special
+]
+
 // STRATEGY wall build-up, basis levels
+// walls can be inherited and force room into over-repair
+// control the wlvl to not increment in great steps
 roomInfoProcess.wallLevel = function (room) {
   if (!room._my_) return 0
 
-  const TargetBarrierHp = [
-    0,
-    5,
-    10,
-    15,
-    20,
-    25
-  ]
+  const wallupFlag = Game.flags['wallup_' + room.name]
 
-  let level = room.level()
-  if (level >= TargetBarrierHp.length) level = TargetBarrierHp.length - 1
+  const baseLevel = room.level()
+  const boostLevel = baseLevel + (wallupFlag === undefined ? 0 : 1)
 
-  const targetByEnergyLevel = TargetBarrierHp[level]
-
-  // walls can be inherited and force room into over-repair
-  // control the wlvl to not increment in great steps
+  const targetByEnergyLevel = TargetBarrierHp[boostLevel]
 
   const roomPlanned = room.memory.wlvl
   if (roomPlanned) {
     const roomHas = this._wallLevel(room)
 
+    // build walls all the way
+    if (boostLevel > 8 && roomHas >= targetByEnergyLevel && wallupFlag) {
+      // mark as inactive
+      wallupFlag._removed_ = wallupFlag.remove() === OK
+      // continue as usual
+    }
+
     // if walls are under-level, build up from what is available
-    if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) return roomHas + 1
+    if (roomHas < roomPlanned || roomHas < targetByEnergyLevel) {
+      if (wallupFlag && !wallupFlag._removed_) {
+        return roomHas + TargetBarrierHp[5]
+      } else {
+        return roomHas + TargetBarrierHp[1]
+      }
+    }
 
     // walls are equal or greater, may be significantly greater
 
     // grow if there is no danger
     if (room.memory.threat === undefined) {
       if (Math.random() < 1 / 6) {
-        return roomPlanned + 1
+        return roomPlanned + TargetBarrierHp[1]
       }
     }
 
     // no growth
     return roomPlanned
   } else {
-    return targetByEnergyLevel
+    // don't force super high values from the start
+    return TargetBarrierHp[baseLevel]
   }
 }
 
 roomInfoProcess.upgradeLevel = function (room) {
   if (!room._my_) return 0
 
-  if (room.level() < 8) return 0
+  if (room.level() < 7) return 0
 
   const MaxDistance = 3
 

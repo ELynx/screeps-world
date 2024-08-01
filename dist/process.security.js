@@ -49,7 +49,7 @@ secutiryProcess.work = function (room) {
       }
     }
 
-    if (threatTimer + ThreatStep <= Game.time) {
+    if (threatTimer + ThreatStep <= Game.time && room.memory.nothreat !== true) {
       if (threatLevel < bootstrap.ThreatLevelMax) {
         ++threatLevel
 
