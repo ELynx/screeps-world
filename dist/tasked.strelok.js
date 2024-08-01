@@ -63,6 +63,11 @@ strelok.creepAtDestination = function (creep) {
 
         const structureType = structure.structureType
 
+        // shortcut - only attack creeps not under ramparts
+        if (this.id === 'patrol') {
+          return structureType === STRUCTURE_RAMPART
+        }
+
         // STRATEGY ignore resource management, even though it can be military
         if (structureType === STRUCTURE_CONTAINER ||
             structureType === STRUCTURE_EXTRACTOR ||
@@ -91,10 +96,19 @@ strelok.creepAtDestination = function (creep) {
       }
     )
 
-    let targets = targetCreeps.concat(targetStructures)
+    let targets
 
-    if (creep.room.aggro().length > 0) {
-      targets = targets.concat(creep.room.aggro())
+    if (this.id === 'patrol') {
+      targets = _.filter(
+        targetCreeps,
+        creep1 => !_.some(targetStructures, someRampart => someRampart.pos.x === creep1.pos.x && someRampart.pos.y === creep1.pos.y)
+      )
+    } else {
+      targets = targetCreeps.concat(targetStructures)
+
+      if (creep.room.aggro().length > 0) {
+        targets = targets.concat(creep.room.aggro())
+      }
     }
 
     const wounded = _.filter(
@@ -114,8 +128,16 @@ strelok.creepAtDestination = function (creep) {
 
   const rushPos = creep.getControlPos()
   const targets = this.roomTargets[dest]
+  let primaryTargets
 
-  const fireTarget = creep.pos.findClosestByRange(targets)
+  // sneek
+  if (creep.memory.btyp.indexOf('outlast') !== -1) {
+    if (creep.room.aggro().length > 0) {
+      primaryTargets = creep.room.aggro()
+    }
+  }
+
+  const fireTarget = creep.pos.findClosestByRange(primaryTargets || targets)
 
   let moveTarget
   const prio = _.filter(
@@ -175,17 +197,18 @@ strelok.creepAtDestination = function (creep) {
       if (rangeToFireTarget <= 4 && fireTarget.id === moveTarget.id) {
         let flee
         let range
+        const range2or1 = creep.__canRanged ? 2 : 1
 
         const targetIsStructure = fireTarget.structureType !== undefined
         const targetIsNotMelee = fireTarget.body && !_.some(fireTarget.body, _.matchesProperty('type', ATTACK))
 
         if (targetIsStructure && fireTarget._aggro_) {
-          if (rangeToFireTarget > 2) {
+          if (rangeToFireTarget > range2or1) {
             flee = false
-            range = 2
-          } else if (rangeToFireTarget < 2) {
-            flee = true
-            range = 2
+            range = range2or1
+          } else if (rangeToFireTarget < range2or1) {
+            flee = creep.__canRanged
+            range = range2or1
           }
         } else if (targetIsStructure || targetIsNotMelee) {
           if (rangeToFireTarget > 1) {
@@ -195,10 +218,10 @@ strelok.creepAtDestination = function (creep) {
         } else {
           if (rangeToFireTarget >= 3) {
             flee = false
-            range = 2
+            range = range2or1
           } else {
-            flee = true
-            range = 2
+            flee = creep.__canRanged
+            range = range2or1
           }
         }
 
@@ -217,7 +240,7 @@ strelok.creepAtDestination = function (creep) {
         // STRATEGY follow creep tightly
         const reusePath = moveTarget.structureType ? _.random(3, 5) : 0
         // STRATEGY bump into structure
-        const range = moveTarget.structureType ? 1 : 3
+        const range = moveTarget.structureType ? 1 : creep.__canRanged ? 3 : 1
 
         creep.moveToWrapper(
           moveTarget,
@@ -294,7 +317,7 @@ strelok.flagPrepare = function (flag) {
   return this.FLAG_SPAWN
 }
 
-strelok.makeBody = function (room) {
+strelok.makeBody = function (room, limit = undefined) {
   const energy = room.extendedAvailableEnergyCapacity()
 
   if (energy < 500) {
@@ -311,9 +334,10 @@ strelok.makeBody = function (room) {
     this.__bodyCache = { }
   }
 
-  const elvl = Math.ceil((energy - 300) / 500)
+  const roomLimit = Math.ceil((energy - 300) / 500)
+  const stepLimit = limit ? Math.min(roomLimit, limit) : roomLimit
 
-  const cached = this.__bodyCache[elvl]
+  const cached = this.__bodyCache[stepLimit]
   if (cached) {
     return cached
   }
@@ -325,7 +349,7 @@ strelok.makeBody = function (room) {
   let heal = 0
 
   // 700 for base combo and 250 per next level
-  let budget = 700 + 250 * elvl
+  let budget = 700 + 250 * stepLimit
 
   // add heal + two ranged combo
   // 700 is 150 ranged x 2 + 250 heal x 1 + 50 move x 3
@@ -391,15 +415,15 @@ strelok.makeBody = function (room) {
 
   const body = partsTough.concat(partsMove).concat(partsRanged).concat(partsMelee).concat(partsHeal)
 
-  this.__bodyCache[elvl] = body
+  this.__bodyCache[stepLimit] = body
 
   return body
 }
 
 // room service, melee strelok...
-strelok.makeBody_2 = function (room) {
+strelok.makeBody_2 = function (room, limit = undefined) {
   const energy = room.extendedAvailableEnergyCapacity()
-  const pairs = Math.min(Math.floor(energy / 130), 25)
+  const pairs = Math.min(Math.floor(energy / 130), limit || 25)
 
   const partsMove = new Array(pairs)
   partsMove.fill(MOVE)
@@ -412,6 +436,26 @@ strelok.makeBody_2 = function (room) {
   return body
 }
 
-strelok.register()
+// before profiler wrap
+const patrol = _.assign({ }, strelok)
 
-module.exports = strelok
+patrol.id = 'patrol'
+
+const PatrolLimit = 5
+
+patrol.makeBody = function (room) {
+  return strelok.makeBody(room, PatrolLimit)
+}
+
+patrol.makeBody_2 = function (room) {
+  return strelok.makeBody_2(room, PatrolLimit)
+}
+
+strelok.register()
+patrol.register()
+
+module.exports =
+{
+  strelok,
+  patrol
+}

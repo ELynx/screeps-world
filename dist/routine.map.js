@@ -180,14 +180,18 @@ const map = {
         if (!fromSk && bootstrap._isSourceKeeperRoomName(parsedFrom)) fromSk = true
       }
 
-      let toFromSk = toSk === true || fromSk === true
+      const toFromSk = toSk === true || fromSk === true
 
       routeCallback = (x, y) => {
-        if (Game.flags['block_' + x]) return Infinity
+        // block specific passage, priority
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
 
+        // destination is always reachable
         if (x === toRoom) return 1
+
+        // block specific room
+        if (Game.flags['block_' + x]) return Infinity
 
         if (toFromSk) return this.__routeCallback_safeTravel_sk(x, y)
         else return this.__routeCallback_safeTravel_notSk(x, y)
@@ -196,11 +200,15 @@ const map = {
 
     if (mode === 'combat') {
       routeCallback = (x, y) => {
-        if (Game.flags['block_' + x]) return Infinity
+        // block specific passage, priority
         if (Game.flags['block_' + x + '_' + y]) return Infinity
         if (Game.flags['block_' + y + '_' + x]) return Infinity
 
+        // destination is always reachable
         if (x === toRoom) return 1
+
+        // block specific room
+        if (Game.flags['block_' + x]) return Infinity
 
         return this.__routeCallback_combatTravel(x, y)
       }

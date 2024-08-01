@@ -16,30 +16,31 @@ const spawn = {
   },
 
   makeEmptyStructure () {
-    const result = { urgent: [], normal: [], lowkey: [] }
+    const result = { queue: [] }
     return result
   },
 
   noMemory () {
-    return _.isUndefined(Memory.spawn_v1) || _.isEmpty(Memory.spawn_v1)
+    return _.isUndefined(Memory.spawn_v2) || _.isEmpty(Memory.spawn_v2)
   },
 
   prepareMemory () {
     if (this.noMemory()) {
       const emptyStructure = this.makeEmptyStructure()
 
-      console.log('Generating empty structure for spawn_v1')
+      console.log('Generating empty structure for spawn_v2')
 
-      Memory.spawn_v1 = emptyStructure
+      Memory.spawn_v2 = emptyStructure
     }
   },
 
-  _add (target, id, body, name, memory, from, to, n) {
+  _add (priority, id, body, name, memory, from, to, n) {
     const extra = this.__addExtra || 0
 
     for (let i = 0; i < n; ++i) {
       const model =
             {
+              priority,
               id,
               body,
               name: name + '_' + Game.time + '_' + (i + extra),
@@ -50,7 +51,28 @@ const spawn = {
               _time: Game.time
             }
 
-      target.push(model)
+      switch (priority) {
+        case 'urgent':
+          Memory.spawn_v2.queue.unshift(model)
+          break
+
+        case 'normal':
+          if (Memory.spawn_v2.queue.length < 2) {
+            Memory.spawn_v2.queue.push(model)
+          } else {
+            Memory.spawn_v2.queue.splice(
+              Math.floor(Memory.spawn_v2.queue.length / 2),
+              0,
+              model
+            )
+          }
+          break
+
+        case 'lowkey':
+        default:
+          Memory.spawn_v2.queue.push(model)
+          break
+      }
     }
 
     this.__addExtra = extra + n
@@ -58,17 +80,17 @@ const spawn = {
 
   addUrgent (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
-    this._add(Memory.spawn_v1.urgent, id, body, name, memory, from, to, n)
+    this._add('urgent', id, body, name, memory, from, to, n)
   },
 
   addNormal (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
-    this._add(Memory.spawn_v1.normal, id, body, name, memory, from, to, n)
+    this._add('normal', id, body, name, memory, from, to, n)
   },
 
   addLowkey (id, body, name, memory, from, to, n = 1) {
     this.prepareMemory()
-    this._add(Memory.spawn_v1.lowkey, id, body, name, memory, from, to, n)
+    this._add('lowkey', id, body, name, memory, from, to, n)
   },
 
   _peek () {
@@ -76,19 +98,11 @@ const spawn = {
       return undefined
     }
 
-    if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.urgent[0], { priority: 'urgent' })
+    if (Memory.spawn_v2.queue.length === 0) {
+      return undefined
     }
 
-    if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.normal[0], { priority: 'normal' })
-    }
-
-    if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend({ }, Memory.spawn_v1.lowkey[0], { priority: 'lowkey' })
-    }
-
-    return undefined
+    return _.extend({ }, Memory.spawn_v2.queue[0])
   },
 
   peek () {
@@ -100,19 +114,11 @@ const spawn = {
       return undefined
     }
 
-    if (Memory.spawn_v1.urgent.length > 0) {
-      return _.extend(Memory.spawn_v1.urgent.shift(), { priority: 'urgent' })
+    if (Memory.spawn_v2.queue.length === 0) {
+      return undefined
     }
 
-    if (Memory.spawn_v1.normal.length > 0) {
-      return _.extend(Memory.spawn_v1.normal.shift(), { priority: 'normal' })
-    }
-
-    if (Memory.spawn_v1.lowkey.length > 0) {
-      return _.extend(Memory.spawn_v1.lowkey.shift(), { priority: 'lowkey' })
-    }
-
-    return undefined
+    return Memory.spawn_v2.queue.shift()
   },
 
   get () {
@@ -135,12 +141,7 @@ const spawn = {
       return 0
     }
 
-    let total = 0
-    total += this.__count(Memory.spawn_v1.urgent, id)
-    total += this.__count(Memory.spawn_v1.normal, id)
-    total += this.__count(Memory.spawn_v1.lowkey, id)
-
-    return total
+    return this.__count(Memory.spawn_v2.queue, id)
   },
 
   count (id) {
@@ -156,33 +157,16 @@ const spawn = {
       return stored.id !== id
     }
 
-    Memory.spawn_v1.urgent = _.filter(Memory.spawn_v1.urgent, filter)
-    Memory.spawn_v1.normal = _.filter(Memory.spawn_v1.normal, filter)
-    Memory.spawn_v1.lowkey = _.filter(Memory.spawn_v1.lowkey, filter)
+    Memory.spawn_v2.queue = _.filter(Memory.spawn_v2.queue, filter)
   },
 
   erase (id) {
     this._erase(id)
   },
 
-  // internals of this function should not be used
-  __postpone (target) {
-    if (Game.__spawnRoutine_spawnPostponeN === undefined) {
-      // STRATEGY how many shuffles in queue are allowed
-      Game.__spawnRoutine_spawnPostponeN = Math.floor(target.length / 2)
-    }
-
-    // denied
-    if (Game.__spawnRoutine_spawnPostponeN === 0) {
-      return false
-    }
-
-    Game.__spawnRoutine_spawnPostponeN = Game.__spawnRoutine_spawnPostponeN - 1
-
-    const taken = target.shift()
-    target.push(taken)
-
-    return true
+  __postpone () {
+    const item = Memory.spawn_v2.queue.shift()
+    Memory.spawn_v2.queue.push(item)
   },
 
   _postpone () {
@@ -190,23 +174,26 @@ const spawn = {
       return false
     }
 
-    // logic
-    // if priority list is empty, skip it
-    // if has one element, sorry, no postpone
-    // if more than one, postpone within single priority
+    if (Memory.spawn_v2.length < 2) {
+      return false
+    }
 
-    const lu = Memory.spawn_v1.urgent.length
-    if (lu === 1) return false
-    if (lu > 1) return this.__postpone(Memory.spawn_v1.urgent)
+    // STRATEGY how many postpones are allowed per tick
+    const allowed = Math.floor(Memory.spawn_v2.length / 2)
 
-    const ln = Memory.spawn_v1.normal.length
-    if (ln === 1) return false
-    if (ln > 1) return this.__postpone(Memory.spawn_v1.normal)
+    if (Game._routine_spawn_postpones === undefined) {
+      Game._routine_spawn_postpones = 0
+    }
 
-    const ll = Memory.spawn_v1.lowkey.length
-    if (ll > 1) return this.__postpone(Memory.spawn_v1.lowkey)
+    if (Game._routine_spawn_postpones >= allowed) {
+      return false
+    }
 
-    return false
+    Game._routine_spawn_postpones = Game._routine_spawn_postpones + 1
+
+    this.__postpone()
+
+    return true
   },
 
   postpone () {

@@ -10,7 +10,7 @@ const taskedObserve = require('./tasked.observe')
 const taskedOutlast = require('./tasked.outlast')
 const taskedPlunder = require('./tasked.plunder')
 const taskedSpawn = require('./tasked.spawn')
-const taskedStrelok = require('./tasked.strelok')
+const taskedStrelokFamily = require('./tasked.strelok')
 
 // STRATEGY Priority for task execution.
 const taskedAuto = [
@@ -18,7 +18,8 @@ const taskedAuto = [
   taskedOutlast.id, // very tick-sensitive logic, run first
   taskedAggro.id, // generates aggro and breach
   taskedBeetle.id, // generates aggro
-  taskedStrelok.id, // consumes aggro
+  taskedStrelokFamily.strelok.id, // consumes aggro
+  taskedStrelokFamily.patrol.id, // consumes aggro
   taskedPlunder.id, // paramilitary
   taskedClaim.id, // a bit paramilitary
   taskedObserve.id, // lowest prio

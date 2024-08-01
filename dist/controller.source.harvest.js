@@ -32,7 +32,7 @@ sourceHarvestGenericController.act = function (source, creep) {
 
 sourceHarvestGenericController.validateTarget = function (allTargets, target, creep) {
   if (this._sticky(target)) {
-    if (target.room.spawns && target.room.spawns.size > 0) {
+    if (!target._controller_source_help_ && target.room.spawns && target.room.spawns.size > 0) {
       return false
     }
 
@@ -73,6 +73,10 @@ sourceHarvestSpecialistController.onAssign = function (target, creep) {
 sourceHarvestSpecialistController.act = function (source, creep) {
   // stick to position
   creep.memory.atds = true
+
+  if (creep.memory.sptx === undefined && creep.memory.spty === undefined) {
+    source._controller_source_help_ = true
+  }
 
   const rc = this._act(source, creep)
 

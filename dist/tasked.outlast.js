@@ -10,6 +10,22 @@ outlast._defaultAction = function (creep) {
   // this means creep is destroyed
   if (creep.memory.shel <= 0) return
 
+  let fastRush = false
+  if (creep.room.controller && creep.room.controller.sign) {
+    if (creep.room.controller.sign.text === '«ᴏᴠᴇʀᴍɪɴᴅ»') {
+      fastRush = true
+    }
+  }
+
+  if (creep.hits >= creep.hitsMax) {
+    const now = creep.memory.octr || 0
+    creep.memory.octr = now + 1
+  }
+
+  if (creep.memory.octr && creep.memory.octr > (fastRush ? 3 : 10)) {
+    creep.memory.flag = 'strelok_bash'
+  }
+
   if (creep.hits < creep.hitsMax) {
     const rc = creep.heal(creep)
     creep.__canMelee = creep.__canMelee && rc !== OK

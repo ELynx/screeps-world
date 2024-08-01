@@ -189,12 +189,20 @@ spawnProcess.workers_my = function (room, live) {
 
   const now = this._hasAndPlanned(room, live, 'worker')
 
+  let boost
+  const wallupFlag = Game.flags['wallup_' + room.name]
+  if (wallupFlag && !wallupFlag._removed_) {
+    boost = RESOURCE_CATALYZED_LEMERGIUM_ACID
+  }
+
   this.addToQueue(
     room.name,
     this._canSpawn(room) ? room.name : queue.FROM_CLOSEST_ROOM,
     'worker',
     'worker',
-    { },
+    {
+      bst1: boost
+    },
     Math.min(limit, want) - now,
     'normal'
   )
