@@ -61,6 +61,8 @@ const loop = function () {
     skipTicks = 0
   }
 
+  taskedActor.vip()
+
   let taskedActed = false
   if (Game._war_ && Game.time % 2 === 0) {
     taskedActor.act()

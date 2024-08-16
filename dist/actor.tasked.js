@@ -12,8 +12,11 @@ const taskedPlunder = require('./tasked.plunder')
 const taskedSpawn = require('./tasked.spawn')
 const taskedStrelokFamily = require('./tasked.strelok')
 
+const taskedVip = [
+]
+
 // STRATEGY Priority for task execution.
-const taskedAuto = [
+const taskedDefault = [
   // generate spawn(s)
   taskedOutlast.id, // very tick-sensitive logic, run first
   taskedAggro.id, // generates aggro and breach
@@ -31,8 +34,8 @@ const taskedAuto = [
 
 const taskedActor =
 {
-  taskControllersControl () {
-    for (const id of taskedAuto) {
+  taskControllersControl (ids) {
+    for (const id of ids) {
       const tasked = bootstrap.taskControllers.get(id)
       if (!tasked) continue
 
@@ -40,8 +43,12 @@ const taskedActor =
     }
   },
 
+  vip () {
+    this.taskControllersControl(taskedVip)
+  },
+
   act () {
-    this.taskControllersControl()
+    this.taskControllersControl(taskedDefault)
   }
 }
 
