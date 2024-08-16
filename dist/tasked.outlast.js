@@ -11,8 +11,8 @@ outlast._defaultAction = function (creep) {
   if (creep.memory.shel <= 0) return
 
   let fastRush = false
-  if (creep.room.controller && creep.room.controller.sign) {
-    if (creep.room.controller.sign.text === '«ᴏᴠᴇʀᴍɪɴᴅ»') {
+  if (creep.room.controller && creep.room.controller.signedByOwner()) {
+    if (creep.room.controller.sign.text === Game.iff.BotSignatureOvermind) {
       fastRush = true
     }
   }
