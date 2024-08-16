@@ -860,6 +860,13 @@ StructureController.prototype.canActivateSafeMode = function () {
   return this.safeModeAvailable > 0
 }
 
+StructureController.prototype.signedByOwner = function () {
+  if (this.owner.username === undefined) return false
+  if (this.sign === undefined) return false
+
+  return this.sign.username === this.owner.username
+}
+
 StructureLab.prototype.isSource = function () {
   return this.getFromMemory(_isSourceKey_)
 }

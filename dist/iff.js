@@ -6,6 +6,8 @@ const UsernamePublic = 'Public'
 const UsernameScreeps = SYSTEM_USERNAME
 const UsernameSourceKeeper = 'Source Keeper'
 
+const BotSignatureOvermind = '«ᴏᴠᴇʀᴍɪɴᴅ»'
+
 const NPCs = new Set(
   [
     UsernameInvader,
@@ -484,6 +486,8 @@ module.exports = {
 
     Game.iff = {
       ownUsername,
+
+      BotSignatureOvermind,
 
       makeAlly (username) {
         return setPCReputation(username, MaxReputation)
