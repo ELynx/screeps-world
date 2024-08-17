@@ -392,10 +392,14 @@ strelok.makeBody = function (room, limit = undefined) {
   }
 
   // add tough padding
-  if (budget >= 10 && (tough + move + ranged + melee + heal <= 50 - 1) && (tough + ranged + melee + heal < move)) {
-    tough = tough + 1
+  // TODO? logical
+  // otherwise patrols with limit 5 have very unfortunate fatigue breakpoint on swamp
+  if (this.id !== 'patrol') {
+    if (budget >= 10 && (tough + move + ranged + melee + heal <= 50 - 1) && (tough + ranged + melee + heal < move)) {
+      tough = tough + 1
 
-    budget = budget - 10
+      budget = budget - 10
+    }
   }
 
   const partsTough = new Array(tough)
