@@ -17,7 +17,7 @@ outlast._defaultAction = function (creep) {
     }
   }
 
-  if (creep.hits >= creep.hitsMax) {
+  if (creep.memory._blk && creep.hits >= creep.hitsMax) {
     const now = creep.memory.octr || 0
     creep.memory.octr = now + 1
   }
@@ -60,8 +60,8 @@ outlast.creepPrepare = function (creep) {
 }
 
 outlast.creepAtDestination = function (creep) {
-  this._defaultAction(creep)
   creep.memory._blk = true
+  this._defaultAction(creep)
 }
 
 outlast.creepRoomTravel = function (creep) {
