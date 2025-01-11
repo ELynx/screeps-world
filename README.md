@@ -2,13 +2,7 @@
 
 ## LICENSE
 
-Copyright (C) 2024 by Eduard Lynx.
-
-All rights reserved.
-
-Unauthorized copying via any medium is strictly prohibited.
-
-Proprietary and confidential.
+I do not care. If you run this stuff somewhere, your problem mostly.
 
 ## Folders
 
