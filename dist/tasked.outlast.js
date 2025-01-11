@@ -11,13 +11,13 @@ outlast._defaultAction = function (creep) {
   if (creep.memory.shel <= 0) return
 
   let fastRush = false
-  if (creep.room.controller && creep.room.controller.sign) {
-    if (creep.room.controller.sign.text === '«ᴏᴠᴇʀᴍɪɴᴅ»') {
+  if (creep.room.controller && creep.room.controller.signedByOwner()) {
+    if (creep.room.controller.sign.text === Game.iff.BotSignatureOvermind) {
       fastRush = true
     }
   }
 
-  if (creep.hits >= creep.hitsMax) {
+  if (creep.memory._blk && creep.hits >= creep.hitsMax) {
     const now = creep.memory.octr || 0
     creep.memory.octr = now + 1
   }
@@ -60,8 +60,8 @@ outlast.creepPrepare = function (creep) {
 }
 
 outlast.creepAtDestination = function (creep) {
-  this._defaultAction(creep)
   creep.memory._blk = true
+  this._defaultAction(creep)
 }
 
 outlast.creepRoomTravel = function (creep) {
